@@ -19,6 +19,8 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isHorizontalSwipe, setIsHorizontalSwipe] = useState(false);
   const [swipeStartOffset, setSwipeStartOffset] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -73,8 +75,9 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     itemTouchStartY.current = e.touches[0].clientY;
     swipeDecided.current = false;
     setIsHorizontalSwipe(false);
-    setSwipeStartOffset(swipingId === eventId ? swipeOffset : 0);
+    setSwipeStartOffset(activeEventId === eventId ? swipeOffset : 0);
     setSwipingId(eventId);
+    setIsAnimating(false);
   };
 
   const handleItemTouchMove = (e: TouchEvent) => {
@@ -99,14 +102,21 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     e.preventDefault();
     const newOffset = swipeStartOffset + diffX;
     setSwipeOffset(Math.max(0, Math.min(newOffset, 80)));
+    setActiveEventId(swipingId);
   };
 
   const handleItemTouchEnd = () => {
+    setIsAnimating(true);
     if (swipeOffset > 60) {
       setSwipeOffset(80);
+      setActiveEventId(swipingId);
     } else {
       setSwipeOffset(0);
-      setSwipingId(null);
+      setTimeout(() => {
+        setActiveEventId(null);
+        setSwipingId(null);
+        setIsAnimating(false);
+      }, 200);
     }
     setIsHorizontalSwipe(false);
     swipeDecided.current = false;
@@ -179,18 +189,19 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
           ) : (
             <div className="space-y-2 mb-4">
               {filteredEvents.map((event) => {
-                const isActive = swipingId === event.id && swipeOffset > 0;
+                const isActive = activeEventId === event.id;
+                const showDelete = isActive && (swipeOffset > 0 || isAnimating);
                 return (
                   <div key={event.id} className="flex w-full">
                     <div
-                      className="flex items-center justify-between p-3 bg-black border border-white/30 transition-all overflow-hidden"
+                      className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
                       style={{ 
-                        width: isActive ? `calc(100% - ${swipeOffset}px)` : '100%',
+                        width: showDelete ? `calc(100% - ${swipeOffset}px)` : '100%',
                         borderTopLeftRadius: '0.5rem',
                         borderBottomLeftRadius: '0.5rem',
-                        borderTopRightRadius: isActive ? 0 : '0.5rem',
-                        borderBottomRightRadius: isActive ? 0 : '0.5rem',
-                        borderRight: isActive ? 'none' : undefined,
+                        borderTopRightRadius: showDelete ? 0 : '0.5rem',
+                        borderBottomRightRadius: showDelete ? 0 : '0.5rem',
+                        borderRight: showDelete ? 'none' : undefined,
                       }}
                       onTouchStart={(e) => handleItemTouchStart(e, event.id)}
                       onTouchMove={handleItemTouchMove}
@@ -204,13 +215,13 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                         {format(new Date(event.time), 'HH:mm')} Uhr
                       </span>
                     </div>
-                    {isActive && (
+                    {showDelete && (
                       <button
                         onClick={() => handleDelete(event.id)}
-                        className="bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg"
+                        className={`bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
                         style={{ width: swipeOffset }}
                       >
-                        Löschen
+                        {swipeOffset > 50 && 'Löschen'}
                       </button>
                     )}
                   </div>
