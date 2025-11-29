@@ -18,6 +18,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isHorizontalSwipe, setIsHorizontalSwipe] = useState(false);
+  const [swipeStartOffset, setSwipeStartOffset] = useState(0);
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -72,6 +73,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     itemTouchStartY.current = e.touches[0].clientY;
     swipeDecided.current = false;
     setIsHorizontalSwipe(false);
+    setSwipeStartOffset(swipingId === eventId ? swipeOffset : 0);
     setSwipingId(eventId);
   };
 
@@ -94,11 +96,9 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     
     if (!isHorizontalSwipe && swipeDecided.current) return;
     
-    // Only allow left swipe (positive diff)
-    if (diffX > 0) {
-      e.preventDefault();
-      setSwipeOffset(Math.max(0, Math.min(diffX, 80)));
-    }
+    e.preventDefault();
+    const newOffset = swipeStartOffset + diffX;
+    setSwipeOffset(Math.max(0, Math.min(newOffset, 80)));
   };
 
   const handleItemTouchEnd = () => {
@@ -140,7 +140,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black max-h-[80vh] flex flex-col">
+      <DrawerContent className="bg-black border-black h-[60vh] flex flex-col">
         <DrawerHeader className="sticky top-0 bg-black z-10 pb-4">
           <div className="flex items-center justify-between">
             <div className="w-6 h-6 flex items-center justify-center">
