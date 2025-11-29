@@ -14,6 +14,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const touchStartX = useRef<number>(0);
   const itemTouchStartX = useRef<number>(0);
 
@@ -64,25 +65,39 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     touchStartX.current = e.touches[0].clientX;
   };
 
+  const changeDate = (direction: 'left' | 'right') => {
+    const today = new Date();
+    if (direction === 'left') {
+      const nextDay = addDays(selectedDate, 1);
+      if (nextDay > today) return;
+    } else {
+      const prevDay = subDays(selectedDate, 1);
+      const sevenDaysAgo = subDays(today, 6);
+      if (prevDay < sevenDaysAgo) return;
+    }
+    
+    setSlideDirection(direction);
+    setTimeout(() => {
+      if (direction === 'left') {
+        setSelectedDate(addDays(selectedDate, 1));
+      } else {
+        setSelectedDate(subDays(selectedDate, 1));
+      }
+      setTimeout(() => setSlideDirection(null), 150);
+    }, 150);
+  };
+
   const handleTouchEnd = (e: TouchEvent) => {
-    if (swipingId) return; // Don't change date when swiping item
+    if (swipingId) return;
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
     const minSwipeDistance = 50;
-    const today = new Date();
 
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
-        const nextDay = addDays(selectedDate, 1);
-        if (nextDay <= today) {
-          setSelectedDate(nextDay);
-        }
+        changeDate('left');
       } else {
-        const prevDay = subDays(selectedDate, 1);
-        const sevenDaysAgo = subDays(today, 6);
-        if (prevDay >= sevenDaysAgo) {
-          setSelectedDate(prevDay);
-        }
+        changeDate('right');
       }
     }
   };
@@ -96,10 +111,17 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
           </DrawerTitle>
         </DrawerHeader>
         <div 
-          className="p-4 overflow-y-auto"
+          className="p-4 overflow-y-auto overflow-x-hidden"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
+          <div 
+            className={`transition-all duration-150 ${
+              slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
+              slideDirection === 'right' ? 'opacity-0 translate-x-4' : 
+              'opacity-100 translate-x-0'
+            }`}
+          >
           {filteredEvents.length === 0 ? (
             <p className="text-center text-[14px] text-white/60">
               Keine Ereignisse
@@ -148,6 +170,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
           <p className="text-center text-[12px] text-white/40 mt-4">
             ← Wischen für andere Tage →
           </p>
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
