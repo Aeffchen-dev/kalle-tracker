@@ -26,8 +26,8 @@ const Index = () => {
     const now = new Date();
     const elapsed = now.getTime() - lastEventTime.getTime();
     
-    // If elapsed is negative (future event), show 00.00
-    if (elapsed < 0) {
+    // If elapsed is negative or very small, show 00.00
+    if (elapsed <= 0) {
       setTimeDisplay('00.00');
       return;
     }
@@ -44,8 +44,8 @@ const Index = () => {
   }, [updateCountdown]);
 
   const handleEventAdded = () => {
-    // Immediately update the countdown
-    updateCountdown();
+    // Small delay to ensure storage is updated
+    setTimeout(updateCountdown, 50);
   };
 
   return (
