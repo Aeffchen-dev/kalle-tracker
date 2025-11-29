@@ -171,9 +171,11 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
             }`}
           >
           {filteredEvents.length === 0 ? (
-            <p className="text-center text-[14px] text-white/60">
-              Keine Ereignisse
-            </p>
+            <div className="flex-1 flex items-center justify-center min-h-[200px]">
+              <p className="text-center text-[14px] text-white/60">
+                Keine Einträge
+              </p>
+            </div>
           ) : (
             <div className="space-y-2 mb-4">
               {filteredEvents.map((event) => {
