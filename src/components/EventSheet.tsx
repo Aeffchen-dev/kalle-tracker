@@ -96,7 +96,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="block w-full h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
+              className="box-border w-full h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:invert"
+              style={{ lineHeight: '48px' }}
             />
           </div>
 
