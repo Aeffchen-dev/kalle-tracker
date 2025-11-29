@@ -96,18 +96,20 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="bg-transparent border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
+              className="h-8 bg-transparent border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
               style={{ width: 'calc(100% - 30px)' }}
             />
           </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={selectedTypes.size === 0 || isSubmitting}
-            className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
-          >
-            {isSubmitting ? 'Speichern...' : 'Speichern'}
-          </Button>
+          <div className="pb-4">
+            <Button
+              onClick={handleSubmit}
+              disabled={selectedTypes.size === 0 || isSubmitting}
+              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
+            >
+              {isSubmitting ? 'Speichern...' : 'Speichern'}
+            </Button>
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
