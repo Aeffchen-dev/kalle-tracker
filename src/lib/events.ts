@@ -24,10 +24,10 @@ export const getEvents = async (): Promise<Event[]> => {
   }));
 };
 
-export const saveEvent = async (type: 'pipi' | 'stuhlgang'): Promise<void> => {
+export const saveEvent = async (type: 'pipi' | 'stuhlgang', time?: Date): Promise<void> => {
   const { error } = await supabase
     .from('events')
-    .insert({ type, time: new Date().toISOString() });
+    .insert({ type, time: (time || new Date()).toISOString() });
   
   if (error) {
     console.error('Error saving event:', error);
