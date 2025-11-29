@@ -23,10 +23,18 @@ export const saveEvent = (event: Event): void => {
     const events = getEvents();
     events.push(event);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-    console.log('Event saved:', event);
-    console.log('All events now:', events);
   } catch (error) {
     console.error('Error saving event:', error);
+  }
+};
+
+export const deleteEvent = (eventId: string): void => {
+  try {
+    const events = getEvents();
+    const filtered = events.filter(e => e.id !== eventId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+  } catch (error) {
+    console.error('Error deleting event:', error);
   }
 };
 
