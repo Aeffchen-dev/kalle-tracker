@@ -147,7 +147,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     if (swipingId) return;
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
-    const minSwipeDistance = 50;
+    const minSwipeDistance = 100;
 
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
