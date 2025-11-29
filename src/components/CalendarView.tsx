@@ -109,11 +109,11 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
               {filteredEvents.map((event) => {
                 const isActive = swipingId === event.id && swipeOffset > 0;
                 return (
-                  <div key={event.id} className="relative flex rounded-lg">
+                  <div key={event.id} className="flex w-full">
                     <div
-                      className="flex-1 flex items-center justify-between p-3 bg-black border border-white/30 transition-all overflow-hidden"
+                      className="flex items-center justify-between p-3 bg-black border border-white/30 transition-all overflow-hidden"
                       style={{ 
-                        marginRight: isActive ? swipeOffset : 0,
+                        width: isActive ? `calc(100% - ${swipeOffset}px)` : '100%',
                         borderTopLeftRadius: '0.5rem',
                         borderBottomLeftRadius: '0.5rem',
                         borderTopRightRadius: isActive ? 0 : '0.5rem',
