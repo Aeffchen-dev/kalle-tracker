@@ -99,20 +99,20 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
           
-          <div className="w-full max-w-full">
+          <div>
             <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full max-w-full box-border p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="w-auto p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
           <Button
             onClick={handleSubmit}
             disabled={selectedTypes.size === 0}
-            className="w-full text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50"
+            className="w-full text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
           >
             Speichern
           </Button>
