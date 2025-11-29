@@ -61,7 +61,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 h-10 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white hover:text-white border border-white/30'
@@ -72,7 +72,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 h-10 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white hover:text-white border border-white/30'
