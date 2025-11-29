@@ -4,48 +4,42 @@ export interface Event {
   time: Date;
 }
 
-const COOKIE_NAME = 'kalle_events';
-const COUNTDOWN_COOKIE = 'kalle_countdown_target';
+const STORAGE_KEY = 'kalle_events';
 
 export const getEvents = (): Event[] => {
-  const cookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith(`${COOKIE_NAME}=`));
-  
-  if (!cookie) return [];
-  
   try {
-    const data = JSON.parse(decodeURIComponent(cookie.split('=')[1]));
-    return data.map((e: any) => ({ ...e, time: new Date(e.time) }));
-  } catch {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    return parsed.map((e: any) => ({ ...e, time: new Date(e.time) }));
+  } catch (error) {
+    console.error('Error loading events:', error);
     return [];
   }
 };
 
 export const saveEvent = (event: Event): void => {
-  const events = getEvents();
-  events.push(event);
-  const expires = new Date();
-  expires.setFullYear(expires.getFullYear() + 1);
-  document.cookie = `${COOKIE_NAME}=${encodeURIComponent(JSON.stringify(events))}; expires=${expires.toUTCString()}; path=/`;
+  try {
+    const events = getEvents();
+    events.push(event);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+    console.log('Event saved:', event);
+    console.log('All events now:', events);
+  } catch (error) {
+    console.error('Error saving event:', error);
+  }
 };
 
 export const getCountdownTarget = (): Date | null => {
-  const cookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith(`${COUNTDOWN_COOKIE}=`));
-  
-  if (!cookie) return null;
-  
   try {
-    return new Date(decodeURIComponent(cookie.split('=')[1]));
+    const data = localStorage.getItem('kalle_countdown_target');
+    if (!data) return null;
+    return new Date(data);
   } catch {
     return null;
   }
 };
 
 export const setCountdownTarget = (target: Date): void => {
-  const expires = new Date();
-  expires.setFullYear(expires.getFullYear() + 1);
-  document.cookie = `${COUNTDOWN_COOKIE}=${encodeURIComponent(target.toISOString())}; expires=${expires.toUTCString()}; path=/`;
+  localStorage.setItem('kalle_countdown_target', target.toISOString());
 };
