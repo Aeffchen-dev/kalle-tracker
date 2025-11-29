@@ -9,7 +9,16 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [pawAnimationComplete, setPawAnimationComplete] = useState(false);
   const eventsRef = useRef<Event[]>([]);
+
+  // Paw animation on load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPawAnimationComplete(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
@@ -125,7 +134,40 @@ const Index = () => {
       <header className="p-4 flex justify-between items-center relative z-10">
         <span className="text-[14px] uppercase flex items-center">
           Kalle
-          <PawPrint size={14} className="ml-1 rotate-6 fill-black" />
+          <span className="relative flex items-center ml-1">
+            {/* First paw - appears first, fades out */}
+            <PawPrint 
+              size={14} 
+              className={`absolute fill-black transition-opacity duration-300 ${
+                pawAnimationComplete ? 'opacity-0' : 'opacity-100'
+              }`}
+              style={{ 
+                left: '-16px',
+                transform: 'rotate(-8deg)',
+                animationDelay: '0ms'
+              }}
+            />
+            {/* Middle paw - always visible */}
+            <PawPrint 
+              size={14} 
+              className="fill-black rotate-6"
+              style={{
+                animation: pawAnimationComplete ? 'none' : 'pawAppear 0.3s ease-out 0.3s both'
+              }}
+            />
+            {/* Third paw - appears last, fades out */}
+            <PawPrint 
+              size={14} 
+              className={`absolute fill-black transition-opacity duration-300 ${
+                pawAnimationComplete ? 'opacity-0' : 'opacity-100'
+              }`}
+              style={{ 
+                left: '16px',
+                transform: 'rotate(20deg)',
+                animation: pawAnimationComplete ? 'none' : 'pawAppear 0.3s ease-out 0.6s both'
+              }}
+            />
+          </span>
         </span>
         <h1 className="text-[14px] uppercase">Tracker</h1>
       </header>
