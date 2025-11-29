@@ -143,7 +143,7 @@ const Index = () => {
               }`}
               style={{ 
                 left: '-24px',
-                top: '8px',
+                top: '24px',
                 transform: 'rotate(-8deg)',
                 animationDelay: '0ms'
               }}
@@ -164,7 +164,7 @@ const Index = () => {
               }`}
               style={{ 
                 left: '24px',
-                top: '-8px',
+                top: '-24px',
                 transform: 'rotate(20deg)',
                 animation: pawAnimationComplete ? 'none' : 'pawAppear 0.3s ease-out 0.6s both'
               }}
