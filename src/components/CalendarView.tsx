@@ -146,14 +146,17 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleItemClick = (eventId: string) => {
+    console.log('click - eventId:', eventId, 'activeEventId:', activeEventId, 'touchJustEnded:', touchJustEnded.current);
     // Prevent click if touch just ended (mobile devices fire both)
     if (touchJustEnded.current) {
+      console.log('click blocked - touchJustEnded');
       return;
     }
     
     setIsAnimating(true);
     // Toggle: if already showing delete for this item, hide it
     if (activeEventId === eventId) {
+      console.log('click - hiding delete');
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
@@ -161,6 +164,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
+      console.log('click - showing delete');
       // Show delete (also closes any other open item)
       setActiveEventId(eventId);
       setSwipingId(eventId);

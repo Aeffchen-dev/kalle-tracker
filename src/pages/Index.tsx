@@ -9,23 +9,7 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [paw1Hidden, setPaw1Hidden] = useState(false);
-  const [paw3Hidden, setPaw3Hidden] = useState(false);
   const eventsRef = useRef<Event[]>([]);
-
-  // Paw animation on load - hide paws sequentially
-  useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setPaw1Hidden(true);
-    }, 1200);
-    const timer3 = setTimeout(() => {
-      setPaw3Hidden(true);
-    }, 1800);
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer3);
-    };
-  }, []);
 
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
@@ -142,40 +126,10 @@ const Index = () => {
         <span className="text-[14px] uppercase flex items-center">
           Kalle
           <span className="relative flex items-center ml-1">
-            {/* First paw - left back, appears first, fades out first */}
-            <PawPrint 
-              size={14} 
-              className={`absolute fill-black transition-all duration-500 ${
-                paw1Hidden ? 'opacity-0' : 'opacity-100'
-              }`}
-              style={{ 
-                left: '-12px',
-                top: '20px',
-                transform: 'rotate(-15deg)',
-                animation: paw1Hidden ? 'none' : 'pawStep 0.4s ease-out 0s both'
-              }}
-            />
-            {/* Middle paw - right front, always visible */}
             <PawPrint 
               size={14} 
               className="fill-black"
-              style={{
-                transform: 'rotate(10deg)',
-                animation: paw1Hidden && paw3Hidden ? 'none' : 'pawStep 0.4s ease-out 0.25s both'
-              }}
-            />
-            {/* Third paw - left front, appears last, fades out later */}
-            <PawPrint 
-              size={14} 
-              className={`absolute fill-black transition-all duration-500 ${
-                paw3Hidden ? 'opacity-0' : 'opacity-100'
-              }`}
-              style={{ 
-                left: '12px',
-                top: '-20px',
-                transform: 'rotate(-15deg)',
-                animation: paw3Hidden ? 'none' : 'pawStep 0.4s ease-out 0.5s both'
-              }}
+              style={{ transform: 'rotate(10deg)' }}
             />
           </span>
         </span>
