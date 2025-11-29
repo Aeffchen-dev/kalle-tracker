@@ -18,7 +18,7 @@ const CalendarView = () => {
   const [swipeStartOffset, setSwipeStartOffset] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
-  const [snap, setSnap] = useState<SnapPoint | null>(0.35);
+  const [snap, setSnap] = useState<SnapPoint | null>(0.2);
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -196,7 +196,7 @@ const CalendarView = () => {
       open={true} 
       dismissible={false}
       modal={false}
-      snapPoints={[0.35, 0.9]}
+      snapPoints={[0.2, 0.9]}
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
     >
