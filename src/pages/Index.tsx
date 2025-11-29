@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
@@ -8,15 +8,9 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [events, setEvents] = useState<Event[]>([]);
   const eventsRef = useRef<Event[]>([]);
 
-  // Keep ref in sync with state
-  useEffect(() => {
-    eventsRef.current = events;
-  }, [events]);
-
-  const calculateTimeDisplay = useCallback(() => {
+  const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
     if (eventList.length === 0) {
       setTimeDisplay('00.00.00');
@@ -41,14 +35,13 @@ const Index = () => {
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
     setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`);
-  }, []);
+  };
 
-  const loadEvents = useCallback(async () => {
+  const loadEvents = async () => {
     const fetchedEvents = await getEvents();
-    setEvents(fetchedEvents);
     eventsRef.current = fetchedEvents;
     calculateTimeDisplay();
-  }, [calculateTimeDisplay]);
+  };
 
   // Initial load and realtime subscription
   useEffect(() => {
@@ -72,7 +65,7 @@ const Index = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [loadEvents]);
+  }, []);
 
   // Timer interval - runs every second
   useEffect(() => {
@@ -80,7 +73,7 @@ const Index = () => {
       calculateTimeDisplay();
     }, 1000);
     return () => clearInterval(interval);
-  }, [calculateTimeDisplay]);
+  }, []);
 
   return (
     <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
