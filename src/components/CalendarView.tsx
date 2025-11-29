@@ -133,7 +133,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black max-h-[80vh]">
+      <DrawerContent className="bg-black border-black max-h-[80vh] flex flex-col">
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">
             {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
