@@ -128,15 +128,15 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     
     setIsAnimating(true);
     if (activeEventId === eventId && swipeOffset > 0) {
-      // Close delete
+      // Second click - close delete
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
         setSwipingId(null);
         setIsAnimating(false);
       }, 200);
-    } else {
-      // Open delete
+    } else if (activeEventId !== eventId) {
+      // First click on new item - open delete (close any other first)
       setActiveEventId(eventId);
       setSwipingId(eventId);
       setSwipeOffset(80);
