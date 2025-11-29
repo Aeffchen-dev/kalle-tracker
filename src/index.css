@@ -99,8 +99,4 @@
     background-size: 200px 200px;
     background-repeat: repeat;
   }
-
-  [vaul-drawer-wrapper] {
-    background: #f8f8f8 !important;
-  }
 }
