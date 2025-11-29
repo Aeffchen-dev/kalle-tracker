@@ -53,7 +53,7 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center">
         <div className="text-[40px] leading-none">
-          +{timeDisplay}
+          {timeDisplay}
         </div>
         <button
           onClick={() => setEventSheetOpen(true)}

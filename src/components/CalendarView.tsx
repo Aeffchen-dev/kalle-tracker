@@ -1,6 +1,6 @@
 import { useState, useRef, TouchEvent, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getEvents, Event } from '@/lib/cookies';
+import { getEvents, deleteEvent, Event } from '@/lib/cookies';
 import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -12,17 +12,36 @@ interface CalendarViewProps {
 const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
+  const [longPressId, setLongPressId] = useState<string | null>(null);
   const touchStartX = useRef<number>(0);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Re-fetch events when drawer opens
   useEffect(() => {
     if (open) {
-      const loadedEvents = getEvents();
-      console.log('Loaded events:', loadedEvents);
-      setEvents(loadedEvents);
+      setEvents(getEvents());
       setSelectedDate(new Date());
+      setLongPressId(null);
     }
   }, [open]);
+
+  const handleDelete = (eventId: string) => {
+    deleteEvent(eventId);
+    setEvents(getEvents());
+    setLongPressId(null);
+  };
+
+  const handleLongPressStart = (eventId: string) => {
+    longPressTimer.current = setTimeout(() => {
+      setLongPressId(eventId);
+    }, 500);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
   
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.time);
@@ -79,7 +98,12 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
               {filteredEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="flex items-center justify-between p-3 rounded-lg border border-white/30"
+                  className="relative flex items-center justify-between p-3 rounded-lg border border-white/30"
+                  onTouchStart={() => handleLongPressStart(event.id)}
+                  onTouchEnd={handleLongPressEnd}
+                  onMouseDown={() => handleLongPressStart(event.id)}
+                  onMouseUp={handleLongPressEnd}
+                  onMouseLeave={handleLongPressEnd}
                 >
                   <span className="text-[14px] text-white">
                     {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
@@ -87,6 +111,14 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                   <span className="text-[14px] text-white">
                     {format(new Date(event.time), 'HH:mm')} Uhr
                   </span>
+                  {longPressId === event.id && (
+                    <button
+                      onClick={() => handleDelete(event.id)}
+                      className="absolute inset-0 flex items-center justify-center bg-black rounded-lg text-[14px] text-white"
+                    >
+                      Löschen
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
