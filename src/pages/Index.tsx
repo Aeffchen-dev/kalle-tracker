@@ -1,23 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
-import { getEvents } from '@/lib/cookies';
+import { getEvents, Event } from '@/lib/events';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
-  const [timeDisplay, setTimeDisplay] = useState('00.00');
+  const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [events, setEvents] = useState<Event[]>([]);
 
-  const updateCountdown = useCallback(() => {
-    const events = getEvents();
-    
-    if (events.length === 0) {
+  const calculateTimeDisplay = useCallback((eventList: Event[]) => {
+    if (eventList.length === 0) {
       setTimeDisplay('00.00.00');
       return;
     }
 
-    // Find the most recent event
-    const sortedEvents = [...events].sort((a, b) => 
+    const sortedEvents = [...eventList].sort((a, b) => 
       new Date(b.time).getTime() - new Date(a.time).getTime()
     );
     const lastEvent = sortedEvents[0];
@@ -26,7 +25,6 @@ const Index = () => {
     const now = new Date();
     const elapsed = now.getTime() - lastEventTime.getTime();
     
-    // If elapsed is negative or very small, show 00.00.00
     if (elapsed <= 0) {
       setTimeDisplay('00.00.00');
       return;
@@ -38,16 +36,51 @@ const Index = () => {
     setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`);
   }, []);
 
-  useEffect(() => {
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
-  }, [updateCountdown]);
+  const loadEvents = useCallback(async () => {
+    const fetchedEvents = await getEvents();
+    setEvents(fetchedEvents);
+    calculateTimeDisplay(fetchedEvents);
+  }, [calculateTimeDisplay]);
 
-  const handleEventAdded = () => {
-    // Small delay to ensure storage is updated
-    setTimeout(updateCountdown, 50);
-  };
+  useEffect(() => {
+    loadEvents();
+    
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('events-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'events'
+        },
+        () => {
+          loadEvents();
+        }
+      )
+      .subscribe();
+
+    // Update timer every second
+    const interval = setInterval(() => {
+      calculateTimeDisplay(events);
+    }, 1000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(interval);
+    };
+  }, [loadEvents, calculateTimeDisplay, events]);
+
+  // Separate interval effect that only depends on events
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (events.length > 0) {
+        calculateTimeDisplay(events);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [events, calculateTimeDisplay]);
 
   return (
     <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
@@ -127,7 +160,7 @@ const Index = () => {
       <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
-        onEventAdded={handleEventAdded}
+        onEventAdded={loadEvents}
       />
       <CalendarView
         open={calendarOpen}

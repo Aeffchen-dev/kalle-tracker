@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { saveEvent, Event } from '@/lib/cookies';
+import { saveEvent } from '@/lib/events';
 
 interface EventSheetProps {
   open: boolean;
@@ -11,10 +11,7 @@ interface EventSheetProps {
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
-  const [time, setTime] = useState(() => {
-    const now = new Date();
-    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleType = (type: 'pipi' | 'stuhlgang') => {
     setSelectedTypes(prev => {
@@ -28,27 +25,22 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     });
   };
 
-  const handleSubmit = () => {
-    if (selectedTypes.size === 0) return;
+  const handleSubmit = async () => {
+    if (selectedTypes.size === 0 || isSubmitting) return;
     
-    // Use current time for countdown reset
-    const now = new Date();
-
+    setIsSubmitting(true);
+    
     // Save an event for each selected type
-    selectedTypes.forEach(type => {
-      const event: Event = {
-        id: `${Date.now()}-${type}`,
-        type,
-        time: now, // Always use current time so countdown resets
-      };
-      saveEvent(event);
-    });
+    for (const type of selectedTypes) {
+      await saveEvent(type);
+    }
 
     onEventAdded();
     onOpenChange(false);
     
     // Reset selections
     setSelectedTypes(new Set());
+    setIsSubmitting(false);
   };
 
   return (
@@ -83,23 +75,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
 
-          <div>
-            <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="h-10 px-3 rounded border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
-              style={{ width: 'calc(100% - 32px)' }}
-            />
-          </div>
-
           <Button
             onClick={handleSubmit}
-            disabled={selectedTypes.size === 0}
+            disabled={selectedTypes.size === 0 || isSubmitting}
             className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
           >
-            Speichern
+            {isSubmitting ? 'Speichern...' : 'Speichern'}
           </Button>
         </div>
       </DrawerContent>
