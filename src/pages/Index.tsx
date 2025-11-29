@@ -8,51 +8,44 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [lastEventTime, setLastEventTime] = useState<Date | null>(null);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  const calculateTimeDisplay = useCallback((eventList: Event[]) => {
+    if (eventList.length === 0) {
+      setTimeDisplay('00.00.00');
+      return;
+    }
+
+    const sortedEvents = [...eventList].sort((a, b) => 
+      new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
+    const lastEvent = sortedEvents[0];
+    const lastEventTime = new Date(lastEvent.time);
+
+    const now = new Date();
+    const elapsed = now.getTime() - lastEventTime.getTime();
+    
+    if (elapsed <= 0) {
+      setTimeDisplay('00.00.00');
+      return;
+    }
+    
+    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+    setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`);
+  }, []);
 
   const loadEvents = useCallback(async () => {
     const fetchedEvents = await getEvents();
-    if (fetchedEvents.length > 0) {
-      const sortedEvents = [...fetchedEvents].sort((a, b) => 
-        new Date(b.time).getTime() - new Date(a.time).getTime()
-      );
-      setLastEventTime(new Date(sortedEvents[0].time));
-    } else {
-      setLastEventTime(null);
-    }
-  }, []);
+    setEvents(fetchedEvents);
+    calculateTimeDisplay(fetchedEvents);
+  }, [calculateTimeDisplay]);
 
-  // Update display every second
-  useEffect(() => {
-    const updateDisplay = () => {
-      if (!lastEventTime) {
-        setTimeDisplay('00.00.00');
-        return;
-      }
-
-      const now = new Date();
-      const elapsed = now.getTime() - lastEventTime.getTime();
-      
-      if (elapsed <= 0) {
-        setTimeDisplay('00.00.00');
-        return;
-      }
-      
-      const hours = Math.floor(elapsed / (1000 * 60 * 60));
-      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-      setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`);
-    };
-
-    updateDisplay();
-    const interval = setInterval(updateDisplay, 1000);
-    return () => clearInterval(interval);
-  }, [lastEventTime]);
-
-  // Load events on mount and subscribe to realtime
   useEffect(() => {
     loadEvents();
     
+    // Subscribe to realtime updates
     const channel = supabase
       .channel('events-changes')
       .on(
@@ -68,10 +61,26 @@ const Index = () => {
       )
       .subscribe();
 
+    // Update timer every second
+    const interval = setInterval(() => {
+      calculateTimeDisplay(events);
+    }, 1000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(interval);
     };
-  }, [loadEvents]);
+  }, [loadEvents, calculateTimeDisplay, events]);
+
+  // Separate interval effect that only depends on events
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (events.length > 0) {
+        calculateTimeDisplay(events);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [events, calculateTimeDisplay]);
 
   return (
     <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
