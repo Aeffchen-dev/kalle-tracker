@@ -106,34 +106,43 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
             </p>
           ) : (
             <div className="space-y-2">
-              {filteredEvents.map((event) => (
-                <div key={event.id} className="relative overflow-hidden rounded-lg">
-                  <button
-                    onClick={() => handleDelete(event.id)}
-                    className="absolute right-0 top-0 bottom-0 w-[80px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg"
-                  >
-                    Löschen
-                  </button>
-                  <div
-                    className="relative flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg transition-transform"
-                    style={{ 
-                      transform: `translateX(-${swipingId === event.id ? swipeOffset : 0}px)`,
-                      borderTopRightRadius: swipingId === event.id && swipeOffset > 0 ? 0 : undefined,
-                      borderBottomRightRadius: swipingId === event.id && swipeOffset > 0 ? 0 : undefined,
-                    }}
-                    onTouchStart={(e) => handleItemTouchStart(e, event.id)}
-                    onTouchMove={handleItemTouchMove}
-                    onTouchEnd={() => handleItemTouchEnd(event.id)}
-                  >
-                    <span className="text-[14px] text-white">
-                      {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
-                    </span>
-                    <span className="text-[14px] text-white">
-                      {format(new Date(event.time), 'HH:mm')} Uhr
-                    </span>
+              {filteredEvents.map((event) => {
+                const isActive = swipingId === event.id && swipeOffset > 0;
+                return (
+                  <div key={event.id} className="relative flex rounded-lg">
+                    <div
+                      className="flex-1 flex items-center justify-between p-3 bg-black border border-white/30 transition-all overflow-hidden"
+                      style={{ 
+                        marginRight: isActive ? swipeOffset : 0,
+                        borderTopLeftRadius: '0.5rem',
+                        borderBottomLeftRadius: '0.5rem',
+                        borderTopRightRadius: isActive ? 0 : '0.5rem',
+                        borderBottomRightRadius: isActive ? 0 : '0.5rem',
+                        borderRight: isActive ? 'none' : undefined,
+                      }}
+                      onTouchStart={(e) => handleItemTouchStart(e, event.id)}
+                      onTouchMove={handleItemTouchMove}
+                      onTouchEnd={() => handleItemTouchEnd(event.id)}
+                    >
+                      <span className="text-[14px] text-white whitespace-nowrap">
+                        {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
+                      </span>
+                      <span className="text-[14px] text-white whitespace-nowrap">
+                        {format(new Date(event.time), 'HH:mm')} Uhr
+                      </span>
+                    </div>
+                    {isActive && (
+                      <button
+                        onClick={() => handleDelete(event.id)}
+                        className="bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg"
+                        style={{ width: swipeOffset }}
+                      >
+                        Löschen
+                      </button>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
           <p className="text-center text-[12px] text-white/40 mt-4">
