@@ -107,15 +107,17 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleItemTouchEnd = () => {
+    console.log('touchEnd - swipingId:', swipingId, 'activeEventId:', activeEventId, 'swipeOffset:', swipeOffset, 'swipeDecided:', swipeDecided.current);
     touchJustEnded.current = true;
     setTimeout(() => { touchJustEnded.current = false; }, 300);
     
     setIsAnimating(true);
     if (swipeOffset > 60) {
+      console.log('touchEnd - swipe complete, keeping delete open');
       setSwipeOffset(80);
       setActiveEventId(swipingId);
     } else if (swipeDecided.current) {
-      // Only reset if we actually swiped left to close
+      console.log('touchEnd - swiped to close');
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
@@ -123,11 +125,10 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // Tap on touch device - only show delete, never hide
-      if (activeEventId !== swipingId) {
-        setActiveEventId(swipingId);
-        setSwipeOffset(80);
-      }
+      console.log('touchEnd - tap detected, showing delete');
+      // Tap on touch device - show delete
+      setActiveEventId(swipingId);
+      setSwipeOffset(80);
       setTimeout(() => setIsAnimating(false), 200);
     }
     setIsHorizontalSwipe(false);
@@ -135,17 +136,19 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleItemClick = (eventId: string) => {
+    console.log('click - eventId:', eventId, 'touchJustEnded:', touchJustEnded.current, 'activeEventId:', activeEventId);
     // Prevent click if touch just ended (mobile devices fire both)
-    if (touchJustEnded.current) return;
-    
-    // Only show delete, never hide on click
-    if (activeEventId !== eventId) {
-      setIsAnimating(true);
-      setActiveEventId(eventId);
-      setSwipingId(eventId);
-      setSwipeOffset(80);
-      setTimeout(() => setIsAnimating(false), 200);
+    if (touchJustEnded.current) {
+      console.log('click - blocked due to touch');
+      return;
     }
+    
+    console.log('click - showing delete');
+    setIsAnimating(true);
+    setActiveEventId(eventId);
+    setSwipingId(eventId);
+    setSwipeOffset(80);
+    setTimeout(() => setIsAnimating(false), 200);
   };
   
   const filteredEvents = events.filter(event => {
