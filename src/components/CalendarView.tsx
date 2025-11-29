@@ -115,7 +115,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
       setSwipeOffset(80);
       setActiveEventId(swipingId);
     } else if (swipeDecided.current) {
-      // Only reset if we actually swiped
+      // Only reset if we actually swiped left to close
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
@@ -123,19 +123,12 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // Tap on touch device - toggle delete
-      if (activeEventId === swipingId && swipeOffset > 0) {
-        setSwipeOffset(0);
-        setTimeout(() => {
-          setActiveEventId(null);
-          setSwipingId(null);
-          setIsAnimating(false);
-        }, 200);
-      } else {
+      // Tap on touch device - only show delete, never hide
+      if (activeEventId !== swipingId) {
         setActiveEventId(swipingId);
         setSwipeOffset(80);
-        setTimeout(() => setIsAnimating(false), 200);
       }
+      setTimeout(() => setIsAnimating(false), 200);
     }
     setIsHorizontalSwipe(false);
     swipeDecided.current = false;
@@ -145,17 +138,9 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     // Prevent click if touch just ended (mobile devices fire both)
     if (touchJustEnded.current) return;
     
-    setIsAnimating(true);
-    if (activeEventId === eventId && swipeOffset > 0) {
-      // Second click on same item - hide delete
-      setSwipeOffset(0);
-      setTimeout(() => {
-        setActiveEventId(null);
-        setSwipingId(null);
-        setIsAnimating(false);
-      }, 200);
-    } else {
-      // First click - show delete
+    // Only show delete, never hide on click
+    if (activeEventId !== eventId) {
+      setIsAnimating(true);
       setActiveEventId(eventId);
       setSwipingId(eventId);
       setSwipeOffset(80);
