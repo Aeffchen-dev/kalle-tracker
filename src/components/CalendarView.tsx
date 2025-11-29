@@ -244,7 +244,7 @@ const CalendarView = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-2 pb-4">
+            <div className="space-y-2 pb-20">
               {filteredEvents.map((event) => {
                 const isActive = activeEventId === event.id;
                 const showDelete = isActive && (swipeOffset > 0 || isAnimating);
