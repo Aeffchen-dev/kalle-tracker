@@ -4,7 +4,7 @@ import { getEvents, deleteEvent, Event } from '@/lib/events';
 import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface CalendarViewProps {
   open: boolean;
@@ -141,28 +141,28 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-black max-h-[80vh] flex flex-col">
-        <DrawerHeader>
+        <DrawerHeader className="sticky top-0 bg-black z-10 pb-4">
           <div className="flex items-center justify-between">
-            <div className="w-6">
+            <div className="w-6 h-6 flex items-center justify-center">
               {canGoPrev && (
-                <button onClick={() => changeDate('right')}>
-                  <ChevronLeft size={24} className="text-white" />
+                <button onClick={() => changeDate('right')} className="flex items-center justify-center">
+                  <ArrowLeft size={24} className="text-white" />
                 </button>
               )}
             </div>
-            <DrawerTitle className="text-center text-[14px] text-white">
+            <DrawerTitle className="text-center text-[14px] text-white leading-6">
               {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
             </DrawerTitle>
-            <div className="w-6">
+            <div className="w-6 h-6 flex items-center justify-center">
               {canGoNext && (
-                <button onClick={() => changeDate('left')}>
-                  <ChevronRight size={24} className="text-white" />
+                <button onClick={() => changeDate('left')} className="flex items-center justify-center">
+                  <ArrowRight size={24} className="text-white" />
                 </button>
               )}
             </div>
           </div>
         </DrawerHeader>
-        <div className="p-4 pt-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
+        <div className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           <div 
             className={`transition-all duration-150 ${
               slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
