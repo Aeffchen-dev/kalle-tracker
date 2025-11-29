@@ -12,7 +12,7 @@ const Index = () => {
     const events = getEvents();
     
     if (events.length === 0) {
-      setTimeDisplay('00.00');
+      setTimeDisplay('00.00.00');
       return;
     }
 
@@ -26,15 +26,16 @@ const Index = () => {
     const now = new Date();
     const elapsed = now.getTime() - lastEventTime.getTime();
     
-    // If elapsed is negative or very small, show 00.00
+    // If elapsed is negative or very small, show 00.00.00
     if (elapsed <= 0) {
-      setTimeDisplay('00.00');
+      setTimeDisplay('00.00.00');
       return;
     }
     
     const hours = Math.floor(elapsed / (1000 * 60 * 60));
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`);
+    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+    setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`);
   }, []);
 
   useEffect(() => {
