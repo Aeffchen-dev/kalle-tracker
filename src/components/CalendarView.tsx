@@ -19,6 +19,10 @@ const CalendarView = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
+  
+  const toggleSnapPoint = () => {
+    setSnap(snap === 0.2 ? 0.9 : 0.2);
+  };
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -201,11 +205,14 @@ const CalendarView = () => {
       setActiveSnapPoint={setSnap}
     >
       <DrawerContent className="bg-black border-black flex flex-col h-full">
-        <DrawerHeader className="sticky top-0 bg-black z-10 pb-4">
+        <DrawerHeader 
+          className="sticky top-0 bg-black z-10 pb-4 cursor-pointer" 
+          onClick={toggleSnapPoint}
+        >
           <div className="flex items-center justify-between">
             <div className="w-6 h-6 flex items-center justify-center">
               {canGoPrev && (
-                <button onClick={() => changeDate('right')} className="flex items-center justify-center">
+                <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
                   <ArrowLeft size={24} className="text-white" />
                 </button>
               )}
@@ -215,7 +222,7 @@ const CalendarView = () => {
             </DrawerTitle>
             <div className="w-6 h-6 flex items-center justify-center">
               {canGoNext && (
-                <button onClick={() => changeDate('left')} className="flex items-center justify-center">
+                <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
                   <ArrowRight size={24} className="text-white" />
                 </button>
               )}
