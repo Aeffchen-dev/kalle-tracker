@@ -94,21 +94,9 @@
 
   body {
     @apply text-foreground font-rauschen;
-    background-color: hsl(0 0% 98%);
-    background-image: 
-      radial-gradient(ellipse 25px 20px at 10% 15%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 18px 22px at 85% 8%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 30px 25px at 45% 25%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 20px 18px at 70% 35%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 22px 28px at 15% 45%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 28px 20px at 90% 50%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 15px 20px at 35% 55%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 25px 22px at 60% 65%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 20px 25px at 5% 75%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 22px 18px at 80% 78%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 18px 22px at 25% 88%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 28px 24px at 55% 92%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
-      radial-gradient(ellipse 16px 20px at 95% 95%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%);
-    background-attachment: fixed;
+    background-color: #f8f8f8;
+    background-image: url('/dalmatian-pattern.svg');
+    background-size: 200px 200px;
+    background-repeat: repeat;
   }
 }
