@@ -87,7 +87,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="h-10 p-3 rounded-full border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
               style={{ width: 'calc(100% - 32px)' }}
             />
           </div>
@@ -95,7 +95,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <Button
             onClick={handleSubmit}
             disabled={selectedTypes.size === 0}
-            className="w-full text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
+            className="w-full h-10 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
           >
             Speichern
           </Button>

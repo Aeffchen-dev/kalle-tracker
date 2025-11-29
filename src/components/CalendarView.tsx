@@ -146,8 +146,9 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                       onTouchMove={handleItemTouchMove}
                       onTouchEnd={() => handleItemTouchEnd(event.id)}
                     >
-                      <span className="text-[14px] text-white whitespace-nowrap">
-                        {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
+                      <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-4">
+                        <span>{event.type === 'pipi' ? '💦' : '💩'}</span>
+                        <span>{event.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
                       </span>
                       <span className="text-[14px] text-white whitespace-nowrap">
                         {format(new Date(event.time), 'HH:mm')} Uhr
