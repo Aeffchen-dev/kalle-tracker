@@ -1,69 +1,63 @@
 import { useState, useEffect } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
-import { getCountdownTarget, setCountdownTarget } from '@/lib/cookies';
+import { getEvents } from '@/lib/cookies';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00');
-  const [isCountingUp, setIsCountingUp] = useState(false);
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const updateCountdown = () => {
-    const target = getCountdownTarget();
+    const events = getEvents();
     
-    if (!target) {
-      // Set initial countdown to 4 hours from now
-      const initialTarget = new Date();
-      initialTarget.setHours(initialTarget.getHours() + 4);
-      setCountdownTarget(initialTarget);
+    if (events.length === 0) {
+      setTimeDisplay('00.00');
       return;
     }
 
-    const now = new Date();
-    const diff = target.getTime() - now.getTime();
+    // Find the most recent event
+    const sortedEvents = events.sort((a, b) => 
+      new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
+    const lastEvent = sortedEvents[0];
+    const lastEventTime = new Date(lastEvent.time);
 
-    if (diff <= 0) {
-      // Count up
-      setIsCountingUp(true);
-      const elapsed = Math.abs(diff);
-      const hours = Math.floor(elapsed / (1000 * 60 * 60));
-      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`);
-    } else {
-      // Count down
-      setIsCountingUp(false);
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`);
-    }
+    const now = new Date();
+    const elapsed = now.getTime() - lastEventTime.getTime();
+    
+    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+    setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`);
   };
 
   useEffect(() => {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshKey]);
 
   const handleEventAdded = () => {
-    updateCountdown();
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <header className="p-4">
-        <h1 className="text-center text-[14px]">Kalle 🐶 Tracking</h1>
+      <header className="p-4 flex justify-between items-center">
+        <span className="text-[14px] uppercase">🐶</span>
+        <h1 className="text-[14px] uppercase">Kalle Tracking</h1>
       </header>
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center">
         <div className="text-[40px] leading-none">
-          {isCountingUp ? '+' : ''}{timeDisplay}
+          +{timeDisplay}
         </div>
         <button
           onClick={() => setEventSheetOpen(true)}
-          className="mt-4 text-[14px] underline underline-offset-2"
+          className="mt-4 text-[14px]"
         >
           Ereignis hinzufügen
         </button>
@@ -73,7 +67,7 @@ const Index = () => {
       <footer className="p-4">
         <button
           onClick={() => setCalendarOpen(true)}
-          className="w-full text-center text-[14px] underline underline-offset-2"
+          className="w-full text-center text-[14px]"
         >
           Kalender ansehen
         </button>
