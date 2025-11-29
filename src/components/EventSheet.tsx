@@ -31,16 +31,15 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const handleSubmit = () => {
     if (selectedTypes.size === 0) return;
     
-    const [hours, minutes] = time.split(':').map(Number);
-    const eventTime = new Date();
-    eventTime.setHours(hours, minutes, 0, 0);
+    // Use current time for countdown reset
+    const now = new Date();
 
     // Save an event for each selected type
     selectedTypes.forEach(type => {
       const event: Event = {
         id: `${Date.now()}-${type}`,
         type,
-        time: eventTime,
+        time: now, // Always use current time so countdown resets
       };
       saveEvent(event);
     });

@@ -110,13 +110,17 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                 <div key={event.id} className="relative overflow-hidden rounded-lg">
                   <button
                     onClick={() => handleDelete(event.id)}
-                    className="absolute right-0 top-0 bottom-0 w-[80px] bg-red-500 flex items-center justify-center text-[14px] text-white"
+                    className="absolute right-0 top-0 bottom-0 w-[80px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg"
                   >
                     Löschen
                   </button>
                   <div
                     className="relative flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg transition-transform"
-                    style={{ transform: `translateX(-${swipingId === event.id ? swipeOffset : 0}px)` }}
+                    style={{ 
+                      transform: `translateX(-${swipingId === event.id ? swipeOffset : 0}px)`,
+                      borderTopRightRadius: swipingId === event.id && swipeOffset > 0 ? 0 : undefined,
+                      borderBottomRightRadius: swipingId === event.id && swipeOffset > 0 ? 0 : undefined,
+                    }}
                     onTouchStart={(e) => handleItemTouchStart(e, event.id)}
                     onTouchMove={handleItemTouchMove}
                     onTouchEnd={() => handleItemTouchEnd(event.id)}
