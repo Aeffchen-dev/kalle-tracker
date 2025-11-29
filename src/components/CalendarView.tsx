@@ -4,6 +4,7 @@ import { getEvents, deleteEvent, Event } from '@/lib/events';
 import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CalendarViewProps {
   open: boolean;
@@ -17,7 +18,6 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isHorizontalSwipe, setIsHorizontalSwipe] = useState(false);
-  const touchStartX = useRef<number>(0);
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -117,20 +117,15 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     return isSameDay(eventDate, selectedDate);
   }).sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-  };
+  const today = new Date();
+  const sevenDaysAgo = subDays(today, 6);
+  
+  const canGoNext = addDays(selectedDate, 1) <= today;
+  const canGoPrev = subDays(selectedDate, 1) >= sevenDaysAgo;
 
   const changeDate = (direction: 'left' | 'right') => {
-    const today = new Date();
-    if (direction === 'left') {
-      const nextDay = addDays(selectedDate, 1);
-      if (nextDay > today) return;
-    } else {
-      const prevDay = subDays(selectedDate, 1);
-      const sevenDaysAgo = subDays(today, 6);
-      if (prevDay < sevenDaysAgo) return;
-    }
+    if (direction === 'left' && !canGoNext) return;
+    if (direction === 'right' && !canGoPrev) return;
     
     setSlideDirection(direction);
     setTimeout(() => {
@@ -143,34 +138,31 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     }, 150);
   };
 
-  const handleTouchEnd = (e: TouchEvent) => {
-    if (swipingId) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-    const minSwipeDistance = 100;
-
-    if (Math.abs(diff) > minSwipeDistance) {
-      if (diff > 0) {
-        changeDate('left');
-      } else {
-        changeDate('right');
-      }
-    }
-  };
-
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-black max-h-[80vh] flex flex-col">
         <DrawerHeader>
-          <DrawerTitle className="text-center text-[14px] text-white">
-            {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
-          </DrawerTitle>
+          <div className="flex items-center justify-between">
+            <div className="w-6">
+              {canGoPrev && (
+                <button onClick={() => changeDate('right')}>
+                  <ChevronLeft size={24} className="text-white" />
+                </button>
+              )}
+            </div>
+            <DrawerTitle className="text-center text-[14px] text-white">
+              {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
+            </DrawerTitle>
+            <div className="w-6">
+              {canGoNext && (
+                <button onClick={() => changeDate('left')}>
+                  <ChevronRight size={24} className="text-white" />
+                </button>
+              )}
+            </div>
+          </div>
         </DrawerHeader>
-        <div 
-          className="p-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
+        <div className="p-4 pt-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           <div 
             className={`transition-all duration-150 ${
               slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
@@ -224,9 +216,6 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
               })}
             </div>
           )}
-          <p className="text-center text-[12px] text-white/40 mt-4">
-            ← Wischen für andere Tage →
-          </p>
           </div>
         </div>
       </DrawerContent>
