@@ -3,6 +3,7 @@ import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
 import { supabase } from '@/integrations/supabase/client';
+import { PawPrint } from 'lucide-react';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
@@ -122,7 +123,10 @@ const Index = () => {
       
       {/* Header */}
       <header className="p-4 flex justify-between items-center relative z-10">
-        <span className="text-[14px] uppercase">Kalle</span>
+        <span className="text-[14px] uppercase flex items-center">
+          Kalle
+          <PawPrint size={14} className="ml-2 rotate-12 fill-black" />
+        </span>
         <h1 className="text-[14px] uppercase">Tracker</h1>
       </header>
 
