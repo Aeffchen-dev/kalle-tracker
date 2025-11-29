@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
@@ -9,8 +9,15 @@ const Index = () => {
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
+  const eventsRef = useRef<Event[]>([]);
 
-  const calculateTimeDisplay = useCallback((eventList: Event[]) => {
+  // Keep ref in sync with state
+  useEffect(() => {
+    eventsRef.current = events;
+  }, [events]);
+
+  const calculateTimeDisplay = useCallback(() => {
+    const eventList = eventsRef.current;
     if (eventList.length === 0) {
       setTimeDisplay('00.00.00');
       return;
@@ -39,13 +46,14 @@ const Index = () => {
   const loadEvents = useCallback(async () => {
     const fetchedEvents = await getEvents();
     setEvents(fetchedEvents);
-    calculateTimeDisplay(fetchedEvents);
+    eventsRef.current = fetchedEvents;
+    calculateTimeDisplay();
   }, [calculateTimeDisplay]);
 
+  // Initial load and realtime subscription
   useEffect(() => {
     loadEvents();
     
-    // Subscribe to realtime updates
     const channel = supabase
       .channel('events-changes')
       .on(
@@ -61,26 +69,18 @@ const Index = () => {
       )
       .subscribe();
 
-    // Update timer every second
-    const interval = setInterval(() => {
-      calculateTimeDisplay(events);
-    }, 1000);
-
     return () => {
       supabase.removeChannel(channel);
-      clearInterval(interval);
     };
-  }, [loadEvents, calculateTimeDisplay, events]);
+  }, [loadEvents]);
 
-  // Separate interval effect that only depends on events
+  // Timer interval - runs every second
   useEffect(() => {
     const interval = setInterval(() => {
-      if (events.length > 0) {
-        calculateTimeDisplay(events);
-      }
+      calculateTimeDisplay();
     }, 1000);
     return () => clearInterval(interval);
-  }, [events, calculateTimeDisplay]);
+  }, [calculateTimeDisplay]);
 
   return (
     <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
@@ -161,7 +161,6 @@ const Index = () => {
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={loadEvents}
-        onTimerReset={() => setTimeDisplay('00.00.00')}
       />
       <CalendarView
         open={calendarOpen}
