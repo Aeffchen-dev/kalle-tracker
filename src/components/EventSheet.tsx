@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { saveEvent, Event } from '@/lib/cookies';
 
 interface EventSheetProps {
@@ -10,7 +11,7 @@ interface EventSheetProps {
 }
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
-  const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set(['pipi']));
+  const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [time, setTime] = useState(() => {
     const now = new Date();
     return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -48,7 +49,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     onOpenChange(false);
     
     // Reset selections
-    setSelectedTypes(new Set(['pipi']));
+    setSelectedTypes(new Set());
   };
 
   return (
@@ -61,23 +62,31 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
+              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white flex items-center justify-between ${
                 selectedTypes.has('pipi')
                   ? 'border-white bg-white/10'
                   : 'border-white/30'
               }`}
             >
-              💦 Pipi
+              <span>💦 Pipi</span>
+              <Checkbox 
+                checked={selectedTypes.has('pipi')} 
+                className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+              />
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
+              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white flex items-center justify-between ${
                 selectedTypes.has('stuhlgang')
                   ? 'border-white bg-white/10'
                   : 'border-white/30'
               }`}
             >
-              💩 Stuhlgang
+              <span>💩 Stuhlgang</span>
+              <Checkbox 
+                checked={selectedTypes.has('stuhlgang')} 
+                className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+              />
             </button>
           </div>
           
