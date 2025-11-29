@@ -12,34 +12,46 @@ interface CalendarViewProps {
 const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
-  const [longPressId, setLongPressId] = useState<string | null>(null);
+  const [swipingId, setSwipingId] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const touchStartX = useRef<number>(0);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const itemTouchStartX = useRef<number>(0);
 
-  // Re-fetch events when drawer opens
   useEffect(() => {
     if (open) {
       setEvents(getEvents());
       setSelectedDate(new Date());
-      setLongPressId(null);
+      setSwipingId(null);
+      setSwipeOffset(0);
     }
   }, [open]);
 
   const handleDelete = (eventId: string) => {
     deleteEvent(eventId);
     setEvents(getEvents());
-    setLongPressId(null);
+    setSwipingId(null);
+    setSwipeOffset(0);
   };
 
-  const handleLongPressStart = (eventId: string) => {
-    longPressTimer.current = setTimeout(() => {
-      setLongPressId(eventId);
-    }, 500);
+  const handleItemTouchStart = (e: TouchEvent, eventId: string) => {
+    e.stopPropagation();
+    itemTouchStartX.current = e.touches[0].clientX;
+    setSwipingId(eventId);
   };
 
-  const handleLongPressEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
+  const handleItemTouchMove = (e: TouchEvent) => {
+    if (!swipingId) return;
+    const diff = itemTouchStartX.current - e.touches[0].clientX;
+    setSwipeOffset(Math.max(0, Math.min(diff, 80)));
+  };
+
+  const handleItemTouchEnd = (eventId: string) => {
+    if (swipeOffset > 60) {
+      // Show delete button
+      setSwipeOffset(80);
+    } else {
+      setSwipeOffset(0);
+      setSwipingId(null);
     }
   };
   
@@ -53,6 +65,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleTouchEnd = (e: TouchEvent) => {
+    if (swipingId) return; // Don't change date when swiping item
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
     const minSwipeDistance = 50;
@@ -60,13 +73,11 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
 
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
-        // Swipe left - go to next day (but not beyond today)
         const nextDay = addDays(selectedDate, 1);
         if (nextDay <= today) {
           setSelectedDate(nextDay);
         }
       } else {
-        // Swipe right - go to previous day (up to 7 days back)
         const prevDay = subDays(selectedDate, 1);
         const sevenDaysAgo = subDays(today, 6);
         if (prevDay >= sevenDaysAgo) {
@@ -96,29 +107,27 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
           ) : (
             <div className="space-y-2">
               {filteredEvents.map((event) => (
-                <div
-                  key={event.id}
-                  className="relative flex items-center justify-between p-3 rounded-lg border border-white/30"
-                  onTouchStart={() => handleLongPressStart(event.id)}
-                  onTouchEnd={handleLongPressEnd}
-                  onMouseDown={() => handleLongPressStart(event.id)}
-                  onMouseUp={handleLongPressEnd}
-                  onMouseLeave={handleLongPressEnd}
-                >
-                  <span className="text-[14px] text-white">
-                    {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
-                  </span>
-                  <span className="text-[14px] text-white">
-                    {format(new Date(event.time), 'HH:mm')} Uhr
-                  </span>
-                  {longPressId === event.id && (
-                    <button
-                      onClick={() => handleDelete(event.id)}
-                      className="absolute inset-0 flex items-center justify-center bg-black rounded-lg text-[14px] text-white"
-                    >
-                      Löschen
-                    </button>
-                  )}
+                <div key={event.id} className="relative overflow-hidden rounded-lg">
+                  <button
+                    onClick={() => handleDelete(event.id)}
+                    className="absolute right-0 top-0 bottom-0 w-[80px] bg-red-500 flex items-center justify-center text-[14px] text-white"
+                  >
+                    Löschen
+                  </button>
+                  <div
+                    className="relative flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg transition-transform"
+                    style={{ transform: `translateX(-${swipingId === event.id ? swipeOffset : 0}px)` }}
+                    onTouchStart={(e) => handleItemTouchStart(e, event.id)}
+                    onTouchMove={handleItemTouchMove}
+                    onTouchEnd={() => handleItemTouchEnd(event.id)}
+                  >
+                    <span className="text-[14px] text-white">
+                      {event.type === 'pipi' ? '💦 Pipi' : '💩 Stuhlgang'}
+                    </span>
+                    <span className="text-[14px] text-white">
+                      {format(new Date(event.time), 'HH:mm')} Uhr
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>

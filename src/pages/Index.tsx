@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents } from '@/lib/cookies';
@@ -7,9 +7,8 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const updateCountdown = () => {
+  const updateCountdown = useCallback(() => {
     const events = getEvents();
     
     if (events.length === 0) {
@@ -18,7 +17,7 @@ const Index = () => {
     }
 
     // Find the most recent event
-    const sortedEvents = events.sort((a, b) => 
+    const sortedEvents = [...events].sort((a, b) => 
       new Date(b.time).getTime() - new Date(a.time).getTime()
     );
     const lastEvent = sortedEvents[0];
@@ -27,19 +26,26 @@ const Index = () => {
     const now = new Date();
     const elapsed = now.getTime() - lastEventTime.getTime();
     
+    // If elapsed is negative (future event), show 00.00
+    if (elapsed < 0) {
+      setTimeDisplay('00.00');
+      return;
+    }
+    
     const hours = Math.floor(elapsed / (1000 * 60 * 60));
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
     setTimeDisplay(`${hours.toString().padStart(2, '0')}.${minutes.toString().padStart(2, '0')}`);
-  };
+  }, []);
 
   useEffect(() => {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     return () => clearInterval(interval);
-  }, [refreshKey]);
+  }, [updateCountdown]);
 
   const handleEventAdded = () => {
-    setRefreshKey(prev => prev + 1);
+    // Immediately update the countdown
+    updateCountdown();
   };
 
   return (
