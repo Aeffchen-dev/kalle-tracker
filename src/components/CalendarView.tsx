@@ -1,8 +1,9 @@
 import { useState, useRef, TouchEvent, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getEvents, deleteEvent, Event } from '@/lib/cookies';
+import { getEvents, deleteEvent, Event } from '@/lib/events';
 import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CalendarViewProps {
   open: boolean;
@@ -18,18 +19,47 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const touchStartX = useRef<number>(0);
   const itemTouchStartX = useRef<number>(0);
 
+  const loadEvents = async () => {
+    const fetchedEvents = await getEvents();
+    setEvents(fetchedEvents);
+  };
+
   useEffect(() => {
     if (open) {
-      setEvents(getEvents());
+      loadEvents();
       setSelectedDate(new Date());
       setSwipingId(null);
       setSwipeOffset(0);
     }
   }, [open]);
 
-  const handleDelete = (eventId: string) => {
-    deleteEvent(eventId);
-    setEvents(getEvents());
+  // Subscribe to realtime updates
+  useEffect(() => {
+    if (!open) return;
+    
+    const channel = supabase
+      .channel('calendar-events-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'events'
+        },
+        () => {
+          loadEvents();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [open]);
+
+  const handleDelete = async (eventId: string) => {
+    await deleteEvent(eventId);
+    await loadEvents();
     setSwipingId(null);
     setSwipeOffset(0);
   };
@@ -46,9 +76,8 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     setSwipeOffset(Math.max(0, Math.min(diff, 80)));
   };
 
-  const handleItemTouchEnd = (eventId: string) => {
+  const handleItemTouchEnd = () => {
     if (swipeOffset > 60) {
-      // Show delete button
       setSwipeOffset(80);
     } else {
       setSwipeOffset(0);
@@ -144,7 +173,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                       }}
                       onTouchStart={(e) => handleItemTouchStart(e, event.id)}
                       onTouchMove={handleItemTouchMove}
-                      onTouchEnd={() => handleItemTouchEnd(event.id)}
+                      onTouchEnd={() => handleItemTouchEnd()}
                     >
                       <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
                         <span>{event.type === 'pipi' ? '💦' : '💩'}</span>
