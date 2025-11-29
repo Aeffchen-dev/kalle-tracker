@@ -95,9 +95,6 @@
   body {
     @apply text-foreground font-rauschen;
     background-color: #f8f8f8;
-    background-image: url('/dalmatian-pattern.svg');
-    background-size: 200px 200px;
-    background-repeat: repeat;
   }
 }
 
