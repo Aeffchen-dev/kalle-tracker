@@ -16,8 +16,11 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [isHorizontalSwipe, setIsHorizontalSwipe] = useState(false);
   const touchStartX = useRef<number>(0);
   const itemTouchStartX = useRef<number>(0);
+  const itemTouchStartY = useRef<number>(0);
+  const swipeDecided = useRef<boolean>(false);
 
   const loadEvents = async () => {
     const fetchedEvents = await getEvents();
@@ -65,15 +68,37 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleItemTouchStart = (e: TouchEvent, eventId: string) => {
-    e.stopPropagation();
     itemTouchStartX.current = e.touches[0].clientX;
+    itemTouchStartY.current = e.touches[0].clientY;
+    swipeDecided.current = false;
+    setIsHorizontalSwipe(false);
     setSwipingId(eventId);
   };
 
   const handleItemTouchMove = (e: TouchEvent) => {
     if (!swipingId) return;
-    const diff = itemTouchStartX.current - e.touches[0].clientX;
-    setSwipeOffset(Math.max(0, Math.min(diff, 80)));
+    
+    const diffX = itemTouchStartX.current - e.touches[0].clientX;
+    const diffY = Math.abs(e.touches[0].clientY - itemTouchStartY.current);
+    
+    // Decide direction once after minimum movement
+    if (!swipeDecided.current && (Math.abs(diffX) > 10 || diffY > 10)) {
+      swipeDecided.current = true;
+      const isHorizontal = Math.abs(diffX) > diffY * 1.5;
+      setIsHorizontalSwipe(isHorizontal);
+      if (!isHorizontal) {
+        setSwipingId(null);
+        return;
+      }
+    }
+    
+    if (!isHorizontalSwipe && swipeDecided.current) return;
+    
+    // Only allow left swipe (positive diff)
+    if (diffX > 0) {
+      e.preventDefault();
+      setSwipeOffset(Math.max(0, Math.min(diffX, 80)));
+    }
   };
 
   const handleItemTouchEnd = () => {
@@ -83,6 +108,8 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
       setSwipeOffset(0);
       setSwipingId(null);
     }
+    setIsHorizontalSwipe(false);
+    swipeDecided.current = false;
   };
   
   const filteredEvents = events.filter(event => {
