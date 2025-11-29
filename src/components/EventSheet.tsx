@@ -11,6 +11,10 @@ interface EventSheetProps {
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
+  const [time, setTime] = useState(() => {
+    const now = new Date();
+    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleType = (type: 'pipi' | 'stuhlgang') => {
@@ -30,9 +34,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     setIsSubmitting(true);
     
+    // Create date with selected time
+    const [hours, minutes] = time.split(':').map(Number);
+    const eventTime = new Date();
+    eventTime.setHours(hours, minutes, 0, 0);
+    
     // Save an event for each selected type
     for (const type of selectedTypes) {
-      await saveEvent(type);
+      await saveEvent(type, eventTime);
     }
 
     onEventAdded();
@@ -73,6 +82,17 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               <span>💩</span>
               <span>Stuhlgang</span>
             </button>
+          </div>
+
+          <div>
+            <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="h-10 px-3 rounded border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              style={{ width: 'calc(100% - 32px)' }}
+            />
           </div>
 
           <Button
