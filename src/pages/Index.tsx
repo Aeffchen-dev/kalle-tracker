@@ -3,7 +3,7 @@ import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
 import { supabase } from '@/integrations/supabase/client';
-import { PawPrint } from 'lucide-react';
+import DogPaw from '@/components/DogPaw';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
@@ -136,9 +136,9 @@ const Index = () => {
           Kalle
           <span className="relative flex items-center ml-1">
             {/* First paw - left back, appears first, fades out */}
-            <PawPrint 
+            <DogPaw 
               size={14} 
-              className={`absolute fill-black transition-all duration-500 ${
+              className={`absolute text-black transition-all duration-500 ${
                 pawAnimationComplete ? 'opacity-0' : 'opacity-100'
               }`}
               style={{ 
@@ -149,18 +149,18 @@ const Index = () => {
               }}
             />
             {/* Middle paw - right front, always visible */}
-            <PawPrint 
+            <DogPaw 
               size={14} 
-              className="fill-black"
+              className="text-black"
               style={{
                 transform: 'rotate(10deg)',
                 animation: pawAnimationComplete ? 'none' : 'pawStep 0.4s ease-out 0.25s both'
               }}
             />
             {/* Third paw - left front, appears last, fades out */}
-            <PawPrint 
+            <DogPaw 
               size={14} 
-              className={`absolute fill-black transition-all duration-500 ${
+              className={`absolute text-black transition-all duration-500 ${
                 pawAnimationComplete ? 'opacity-0' : 'opacity-100'
               }`}
               style={{ 
