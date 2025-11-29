@@ -102,7 +102,7 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10">
-        <div className="text-[40px] leading-none">
+        <div className="text-[72px] md:text-[96px] leading-none">
           {timeDisplay}
         </div>
         <button
