@@ -53,18 +53,45 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background relative">
       {/* Dalmatian spots pattern */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute w-8 h-10 bg-[#3d2b1f] rounded-full top-[5%] left-[8%]" />
-        <div className="absolute w-10 h-8 bg-[#3d2b1f] rounded-full top-[3%] left-[75%]" />
-        <div className="absolute w-12 h-9 bg-[#3d2b1f] rounded-full top-[15%] left-[45%]" />
-        <div className="absolute w-7 h-11 bg-[#3d2b1f] rounded-full top-[20%] left-[85%]" />
-        <div className="absolute w-9 h-7 bg-[#3d2b1f] rounded-full top-[35%] left-[12%]" />
-        <div className="absolute w-11 h-8 bg-[#3d2b1f] rounded-full top-[45%] left-[60%]" />
-        <div className="absolute w-8 h-6 bg-[#3d2b1f] rounded-full top-[55%] left-[25%]" />
-        <div className="absolute w-6 h-9 bg-[#3d2b1f] rounded-full top-[65%] left-[80%]" />
-        <div className="absolute w-10 h-7 bg-[#3d2b1f] rounded-full top-[75%] left-[5%]" />
-        <div className="absolute w-7 h-10 bg-[#3d2b1f] rounded-full top-[85%] left-[55%]" />
-        <div className="absolute w-9 h-8 bg-[#3d2b1f] rounded-full top-[92%] left-[30%]" />
-        <div className="absolute w-8 h-7 bg-[#3d2b1f] rounded-full top-[88%] left-[90%]" />
+        {/* Large spots */}
+        <div className="absolute w-10 h-12 bg-black rounded-[50%] top-[3%] left-[5%] rotate-12" />
+        <div className="absolute w-14 h-10 bg-black rounded-[50%] top-[8%] left-[70%] -rotate-6" />
+        <div className="absolute w-12 h-14 bg-black rounded-[50%] top-[18%] left-[35%] rotate-45" />
+        <div className="absolute w-11 h-13 bg-black rounded-[50%] top-[28%] left-[82%] -rotate-12" />
+        <div className="absolute w-13 h-10 bg-black rounded-[50%] top-[42%] left-[8%] rotate-30" />
+        <div className="absolute w-10 h-12 bg-black rounded-[50%] top-[52%] left-[65%] -rotate-20" />
+        <div className="absolute w-14 h-11 bg-black rounded-[50%] top-[68%] left-[20%] rotate-15" />
+        <div className="absolute w-11 h-14 bg-black rounded-[50%] top-[78%] left-[75%] -rotate-35" />
+        <div className="absolute w-12 h-10 bg-black rounded-[50%] top-[88%] left-[45%] rotate-25" />
+        
+        {/* Medium spots */}
+        <div className="absolute w-8 h-9 bg-black rounded-[50%] top-[12%] left-[18%] -rotate-15" />
+        <div className="absolute w-9 h-7 bg-black rounded-[50%] top-[6%] left-[48%] rotate-20" />
+        <div className="absolute w-7 h-9 bg-black rounded-[50%] top-[22%] left-[88%] -rotate-8" />
+        <div className="absolute w-8 h-7 bg-black rounded-[50%] top-[35%] left-[55%] rotate-35" />
+        <div className="absolute w-9 h-8 bg-black rounded-[50%] top-[48%] left-[30%] -rotate-25" />
+        <div className="absolute w-7 h-8 bg-black rounded-[50%] top-[58%] left-[92%] rotate-10" />
+        <div className="absolute w-8 h-9 bg-black rounded-[50%] top-[72%] left-[50%] -rotate-40" />
+        <div className="absolute w-9 h-7 bg-black rounded-[50%] top-[82%] left-[10%] rotate-5" />
+        <div className="absolute w-7 h-8 bg-black rounded-[50%] top-[95%] left-[85%] -rotate-18" />
+        
+        {/* Small spots */}
+        <div className="absolute w-5 h-6 bg-black rounded-[50%] top-[2%] left-[28%] rotate-8" />
+        <div className="absolute w-6 h-5 bg-black rounded-[50%] top-[15%] left-[60%] -rotate-12" />
+        <div className="absolute w-5 h-5 bg-black rounded-[50%] top-[25%] left-[3%] rotate-22" />
+        <div className="absolute w-6 h-6 bg-black rounded-[50%] top-[38%] left-[42%] -rotate-5" />
+        <div className="absolute w-5 h-6 bg-black rounded-[50%] top-[45%] left-[78%] rotate-15" />
+        <div className="absolute w-6 h-5 bg-black rounded-[50%] top-[62%] left-[38%] -rotate-28" />
+        <div className="absolute w-5 h-5 bg-black rounded-[50%] top-[75%] left-[62%] rotate-32" />
+        <div className="absolute w-6 h-6 bg-black rounded-[50%] top-[85%] left-[28%] -rotate-10" />
+        <div className="absolute w-5 h-6 bg-black rounded-[50%] top-[92%] left-[68%] rotate-18" />
+        
+        {/* Extra small accent spots */}
+        <div className="absolute w-3 h-4 bg-black rounded-[50%] top-[10%] left-[92%]" />
+        <div className="absolute w-4 h-3 bg-black rounded-[50%] top-[32%] left-[25%]" />
+        <div className="absolute w-3 h-3 bg-black rounded-[50%] top-[55%] left-[15%]" />
+        <div className="absolute w-4 h-4 bg-black rounded-[50%] top-[65%] left-[88%]" />
+        <div className="absolute w-3 h-4 bg-black rounded-[50%] top-[80%] left-[58%]" />
       </div>
       
       {/* Header */}
