@@ -125,7 +125,7 @@ const Index = () => {
       <header className="p-4 flex justify-between items-center relative z-10">
         <span className="text-[14px] uppercase flex items-center">
           Kalle
-          <PawPrint size={14} className="ml-2 rotate-12 fill-black" />
+          <PawPrint size={14} className="ml-1 rotate-6 fill-black" />
         </span>
         <h1 className="text-[14px] uppercase">Tracker</h1>
       </header>
