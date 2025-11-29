@@ -60,11 +60,11 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black">
+      <DrawerContent className="bg-black border-black overflow-hidden">
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4 space-y-4 overflow-x-hidden">
+        <div className="p-4 space-y-4 overflow-hidden">
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
@@ -90,13 +90,13 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-full">
             <span className="text-[14px] text-white">Uhrzeit:</span>
             <Input
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
+              className="w-full max-w-full box-border bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
