@@ -150,7 +150,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     
     setIsAnimating(true);
     // Toggle: if already showing delete for this item, hide it
-    if (activeEventId === eventId && swipeOffset > 0) {
+    if (activeEventId === eventId) {
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
@@ -158,7 +158,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // Show delete
+      // Show delete (also closes any other open item)
       setActiveEventId(eventId);
       setSwipingId(eventId);
       setSwipeOffset(80);
