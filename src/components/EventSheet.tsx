@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { saveEvent } from '@/lib/events';
+import { format } from 'date-fns';
 
 interface EventSheetProps {
   open: boolean;
@@ -13,6 +15,14 @@ interface EventSheetProps {
 const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
+
+  // Reset time to current when sheet opens
+  useEffect(() => {
+    if (open) {
+      setSelectedTime(format(new Date(), 'HH:mm'));
+    }
+  }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang') => {
     setSelectedTypes(prev => {
@@ -31,9 +41,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventShe
     
     setIsSubmitting(true);
     
+    // Create date with selected time
+    const [hours, minutes] = selectedTime.split(':').map(Number);
+    const eventDate = new Date();
+    eventDate.setHours(hours, minutes, 0, 0);
+    
     // Save an event for each selected type
     for (const type of selectedTypes) {
-      await saveEvent(type);
+      await saveEvent(type, eventDate);
     }
 
     onTimerReset?.();
@@ -52,6 +67,15 @@ const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventShe
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="p-4 space-y-4 overflow-x-hidden">
+          <div className="flex items-center gap-3">
+            <span className="text-[14px] text-white">Uhrzeit:</span>
+            <Input
+              type="time"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              className="flex-1 bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
+            />
+          </div>
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
