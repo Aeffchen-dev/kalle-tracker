@@ -8,7 +8,6 @@ import { PawPrint } from 'lucide-react';
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
-  const [calendarOpen, setCalendarOpen] = useState(false);
   const eventsRef = useRef<Event[]>([]);
 
   const calculateTimeDisplay = () => {
@@ -95,37 +94,26 @@ const Index = () => {
       </header>
 
       {/* Main countdown area */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[35vh]">
         <div className="text-[72px] md:text-[96px] leading-none">
           {timeDisplay}
         </div>
         <button
           onClick={() => setEventSheetOpen(true)}
-          className="mt-4 text-[14px]"
+          className="mt-4 text-[14px] py-2 px-4 rounded-lg bg-black/20 backdrop-blur-[32px] border border-black/10"
         >
-          Ereignis hinzufügen
+          Eintrag hinzufügen
         </button>
       </main>
 
-      {/* Footer link */}
-      <footer className="p-4 relative z-10">
-        <button
-          onClick={() => setCalendarOpen(true)}
-          className="w-full text-center text-[14px]"
-        >
-          Kalender ansehen
-        </button>
-      </footer>
+      {/* Always visible calendar sheet */}
+      <CalendarView />
 
-      {/* Sheets */}
+      {/* Event sheet opens on top */}
       <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={loadEvents}
-      />
-      <CalendarView
-        open={calendarOpen}
-        onOpenChange={setCalendarOpen}
       />
     </div>
   );

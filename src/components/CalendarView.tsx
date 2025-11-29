@@ -6,12 +6,9 @@ import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-interface CalendarViewProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
+type SnapPoint = number | string;
 
-const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
+const CalendarView = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [swipingId, setSwipingId] = useState<string | null>(null);
@@ -21,6 +18,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const [swipeStartOffset, setSwipeStartOffset] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
+  const [snap, setSnap] = useState<SnapPoint | null>(0.35);
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
@@ -33,18 +31,12 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   useEffect(() => {
-    if (open) {
-      loadEvents();
-      setSelectedDate(new Date());
-      setSwipingId(null);
-      setSwipeOffset(0);
-    }
-  }, [open]);
+    loadEvents();
+    setSelectedDate(new Date());
+  }, []);
 
   // Subscribe to realtime updates
   useEffect(() => {
-    if (!open) return;
-    
     const channel = supabase
       .channel('calendar-events-changes')
       .on(
@@ -63,7 +55,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [open]);
+  }, []);
 
   const handleDelete = async (eventId: string) => {
     await deleteEvent(eventId);
@@ -200,8 +192,15 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black h-[60vh] flex flex-col">
+    <Drawer 
+      open={true} 
+      dismissible={false}
+      modal={false}
+      snapPoints={[0.35, 0.9]}
+      activeSnapPoint={snap}
+      setActiveSnapPoint={setSnap}
+    >
+      <DrawerContent className="bg-black border-black flex flex-col h-full">
         <DrawerHeader className="sticky top-0 bg-black z-10 pb-4">
           <div className="flex items-center justify-between">
             <div className="w-6 h-6 flex items-center justify-center">
