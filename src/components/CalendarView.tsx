@@ -121,6 +121,27 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     setIsHorizontalSwipe(false);
     swipeDecided.current = false;
   };
+
+  const handleItemClick = (eventId: string) => {
+    // Only toggle if we didn't just swipe
+    if (swipeDecided.current) return;
+    
+    setIsAnimating(true);
+    if (activeEventId === eventId && swipeOffset > 0) {
+      // Close delete
+      setSwipeOffset(0);
+      setTimeout(() => {
+        setActiveEventId(null);
+        setSwipingId(null);
+        setIsAnimating(false);
+      }, 200);
+    } else {
+      // Open delete
+      setActiveEventId(eventId);
+      setSwipingId(eventId);
+      setSwipeOffset(80);
+    }
+  };
   
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.time);
@@ -194,7 +215,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                 return (
                   <div key={event.id} className="flex w-full">
                     <div
-                      className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
+                      className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden cursor-pointer ${isAnimating ? 'transition-all duration-200' : ''}`}
                       style={{ 
                         width: showDelete ? `calc(100% - ${swipeOffset}px)` : '100%',
                         borderTopLeftRadius: '0.5rem',
@@ -203,6 +224,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
                         borderBottomRightRadius: showDelete ? 0 : '0.5rem',
                         borderRight: showDelete ? 'none' : undefined,
                       }}
+                      onClick={() => handleItemClick(event.id)}
                       onTouchStart={(e) => handleItemTouchStart(e, event.id)}
                       onTouchMove={handleItemTouchMove}
                       onTouchEnd={() => handleItemTouchEnd()}
