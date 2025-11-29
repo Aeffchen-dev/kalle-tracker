@@ -156,7 +156,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
               Keine Ereignisse
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 mb-4">
               {filteredEvents.map((event) => {
                 const isActive = swipingId === event.id && swipeOffset > 0;
                 return (
