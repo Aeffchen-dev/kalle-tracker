@@ -57,7 +57,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4 space-y-4 overflow-hidden">
+        <div className="p-4 space-y-4 overflow-x-hidden">
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
