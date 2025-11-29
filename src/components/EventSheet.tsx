@@ -92,11 +92,11 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           <div className="space-y-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <Input
+            <input
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full h-10 bg-transparent border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
+              className="block w-full h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
