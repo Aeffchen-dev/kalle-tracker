@@ -7,9 +7,10 @@ interface EventSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEventAdded: () => void;
+  onTimerReset?: () => void;
 }
 
-const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
+const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,6 +36,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       await saveEvent(type);
     }
 
+    onTimerReset?.();
     onEventAdded();
     onOpenChange(false);
     
