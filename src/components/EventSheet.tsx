@@ -61,23 +61,25 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
+              className={`flex-1 py-4 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white/60 hover:text-white border border-white/30'
               }`}
             >
-              💦 Pipi
+              <span>💦</span>
+              <span>Pipi</span>
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
+              className={`flex-1 py-4 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white/60 hover:text-white border border-white/30'
               }`}
             >
-              💩 Stuhlgang
+              <span>💩</span>
+              <span>Stuhlgang</span>
             </button>
           </div>
           
@@ -87,7 +89,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="h-10 p-3 rounded-full border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="h-10 p-3 rounded border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
               style={{ width: 'calc(100% - 32px)' }}
             />
           </div>
