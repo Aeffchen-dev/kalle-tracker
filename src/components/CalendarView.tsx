@@ -25,6 +25,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
   const touchJustEnded = useRef<boolean>(false);
+  const wasActiveOnTouchStart = useRef<boolean>(false);
 
   const loadEvents = async () => {
     const fetchedEvents = await getEvents();
@@ -77,8 +78,8 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     swipeDecided.current = false;
     setIsHorizontalSwipe(false);
     // Store if this item was already active (showing delete)
-    const wasActive = activeEventId === eventId;
-    setSwipeStartOffset(wasActive ? 80 : 0);
+    wasActiveOnTouchStart.current = activeEventId === eventId;
+    setSwipeStartOffset(wasActiveOnTouchStart.current ? 80 : 0);
     setSwipingId(eventId);
     setIsAnimating(false);
   };
@@ -124,8 +125,8 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // Tap on touch device - toggle delete
-      if (swipeStartOffset > 0) {
+      // Tap on touch device - toggle delete using ref
+      if (wasActiveOnTouchStart.current) {
         // Was already showing, hide it
         setSwipeOffset(0);
         setTimeout(() => {
