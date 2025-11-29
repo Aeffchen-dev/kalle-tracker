@@ -117,7 +117,7 @@ const Index = () => {
       <footer className="p-4 relative z-10">
         <button
           onClick={() => setCalendarOpen(true)}
-          className="w-full text-center text-[14px]"
+          className="w-full text-center text-[14px] uppercase"
         >
           Kalender ansehen
         </button>
