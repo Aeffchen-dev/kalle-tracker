@@ -54,7 +54,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black">
+      <DrawerContent className="bg-black border-black min-h-[280px]">
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
