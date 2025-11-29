@@ -63,8 +63,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('pipi')}
               className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
                 selectedTypes.has('pipi')
-                  ? 'bg-white text-black'
-                  : 'bg-transparent text-white/60 hover:text-white'
+                  ? 'bg-white text-black border border-white'
+                  : 'bg-transparent text-white/60 hover:text-white border border-white/30'
               }`}
             >
               💦 Pipi
@@ -73,8 +73,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('stuhlgang')}
               className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
                 selectedTypes.has('stuhlgang')
-                  ? 'bg-white text-black'
-                  : 'bg-transparent text-white/60 hover:text-white'
+                  ? 'bg-white text-black border border-white'
+                  : 'bg-transparent text-white/60 hover:text-white border border-white/30'
               }`}
             >
               💩 Stuhlgang
