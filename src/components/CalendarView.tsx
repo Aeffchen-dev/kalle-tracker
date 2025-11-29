@@ -21,7 +21,7 @@ const CalendarView = () => {
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
   
   const toggleSnapPoint = () => {
-    setSnap(snap === 0.2 ? 0.9 : 0.2);
+    setSnap(snap === 0.2 ? 1 : 0.2);
   };
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
@@ -200,7 +200,7 @@ const CalendarView = () => {
       open={true} 
       dismissible={false}
       modal={false}
-      snapPoints={[0.2, 0.9]}
+      snapPoints={[0.2, 1]}
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
     >
