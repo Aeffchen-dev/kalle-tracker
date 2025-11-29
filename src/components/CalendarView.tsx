@@ -134,7 +134,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent 
-        className="bg-black border-black max-h-[80vh]"
+        className="bg-black border-black min-h-[280px] max-h-[80vh]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
