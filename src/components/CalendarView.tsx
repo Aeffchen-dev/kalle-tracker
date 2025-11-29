@@ -1,7 +1,7 @@
 import { useState, useRef, TouchEvent, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { getEvents, Event } from '@/lib/cookies';
-import { format, subDays, addDays } from 'date-fns';
+import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface CalendarViewProps {
@@ -10,22 +10,23 @@ interface CalendarViewProps {
 }
 
 const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
-  const today = new Date();
-  const [selectedDate, setSelectedDate] = useState(today);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const touchStartX = useRef<number>(0);
 
   // Re-fetch events when drawer opens
   useEffect(() => {
     if (open) {
-      setEvents(getEvents());
+      const loadedEvents = getEvents();
+      console.log('Loaded events:', loadedEvents);
+      setEvents(loadedEvents);
       setSelectedDate(new Date());
     }
   }, [open]);
   
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.time);
-    return eventDate.toDateString() === selectedDate.toDateString();
+    return isSameDay(eventDate, selectedDate);
   }).sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
   const handleTouchStart = (e: TouchEvent) => {
@@ -36,6 +37,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
     const touchEndX = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX;
     const minSwipeDistance = 50;
+    const today = new Date();
 
     if (Math.abs(diff) > minSwipeDistance) {
       if (diff > 0) {
