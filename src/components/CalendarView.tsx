@@ -133,17 +133,17 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-black max-h-[80vh]">
+      <DrawerContent 
+        className="bg-black border-black max-h-[80vh]"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">
             {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
           </DrawerTitle>
         </DrawerHeader>
-        <div 
-          className="p-4 overflow-y-auto overflow-x-hidden"
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-        >
+        <div className="p-4 overflow-y-auto overflow-x-hidden">
           <div 
             className={`transition-all duration-150 ${
               slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
