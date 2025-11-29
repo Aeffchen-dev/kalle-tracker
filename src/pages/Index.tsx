@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
 
 const Index = () => {
