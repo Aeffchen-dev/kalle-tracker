@@ -24,6 +24,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
   const swipeDecided = useRef<boolean>(false);
+  const touchJustEnded = useRef<boolean>(false);
 
   const loadEvents = async () => {
     const fetchedEvents = await getEvents();
@@ -106,25 +107,43 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
   };
 
   const handleItemTouchEnd = () => {
+    touchJustEnded.current = true;
+    setTimeout(() => { touchJustEnded.current = false; }, 300);
+    
     setIsAnimating(true);
     if (swipeOffset > 60) {
       setSwipeOffset(80);
       setActiveEventId(swipingId);
-    } else {
+    } else if (swipeDecided.current) {
+      // Only reset if we actually swiped
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
         setSwipingId(null);
         setIsAnimating(false);
       }, 200);
+    } else {
+      // Tap on touch device - toggle delete
+      if (activeEventId === swipingId && swipeOffset > 0) {
+        setSwipeOffset(0);
+        setTimeout(() => {
+          setActiveEventId(null);
+          setSwipingId(null);
+          setIsAnimating(false);
+        }, 200);
+      } else {
+        setActiveEventId(swipingId);
+        setSwipeOffset(80);
+        setTimeout(() => setIsAnimating(false), 200);
+      }
     }
     setIsHorizontalSwipe(false);
     swipeDecided.current = false;
   };
 
   const handleItemClick = (eventId: string) => {
-    // Only toggle if we didn't just swipe
-    if (swipeDecided.current) return;
+    // Prevent click if touch just ended (mobile devices fire both)
+    if (touchJustEnded.current) return;
     
     setIsAnimating(true);
     if (activeEventId === eventId && swipeOffset > 0) {
@@ -136,7 +155,7 @@ const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // First click - show delete (close any other first)
+      // First click - show delete
       setActiveEventId(eventId);
       setSwipingId(eventId);
       setSwipeOffset(80);
