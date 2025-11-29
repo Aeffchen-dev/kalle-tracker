@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { saveEvent, setCountdownTarget, Event } from '@/lib/cookies';
+import { saveEvent, Event } from '@/lib/cookies';
 
 interface EventSheetProps {
   open: boolean;
@@ -10,32 +10,46 @@ interface EventSheetProps {
 }
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
-  const [selectedType, setSelectedType] = useState<'pipi' | 'stuhlgang'>('pipi');
+  const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set(['pipi']));
   const [time, setTime] = useState(() => {
     const now = new Date();
     return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   });
 
+  const toggleType = (type: 'pipi' | 'stuhlgang') => {
+    setSelectedTypes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(type)) {
+        newSet.delete(type);
+      } else {
+        newSet.add(type);
+      }
+      return newSet;
+    });
+  };
+
   const handleSubmit = () => {
+    if (selectedTypes.size === 0) return;
+    
     const [hours, minutes] = time.split(':').map(Number);
     const eventTime = new Date();
     eventTime.setHours(hours, minutes, 0, 0);
 
-    const event: Event = {
-      id: Date.now().toString(),
-      type: selectedType,
-      time: eventTime,
-    };
-
-    saveEvent(event);
-
-    // Set new countdown target (e.g., 4 hours from event)
-    const nextTarget = new Date(eventTime);
-    nextTarget.setHours(nextTarget.getHours() + 4);
-    setCountdownTarget(nextTarget);
+    // Save an event for each selected type
+    selectedTypes.forEach(type => {
+      const event: Event = {
+        id: `${Date.now()}-${type}`,
+        type,
+        time: eventTime,
+      };
+      saveEvent(event);
+    });
 
     onEventAdded();
     onOpenChange(false);
+    
+    // Reset selections
+    setSelectedTypes(new Set(['pipi']));
   };
 
   return (
@@ -44,12 +58,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
         <DrawerHeader>
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 overflow-hidden">
           <div className="flex gap-3">
             <button
-              onClick={() => setSelectedType('pipi')}
+              onClick={() => toggleType('pipi')}
               className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
-                selectedType === 'pipi'
+                selectedTypes.has('pipi')
                   ? 'border-white bg-white/10'
                   : 'border-white/30'
               }`}
@@ -57,9 +71,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               💦 Pipi
             </button>
             <button
-              onClick={() => setSelectedType('stuhlgang')}
+              onClick={() => toggleType('stuhlgang')}
               className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
-                selectedType === 'stuhlgang'
+                selectedTypes.has('stuhlgang')
                   ? 'border-white bg-white/10'
                   : 'border-white/30'
               }`}
@@ -68,19 +82,20 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
           
-          <div>
+          <div className="overflow-hidden">
             <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="w-full max-w-full p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert box-border"
             />
           </div>
 
           <Button
             onClick={handleSubmit}
-            className="w-full text-[14px] bg-white text-black hover:bg-white/90"
+            disabled={selectedTypes.size === 0}
+            className="w-full text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50"
           >
             Speichern
           </Button>
