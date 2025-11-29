@@ -61,41 +61,23 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 p-5 rounded-2xl border-2 text-[14px] transition-all duration-200 text-white flex items-center justify-between ${
+              className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
                 selectedTypes.has('pipi')
-                  ? 'border-white bg-white/15 shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                  : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
+                  ? 'bg-white text-black'
+                  : 'bg-transparent text-white/60 hover:text-white'
               }`}
             >
-              <span className="text-[16px]">💦 Pipi</span>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                selectedTypes.has('pipi')
-                  ? 'border-white bg-white'
-                  : 'border-white/40'
-              }`}>
-                {selectedTypes.has('pipi') && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-black" />
-                )}
-              </div>
+              💦 Pipi
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 p-5 rounded-2xl border-2 text-[14px] transition-all duration-200 text-white flex items-center justify-between ${
+              className={`flex-1 py-4 px-5 rounded-full text-[16px] font-medium transition-all duration-200 ${
                 selectedTypes.has('stuhlgang')
-                  ? 'border-white bg-white/15 shadow-[0_0_20px_rgba(255,255,255,0.15)]'
-                  : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
+                  ? 'bg-white text-black'
+                  : 'bg-transparent text-white/60 hover:text-white'
               }`}
             >
-              <span className="text-[16px]">💩 Stuhlgang</span>
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                selectedTypes.has('stuhlgang')
-                  ? 'border-white bg-white'
-                  : 'border-white/40'
-              }`}>
-                {selectedTypes.has('stuhlgang') && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-black" />
-                )}
-              </div>
+              💩 Stuhlgang
             </button>
           </div>
           
@@ -105,7 +87,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              style={{ width: 'calc(100% - 32px)' }}
             />
           </div>
 
