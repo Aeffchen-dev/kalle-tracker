@@ -9,19 +9,19 @@ const DogPaw = ({ size = 14, className = '', style }: DogPawProps) => {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 32 32"
       fill="currentColor"
       className={className}
       style={style}
     >
-      {/* Main pad - heart-like shape */}
-      <path d="M12 22c-3 0-6-3-6-6 0-2 1-3 2-4s2-2 4-2 3 1 4 2 2 2 2 4c0 3-3 6-6 6z" />
+      {/* Main pad - triangular rounded */}
+      <path d="M16 28c-4.5 0-8-2.5-8-6 0-2.5 2-5 4-6.5 1.5-1 2.5-1.5 4-1.5s2.5.5 4 1.5c2 1.5 4 4 4 6.5 0 3.5-3.5 6-8 6z" />
       
-      {/* Toe beans */}
-      <circle cx="7" cy="8" r="2.5" />
-      <circle cx="11" cy="5" r="2.3" />
-      <circle cx="16" cy="5" r="2.3" />
-      <circle cx="19" cy="8" r="2.5" />
+      {/* Four toe pads */}
+      <ellipse cx="8" cy="10" rx="3.5" ry="4" />
+      <ellipse cx="14.5" cy="6" rx="3" ry="3.5" />
+      <ellipse cx="21.5" cy="6" rx="3" ry="3.5" />
+      <ellipse cx="28" cy="10" rx="3.5" ry="4" />
     </svg>
   );
 };
