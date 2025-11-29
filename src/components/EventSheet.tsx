@@ -71,7 +71,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               <span>💦 Pipi</span>
               <Checkbox 
                 checked={selectedTypes.has('pipi')} 
-                className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                className="w-6 h-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
               />
             </button>
             <button
@@ -85,18 +85,18 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               <span>💩 Stuhlgang</span>
               <Checkbox 
                 checked={selectedTypes.has('stuhlgang')} 
-                className="border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                className="w-6 h-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
               />
             </button>
           </div>
           
-          <div className="w-full">
+          <div className="w-full max-w-full">
             <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full box-border p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="w-full max-w-full box-border p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
