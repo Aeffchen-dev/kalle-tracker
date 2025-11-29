@@ -21,8 +21,32 @@
     <meta name="twitter:image" content="https://da35de91-b5ca-4633-a32c-ea22b40beb3a.lovableproject.com/og-image.jpg" />
   </head>
 
-  <body>
-    <div id="root"></div>
+  <body style="background-color: #faf9f7; margin: 0;">
+    <div id="root">
+      <!-- Static loading state -->
+      <div style="height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden;">
+        <!-- Static spots -->
+        <div style="position: fixed; inset: 0; pointer-events: none; z-index: 0;">
+          <div style="position: absolute; width: 48px; height: 56px; background: #5c4033; top: 8%; left: 5%; transform: rotate(12deg); border-radius: 60% 40% 55% 45% / 55% 60% 40% 45%;"></div>
+          <div style="position: absolute; width: 64px; height: 48px; background: #5c4033; top: 8%; left: 70%; transform: rotate(-6deg); border-radius: 45% 55% 40% 60% / 50% 45% 55% 50%;"></div>
+          <div style="position: absolute; width: 56px; height: 64px; background: #5c4033; top: 18%; left: 35%; transform: rotate(45deg); border-radius: 55% 45% 60% 40% / 45% 55% 45% 55%;"></div>
+          <div style="position: absolute; width: 52px; height: 60px; background: #5c4033; top: 28%; left: 82%; transform: rotate(-12deg); border-radius: 40% 60% 45% 55% / 60% 40% 55% 45%;"></div>
+          <div style="position: absolute; width: 60px; height: 48px; background: #5c4033; top: 42%; left: 8%; transform: rotate(30deg); border-radius: 50% 50% 45% 55% / 55% 45% 50% 50%;"></div>
+          <div style="position: absolute; width: 48px; height: 56px; background: #5c4033; top: 52%; left: 65%; transform: rotate(-20deg); border-radius: 65% 35% 50% 50% / 45% 55% 45% 55%;"></div>
+          <div style="position: absolute; width: 64px; height: 52px; background: #5c4033; top: 68%; left: 20%; transform: rotate(15deg); border-radius: 45% 55% 55% 45% / 50% 50% 50% 50%;"></div>
+          <div style="position: absolute; width: 52px; height: 64px; background: #5c4033; top: 78%; left: 75%; transform: rotate(-35deg); border-radius: 55% 45% 40% 60% / 60% 40% 55% 45%;"></div>
+        </div>
+        <!-- Static header -->
+        <header style="padding: 16px; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 10;">
+          <span style="font-size: 14px; text-transform: uppercase; font-family: system-ui, sans-serif;">Kalle 🐾</span>
+          <h1 style="font-size: 14px; text-transform: uppercase; margin: 0; font-family: system-ui, sans-serif;">Tracker</h1>
+        </header>
+        <!-- Static timer placeholder -->
+        <main style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10;">
+          <div style="font-size: 72px; line-height: 1; font-family: system-ui, sans-serif;">00.00.00</div>
+        </main>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
