@@ -62,7 +62,7 @@ const Index = () => {
         <div className="absolute w-12 h-14 bg-[#5c4033] top-[52%] left-[65%] -rotate-20" style={{borderRadius: '65% 35% 50% 50% / 45% 55% 45% 55%'}} />
         <div className="absolute w-16 h-13 bg-[#5c4033] top-[68%] left-[20%] rotate-15" style={{borderRadius: '45% 55% 55% 45% / 50% 50% 50% 50%'}} />
         <div className="absolute w-13 h-16 bg-[#5c4033] top-[78%] left-[75%] -rotate-35" style={{borderRadius: '55% 45% 40% 60% / 60% 40% 55% 45%'}} />
-        <div className="absolute w-14 h-12 bg-[#5c4033] top-[78%] left-[45%] rotate-25" style={{borderRadius: '40% 60% 50% 50% / 50% 50% 45% 55%'}} />
+        <div className="absolute w-14 h-12 bg-[#5c4033] top-[85%] left-[45%] rotate-25" style={{borderRadius: '40% 60% 50% 50% / 50% 50% 45% 55%'}} />
         
         {/* Medium spots */}
         <div className="absolute w-10 h-11 bg-[#5c4033] top-[12%] left-[18%] -rotate-15" style={{borderRadius: '55% 45% 60% 40% / 40% 60% 45% 55%'}} />
