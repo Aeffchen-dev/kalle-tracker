@@ -61,10 +61,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-black overflow-hidden">
-        <DrawerHeader>
+        <DrawerHeader className="pb-4">
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4 space-y-4 overflow-hidden">
+        <div className="px-4 pb-4 space-y-4 overflow-hidden">
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
