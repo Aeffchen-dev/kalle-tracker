@@ -50,7 +50,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative">
+    <div className="h-dvh flex flex-col bg-background relative overflow-hidden">
       {/* Dalmatian spots pattern */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Large spots - organic blob shapes */}
