@@ -40,28 +40,28 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-background">
+      <DrawerContent className="bg-black border-black">
         <DrawerHeader>
-          <DrawerTitle className="text-center text-[14px]">Ereignis hinzufügen</DrawerTitle>
+          <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="p-4 space-y-4">
           <div className="flex gap-3">
             <button
               onClick={() => setSelectedType('pipi')}
-              className={`flex-1 p-4 rounded-lg border-2 text-[14px] transition-all ${
+              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
                 selectedType === 'pipi'
-                  ? 'border-foreground bg-foreground/10'
-                  : 'border-foreground/30'
+                  ? 'border-white bg-white/10'
+                  : 'border-white/30'
               }`}
             >
               💦 Pipi
             </button>
             <button
               onClick={() => setSelectedType('stuhlgang')}
-              className={`flex-1 p-4 rounded-lg border-2 text-[14px] transition-all ${
+              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white ${
                 selectedType === 'stuhlgang'
-                  ? 'border-foreground bg-foreground/10'
-                  : 'border-foreground/30'
+                  ? 'border-white bg-white/10'
+                  : 'border-white/30'
               }`}
             >
               💩 Stuhlgang
@@ -69,18 +69,18 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           </div>
           
           <div>
-            <label className="block text-[14px] mb-2">Uhrzeit</label>
+            <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full p-3 rounded-lg border-2 border-foreground bg-transparent text-[14px]"
+              className="w-full p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
           <Button
             onClick={handleSubmit}
-            className="w-full text-[14px]"
+            className="w-full text-[14px] bg-white text-black hover:bg-white/90"
           >
             Speichern
           </Button>
