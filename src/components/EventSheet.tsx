@@ -82,13 +82,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
           
-          <div className="overflow-hidden">
+          <div className="w-full">
             <label className="block text-[14px] mb-2 text-white">Uhrzeit</label>
             <input
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="w-full max-w-full p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert box-border"
+              style={{ width: '100%' }}
+              className="p-3 rounded-lg border border-white bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
