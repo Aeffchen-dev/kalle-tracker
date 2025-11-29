@@ -9,10 +9,9 @@ interface EventSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEventAdded: () => void;
-  onTimerReset?: () => void;
 }
 
-const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventSheetProps) => {
+const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
@@ -51,7 +50,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventShe
       await saveEvent(type, eventDate);
     }
 
-    onTimerReset?.();
     onEventAdded();
     onOpenChange(false);
     
@@ -67,15 +65,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventShe
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="p-4 space-y-4 overflow-x-hidden">
-          <div className="flex items-center gap-3">
-            <span className="text-[14px] text-white">Uhrzeit:</span>
-            <Input
-              type="time"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              className="flex-1 bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
-            />
-          </div>
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
@@ -99,6 +88,16 @@ const EventSheet = ({ open, onOpenChange, onEventAdded, onTimerReset }: EventShe
               <span>💩</span>
               <span>Stuhlgang</span>
             </button>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[14px] text-white">Uhrzeit:</span>
+            <Input
+              type="time"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              className="w-full bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
+            />
           </div>
 
           <Button
