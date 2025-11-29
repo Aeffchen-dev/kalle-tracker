@@ -150,7 +150,7 @@ const Index = () => {
       <footer className="p-4 relative z-10">
         <button
           onClick={() => setCalendarOpen(true)}
-          className="w-full text-center text-[14px] uppercase"
+          className="w-full text-center text-[14px]"
         >
           Kalender ansehen
         </button>
@@ -161,6 +161,7 @@ const Index = () => {
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={loadEvents}
+        onTimerReset={() => setTimeDisplay('00.00.00')}
       />
       <CalendarView
         open={calendarOpen}
