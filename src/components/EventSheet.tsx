@@ -61,10 +61,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 h-8 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 h-10 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white/60 hover:text-white border border-white/30'
+                  : 'bg-transparent text-white hover:text-white border border-white/30'
               }`}
             >
               <span>💦</span>
@@ -72,10 +72,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 h-8 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`flex-1 h-10 px-5 rounded text-[16px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white/60 hover:text-white border border-white/30'
+                  : 'bg-transparent text-white hover:text-white border border-white/30'
               }`}
             >
               <span>💩</span>
@@ -89,7 +89,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="h-8 px-3 rounded border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
+              className="h-10 px-3 rounded border border-white/30 bg-transparent text-[14px] text-white [&::-webkit-calendar-picker-indicator]:invert"
               style={{ width: 'calc(100% - 32px)' }}
             />
           </div>
@@ -97,7 +97,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <Button
             onClick={handleSubmit}
             disabled={selectedTypes.size === 0}
-            className="w-full h-10 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
+            className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
           >
             Speichern
           </Button>
