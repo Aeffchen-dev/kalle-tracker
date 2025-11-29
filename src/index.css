@@ -13,25 +13,25 @@
 
 @layer base {
   :root {
-    --background: 82 100% 50%;
+    --background: 0 0% 98%;
     --foreground: 0 0% 0%;
 
-    --card: 82 100% 50%;
+    --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;
 
-    --popover: 82 100% 50%;
+    --popover: 0 0% 98%;
     --popover-foreground: 0 0% 0%;
 
     --primary: 0 0% 0%;
-    --primary-foreground: 82 100% 50%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 82 100% 45%;
+    --secondary: 0 0% 90%;
     --secondary-foreground: 0 0% 0%;
 
-    --muted: 82 100% 40%;
-    --muted-foreground: 0 0% 20%;
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 82 100% 55%;
+    --accent: 0 0% 95%;
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
@@ -40,44 +40,47 @@
     --border: 0 0% 0%;
     --input: 0 0% 0%;
     --ring: 0 0% 0%;
+    
+    --spot-color: 30 30% 25%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 82 100% 50%;
+    --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 0%;
     --sidebar-primary: 0 0% 0%;
-    --sidebar-primary-foreground: 82 100% 50%;
-    --sidebar-accent: 82 100% 45%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 90%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 0%;
     --sidebar-ring: 0 0% 0%;
   }
 
   .dark {
-    --background: 82 100% 50%;
+    --background: 0 0% 98%;
     --foreground: 0 0% 0%;
-    --card: 82 100% 50%;
+    --card: 0 0% 98%;
     --card-foreground: 0 0% 0%;
-    --popover: 82 100% 50%;
+    --popover: 0 0% 98%;
     --popover-foreground: 0 0% 0%;
     --primary: 0 0% 0%;
-    --primary-foreground: 82 100% 50%;
-    --secondary: 82 100% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 90%;
     --secondary-foreground: 0 0% 0%;
-    --muted: 82 100% 40%;
-    --muted-foreground: 0 0% 20%;
-    --accent: 82 100% 55%;
+    --muted: 0 0% 85%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 95%;
     --accent-foreground: 0 0% 0%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 0 0% 0%;
     --input: 0 0% 0%;
     --ring: 0 0% 0%;
-    --sidebar-background: 82 100% 50%;
+    --spot-color: 30 30% 25%;
+    --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 0%;
     --sidebar-primary: 0 0% 0%;
-    --sidebar-primary-foreground: 82 100% 50%;
-    --sidebar-accent: 82 100% 45%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 90%;
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 0 0% 0%;
     --sidebar-ring: 0 0% 0%;
@@ -90,6 +93,22 @@
   }
 
   body {
-    @apply bg-background text-foreground font-rauschen;
+    @apply text-foreground font-rauschen;
+    background-color: hsl(0 0% 98%);
+    background-image: 
+      radial-gradient(ellipse 25px 20px at 10% 15%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 18px 22px at 85% 8%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 30px 25px at 45% 25%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 20px 18px at 70% 35%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 22px 28px at 15% 45%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 28px 20px at 90% 50%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 15px 20px at 35% 55%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 25px 22px at 60% 65%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 20px 25px at 5% 75%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 22px 18px at 80% 78%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 18px 22px at 25% 88%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 28px 24px at 55% 92%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%),
+      radial-gradient(ellipse 16px 20px at 95% 95%, hsl(30 30% 25%) 0%, hsl(30 30% 25%) 100%, transparent 100%);
+    background-attachment: fixed;
   }
 }
