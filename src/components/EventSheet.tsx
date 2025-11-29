@@ -90,14 +90,13 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
 
-          <div className="space-y-2 max-w-full">
+          <div className="space-y-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
             <Input
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="h-8 bg-transparent border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
-              style={{ width: 'calc(100% - 32px)' }}
+              className="w-full h-10 bg-transparent border-white/30 text-white text-[14px] rounded-[4px] [&::-webkit-calendar-picker-indicator]:invert"
             />
           </div>
 
