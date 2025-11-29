@@ -90,13 +90,13 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
 
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
             <input
               type="time"
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="box-border w-32 h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:invert"
+              className="box-border w-full h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:invert"
               style={{ lineHeight: '48px' }}
             />
           </div>
