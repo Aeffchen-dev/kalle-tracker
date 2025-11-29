@@ -135,38 +135,39 @@ const Index = () => {
         <span className="text-[14px] uppercase flex items-center">
           Kalle
           <span className="relative flex items-center ml-1">
-            {/* First paw - appears first, fades out */}
+            {/* First paw - left back, appears first, fades out */}
             <PawPrint 
               size={14} 
-              className={`absolute fill-black transition-opacity duration-300 ${
+              className={`absolute fill-black transition-all duration-500 ${
                 pawAnimationComplete ? 'opacity-0' : 'opacity-100'
               }`}
               style={{ 
-                left: '-24px',
-                top: '16px',
-                transform: 'rotate(-8deg)',
-                animationDelay: '0ms'
+                left: '-20px',
+                top: '12px',
+                transform: 'rotate(-15deg)',
+                animation: pawAnimationComplete ? 'none' : 'pawStep 0.4s ease-out 0s both'
               }}
             />
-            {/* Middle paw - always visible */}
+            {/* Middle paw - right front, always visible */}
             <PawPrint 
               size={14} 
-              className="fill-black rotate-6"
+              className="fill-black"
               style={{
-                animation: pawAnimationComplete ? 'none' : 'pawAppear 0.3s ease-out 0.3s both'
+                transform: 'rotate(10deg)',
+                animation: pawAnimationComplete ? 'none' : 'pawStep 0.4s ease-out 0.25s both'
               }}
             />
-            {/* Third paw - appears last, fades out */}
+            {/* Third paw - left front, appears last, fades out */}
             <PawPrint 
               size={14} 
-              className={`absolute fill-black transition-opacity duration-300 ${
+              className={`absolute fill-black transition-all duration-500 ${
                 pawAnimationComplete ? 'opacity-0' : 'opacity-100'
               }`}
               style={{ 
-                left: '24px',
-                top: '-16px',
-                transform: 'rotate(20deg)',
-                animation: pawAnimationComplete ? 'none' : 'pawAppear 0.3s ease-out 0.6s both'
+                left: '20px',
+                top: '-12px',
+                transform: 'rotate(-15deg)',
+                animation: pawAnimationComplete ? 'none' : 'pawStep 0.4s ease-out 0.5s both'
               }}
             />
           </span>
