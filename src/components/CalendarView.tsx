@@ -172,7 +172,7 @@ const CalendarView = () => {
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.time);
     return isSameDay(eventDate, selectedDate);
-  }).sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+  }).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
   const today = new Date();
   const sevenDaysAgo = subDays(today, 6);
