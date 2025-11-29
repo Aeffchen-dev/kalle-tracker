@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { saveEvent, Event } from '@/lib/cookies';
 
 interface EventSheetProps {
@@ -62,31 +61,41 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="flex gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white flex items-center justify-between ${
+              className={`flex-1 p-5 rounded-2xl border-2 text-[14px] transition-all duration-200 text-white flex items-center justify-between ${
                 selectedTypes.has('pipi')
-                  ? 'border-white bg-white/10'
-                  : 'border-white/30'
+                  ? 'border-white bg-white/15 shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                  : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
               }`}
             >
-              <span>💦 Pipi</span>
-              <Checkbox 
-                checked={selectedTypes.has('pipi')} 
-                className="w-6 h-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-              />
+              <span className="text-[16px]">💦 Pipi</span>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                selectedTypes.has('pipi')
+                  ? 'border-white bg-white'
+                  : 'border-white/40'
+              }`}>
+                {selectedTypes.has('pipi') && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                )}
+              </div>
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 p-4 rounded-lg border text-[14px] transition-all text-white flex items-center justify-between ${
+              className={`flex-1 p-5 rounded-2xl border-2 text-[14px] transition-all duration-200 text-white flex items-center justify-between ${
                 selectedTypes.has('stuhlgang')
-                  ? 'border-white bg-white/10'
-                  : 'border-white/30'
+                  ? 'border-white bg-white/15 shadow-[0_0_20px_rgba(255,255,255,0.15)]'
+                  : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
               }`}
             >
-              <span>💩 Stuhlgang</span>
-              <Checkbox 
-                checked={selectedTypes.has('stuhlgang')} 
-                className="w-6 h-6 border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
-              />
+              <span className="text-[16px]">💩 Stuhlgang</span>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                selectedTypes.has('stuhlgang')
+                  ? 'border-white bg-white'
+                  : 'border-white/40'
+              }`}>
+                {selectedTypes.has('stuhlgang') && (
+                  <div className="w-2.5 h-2.5 rounded-full bg-black" />
+                )}
+              </div>
             </button>
           </div>
           
