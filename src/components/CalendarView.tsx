@@ -1,6 +1,6 @@
-import { useState, useRef, TouchEvent } from 'react';
+import { useState, useRef, TouchEvent, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getEvents } from '@/lib/cookies';
+import { getEvents, Event } from '@/lib/cookies';
 import { format, subDays, addDays } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -10,10 +10,18 @@ interface CalendarViewProps {
 }
 
 const CalendarView = ({ open, onOpenChange }: CalendarViewProps) => {
-  const events = getEvents();
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
+  const [events, setEvents] = useState<Event[]>([]);
   const touchStartX = useRef<number>(0);
+
+  // Re-fetch events when drawer opens
+  useEffect(() => {
+    if (open) {
+      setEvents(getEvents());
+      setSelectedDate(new Date());
+    }
+  }, [open]);
   
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.time);

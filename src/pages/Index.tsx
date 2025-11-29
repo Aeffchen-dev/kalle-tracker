@@ -46,8 +46,8 @@ const Index = () => {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
       <header className="p-4 flex justify-between items-center">
-        <span className="text-[14px] uppercase">🐶</span>
-        <h1 className="text-[14px] uppercase">Kalle Tracking</h1>
+        <span className="text-[14px] uppercase">Kalle</span>
+        <h1 className="text-[14px] uppercase">Tracker</h1>
       </header>
 
       {/* Main countdown area */}
