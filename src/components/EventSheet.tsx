@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { saveEvent } from '@/lib/events';
+import { format } from 'date-fns';
 
 interface EventSheetProps {
   open: boolean;
@@ -12,6 +14,14 @@ interface EventSheetProps {
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
+
+  // Reset time to current when sheet opens
+  useEffect(() => {
+    if (open) {
+      setSelectedTime(format(new Date(), 'HH:mm'));
+    }
+  }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang') => {
     setSelectedTypes(prev => {
@@ -30,8 +40,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     setIsSubmitting(true);
     
-    // Use current time so counter starts from 0
+    // Create date with selected time
+    const [hours, minutes] = selectedTime.split(':').map(Number);
     const eventDate = new Date();
+    eventDate.setHours(hours, minutes, 0, 0);
     
     // Save an event for each selected type
     for (const type of selectedTypes) {
@@ -76,6 +88,16 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               <span>💩</span>
               <span>Stuhlgang</span>
             </button>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[14px] text-white">Uhrzeit:</span>
+            <Input
+              type="time"
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              className="bg-transparent border-white/30 text-white text-[14px] [&::-webkit-calendar-picker-indicator]:invert"
+            />
           </div>
 
           <Button
