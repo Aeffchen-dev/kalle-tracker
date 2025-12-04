@@ -137,11 +137,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setAnimationPhase('expanding');
-      // Reveal content after dot animation completes (1s)
+      // Reveal content after dot animation completes (0.6s)
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         setAnimationPhase('visible');
-      }, 1000);
+      }, 600);
     }
   }, [isOpen, animationPhase]);
 
@@ -258,7 +258,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     attributeName="d"
                     from={startPath}
                     to={endPath}
-                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1s'}
+                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '0.6s'}
                     fill="freeze"
                     calcMode="spline"
                     keyTimes="0;1"
