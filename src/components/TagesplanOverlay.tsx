@@ -164,17 +164,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Reset body color and show dalmatian spots
+    // Reset body color, keep dalmatian spots hidden during animation
     document.body.style.backgroundColor = '';
-    const spotsContainer = document.getElementById('dalmatian-spots');
-    if (spotsContainer) {
-      spotsContainer.style.opacity = '1';
-    }
     
     setAnimationPhase('dots-collapsing');
     
-    // Cleanup after animation
+    // After dots collapse, show real spots and close
     setTimeout(() => {
+      const spotsContainer = document.getElementById('dalmatian-spots');
+      if (spotsContainer) {
+        spotsContainer.style.opacity = '1';
+      }
       setAnimationPhase('idle');
       onClose();
     }, 500);
