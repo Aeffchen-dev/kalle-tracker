@@ -95,13 +95,13 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
-        <div className="w-full bg-white/20 backdrop-blur-[16px] rounded-[24px] flex flex-col items-center justify-center py-[90px]">
-          <div className="text-[72px] md:text-[96px] leading-none">
+        <div className="w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-white/25 flex flex-col items-center justify-center py-12">
+          <div className="text-[56px] md:text-[72px] leading-none">
             {timeDisplay}
           </div>
           <button
             onClick={() => setEventSheetOpen(true)}
-            className="mt-4 text-[14px] h-12 px-8 rounded-[999px] bg-black text-white flex items-center justify-center"
+            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-black text-white flex items-center justify-center"
           >
             Eintrag hinzufügen
           </button>
