@@ -112,7 +112,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="h-dvh flex flex-col bg-transparent relative overflow-hidden">
+    <div className="min-h-dvh flex flex-col bg-transparent relative overflow-hidden pb-[env(safe-area-inset-bottom)]">
       
       {/* Loading state */}
       {isLoading && imageLoaded && (
