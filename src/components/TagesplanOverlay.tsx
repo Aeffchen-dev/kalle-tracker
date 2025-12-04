@@ -14,7 +14,7 @@ interface MealData {
 
 const mealsData: MealData[] = [
   {
-    title: 'Morgens',
+    title: 'Morgens, mittags, abends',
     ingredients: [
       { quantity: '103g', name: 'Royal Canine Urinary u/c' },
       { quantity: '309g', name: 'Wasser' },
@@ -25,25 +25,11 @@ const mealsData: MealData[] = [
     ],
   },
   {
-    title: 'Mittags',
+    title: 'Schleckpaste',
     ingredients: [
-      { quantity: '103g', name: 'Royal Canine Urinary u/c' },
-      { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Germüse' },
-      { quantity: '6,6g', name: 'Dicalciumphosphat' },
-      { quantity: '3,3g', name: 'Elements sensitive' },
-      { quantity: '6,6g', name: 'Futteröl Junior' },
-    ],
-  },
-  {
-    title: 'Abends',
-    ingredients: [
-      { quantity: '103g', name: 'Royal Canine Urinary u/c' },
-      { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Germüse' },
-      { quantity: '6,6g', name: 'Dicalciumphosphat' },
-      { quantity: '3,3g', name: 'Elements sensitive' },
-      { quantity: '6,6g', name: 'Futteröl Junior' },
+      { quantity: '60g', name: 'Ei ohne Schale, gekocht' },
+      { quantity: '100g', name: 'Joghurt 1,5% Fett' },
+      { quantity: '100g', name: 'Karotten, gekocht' },
     ],
   },
 ];
