@@ -11,21 +11,21 @@ interface TrendAnalysisProps {
 const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
   const weightData = useMemo(() => {
     return events
-      .filter(e => e.type === 'gewicht' && e.weight_value)
+      .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
         date: format(new Date(e.time), 'd.M HH:mm', { locale: de }),
-        value: e.weight_value,
+        value: Number(e.weight_value),
       }));
   }, [events]);
 
   const phData = useMemo(() => {
     return events
-      .filter(e => e.type === 'phwert' && e.ph_value)
+      .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
         date: format(new Date(e.time), 'd.M HH:mm', { locale: de }),
-        value: parseFloat(e.ph_value!.replace(',', '.')),
+        value: parseFloat(String(e.ph_value).replace(',', '.')),
       }));
   }, [events]);
 
