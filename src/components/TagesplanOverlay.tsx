@@ -337,8 +337,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               {/* Schedule Table */}
               <div className="overflow-x-auto -mx-4">
-                <div className="pl-4 min-w-fit">
-                <div className="border border-white/30 rounded-l-[16px] overflow-hidden inline-block min-w-[700px]">
+                <div className="px-4 min-w-fit">
+                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
                 <table className="w-full text-[12px]">
                   <thead>
                     <tr className="border-b border-white/30">
