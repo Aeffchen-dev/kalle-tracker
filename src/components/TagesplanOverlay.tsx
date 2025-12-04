@@ -145,7 +145,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     key={index}
                     className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/30' : ''}`}
                   >
-                    <span className="text-[14px] text-white w-[80px] flex-shrink-0">{ingredient.quantity}</span>
+                    <span className="text-[14px] text-white/60 w-[80px] flex-shrink-0">{ingredient.quantity}</span>
                     <div className="flex-1">
                       <span className="text-[14px] text-white/60">{ingredient.name}</span>
                       {ingredient.description && (
