@@ -337,7 +337,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               {/* Schedule Table */}
               <div className="border border-white/30 rounded-lg overflow-x-auto">
-                <table className="w-full text-[12px]">
+                <table className="w-full text-[12px] min-w-[700px]">
                   <thead>
                     <tr className="border-b border-white/30">
                       {weekSchedule.map((day, index) => (
