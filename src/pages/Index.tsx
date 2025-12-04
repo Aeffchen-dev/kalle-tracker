@@ -118,7 +118,7 @@ const Index = () => {
         <img
           src={dogOnBike}
           alt="Dog on bike"
-          className="fixed z-50 h-[120px] w-auto pointer-events-none animate-dog-ride"
+          className="fixed z-50 h-[102px] w-auto pointer-events-none animate-dog-ride"
           style={{ bottom: '20vh' }}
           onAnimationEnd={() => setShowDogAnimation(false)}
         />
