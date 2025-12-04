@@ -214,43 +214,45 @@ const CalendarView = () => {
           <div className="flex items-center justify-between">
             {showTrends ? (
               <>
-                <div className="w-6 h-6" />
-                <DrawerTitle className="text-center text-[14px] text-white leading-6">
-                  Trend-Analyse
-                </DrawerTitle>
                 <button 
                   onClick={(e) => { e.stopPropagation(); setShowTrends(false); }} 
                   className="w-6 h-6 flex items-center justify-center"
                 >
-                  <TrendingUp size={20} className="text-[#5AD940]" />
+                  <ArrowLeft size={24} className="text-white" />
                 </button>
+                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                  Trend-Analyse
+                </DrawerTitle>
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <TrendingUp size={20} className="text-[#5AD940]" />
+                </div>
               </>
             ) : (
               <>
+                <div className="w-6 h-6 flex items-center justify-center">
+                  {canGoPrev && (
+                    <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
+                      <ArrowLeft size={24} className="text-white" />
+                    </button>
+                  )}
+                </div>
+                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                  {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
+                </DrawerTitle>
                 <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {canGoNext && (
+                      <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
+                        <ArrowRight size={24} className="text-white" />
+                      </button>
+                    )}
+                  </div>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setShowTrends(true); }} 
                     className="w-6 h-6 flex items-center justify-center"
                   >
                     <TrendingUp size={20} className="text-white/60" />
                   </button>
-                  <div className="w-6 h-6 flex items-center justify-center">
-                    {canGoPrev && (
-                      <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
-                        <ArrowLeft size={24} className="text-white" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <DrawerTitle className="text-center text-[14px] text-white leading-6">
-                  {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
-                </DrawerTitle>
-                <div className="w-6 h-6 flex items-center justify-center">
-                  {canGoNext && (
-                    <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
-                      <ArrowRight size={24} className="text-white" />
-                    </button>
-                  )}
                 </div>
               </>
             )}
