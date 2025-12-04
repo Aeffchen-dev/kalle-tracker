@@ -126,7 +126,7 @@ const Index = () => {
           onClick={() => {
             setShowDogAnimation(true);
           }}
-          className="cursor-pointer -mt-2 -ml-[10px] relative"
+          className="cursor-pointer -mt-2 -ml-[18px] relative"
         >
           <img 
             src={dalmatianHeader} 
