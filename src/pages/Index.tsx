@@ -5,7 +5,7 @@ import TagesplanOverlay from '@/components/TagesplanOverlay';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
-import AnimatedDalmatian from '@/components/AnimatedDalmatian';
+import dalmatianHeader from '@/assets/dalmatian-header.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
@@ -117,12 +117,10 @@ const Index = () => {
       {/* Header */}
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
+          onClick={() => setShowDogAnimation(true)}
           className="cursor-pointer -mt-2 -ml-[10px]"
         >
-          <AnimatedDalmatian 
-            className="h-[100px] w-auto"
-            onClick={() => setShowDogAnimation(true)}
-          />
+          <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
