@@ -151,7 +151,7 @@ const Index = () => {
           </button>
           <button
             onClick={() => setEventSheetOpen(true)}
-            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-[#6DE24A] text-black flex items-center justify-center"
+            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-[#4CD137] text-black flex items-center justify-center"
           >
             Eintrag hinzufügen
           </button>
