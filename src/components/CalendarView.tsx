@@ -269,7 +269,7 @@ const CalendarView = () => {
                         <span>{event.type === 'pipi' ? '💦' : '💩'}</span>
                         <span>
                           {event.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}
-                          {event.type === 'pipi' && event.ph_value && `, pH-Wert: ${event.ph_value}`}
+                          {event.type === 'pipi' && event.ph_value && `, pH: ${event.ph_value}`}
                         </span>
                       </span>
                       <span className="text-[14px] text-white whitespace-nowrap">
