@@ -162,7 +162,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     setTimeout(() => {
       setAnimationPhase('idle');
       onClose();
-    }, 500);
+    }, 800);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -221,7 +221,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   attributeName="rx"
                   from={animationPhase === 'dots-collapsing' ? '100' : String(spot.rx)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.8s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
@@ -231,7 +231,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   attributeName="ry"
                   from={animationPhase === 'dots-collapsing' ? '100' : String(spot.ry)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.8s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
