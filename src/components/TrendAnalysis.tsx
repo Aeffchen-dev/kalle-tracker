@@ -61,7 +61,19 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
+const POINTS_PER_VIEW = 10;
+const MIN_POINT_WIDTH = 60;
+
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Scroll to the right (latest data) on mount
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data]);
+
   if (data.length < 2 || width === 0) {
     return (
       <div className="h-[180px] flex items-center justify-center">
@@ -72,11 +84,20 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   const minValue = Math.min(...data.map(d => d.value));
   const maxValue = Math.max(...data.map(d => d.value));
+  
+  // Calculate chart width: if many points, make it wider than container
+  const chartWidth = data.length > POINTS_PER_VIEW 
+    ? Math.max(width, data.length * MIN_POINT_WIDTH)
+    : width;
 
   return (
-    <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
+    <div 
+      ref={scrollRef}
+      className="h-[180px] w-full overflow-x-auto overflow-y-hidden scrollbar-hide" 
+      data-vaul-no-drag
+    >
       <AreaChart 
-        width={width} 
+        width={chartWidth} 
         height={180} 
         data={data} 
         margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
@@ -92,7 +113,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
           tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
           axisLine={false}
           tickLine={false}
-          interval="preserveStartEnd"
+          interval={data.length > POINTS_PER_VIEW ? Math.floor(data.length / 10) : "preserveStartEnd"}
           dy={8}
         />
         <YAxis 
@@ -127,6 +148,15 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 WeightChart.displayName = 'WeightChart';
 
 const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    // Scroll to the right (latest data) on mount
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data]);
+
   if (data.length < 2 || width === 0) {
     return (
       <div className="h-[180px] flex items-center justify-center">
@@ -137,11 +167,20 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
 
   const minValue = Math.min(...data.map(d => d.value));
   const maxValue = Math.max(...data.map(d => d.value));
+  
+  // Calculate chart width: if many points, make it wider than container
+  const chartWidth = data.length > POINTS_PER_VIEW 
+    ? Math.max(width, data.length * MIN_POINT_WIDTH)
+    : width;
 
   return (
-    <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
+    <div 
+      ref={scrollRef}
+      className="h-[180px] w-full overflow-x-auto overflow-y-hidden scrollbar-hide" 
+      data-vaul-no-drag
+    >
       <LineChart 
-        width={width} 
+        width={chartWidth} 
         height={180} 
         data={data} 
         margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
@@ -151,7 +190,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
           tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
           axisLine={false}
           tickLine={false}
-          interval="preserveStartEnd"
+          interval={data.length > POINTS_PER_VIEW ? Math.floor(data.length / 10) : "preserveStartEnd"}
           dy={8}
         />
         <YAxis 
