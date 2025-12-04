@@ -143,9 +143,12 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
         <div className={`w-full bg-[#FFFEF5]/15 backdrop-blur-[4px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-12 ${showCard ? 'animate-fade-in-up' : 'opacity-0'}`}>
-          <div className="text-[56px] md:text-[72px] leading-none">
+          <button 
+            onClick={() => setEventSheetOpen(true)}
+            className="text-[56px] md:text-[72px] leading-none cursor-pointer"
+          >
             {timeDisplay}
-          </div>
+          </button>
           <button
             onClick={() => setEventSheetOpen(true)}
             className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-black text-white flex items-center justify-center"
