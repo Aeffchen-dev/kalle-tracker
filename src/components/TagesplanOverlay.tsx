@@ -132,7 +132,7 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'collapsing'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'collapsing' | 'dots-collapsing'>('idle');
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -152,12 +152,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
+    // First hide content, then collapse dots
     setAnimationPhase('collapsing');
     setTimeout(() => {
-      document.body.style.backgroundColor = '';
-      setAnimationPhase('idle');
-      onClose();
-    }, 600);
+      setAnimationPhase('dots-collapsing');
+      // After dots collapse, reset everything
+      setTimeout(() => {
+        document.body.style.backgroundColor = '';
+        setAnimationPhase('idle');
+        onClose();
+      }, 1200);
+    }, 300);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -188,16 +193,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <ellipse key={i} cx={spot.cx} cy={spot.cy}>
                 <animate
                   attributeName="rx"
-                  from={animationPhase === 'collapsing' ? '200' : String(spot.rx)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
-                  dur={animationPhase === 'expanding' ? '1.2s' : '0.6s'}
+                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.rx)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' || animationPhase === 'collapsing' ? '200' : String(spot.rx)}
+                  dur="1.2s"
                   fill="freeze"
                 />
                 <animate
                   attributeName="ry"
-                  from={animationPhase === 'collapsing' ? '200' : String(spot.ry)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
-                  dur={animationPhase === 'expanding' ? '1.2s' : '0.6s'}
+                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.ry)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' || animationPhase === 'collapsing' ? '200' : String(spot.ry)}
+                  dur="1.2s"
                   fill="freeze"
                 />
               </ellipse>
@@ -211,7 +216,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           height="200"
           style={{ fill: 'hsl(var(--spot-color))' }}
           clipPath="url(#dotsClip)"
-          className={`transition-opacity duration-300 ${animationPhase === 'collapsing' ? 'opacity-0' : 'opacity-100'}`}
         />
       </svg>
 
