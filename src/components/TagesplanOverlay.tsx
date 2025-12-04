@@ -185,43 +185,44 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         <defs>
           <clipPath id="dotsClip">
             {/* Spots matching exact positions from index.html #dalmatian-spots */}
+            {/* cx = left% + (width/2 as %), cy = top% + (height/2 as %) */}
             {[
-              /* Large spots - from index.html lines 44-52 */
-              { cx: 5, cy: 8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
-              { cx: 70, cy: 8, w: 6.4, h: 4.8, rotate: -6, seed: 1 },
-              { cx: 35, cy: 18, w: 5.6, h: 6.4, rotate: 45, seed: 2 },
-              { cx: 82, cy: 28, w: 5.2, h: 6, rotate: -12, seed: 3 },
-              { cx: 8, cy: 42, w: 6, h: 4.8, rotate: 30, seed: 4 },
-              { cx: 65, cy: 52, w: 4.8, h: 5.6, rotate: -20, seed: 5 },
-              { cx: 20, cy: 68, w: 6.4, h: 5.2, rotate: 15, seed: 6 },
-              { cx: 75, cy: 78, w: 5.2, h: 6.4, rotate: -35, seed: 7 },
-              { cx: 45, cy: 85, w: 5.6, h: 4.8, rotate: 25, seed: 8 },
-              /* Medium spots - from index.html lines 54-62 */
-              { cx: 18, cy: 12, w: 4, h: 4.4, rotate: -15, seed: 9 },
-              { cx: 48, cy: 6, w: 4.4, h: 3.6, rotate: 20, seed: 10 },
-              { cx: 88, cy: 22, w: 3.6, h: 4.4, rotate: -8, seed: 11 },
-              { cx: 55, cy: 35, w: 4, h: 3.6, rotate: 35, seed: 12 },
-              { cx: 30, cy: 48, w: 4.4, h: 4, rotate: -25, seed: 13 },
-              { cx: 92, cy: 58, w: 3.6, h: 4, rotate: 10, seed: 14 },
-              { cx: 50, cy: 72, w: 4, h: 4.4, rotate: -40, seed: 15 },
-              { cx: 10, cy: 82, w: 4.4, h: 3.6, rotate: 5, seed: 16 },
-              { cx: 85, cy: 95, w: 3.6, h: 4, rotate: -18, seed: 17 },
-              /* Small spots - from index.html lines 64-72 */
-              { cx: 28, cy: 2, w: 2.8, h: 3.2, rotate: 8, seed: 18 },
-              { cx: 60, cy: 15, w: 3.2, h: 2.8, rotate: -12, seed: 19 },
-              { cx: 3, cy: 25, w: 2.8, h: 2.8, rotate: 22, seed: 20 },
-              { cx: 42, cy: 38, w: 3.2, h: 3.2, rotate: -5, seed: 21 },
-              { cx: 78, cy: 45, w: 2.8, h: 3.2, rotate: 15, seed: 22 },
-              { cx: 38, cy: 62, w: 3.2, h: 2.8, rotate: -28, seed: 23 },
-              { cx: 62, cy: 75, w: 2.8, h: 2.8, rotate: 32, seed: 24 },
-              { cx: 28, cy: 85, w: 3.2, h: 3.2, rotate: -10, seed: 25 },
-              { cx: 68, cy: 92, w: 2.8, h: 3.2, rotate: 18, seed: 26 },
-              /* Extra small spots - from index.html lines 74-78 */
-              { cx: 92, cy: 10, w: 1.6, h: 2, rotate: 0, seed: 27 },
-              { cx: 25, cy: 32, w: 2, h: 1.6, rotate: 0, seed: 28 },
-              { cx: 15, cy: 55, w: 1.6, h: 1.6, rotate: 0, seed: 29 },
-              { cx: 88, cy: 65, w: 2, h: 2, rotate: 0, seed: 30 },
-              { cx: 58, cy: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
+              /* Large spots - center positions calculated from top-left + half size */
+              { cx: 7.4, cy: 10.8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },    // left:5% + 2.4, top:8% + 2.8
+              { cx: 73.2, cy: 10.4, w: 6.4, h: 4.8, rotate: -6, seed: 1 },   // left:70% + 3.2, top:8% + 2.4
+              { cx: 37.8, cy: 21.2, w: 5.6, h: 6.4, rotate: 45, seed: 2 },   // left:35% + 2.8, top:18% + 3.2
+              { cx: 84.6, cy: 31, w: 5.2, h: 6, rotate: -12, seed: 3 },      // left:82% + 2.6, top:28% + 3
+              { cx: 11, cy: 44.4, w: 6, h: 4.8, rotate: 30, seed: 4 },       // left:8% + 3, top:42% + 2.4
+              { cx: 67.4, cy: 54.8, w: 4.8, h: 5.6, rotate: -20, seed: 5 },  // left:65% + 2.4, top:52% + 2.8
+              { cx: 23.2, cy: 70.6, w: 6.4, h: 5.2, rotate: 15, seed: 6 },   // left:20% + 3.2, top:68% + 2.6
+              { cx: 77.6, cy: 81.2, w: 5.2, h: 6.4, rotate: -35, seed: 7 },  // left:75% + 2.6, top:78% + 3.2
+              { cx: 47.8, cy: 87.4, w: 5.6, h: 4.8, rotate: 25, seed: 8 },   // left:45% + 2.8, top:85% + 2.4
+              /* Medium spots */
+              { cx: 20, cy: 14.2, w: 4, h: 4.4, rotate: -15, seed: 9 },      // left:18% + 2, top:12% + 2.2
+              { cx: 50.2, cy: 7.8, w: 4.4, h: 3.6, rotate: 20, seed: 10 },   // left:48% + 2.2, top:6% + 1.8
+              { cx: 89.8, cy: 24.2, w: 3.6, h: 4.4, rotate: -8, seed: 11 },  // left:88% + 1.8, top:22% + 2.2
+              { cx: 57, cy: 36.8, w: 4, h: 3.6, rotate: 35, seed: 12 },      // left:55% + 2, top:35% + 1.8
+              { cx: 32.2, cy: 50, w: 4.4, h: 4, rotate: -25, seed: 13 },     // left:30% + 2.2, top:48% + 2
+              { cx: 93.8, cy: 60, w: 3.6, h: 4, rotate: 10, seed: 14 },      // left:92% + 1.8, top:58% + 2
+              { cx: 52, cy: 74.2, w: 4, h: 4.4, rotate: -40, seed: 15 },     // left:50% + 2, top:72% + 2.2
+              { cx: 12.2, cy: 83.8, w: 4.4, h: 3.6, rotate: 5, seed: 16 },   // left:10% + 2.2, top:82% + 1.8
+              { cx: 86.8, cy: 97, w: 3.6, h: 4, rotate: -18, seed: 17 },     // left:85% + 1.8, top:95% + 2
+              /* Small spots */
+              { cx: 29.4, cy: 3.6, w: 2.8, h: 3.2, rotate: 8, seed: 18 },    // left:28% + 1.4, top:2% + 1.6
+              { cx: 61.6, cy: 16.4, w: 3.2, h: 2.8, rotate: -12, seed: 19 }, // left:60% + 1.6, top:15% + 1.4
+              { cx: 4.4, cy: 26.4, w: 2.8, h: 2.8, rotate: 22, seed: 20 },   // left:3% + 1.4, top:25% + 1.4
+              { cx: 43.6, cy: 39.6, w: 3.2, h: 3.2, rotate: -5, seed: 21 },  // left:42% + 1.6, top:38% + 1.6
+              { cx: 79.4, cy: 46.6, w: 2.8, h: 3.2, rotate: 15, seed: 22 },  // left:78% + 1.4, top:45% + 1.6
+              { cx: 39.6, cy: 63.4, w: 3.2, h: 2.8, rotate: -28, seed: 23 }, // left:38% + 1.6, top:62% + 1.4
+              { cx: 63.4, cy: 76.4, w: 2.8, h: 2.8, rotate: 32, seed: 24 },  // left:62% + 1.4, top:75% + 1.4
+              { cx: 29.6, cy: 86.6, w: 3.2, h: 3.2, rotate: -10, seed: 25 }, // left:28% + 1.6, top:85% + 1.6
+              { cx: 69.4, cy: 93.6, w: 2.8, h: 3.2, rotate: 18, seed: 26 },  // left:68% + 1.4, top:92% + 1.6
+              /* Extra small spots */
+              { cx: 92.8, cy: 11, w: 1.6, h: 2, rotate: 0, seed: 27 },       // left:92% + 0.8, top:10% + 1
+              { cx: 26, cy: 32.8, w: 2, h: 1.6, rotate: 0, seed: 28 },       // left:25% + 1, top:32% + 0.8
+              { cx: 15.8, cy: 55.8, w: 1.6, h: 1.6, rotate: 0, seed: 29 },   // left:15% + 0.8, top:55% + 0.8
+              { cx: 89, cy: 66, w: 2, h: 2, rotate: 0, seed: 30 },           // left:88% + 1, top:65% + 1
+              { cx: 58.8, cy: 81, w: 1.6, h: 2, rotate: 0, seed: 31 },       // left:58% + 0.8, top:80% + 1
             ].map((spot) => {
               // Create irregular ellipse using cubic bezier curves
               const generateIrregularEllipse = (scaleX: number, scaleY: number) => {
