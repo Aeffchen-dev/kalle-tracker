@@ -1,1 +1,0 @@
-ALTER TABLE public.events ADD COLUMN meal_timing text;

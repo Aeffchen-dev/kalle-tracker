@@ -19,14 +19,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
-  const [selectedMealTiming, setSelectedMealTiming] = useState<string | null>(null);
 
   // Reset time to current when sheet opens
   useEffect(() => {
     if (open) {
       setSelectedTime(format(new Date(), 'HH:mm'));
       setSelectedPh(null);
-      setSelectedMealTiming(null);
     }
   }, [open]);
 
@@ -54,10 +52,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     // Save an event for each selected type
     for (const type of selectedTypes) {
-      // Only include pH value and meal timing for pipi type
+      // Only include pH value for pipi type
       const phValue = type === 'pipi' ? selectedPh : undefined;
-      const mealTiming = type === 'pipi' ? selectedMealTiming : undefined;
-      await saveEvent(type, eventDate, phValue || undefined, mealTiming || undefined);
+      await saveEvent(type, eventDate, phValue || undefined);
     }
 
     onEventAdded();
@@ -66,7 +63,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     // Reset selections
     setSelectedTypes(new Set());
     setSelectedPh(null);
-    setSelectedMealTiming(null);
     setIsSubmitting(false);
   };
 
@@ -143,28 +139,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                     );
                   })}
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setSelectedMealTiming(selectedMealTiming === 'vor' ? null : 'vor')}
-                  className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
-                    selectedMealTiming === 'vor'
-                      ? 'bg-white text-black border border-white'
-                      : 'bg-transparent text-white border border-white/30'
-                  }`}
-                >
-                  vor dem Essen
-                </button>
-                <button
-                  onClick={() => setSelectedMealTiming(selectedMealTiming === 'nach' ? null : 'nach')}
-                  className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
-                    selectedMealTiming === 'nach'
-                      ? 'bg-white text-black border border-white'
-                      : 'bg-transparent text-white border border-white/30'
-                  }`}
-                >
-                  nach dem Essen
-                </button>
               </div>
             </div>
           )}

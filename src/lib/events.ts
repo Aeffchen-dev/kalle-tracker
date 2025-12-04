@@ -5,7 +5,6 @@ export interface Event {
   type: 'pipi' | 'stuhlgang';
   time: Date;
   ph_value?: string | null;
-  meal_timing?: string | null;
 }
 
 export const getEvents = async (): Promise<Event[]> => {
@@ -23,15 +22,14 @@ export const getEvents = async (): Promise<Event[]> => {
     id: e.id,
     type: e.type as 'pipi' | 'stuhlgang',
     time: new Date(e.time),
-    ph_value: e.ph_value,
-    meal_timing: e.meal_timing
+    ph_value: e.ph_value
   }));
 };
 
-export const saveEvent = async (type: 'pipi' | 'stuhlgang', time?: Date, ph_value?: string, meal_timing?: string): Promise<void> => {
+export const saveEvent = async (type: 'pipi' | 'stuhlgang', time?: Date, ph_value?: string): Promise<void> => {
   const { error } = await supabase
     .from('events')
-    .insert({ type, time: (time || new Date()).toISOString(), ph_value: ph_value || null, meal_timing: meal_timing || null });
+    .insert({ type, time: (time || new Date()).toISOString(), ph_value: ph_value || null });
   
   if (error) {
     console.error('Error saving event:', error);

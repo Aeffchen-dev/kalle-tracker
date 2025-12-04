@@ -270,7 +270,6 @@ const CalendarView = () => {
                         <span>
                           {event.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}
                           {event.type === 'pipi' && event.ph_value && `, pH: ${event.ph_value}`}
-                          {event.type === 'pipi' && event.meal_timing && `, ${event.meal_timing === 'vor' ? 'vor dem Essen' : 'nach dem Essen'}`}
                         </span>
                       </span>
                       <span className="text-[14px] text-white whitespace-nowrap">
