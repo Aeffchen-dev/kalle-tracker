@@ -227,8 +227,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               key={spot.seed}
               style={{
                 position: 'absolute',
-                left: `calc(${spot.left}% + ${spot.w / 2}vw)`,
-                top: `calc(${spot.top}% + ${spot.h / 2}vw)`,
+                left: `calc(${spot.left}% + ${spot.w / 2}vw + 4px)`,
+                top: `calc(${spot.top}% + ${spot.h / 2}vw + 4px)`,
                 width: `${spot.w}vw`,
                 height: `${spot.h}vw`,
                 overflow: 'visible',
