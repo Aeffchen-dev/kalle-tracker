@@ -4,7 +4,7 @@ import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
-import dogOnBike from '@/assets/dog-on-bike.png';
+import dogInCar from '@/assets/dog-in-car.png';
 import dogLoading from '@/assets/dog-loading.png';
 
 const Index = () => {
@@ -151,7 +151,7 @@ const Index = () => {
           </button>
           <button
             onClick={() => setEventSheetOpen(true)}
-            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-black text-white flex items-center justify-center"
+            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-[#6DE24A] text-black flex items-center justify-center"
           >
             Eintrag hinzufügen
           </button>
@@ -164,8 +164,8 @@ const Index = () => {
       {/* Dog animation */}
       {showDogAnimation && (
         <img
-          src={dogOnBike}
-          alt="Dog on bike"
+          src={dogInCar}
+          alt="Dog in car"
           className="fixed z-50 h-[102px] w-auto pointer-events-none animate-dog-ride"
           style={{ bottom: 'calc(20vh - 16px)' }}
           onAnimationEnd={() => setShowDogAnimation(false)}
