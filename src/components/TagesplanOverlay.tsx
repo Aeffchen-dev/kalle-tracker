@@ -136,18 +136,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
-      // Hide actual dalmatian spots so SVG animation is visible
-      const spotsContainer = document.getElementById('dalmatian-spots');
-      if (spotsContainer) {
-        spotsContainer.style.opacity = '0';
-      }
-      
       setAnimationPhase('expanding');
-      // Show content when dots have covered the screen
+      // Show content faster
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         setAnimationPhase('visible');
-      }, 1000);
+      }, 600);
     }
   }, [isOpen, animationPhase]);
 
@@ -155,26 +149,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
       document.body.style.backgroundColor = '';
-      // Show dalmatian spots again
-      const spotsContainer = document.getElementById('dalmatian-spots');
-      if (spotsContainer) {
-        spotsContainer.style.opacity = '1';
-      }
     }
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Reset body color, keep dalmatian spots hidden during animation
+    // Reset body color
     document.body.style.backgroundColor = '';
     
     setAnimationPhase('dots-collapsing');
     
-    // After dots collapse, show real spots and close
+    // Close after dots collapse
     setTimeout(() => {
-      const spotsContainer = document.getElementById('dalmatian-spots');
-      if (spotsContainer) {
-        spotsContainer.style.opacity = '1';
-      }
       setAnimationPhase('idle');
       onClose();
     }, 500);
