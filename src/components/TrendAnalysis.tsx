@@ -104,7 +104,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       {/* Sticky Y-Axis */}
       <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
         {yTicks.reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 text-right pr-1">{tick}kg</span>
+          <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
         ))}
       </div>
       {/* Scrollable Chart */}
@@ -199,7 +199,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
       {/* Sticky Y-Axis */}
       <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
         {yTicks.reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 text-right pr-1">{tick.toFixed(1)}</span>
+          <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
         ))}
       </div>
       {/* Scrollable Chart */}
@@ -256,7 +256,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
-        date: format(new Date(e.time), 'd.M HH:mm', { locale: de }),
+        date: format(new Date(e.time), 'd.M', { locale: de }),
         value: Number(e.weight_value),
       }));
   }, [events]);
@@ -266,7 +266,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
-        date: format(new Date(e.time), 'd.M HH:mm', { locale: de }),
+        date: format(new Date(e.time), 'd.M', { locale: de }),
         value: parseFloat(String(e.ph_value).replace(',', '.')),
       }));
   }, [events]);
