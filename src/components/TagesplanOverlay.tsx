@@ -223,27 +223,36 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               const scale = animationPhase === 'dots-collapsing' ? 1 : 15;
               const fromScale = animationPhase === 'dots-collapsing' ? 15 : 1;
               return (
-                <ellipse
-                  key={i}
-                  cx={spot.cx}
-                  cy={spot.cy}
-                  rx={spot.w}
-                  ry={spot.h}
-                  transform={`rotate(${spot.rotate} ${spot.cx} ${spot.cy})`}
-                >
-                  <animateTransform
-                    attributeName="transform"
-                    type="scale"
-                    from={`${fromScale}`}
-                    to={`${scale}`}
-                    dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
-                    fill="freeze"
-                    calcMode="spline"
-                    keyTimes="0;1"
-                    keySplines="0.4 0 0.2 1"
-                    additive="sum"
-                  />
-                </ellipse>
+                <g key={i} style={{ transformOrigin: `${spot.cx}% ${spot.cy}%` }}>
+                  <ellipse
+                    cx={spot.cx}
+                    cy={spot.cy}
+                    rx={spot.w}
+                    ry={spot.h}
+                    transform={`rotate(${spot.rotate} ${spot.cx} ${spot.cy})`}
+                  >
+                    <animate
+                      attributeName="rx"
+                      from={animationPhase === 'dots-collapsing' ? String(spot.w * 15) : String(spot.w)}
+                      to={animationPhase === 'dots-collapsing' ? String(spot.w) : String(spot.w * 15)}
+                      dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
+                      fill="freeze"
+                      calcMode="spline"
+                      keyTimes="0;1"
+                      keySplines="0.4 0 0.2 1"
+                    />
+                    <animate
+                      attributeName="ry"
+                      from={animationPhase === 'dots-collapsing' ? String(spot.h * 15) : String(spot.h)}
+                      to={animationPhase === 'dots-collapsing' ? String(spot.h) : String(spot.h * 15)}
+                      dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
+                      fill="freeze"
+                      calcMode="spline"
+                      keyTimes="0;1"
+                      keySplines="0.35 0 0.25 1"
+                    />
+                  </ellipse>
+                </g>
               );
             })}
           </clipPath>
