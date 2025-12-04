@@ -158,11 +158,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     
     setAnimationPhase('dots-collapsing');
     
-    // Close after dots collapse
+    // Close earlier, don't wait for full animation
     setTimeout(() => {
       setAnimationPhase('idle');
       onClose();
-    }, 800);
+    }, 400);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
