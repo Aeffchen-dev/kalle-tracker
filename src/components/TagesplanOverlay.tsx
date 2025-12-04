@@ -234,8 +234,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               }}
               viewBox="0 0 100 100"
             >
-              <g transform={`rotate(${spot.rotate} 50 50)`}>
-                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
+              <g transform={`translate(50, 50) rotate(${spot.rotate})`}>
+                <path d={blobPaths[spot.seed % 4]} fill="#5c4033" transform="translate(-50, -50)">
                   <animateTransform
                     attributeName="transform"
                     type="scale"
@@ -246,6 +246,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     calcMode="spline"
                     keyTimes="0;1"
                     keySplines={animationPhase === 'dots-collapsing' ? "0 0 0.2 1" : "0.8 0 1 1"}
+                    additive="sum"
                   />
                 </path>
               </g>
