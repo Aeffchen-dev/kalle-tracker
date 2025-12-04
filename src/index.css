@@ -124,6 +124,32 @@
   }
 }
 
+@keyframes spotExpand {
+  0% {
+    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(1);
+  }
+  100% {
+    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(40);
+  }
+}
+
+@keyframes spotCollapse {
+  0% {
+    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(40);
+  }
+  100% {
+    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(1);
+  }
+}
+
+.spot-expand {
+  animation: spotExpand 1.9s cubic-bezier(0.8, 0, 1, 1) forwards;
+}
+
+.spot-collapse {
+  animation: spotCollapse 0.32s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;
