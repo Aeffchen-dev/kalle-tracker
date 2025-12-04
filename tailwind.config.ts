@@ -108,6 +108,26 @@ export default {
             opacity: "1",
           },
         },
+        "tail-wag": {
+          "0%, 100%": {
+            transform: "rotate(0deg) skewX(0deg)",
+          },
+          "15%": {
+            transform: "rotate(-3deg) skewX(2deg)",
+          },
+          "30%": {
+            transform: "rotate(2deg) skewX(-1deg)",
+          },
+          "45%": {
+            transform: "rotate(-2deg) skewX(1.5deg)",
+          },
+          "60%": {
+            transform: "rotate(1.5deg) skewX(-1deg)",
+          },
+          "75%": {
+            transform: "rotate(-1deg) skewX(0.5deg)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -115,6 +135,7 @@ export default {
         "dog-ride": "dog-ride 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
+        "tail-wag": "tail-wag 0.5s ease-in-out",
       },
     },
   },
