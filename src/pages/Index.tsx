@@ -120,7 +120,7 @@ const Index = () => {
           <img
             src={dogLoading}
             alt="Loading..."
-            className="h-[143px] w-auto"
+            className="h-[143px] w-auto mt-1"
           />
         </div>
       )}
