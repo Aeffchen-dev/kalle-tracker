@@ -17,25 +17,22 @@ const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(() => {
-    // Initialize from sessionStorage if we're preserving time, otherwise use current time
-    const preserved = sessionStorage.getItem('preservedTime');
-    if (preserved) {
-      return preserved;
-    }
-    return format(new Date(), 'HH:mm');
-  });
+  const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
-  const prevOpen = useRef(open);
+  const wasOpen = useRef(false);
 
-  // Reset time to current when sheet opens (unless gewicht-only was last saved)
+  // Reset time when sheet opens
   useEffect(() => {
-    // Only run when open changes from false to true
-    if (open && !prevOpen.current) {
-      const preservedTime = sessionStorage.getItem('preservedTime');
-      if (preservedTime) {
-        setSelectedTime(preservedTime);
+    const justOpened = open && !wasOpen.current;
+    wasOpen.current = open;
+    
+    if (justOpened) {
+      const preserved = sessionStorage.getItem('preservedTime');
+      console.log('Sheet opened, preserved time:', preserved);
+      
+      if (preserved) {
+        setSelectedTime(preserved);
         sessionStorage.removeItem('preservedTime');
       } else {
         setSelectedTime(format(new Date(), 'HH:mm'));
@@ -43,7 +40,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       setSelectedPh(null);
       setWeightValue('');
     }
-    prevOpen.current = open;
   }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
@@ -76,12 +72,16 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       await saveEvent(type, eventDate, phValue || undefined, weight);
     }
 
-    // Preserve time for next open ONLY if gewicht was the only type saved
+    // Preserve time ONLY if gewicht was the only type saved
     const onlyGewichtSaved = selectedTypes.size === 1 && selectedTypes.has('gewicht');
+    console.log('Saving, types:', Array.from(selectedTypes), 'onlyGewicht:', onlyGewichtSaved);
+    
     if (onlyGewichtSaved) {
       sessionStorage.setItem('preservedTime', selectedTime);
+      console.log('Preserved time:', selectedTime);
     } else {
       sessionStorage.removeItem('preservedTime');
+      console.log('Cleared preserved time');
     }
 
     onEventAdded();
