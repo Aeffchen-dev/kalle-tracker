@@ -153,11 +153,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Hide content instantly and start dots collapsing
+    // Hide content instantly, color body white, and start dots collapsing
+    document.body.style.backgroundColor = '';
     setAnimationPhase('dots-collapsing');
     // After dots collapse, reset everything
     setTimeout(() => {
-      document.body.style.backgroundColor = '';
       setAnimationPhase('idle');
       onClose();
     }, 1800);
