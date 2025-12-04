@@ -184,47 +184,47 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Irregular circle shapes like dalmatian spots */}
+            {/* Spots matching exact positions from index.html #dalmatian-spots */}
             {[
-              /* Large spots */
-              { cx: 11, cy: 11.5, baseSize: 6.5, seed: 0 },
-              { cx: 78, cy: 11.5, baseSize: 7, seed: 1 },
-              { cx: 42, cy: 22, baseSize: 7.5, seed: 2 },
-              { cx: 88.5, cy: 32, baseSize: 7, seed: 3 },
-              { cx: 15.5, cy: 45, baseSize: 6.75, seed: 4 },
-              { cx: 71, cy: 55.5, baseSize: 6.5, seed: 5 },
-              { cx: 28, cy: 71.5, baseSize: 7.25, seed: 6 },
-              { cx: 81.5, cy: 82, baseSize: 7.25, seed: 7 },
-              { cx: 52, cy: 88, baseSize: 6.5, seed: 8 },
-              /* Medium spots */
-              { cx: 23, cy: 14.5, baseSize: 5.25, seed: 9 },
-              { cx: 53.5, cy: 8.5, baseSize: 5, seed: 10 },
-              { cx: 92.5, cy: 25, baseSize: 5, seed: 11 },
-              { cx: 60, cy: 37.5, baseSize: 4.75, seed: 12 },
-              { cx: 35.5, cy: 50.5, baseSize: 5.25, seed: 13 },
-              { cx: 96.5, cy: 60.5, baseSize: 4.75, seed: 14 },
-              { cx: 55, cy: 75, baseSize: 5.25, seed: 15 },
-              { cx: 15.5, cy: 84.5, baseSize: 5, seed: 16 },
-              { cx: 89.5, cy: 97.5, baseSize: 4.75, seed: 17 },
-              /* Small spots */
-              { cx: 31.5, cy: 4, baseSize: 3.75, seed: 18 },
-              { cx: 64, cy: 17, baseSize: 3.75, seed: 19 },
-              { cx: 6.5, cy: 27, baseSize: 3.5, seed: 20 },
-              { cx: 46, cy: 40, baseSize: 4, seed: 21 },
-              { cx: 81.5, cy: 47, baseSize: 3.75, seed: 22 },
-              { cx: 42, cy: 64, baseSize: 3.75, seed: 23 },
-              { cx: 65.5, cy: 77, baseSize: 3.5, seed: 24 },
-              { cx: 32, cy: 87, baseSize: 4, seed: 25 },
-              { cx: 71.5, cy: 94, baseSize: 3.75, seed: 26 },
-              /* Extra small spots */
-              { cx: 94, cy: 11.2, baseSize: 2.25, seed: 27 },
-              { cx: 27.5, cy: 33, baseSize: 2.25, seed: 28 },
-              { cx: 17, cy: 56, baseSize: 2, seed: 29 },
-              { cx: 90.5, cy: 66.2, baseSize: 2.5, seed: 30 },
-              { cx: 60, cy: 81.2, baseSize: 2.25, seed: 31 },
+              /* Large spots - from index.html lines 44-52 */
+              { cx: 5, cy: 8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
+              { cx: 70, cy: 8, w: 6.4, h: 4.8, rotate: -6, seed: 1 },
+              { cx: 35, cy: 18, w: 5.6, h: 6.4, rotate: 45, seed: 2 },
+              { cx: 82, cy: 28, w: 5.2, h: 6, rotate: -12, seed: 3 },
+              { cx: 8, cy: 42, w: 6, h: 4.8, rotate: 30, seed: 4 },
+              { cx: 65, cy: 52, w: 4.8, h: 5.6, rotate: -20, seed: 5 },
+              { cx: 20, cy: 68, w: 6.4, h: 5.2, rotate: 15, seed: 6 },
+              { cx: 75, cy: 78, w: 5.2, h: 6.4, rotate: -35, seed: 7 },
+              { cx: 45, cy: 85, w: 5.6, h: 4.8, rotate: 25, seed: 8 },
+              /* Medium spots - from index.html lines 54-62 */
+              { cx: 18, cy: 12, w: 4, h: 4.4, rotate: -15, seed: 9 },
+              { cx: 48, cy: 6, w: 4.4, h: 3.6, rotate: 20, seed: 10 },
+              { cx: 88, cy: 22, w: 3.6, h: 4.4, rotate: -8, seed: 11 },
+              { cx: 55, cy: 35, w: 4, h: 3.6, rotate: 35, seed: 12 },
+              { cx: 30, cy: 48, w: 4.4, h: 4, rotate: -25, seed: 13 },
+              { cx: 92, cy: 58, w: 3.6, h: 4, rotate: 10, seed: 14 },
+              { cx: 50, cy: 72, w: 4, h: 4.4, rotate: -40, seed: 15 },
+              { cx: 10, cy: 82, w: 4.4, h: 3.6, rotate: 5, seed: 16 },
+              { cx: 85, cy: 95, w: 3.6, h: 4, rotate: -18, seed: 17 },
+              /* Small spots - from index.html lines 64-72 */
+              { cx: 28, cy: 2, w: 2.8, h: 3.2, rotate: 8, seed: 18 },
+              { cx: 60, cy: 15, w: 3.2, h: 2.8, rotate: -12, seed: 19 },
+              { cx: 3, cy: 25, w: 2.8, h: 2.8, rotate: 22, seed: 20 },
+              { cx: 42, cy: 38, w: 3.2, h: 3.2, rotate: -5, seed: 21 },
+              { cx: 78, cy: 45, w: 2.8, h: 3.2, rotate: 15, seed: 22 },
+              { cx: 38, cy: 62, w: 3.2, h: 2.8, rotate: -28, seed: 23 },
+              { cx: 62, cy: 75, w: 2.8, h: 2.8, rotate: 32, seed: 24 },
+              { cx: 28, cy: 85, w: 3.2, h: 3.2, rotate: -10, seed: 25 },
+              { cx: 68, cy: 92, w: 2.8, h: 3.2, rotate: 18, seed: 26 },
+              /* Extra small spots - from index.html lines 74-78 */
+              { cx: 92, cy: 10, w: 1.6, h: 2, rotate: 0, seed: 27 },
+              { cx: 25, cy: 32, w: 2, h: 1.6, rotate: 0, seed: 28 },
+              { cx: 15, cy: 55, w: 1.6, h: 1.6, rotate: 0, seed: 29 },
+              { cx: 88, cy: 65, w: 2, h: 2, rotate: 0, seed: 30 },
+              { cx: 58, cy: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
             ].map((spot) => {
-              // Create irregular circle using cubic bezier curves
-              const generateIrregularCircle = (scale: number) => {
+              // Create irregular ellipse using cubic bezier curves
+              const generateIrregularEllipse = (scaleX: number, scaleY: number) => {
                 // Pre-computed random-ish offsets per spot for organic look
                 const offsets = [
                   [0.92, 1.08, 0.95, 1.05, 0.88, 1.12, 0.97, 1.03],
@@ -233,30 +233,31 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   [1.05, 0.95, 1.1, 0.9, 0.92, 1.08, 0.97, 1.03],
                 ][spot.seed % 4];
                 
-                const r = scale;
-                const k = 0.552284749831; // Bezier approximation constant for circles
+                const rx = scaleX / 2;
+                const ry = scaleY / 2;
+                const k = 0.552284749831; // Bezier approximation constant
                 
-                const top = { x: spot.cx, y: spot.cy - r * offsets[0] };
-                const right = { x: spot.cx + r * offsets[1], y: spot.cy };
-                const bottom = { x: spot.cx, y: spot.cy + r * offsets[2] };
-                const left = { x: spot.cx - r * offsets[3], y: spot.cy };
+                const top = { x: spot.cx, y: spot.cy - ry * offsets[0] };
+                const right = { x: spot.cx + rx * offsets[1], y: spot.cy };
+                const bottom = { x: spot.cx, y: spot.cy + ry * offsets[2] };
+                const left = { x: spot.cx - rx * offsets[3], y: spot.cy };
                 
                 return `M ${top.x} ${top.y} 
-                  C ${top.x + r * k * offsets[4]} ${top.y}, ${right.x} ${right.y - r * k * offsets[5]}, ${right.x} ${right.y}
-                  C ${right.x} ${right.y + r * k * offsets[6]}, ${bottom.x + r * k * offsets[7]} ${bottom.y}, ${bottom.x} ${bottom.y}
-                  C ${bottom.x - r * k * offsets[0]} ${bottom.y}, ${left.x} ${left.y + r * k * offsets[1]}, ${left.x} ${left.y}
-                  C ${left.x} ${left.y - r * k * offsets[2]}, ${top.x - r * k * offsets[3]} ${top.y}, ${top.x} ${top.y} Z`;
+                  C ${top.x + rx * k * offsets[4]} ${top.y}, ${right.x} ${right.y - ry * k * offsets[5]}, ${right.x} ${right.y}
+                  C ${right.x} ${right.y + ry * k * offsets[6]}, ${bottom.x + rx * k * offsets[7]} ${bottom.y}, ${bottom.x} ${bottom.y}
+                  C ${bottom.x - rx * k * offsets[0]} ${bottom.y}, ${left.x} ${left.y + ry * k * offsets[1]}, ${left.x} ${left.y}
+                  C ${left.x} ${left.y - ry * k * offsets[2]}, ${top.x - rx * k * offsets[3]} ${top.y}, ${top.x} ${top.y} Z`;
               };
               
               const startPath = animationPhase === 'dots-collapsing' 
-                ? generateIrregularCircle(35) 
-                : generateIrregularCircle(spot.baseSize);
+                ? generateIrregularEllipse(70, 70) 
+                : generateIrregularEllipse(spot.w, spot.h);
               const endPath = animationPhase === 'dots-collapsing' 
-                ? generateIrregularCircle(spot.baseSize) 
-                : generateIrregularCircle(100);
+                ? generateIrregularEllipse(spot.w, spot.h) 
+                : generateIrregularEllipse(200, 200);
               
               return (
-                <path key={spot.seed} d={startPath}>
+                <path key={spot.seed} d={startPath} transform={`rotate(${spot.rotate} ${spot.cx} ${spot.cy})`}>
                   <animate
                     attributeName="d"
                     from={startPath}
