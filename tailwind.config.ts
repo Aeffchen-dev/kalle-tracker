@@ -60,6 +60,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        spot: "hsl(var(--spot-color))",
       },
       borderRadius: {
         lg: "var(--radius)",

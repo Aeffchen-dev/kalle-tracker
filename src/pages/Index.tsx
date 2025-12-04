@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
+import TagesplanOverlay from '@/components/TagesplanOverlay';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
@@ -15,6 +16,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showTagesplan, setShowTagesplan] = useState(false);
   const eventsRef = useRef<Event[]>([]);
 
   // Remove static loader on mount to prevent flicker
@@ -138,7 +140,12 @@ const Index = () => {
             />
           </span>
         </button>
-        <h1 className="text-[14px] uppercase">Food</h1>
+        <button 
+          onClick={() => setShowTagesplan(true)}
+          className="text-[14px] uppercase cursor-pointer"
+        >
+          Tagesplan
+        </button>
       </header>
 
       {/* Main countdown area */}
@@ -181,6 +188,12 @@ const Index = () => {
           loadEvents();
           setShowDogAnimation(true);
         }}
+      />
+
+      {/* Tagesplan overlay */}
+      <TagesplanOverlay 
+        isOpen={showTagesplan} 
+        onClose={() => setShowTagesplan(false)} 
       />
     </div>
   );
