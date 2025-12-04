@@ -14,9 +14,6 @@ interface EventSheetProps {
 const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
 const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 
-// Module-level: skip reset only when gewicht-only was saved
-let skipTimeReset = false;
-
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,12 +24,13 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   // Reset time to current when sheet opens (unless gewicht-only was last saved)
   useEffect(() => {
     if (open) {
-      if (!skipTimeReset) {
+      const skipReset = sessionStorage.getItem('skipTimeReset') === 'true';
+      if (!skipReset) {
         setSelectedTime(format(new Date(), 'HH:mm'));
       }
       setSelectedPh(null);
       setWeightValue('');
-      skipTimeReset = false;
+      sessionStorage.removeItem('skipTimeReset');
     }
   }, [open]);
 
@@ -69,7 +67,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     // Skip time reset on next open ONLY if gewicht was the only type saved
     // pipi, stuhlgang, phwert all reset the timer
     const onlyGewichtSaved = selectedTypes.size === 1 && selectedTypes.has('gewicht');
-    skipTimeReset = onlyGewichtSaved;
+    if (onlyGewichtSaved) {
+      sessionStorage.setItem('skipTimeReset', 'true');
+    }
 
     onEventAdded();
     onOpenChange(false);
