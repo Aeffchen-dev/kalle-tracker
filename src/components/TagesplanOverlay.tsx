@@ -136,14 +136,25 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
+      // Set body background immediately when opening (for iOS safe areas)
+      document.body.style.backgroundColor = 'hsl(var(--spot-color))';
       setAnimationPhase('expanding');
-      setTimeout(() => setAnimationPhase('visible'), 600);
+      // Show dots longer (1200ms) before showing solid background
+      setTimeout(() => setAnimationPhase('visible'), 1200);
     }
   }, [isOpen, animationPhase]);
+
+  // Reset body background when fully closed
+  useEffect(() => {
+    if (animationPhase === 'idle' && !isOpen) {
+      document.body.style.backgroundColor = '';
+    }
+  }, [animationPhase, isOpen]);
 
   const handleClose = () => {
     setAnimationPhase('collapsing');
     setTimeout(() => {
+      document.body.style.backgroundColor = '';
       setAnimationPhase('idle');
       onClose();
     }, 600);
@@ -179,14 +190,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   attributeName="rx"
                   from={animationPhase === 'collapsing' ? '200' : String(spot.rx)}
                   to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
-                  dur="0.6s"
+                  dur={animationPhase === 'expanding' ? '1.2s' : '0.6s'}
                   fill="freeze"
                 />
                 <animate
                   attributeName="ry"
                   from={animationPhase === 'collapsing' ? '200' : String(spot.ry)}
                   to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
-                  dur="0.6s"
+                  dur={animationPhase === 'expanding' ? '1.2s' : '0.6s'}
                   fill="freeze"
                 />
               </ellipse>
