@@ -12,6 +12,7 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [calendarKey, setCalendarKey] = useState(0);
   
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
   const [isLoading, setIsLoading] = useState(true);
@@ -158,7 +159,7 @@ const Index = () => {
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
-      {showCalendar && !showTagesplan && <CalendarView eventSheetOpen={eventSheetOpen} />}
+      {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} />}
 
       {/* Dog animation */}
       {showDogAnimation && (
@@ -178,6 +179,8 @@ const Index = () => {
         onEventAdded={() => {
           loadEvents();
           setShowDogAnimation(true);
+          // Force CalendarView remount to ensure drawer is visible
+          setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
       />
 
