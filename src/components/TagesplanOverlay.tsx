@@ -219,16 +219,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         />
       </svg>
 
-      {/* Solid brown background that fades in */}
+      {/* Solid brown background */}
       <div
-        className={`absolute inset-0 bg-spot transition-opacity duration-500 pointer-events-auto ${
+        className={`absolute inset-0 bg-spot pointer-events-auto ${
           animationPhase === 'visible' ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
       {/* Content */}
       <div
-        className={`absolute inset-0 flex flex-col pointer-events-auto transition-opacity duration-300 ${
+        className={`absolute inset-0 flex flex-col pointer-events-auto ${
           animationPhase === 'visible' ? 'opacity-100' : 'opacity-0'
         }`}
       >
