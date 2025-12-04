@@ -4,10 +4,12 @@ import CalendarView from '@/components/CalendarView';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
+import dogOnBike from '@/assets/dog-on-bike.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
+  const [showDogAnimation, setShowDogAnimation] = useState(false);
   const eventsRef = useRef<Event[]>([]);
 
   const calculateTimeDisplay = () => {
@@ -111,11 +113,25 @@ const Index = () => {
       {/* Always visible calendar sheet */}
       <CalendarView />
 
+      {/* Dog animation */}
+      {showDogAnimation && (
+        <img
+          src={dogOnBike}
+          alt="Dog on bike"
+          className="fixed z-50 h-[120px] w-auto pointer-events-none animate-dog-ride"
+          style={{ bottom: '200px' }}
+          onAnimationEnd={() => setShowDogAnimation(false)}
+        />
+      )}
+
       {/* Event sheet opens on top */}
       <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
-        onEventAdded={loadEvents}
+        onEventAdded={() => {
+          loadEvents();
+          setShowDogAnimation(true);
+        }}
       />
     </div>
   );
