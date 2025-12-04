@@ -204,7 +204,7 @@ const CalendarView = () => {
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
     >
-      <DrawerContent className="bg-black border-black flex flex-col h-full">
+      <DrawerContent className="bg-black border-black flex flex-col h-full pb-[env(safe-area-inset-bottom)]">
         <DrawerHeader 
           className="sticky top-0 bg-black z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
