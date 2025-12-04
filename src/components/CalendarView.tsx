@@ -251,7 +251,7 @@ const CalendarView = () => {
                     onClick={(e) => { e.stopPropagation(); setShowTrends(true); }} 
                     className="w-6 h-6 flex items-center justify-center"
                   >
-                    <TrendingUp size={20} className="text-white/60" />
+                    <TrendingUp size={20} className="text-white" />
                   </button>
                 </div>
               </>
