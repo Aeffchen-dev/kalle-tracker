@@ -338,11 +338,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               {/* Schedule Table */}
               <div className="overflow-x-auto -mx-4">
                 <div className="pl-4 min-w-fit">
-                <table className="w-full text-[12px] min-w-[700px] border-y border-white/30">
+                <table className="w-full text-[12px] min-w-[700px] border-y border-l border-white/30 rounded-l-[16px] overflow-hidden">
                   <thead>
                     <tr className="border-b border-white/30">
                       {weekSchedule.map((day, index) => (
-                        <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${index === 0 ? 'border-l border-white/30' : ''}`}>
+                        <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${index === 0 ? 'rounded-tl-[16px]' : ''}`}>
                           <div className="text-white">{day.day}</div>
                           <div className="text-white/60 font-normal">{day.type}</div>
                         </th>
@@ -357,7 +357,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           return (
                             <td
                               key={dayIndex}
-                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${dayIndex === 0 ? 'border-l border-white/30' : ''} ${
+                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${dayIndex === 0 && slotIndex === 4 ? 'rounded-bl-[16px]' : ''} ${
                                 slot?.person === 'niklas'
                                   ? 'bg-blue-500/20'
                                   : slot?.person === 'jana'
