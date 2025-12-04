@@ -26,25 +26,56 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
   const [showTrends, setShowTrends] = useState(false);
   const snapRef = useRef<SnapPoint | null>(0.2);
+  const isKeyboardOpen = useRef(false);
   
-  // Preserve snap state when EventSheet opens/closes
+  // Custom setSnap that also updates ref
+  const updateSnap = (newSnap: SnapPoint | null) => {
+    snapRef.current = newSnap;
+    setSnap(newSnap);
+  };
+  
+  // Detect keyboard open/close via visualViewport and preserve snap state
   useEffect(() => {
-    if (eventSheetOpen) {
-      // Store current snap when EventSheet opens
-      snapRef.current = snap;
-    } else {
-      // Restore snap when EventSheet closes (with slight delay to let drawer settle)
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    
+    const initialHeight = viewport.height;
+    
+    const handleResize = () => {
+      const heightDiff = initialHeight - viewport.height;
+      const keyboardNowOpen = heightDiff > 150; // Keyboard is likely open if viewport shrunk significantly
+      
+      if (keyboardNowOpen && !isKeyboardOpen.current) {
+        // Keyboard just opened - store current snap
+        isKeyboardOpen.current = true;
+      } else if (!keyboardNowOpen && isKeyboardOpen.current) {
+        // Keyboard just closed - restore snap state
+        isKeyboardOpen.current = false;
+        const savedSnap = snapRef.current;
+        if (savedSnap !== null) {
+          setTimeout(() => setSnap(savedSnap), 100);
+        }
+      }
+    };
+    
+    viewport.addEventListener('resize', handleResize);
+    return () => viewport.removeEventListener('resize', handleResize);
+  }, []);
+  
+  // Also preserve snap state when EventSheet opens/closes
+  useEffect(() => {
+    if (!eventSheetOpen) {
+      // Restore snap when EventSheet closes
       const savedSnap = snapRef.current;
-      if (savedSnap !== null && savedSnap !== snap) {
-        setTimeout(() => setSnap(savedSnap), 50);
+      if (savedSnap !== null) {
+        setTimeout(() => setSnap(savedSnap), 100);
       }
     }
   }, [eventSheetOpen]);
   
   const toggleSnapPoint = () => {
     const newSnap = snap === 0.2 ? 0.9 : 0.2;
-    snapRef.current = newSnap;
-    setSnap(newSnap);
+    updateSnap(newSnap);
   };
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
@@ -227,8 +258,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   // Handle clicks outside the drawer to snap to default
   const handleOutsideClick = () => {
     if (snap === 0.9) {
-      snapRef.current = 0.2;
-      setSnap(0.2);
+      updateSnap(0.2);
     }
   };
 
