@@ -94,17 +94,18 @@ const Index = () => {
       </header>
 
       {/* Main countdown area */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh]">
-        <div className="text-[72px] md:text-[96px] leading-none">
-          {timeDisplay}
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
+        <div className="w-full bg-white/20 backdrop-blur-[16px] rounded-[24px] flex flex-col items-center justify-center py-[90px]">
+          <div className="text-[72px] md:text-[96px] leading-none">
+            {timeDisplay}
+          </div>
+          <button
+            onClick={() => setEventSheetOpen(true)}
+            className="mt-4 text-[14px] h-12 px-8 rounded-[999px] bg-black text-white flex items-center justify-center"
+          >
+            Eintrag hinzufügen
+          </button>
         </div>
-        <button
-          onClick={() => setEventSheetOpen(true)}
-          className="mt-4 text-[14px] h-12 px-8 rounded-[999px] bg-white/20 backdrop-blur-[16px] flex items-center justify-center"
-          style={{ boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.16)' }}
-        >
-          Eintrag hinzufügen
-        </button>
       </main>
 
       {/* Always visible calendar sheet */}
