@@ -101,7 +101,7 @@ const Index = () => {
         <button
           onClick={() => setEventSheetOpen(true)}
           className="mt-4 text-[14px] h-12 px-8 rounded-[999px] bg-white/20 backdrop-blur-[16px] flex items-center justify-center"
-          style={{ boxShadow: '0 0 16px 0 rgba(0, 0, 0, 0.16)' }}
+          style={{ boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.16)' }}
         >
           Eintrag hinzufügen
         </button>
