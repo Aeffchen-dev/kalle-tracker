@@ -233,6 +233,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   >
                     <animate
                       attributeName="rx"
+                      begin="0s"
                       from={animationPhase === 'dots-collapsing' ? String(spot.w * 15) : String(spot.w)}
                       to={animationPhase === 'dots-collapsing' ? String(spot.w) : String(spot.w * 15)}
                       dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
@@ -243,6 +244,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     />
                     <animate
                       attributeName="ry"
+                      begin="0s"
                       from={animationPhase === 'dots-collapsing' ? String(spot.h * 15) : String(spot.h)}
                       to={animationPhase === 'dots-collapsing' ? String(spot.h) : String(spot.h * 15)}
                       dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
