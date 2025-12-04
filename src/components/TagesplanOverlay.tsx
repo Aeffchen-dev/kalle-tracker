@@ -231,7 +231,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 height: `${spot.h}vw`,
                 backgroundColor: '#5c4033',
                 borderRadius: radiusPatterns[spot.seed % 4],
-                transform: `rotate(${spot.rotate}deg)`,
+                transform: `translate(8px, 8px) rotate(${spot.rotate}deg)`,
                 transformOrigin: 'center center',
                 '--spot-rotate': `${spot.rotate}deg`,
               } as React.CSSProperties}
