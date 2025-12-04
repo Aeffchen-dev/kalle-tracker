@@ -69,23 +69,36 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Dalmatian spots that expand */}
-            <ellipse cx="30" cy="35" rx="16" ry="20" className={`transition-all duration-500 ${animationPhase === 'expanding' || animationPhase === 'visible' ? 'origin-center' : ''}`}>
-              <animate
-                attributeName="rx"
-                from={animationPhase === 'collapsing' ? '200' : '16'}
-                to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : '16'}
-                dur="0.6s"
-                fill="freeze"
-              />
-              <animate
-                attributeName="ry"
-                from={animationPhase === 'collapsing' ? '200' : '20'}
-                to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : '20'}
-                dur="0.6s"
-                fill="freeze"
-              />
-            </ellipse>
+            {/* All dalmatian spots that expand together */}
+            {[
+              { cx: 30, cy: 35, rx: 16, ry: 20 },
+              { cx: 150, cy: 25, rx: 20, ry: 15 },
+              { cx: 90, cy: 80, rx: 24, ry: 18 },
+              { cx: 170, cy: 100, rx: 14, ry: 22 },
+              { cx: 50, cy: 130, rx: 18, ry: 14 },
+              { cx: 120, cy: 150, rx: 22, ry: 16 },
+              { cx: 25, cy: 180, rx: 15, ry: 12 },
+              { cx: 180, cy: 170, rx: 12, ry: 18 },
+              { cx: 75, cy: 20, rx: 10, ry: 14 },
+              { cx: 140, cy: 75, rx: 12, ry: 10 },
+            ].map((spot, i) => (
+              <ellipse key={i} cx={spot.cx} cy={spot.cy}>
+                <animate
+                  attributeName="rx"
+                  from={animationPhase === 'collapsing' ? '200' : String(spot.rx)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
+                  dur="0.6s"
+                  fill="freeze"
+                />
+                <animate
+                  attributeName="ry"
+                  from={animationPhase === 'collapsing' ? '200' : String(spot.ry)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
+                  dur="0.6s"
+                  fill="freeze"
+                />
+              </ellipse>
+            ))}
           </clipPath>
         </defs>
         <rect
@@ -134,7 +147,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   >
                     <span className="text-[14px] text-white w-[80px] flex-shrink-0">{ingredient.quantity}</span>
                     <div className="flex-1">
-                      <span className="text-[14px] text-white/60 underline">{ingredient.name}</span>
+                      <span className="text-[14px] text-white/60">{ingredient.name}</span>
                       {ingredient.description && (
                         <p className="text-[14px] text-white/60 mt-2 whitespace-pre-line">{ingredient.description}</p>
                       )}
