@@ -49,16 +49,16 @@ const Index = () => {
     calculateTimeDisplay();
   };
 
-  // Loading animation sequence
+  // Loading animation sequence (min 1s loading)
   useEffect(() => {
     const timer1 = setTimeout(() => {
       setIsLoading(false);
       setShowCard(true);
-    }, 1500);
+    }, 1000);
 
     const timer2 = setTimeout(() => {
       setShowCalendar(true);
-    }, 2100);
+    }, 1600);
 
     return () => {
       clearTimeout(timer1);
