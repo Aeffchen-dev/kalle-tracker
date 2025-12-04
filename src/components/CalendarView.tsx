@@ -269,7 +269,7 @@ const CalendarView = () => {
             )}
           </div>
         </DrawerHeader>
-        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0 pb-[env(safe-area-inset-bottom)]">
+        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           {showTrends ? (
             <TrendAnalysis events={events} />
           ) : (
