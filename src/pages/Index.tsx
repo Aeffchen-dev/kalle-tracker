@@ -5,11 +5,15 @@ import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
 import dogOnBike from '@/assets/dog-on-bike.png';
+import dogLoading from '@/assets/dog-loading.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showCard, setShowCard] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   const eventsRef = useRef<Event[]>([]);
 
   const calculateTimeDisplay = () => {
@@ -44,6 +48,23 @@ const Index = () => {
     eventsRef.current = fetchedEvents;
     calculateTimeDisplay();
   };
+
+  // Loading animation sequence
+  useEffect(() => {
+    const timer1 = setTimeout(() => {
+      setIsLoading(false);
+      setShowCard(true);
+    }, 1500);
+
+    const timer2 = setTimeout(() => {
+      setShowCalendar(true);
+    }, 2100);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   // Initial load and realtime subscription
   useEffect(() => {
@@ -80,8 +101,19 @@ const Index = () => {
   return (
     <div className="h-dvh flex flex-col bg-transparent relative overflow-hidden">
       
+      {/* Loading state */}
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <img
+            src={dogLoading}
+            alt="Loading..."
+            className="h-[120px] w-auto animate-gentle-pulse"
+          />
+        </div>
+      )}
+
       {/* Header */}
-      <header className="p-4 flex justify-between items-center relative z-10">
+      <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <span className="text-[14px] uppercase flex items-center">
           Kalle
           <span className="relative flex items-center ml-1">
@@ -97,7 +129,7 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
-        <div className="w-full bg-white/15 backdrop-blur-[4px] rounded-[16px] border border-white/40 flex flex-col items-center justify-center py-12">
+        <div className={`w-full bg-white/15 backdrop-blur-[4px] rounded-[16px] border border-white/40 flex flex-col items-center justify-center py-12 ${showCard ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-[56px] md:text-[72px] leading-none">
             {timeDisplay}
           </div>
@@ -111,7 +143,7 @@ const Index = () => {
       </main>
 
       {/* Always visible calendar sheet */}
-      <CalendarView />
+      {showCalendar && <CalendarView />}
 
       {/* Dog animation */}
       {showDogAnimation && (
