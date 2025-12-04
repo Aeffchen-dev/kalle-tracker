@@ -39,7 +39,7 @@
       }
     </style>
     <!-- Persistent spots - outside #root so they stay when React loads -->
-    <div id="dalmatian-spots" style="position: fixed; inset: 0; pointer-events: none; z-index: 0;">
+    <div id="dalmatian-spots" style="position: fixed; inset: 0; pointer-events: none; z-index: 0; transform: translateZ(0); backface-visibility: hidden;">
       <!-- Large spots -->
       <div style="position: absolute; width: 48px; height: 56px; background: #5c4033; top: 8%; left: 5%; transform: rotate(12deg); border-radius: 60% 40% 55% 45% / 55% 60% 40% 45%;"></div>
       <div style="position: absolute; width: 64px; height: 48px; background: #5c4033; top: 8%; left: 70%; transform: rotate(-6deg); border-radius: 45% 55% 40% 60% / 50% 45% 55% 50%;"></div>
