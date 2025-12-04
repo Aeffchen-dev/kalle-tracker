@@ -124,7 +124,10 @@ const Index = () => {
 
       {/* Header */}
       <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
-        <span className="text-[14px] uppercase flex items-center">
+        <button 
+          onClick={() => setShowDogAnimation(true)}
+          className="text-[14px] uppercase flex items-center cursor-pointer"
+        >
           Kalle
           <span className="relative flex items-center ml-1">
             <PawPrint 
@@ -133,7 +136,7 @@ const Index = () => {
               style={{ transform: 'rotate(10deg)' }}
             />
           </span>
-        </span>
+        </button>
         <h1 className="text-[14px] uppercase">Tracker</h1>
       </header>
 
