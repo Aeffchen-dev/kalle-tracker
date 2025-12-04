@@ -4,7 +4,6 @@ import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { PawPrint } from 'lucide-react';
 import dogInCar from '@/assets/dog-in-car.png';
 const dogLoading = '/dog-loading.png';
 
@@ -129,16 +128,10 @@ const Index = () => {
       <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
           onClick={() => setShowDogAnimation(true)}
-          className="text-[14px] uppercase flex items-center cursor-pointer"
+          className="text-[20px] cursor-pointer"
+          style={{ transform: 'rotate(-15deg)' }}
         >
-          Kalle
-          <span className="relative flex items-center ml-1">
-            <PawPrint 
-              size={14} 
-              className="fill-black"
-              style={{ transform: 'rotate(10deg)' }}
-            />
-          </span>
+          🐕
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
