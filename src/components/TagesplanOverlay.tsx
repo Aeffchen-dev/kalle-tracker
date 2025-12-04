@@ -132,7 +132,7 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing' | 'dots-hidden'>('idle');
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -156,10 +156,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     // Hide content instantly, color body white, and start dots collapsing
     document.body.style.backgroundColor = '';
     setAnimationPhase('dots-collapsing');
-    // After dots collapse, reset everything
+    // After dots collapse, hide them
     setTimeout(() => {
-      setAnimationPhase('idle');
-      onClose();
+      setAnimationPhase('dots-hidden');
+      // Small delay then reset
+      setTimeout(() => {
+        setAnimationPhase('idle');
+        onClose();
+      }, 50);
     }, 1800);
   };
 
@@ -169,7 +173,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Animated dots background */}
       <svg
-        className="absolute inset-0 w-full h-full pointer-events-auto"
+        className={`absolute inset-0 w-full h-full pointer-events-auto ${animationPhase === 'dots-hidden' ? 'hidden' : ''}`}
         viewBox="0 0 200 200"
         preserveAspectRatio="xMidYMid slice"
       >
