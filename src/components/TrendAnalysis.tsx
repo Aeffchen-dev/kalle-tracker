@@ -1,6 +1,6 @@
 import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes } from 'date-fns';
+import { format, differenceInMinutes, subDays, isAfter } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 
@@ -308,49 +308,108 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     return intervals;
   }, [events]);
 
+  // Filter events from last 7 days for average calculations
+  const sevenDaysAgo = useMemo(() => subDays(new Date(), 7), []);
+
   const weightStats = useMemo(() => {
     if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null };
-    const values = weightData.map(d => d.value);
+    const allValues = weightData.map(d => d.value);
+    
+    // Filter weight events from last 7 days for average
+    const last7DaysWeights = events
+      .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo))
+      .map(e => Number(e.weight_value));
+    
+    const avg = last7DaysWeights.length > 0 
+      ? Math.round(last7DaysWeights.reduce((a, b) => a + b, 0) / last7DaysWeights.length * 10) / 10
+      : null;
+    
     return {
-      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
-      min: Math.min(...values),
-      max: Math.max(...values),
-      latest: values[values.length - 1],
+      avg,
+      min: Math.min(...allValues),
+      max: Math.max(...allValues),
+      latest: allValues[allValues.length - 1],
     };
-  }, [weightData]);
+  }, [weightData, events, sevenDaysAgo]);
 
   const phStats = useMemo(() => {
     if (phData.length === 0) return { avg: null, min: null, max: null, latest: null };
-    const values = phData.map(d => d.value);
+    const allValues = phData.map(d => d.value);
+    
+    // Filter pH events from last 7 days for average
+    const last7DaysPh = events
+      .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo))
+      .map(e => parseFloat(String(e.ph_value).replace(',', '.')));
+    
+    const avg = last7DaysPh.length > 0 
+      ? Math.round(last7DaysPh.reduce((a, b) => a + b, 0) / last7DaysPh.length * 10) / 10
+      : null;
+    
     return {
-      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
-      min: Math.min(...values),
-      max: Math.max(...values),
-      latest: values[values.length - 1],
+      avg,
+      min: Math.min(...allValues),
+      max: Math.max(...allValues),
+      latest: allValues[allValues.length - 1],
     };
-  }, [phData]);
+  }, [phData, events, sevenDaysAgo]);
 
   const pipiStats = useMemo(() => {
     if (pipiIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
-    const values = pipiIntervalData.map(d => d.value);
+    const allValues = pipiIntervalData.map(d => d.value);
+    
+    // Calculate intervals only from last 7 days for average
+    const pipiEvents = events
+      .filter(e => e.type === 'pipi')
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo))
+      .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    
+    const last7DaysIntervals: number[] = [];
+    for (let i = 1; i < pipiEvents.length; i++) {
+      const diff = differenceInMinutes(new Date(pipiEvents[i].time), new Date(pipiEvents[i - 1].time));
+      last7DaysIntervals.push(Math.round(diff / 60 * 10) / 10);
+    }
+    
+    const avg = last7DaysIntervals.length > 0 
+      ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
+      : null;
+    
     return {
-      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
-      min: Math.min(...values),
-      max: Math.max(...values),
-      latest: values[values.length - 1],
+      avg,
+      min: Math.min(...allValues),
+      max: Math.max(...allValues),
+      latest: allValues[allValues.length - 1],
     };
-  }, [pipiIntervalData]);
+  }, [pipiIntervalData, events, sevenDaysAgo]);
 
   const stuhlgangStats = useMemo(() => {
     if (stuhlgangIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
-    const values = stuhlgangIntervalData.map(d => d.value);
+    const allValues = stuhlgangIntervalData.map(d => d.value);
+    
+    // Calculate intervals only from last 7 days for average
+    const stuhlgangEvents = events
+      .filter(e => e.type === 'stuhlgang')
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo))
+      .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    
+    const last7DaysIntervals: number[] = [];
+    for (let i = 1; i < stuhlgangEvents.length; i++) {
+      const diff = differenceInMinutes(new Date(stuhlgangEvents[i].time), new Date(stuhlgangEvents[i - 1].time));
+      last7DaysIntervals.push(Math.round(diff / 60 * 10) / 10);
+    }
+    
+    const avg = last7DaysIntervals.length > 0 
+      ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
+      : null;
+    
     return {
-      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
-      min: Math.min(...values),
-      max: Math.max(...values),
-      latest: values[values.length - 1],
+      avg,
+      min: Math.min(...allValues),
+      max: Math.max(...allValues),
+      latest: allValues[allValues.length - 1],
     };
-  }, [stuhlgangIntervalData]);
+  }, [stuhlgangIntervalData, events, sevenDaysAgo]);
 
   return (
     <div className="pb-20 space-y-6">
