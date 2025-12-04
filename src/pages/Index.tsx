@@ -6,13 +6,13 @@ import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
-import dalmatianTail from '@/assets/dalmatian-tail.png';
+
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
-  const [tailWagging, setTailWagging] = useState(false);
+  
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
@@ -121,16 +121,9 @@ const Index = () => {
         <button 
           onClick={() => {
             setShowDogAnimation(true);
-            setTailWagging(true);
           }}
           className="cursor-pointer -mt-2 -ml-[10px] relative"
         >
-          <img 
-            src={dalmatianTail}
-            alt=""
-            className={`absolute top-[22px] left-[5px] h-[36px] w-auto origin-bottom-right rotate-[10deg] z-20 ${tailWagging ? 'animate-tail-wag' : ''}`}
-            onAnimationEnd={() => setTailWagging(false)}
-          />
           <img 
             src={dalmatianHeader} 
             alt="Kalle" 
