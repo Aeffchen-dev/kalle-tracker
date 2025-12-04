@@ -11,10 +11,18 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const eventsRef = useRef<Event[]>([]);
+
+  // Preload loading image
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.src = dogLoading;
+  }, []);
 
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
@@ -49,8 +57,10 @@ const Index = () => {
     calculateTimeDisplay();
   };
 
-  // Loading animation sequence (min 1s loading)
+  // Loading animation sequence (min 1s loading after image loads)
   useEffect(() => {
+    if (!imageLoaded) return;
+    
     const timer1 = setTimeout(() => {
       setIsLoading(false);
       setShowCard(true);
@@ -64,7 +74,7 @@ const Index = () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, []);
+  }, [imageLoaded]);
 
   // Initial load and realtime subscription
   useEffect(() => {
@@ -102,7 +112,7 @@ const Index = () => {
     <div className="h-dvh flex flex-col bg-transparent relative overflow-hidden">
       
       {/* Loading state */}
-      {isLoading && (
+      {isLoading && imageLoaded && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <img
             src={dogLoading}
