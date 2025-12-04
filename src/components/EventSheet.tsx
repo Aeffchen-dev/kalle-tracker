@@ -182,13 +182,15 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <input
-              type="time"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-              className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:invert"
-              style={{ width: 'calc(100% - 28px)', lineHeight: '48px' }}
-            />
+            <div className="flex items-center gap-2">
+              <input
+                type="time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:invert flex-1"
+              />
+              <span className="text-[14px] text-white">Uhr</span>
+            </div>
           </div>
 
           <div className="pb-4">
