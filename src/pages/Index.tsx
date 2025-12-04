@@ -138,7 +138,7 @@ const Index = () => {
             />
           </span>
         </button>
-        <h1 className="text-[14px] uppercase">Tracker</h1>
+        <h1 className="text-[14px] uppercase">Food</h1>
       </header>
 
       {/* Main countdown area */}
