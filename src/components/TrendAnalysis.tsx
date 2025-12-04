@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -12,6 +12,24 @@ interface ChartData {
   date: string;
   value: number;
 }
+
+const useContainerWidth = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (containerRef.current) {
+        setWidth(containerRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  return { containerRef, width };
+};
 
 const StatCard = memo(({ 
   emoji, 
@@ -43,8 +61,8 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const WeightChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: number | null; color: string }) => {
-  if (data.length < 2) {
+const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
+  if (data.length < 2 || width === 0) {
     return (
       <div className="h-[180px] flex items-center justify-center">
         <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
@@ -58,10 +76,10 @@ const WeightChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgVal
   return (
     <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
       <AreaChart 
-        width={340} 
+        width={width} 
         height={180} 
         data={data} 
-        margin={{ top: 10, right: 10, bottom: 25, left: 5 }}
+        margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
       >
         <defs>
           <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -108,8 +126,8 @@ const WeightChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgVal
 
 WeightChart.displayName = 'WeightChart';
 
-const PhChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: number | null; color: string }) => {
-  if (data.length < 2) {
+const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
+  if (data.length < 2 || width === 0) {
     return (
       <div className="h-[180px] flex items-center justify-center">
         <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
@@ -123,10 +141,10 @@ const PhChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: 
   return (
     <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
       <LineChart 
-        width={340} 
+        width={width} 
         height={180} 
         data={data} 
-        margin={{ top: 10, right: 10, bottom: 25, left: 5 }}
+        margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
       >
         <XAxis 
           dataKey="date" 
@@ -167,6 +185,8 @@ const PhChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: 
 PhChart.displayName = 'PhChart';
 
 const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
+  const { containerRef, width } = useContainerWidth();
+  
   const weightData = useMemo(() => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -302,14 +322,14 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div>
+      <div ref={containerRef}>
         <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
-          <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" />
+          <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" width={width} />
         </div>
         <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
-          <PhChart data={phData} avgValue={phStats.avg} color="#FFD700" />
+          <PhChart data={phData} avgValue={phStats.avg} color="#FFD700" width={width} />
         </div>
       </div>
     </div>
