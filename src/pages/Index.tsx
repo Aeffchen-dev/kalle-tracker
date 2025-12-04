@@ -139,7 +139,7 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
-        <div className={`w-full bg-white/15 backdrop-blur-[4px] rounded-[16px] border border-white/40 flex flex-col items-center justify-center py-12 ${showCard ? 'animate-fade-in' : 'opacity-0'}`}>
+        <div className={`w-full bg-white/15 backdrop-blur-[4px] rounded-[16px] border border-white/40 flex flex-col items-center justify-center py-12 ${showCard ? 'animate-fade-in-up' : 'opacity-0'}`}>
           <div className="text-[56px] md:text-[72px] leading-none">
             {timeDisplay}
           </div>

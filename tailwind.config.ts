@@ -99,12 +99,14 @@ export default {
             transform: "scale(1.08)",
           },
         },
-        "fade-in": {
+        "fade-in-up": {
           "0%": {
             opacity: "0",
+            transform: "translateY(20px)",
           },
           "100%": {
             opacity: "1",
+            transform: "translateY(0)",
           },
         },
       },
@@ -113,7 +115,7 @@ export default {
         "accordion-up": "accordion-up 0.2s ease-out",
         "dog-ride": "dog-ride 3s ease-in-out forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
-        "fade-in": "fade-in 0.6s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.6s ease-out forwards",
       },
     },
   },
