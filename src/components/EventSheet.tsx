@@ -11,15 +11,20 @@ interface EventSheetProps {
   onEventAdded: () => void;
 }
 
+const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
+const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
+
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
+  const [selectedPh, setSelectedPh] = useState<string | null>(null);
 
   // Reset time to current when sheet opens
   useEffect(() => {
     if (open) {
       setSelectedTime(format(new Date(), 'HH:mm'));
+      setSelectedPh(null);
     }
   }, [open]);
 
@@ -47,7 +52,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     // Save an event for each selected type
     for (const type of selectedTypes) {
-      await saveEvent(type, eventDate);
+      // Only include pH value for pipi type
+      const phValue = type === 'pipi' ? selectedPh : undefined;
+      await saveEvent(type, eventDate, phValue || undefined);
     }
 
     onEventAdded();
@@ -55,6 +62,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     // Reset selections
     setSelectedTypes(new Set());
+    setSelectedPh(null);
     setIsSubmitting(false);
   };
 
@@ -89,6 +97,45 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               <span>Stuhlgang</span>
             </button>
           </div>
+
+          {/* pH Value Selection - only show when pipi is selected */}
+          {selectedTypes.has('pipi') && (
+            <div className="flex flex-col gap-2">
+              <span className="text-[14px] text-white">PH-Wert</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2">
+                  {PH_VALUES_ROW1.map((ph) => (
+                    <button
+                      key={ph}
+                      onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
+                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                        selectedPh === ph
+                          ? 'bg-white text-black border border-white'
+                          : 'bg-transparent text-white hover:text-white border border-white/30'
+                      }`}
+                    >
+                      {ph}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  {PH_VALUES_ROW2.map((ph) => (
+                    <button
+                      key={ph}
+                      onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
+                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                        selectedPh === ph
+                          ? 'bg-white text-black border border-white'
+                          : 'bg-transparent text-white hover:text-white border border-white/30'
+                      }`}
+                    >
+                      {ph}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
