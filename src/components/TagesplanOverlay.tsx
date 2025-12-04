@@ -228,17 +228,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.33 0 0.67 1' : '0.22 0.61 0.36 1'}
+                  keySplines="0.4 0 0.2 1"
                 />
                 <animate
                   attributeName="ry"
                   from={animationPhase === 'dots-collapsing' ? '35' : String(spot.ry)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.33 0 0.67 1' : '0.22 0.61 0.36 1'}
+                  keySplines="0.35 0 0.25 1"
                 />
               </ellipse>
             ))}
