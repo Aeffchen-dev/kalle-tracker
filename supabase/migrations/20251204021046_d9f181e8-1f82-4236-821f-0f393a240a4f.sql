@@ -1,0 +1,1 @@
+ALTER TABLE public.events ADD COLUMN ph_value text;
