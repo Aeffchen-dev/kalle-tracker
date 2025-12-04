@@ -30,6 +30,7 @@ const CalendarView = () => {
   const swipeDecided = useRef<boolean>(false);
   const touchJustEnded = useRef<boolean>(false);
   const wasActiveOnTouchStart = useRef<boolean>(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const loadEvents = async () => {
     const fetchedEvents = await getEvents();
@@ -40,6 +41,11 @@ const CalendarView = () => {
     loadEvents();
     setSelectedDate(new Date());
   }, []);
+
+  // Scroll to top when switching views
+  useEffect(() => {
+    scrollContainerRef.current?.scrollTo({ top: 0 });
+  }, [showTrends]);
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -261,7 +267,7 @@ const CalendarView = () => {
             )}
           </div>
         </DrawerHeader>
-        <div className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
+        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
           {showTrends ? (
             <TrendAnalysis events={events} />
           ) : (
