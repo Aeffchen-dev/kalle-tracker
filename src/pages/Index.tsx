@@ -9,7 +9,7 @@ import dogInCar from '@/assets/dog-in-car.png';
 import dogLoading from '@/assets/dog-loading.png';
 
 const Index = () => {
-  const [timeDisplay, setTimeDisplay] = useState('00h00m00s');
+  const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
@@ -30,7 +30,7 @@ const Index = () => {
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
     if (eventList.length === 0) {
-      setTimeDisplay('00h00m00s');
+      setTimeDisplay('00h 00m 00s');
       return;
     }
 
@@ -44,14 +44,14 @@ const Index = () => {
     const elapsed = now.getTime() - lastEventTime.getTime();
     
     if (elapsed <= 0) {
-      setTimeDisplay('00h00m00s');
+      setTimeDisplay('00h 00m 00s');
       return;
     }
     
     const hours = Math.floor(elapsed / (1000 * 60 * 60));
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-    setTimeDisplay(`${hours.toString().padStart(2, '0')}h${minutes.toString().padStart(2, '0')}m${seconds.toString().padStart(2, '0')}s`);
+    setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`);
   };
 
   const loadEvents = async () => {
