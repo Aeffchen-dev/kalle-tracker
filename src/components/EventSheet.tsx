@@ -199,8 +199,20 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   inputMode="decimal"
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
+                  onBlur={() => {
+                    // Reset zoom and scroll position after mobile keyboard closes
+                    window.scrollTo(0, 0);
+                    // Reset viewport zoom on iOS
+                    const viewport = document.querySelector('meta[name="viewport"]');
+                    if (viewport) {
+                      viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+                      setTimeout(() => {
+                        viewport.setAttribute('content', 'width=device-width, initial-scale=1');
+                      }, 100);
+                    }
+                  }}
                   placeholder="32"
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="bg-transparent text-white text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="text-[14px] text-white ml-4">kg</span>
               </div>
