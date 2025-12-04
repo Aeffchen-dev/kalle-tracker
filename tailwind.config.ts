@@ -95,7 +95,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "dog-ride": "dog-ride 500ms ease-in-out forwards",
+        "dog-ride": "dog-ride 1.2s ease forwards",
       },
     },
   },
