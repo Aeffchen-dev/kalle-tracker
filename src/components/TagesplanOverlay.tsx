@@ -147,9 +147,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   >
                     <span className="text-[14px] text-white w-[80px] flex-shrink-0">{ingredient.quantity}</span>
                     <div className="flex-1">
-                      <span className="text-[14px] text-white/60">{ingredient.name}</span>
+                      <span className="text-[14px] text-white">{ingredient.name}</span>
                       {ingredient.description && (
-                        <p className="text-[14px] text-white/60 mt-2 whitespace-pre-line">{ingredient.description}</p>
+                        <p className="text-[14px] text-white mt-2 whitespace-pre-line">{ingredient.description}</p>
                       )}
                     </div>
                   </div>
