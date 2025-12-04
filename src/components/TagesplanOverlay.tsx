@@ -222,9 +222,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           y="0"
           width="200"
           height="200"
-          style={{ fill: 'hsl(var(--spot-color))' }}
+          style={{ fill: '#3d2b1f' }}
           clipPath="url(#dotsClip)"
-        />
+        >
+          {animationPhase === 'dots-collapsing' && (
+            <animate
+              attributeName="opacity"
+              from="1"
+              to="0"
+              dur="0.6s"
+              fill="freeze"
+              keyTimes="0;0.67;1"
+              values="1;1;0"
+            />
+          )}
+        </rect>
       </svg>
 
       {/* Solid brown background */}
