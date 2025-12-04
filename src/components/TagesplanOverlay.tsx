@@ -184,32 +184,58 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      {/* Animated dots background - matches dalmatian pattern positions */}
+      {/* Animated dots - matches actual dalmatian spot positions from index.html */}
       <svg
         key={animationPhase}
         className="absolute inset-0 w-full h-full pointer-events-auto"
-        viewBox="0 0 200 200"
-        preserveAspectRatio="xMidYMid slice"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
       >
         <defs>
           <clipPath id="dotsClip">
+            {/* Large spots */}
             {[
-              { cx: 30, cy: 35, rx: 16, ry: 20 },
-              { cx: 150, cy: 25, rx: 20, ry: 15 },
-              { cx: 90, cy: 80, rx: 24, ry: 18 },
-              { cx: 170, cy: 100, rx: 14, ry: 22 },
-              { cx: 50, cy: 130, rx: 18, ry: 14 },
-              { cx: 120, cy: 150, rx: 22, ry: 16 },
-              { cx: 25, cy: 180, rx: 15, ry: 12 },
-              { cx: 180, cy: 170, rx: 12, ry: 18 },
-              { cx: 75, cy: 20, rx: 10, ry: 14 },
-              { cx: 140, cy: 75, rx: 12, ry: 10 },
+              { cx: 5, cy: 8, rx: 6, ry: 4 },
+              { cx: 70, cy: 8, rx: 8, ry: 4 },
+              { cx: 35, cy: 18, rx: 7, ry: 5 },
+              { cx: 82, cy: 28, rx: 6, ry: 5 },
+              { cx: 8, cy: 42, rx: 7, ry: 4 },
+              { cx: 65, cy: 52, rx: 6, ry: 4 },
+              { cx: 20, cy: 68, rx: 8, ry: 4 },
+              { cx: 75, cy: 78, rx: 6, ry: 5 },
+              { cx: 45, cy: 85, rx: 7, ry: 4 },
+              /* Medium spots */
+              { cx: 18, cy: 12, rx: 5, ry: 3 },
+              { cx: 48, cy: 6, rx: 5, ry: 3 },
+              { cx: 88, cy: 22, rx: 4, ry: 3 },
+              { cx: 55, cy: 35, rx: 5, ry: 3 },
+              { cx: 30, cy: 48, rx: 5, ry: 3 },
+              { cx: 92, cy: 58, rx: 4, ry: 3 },
+              { cx: 50, cy: 72, rx: 5, ry: 3 },
+              { cx: 10, cy: 82, rx: 5, ry: 3 },
+              { cx: 85, cy: 95, rx: 4, ry: 3 },
+              /* Small spots */
+              { cx: 28, cy: 2, rx: 3, ry: 2 },
+              { cx: 60, cy: 15, rx: 4, ry: 2 },
+              { cx: 3, cy: 25, rx: 3, ry: 2 },
+              { cx: 42, cy: 38, rx: 4, ry: 2 },
+              { cx: 78, cy: 45, rx: 3, ry: 2 },
+              { cx: 38, cy: 62, rx: 4, ry: 2 },
+              { cx: 62, cy: 75, rx: 3, ry: 2 },
+              { cx: 28, cy: 85, rx: 4, ry: 2 },
+              { cx: 68, cy: 92, rx: 3, ry: 2 },
+              /* Extra small spots */
+              { cx: 92, cy: 10, rx: 2, ry: 1.5 },
+              { cx: 25, cy: 32, rx: 2, ry: 1.5 },
+              { cx: 15, cy: 55, rx: 2, ry: 1.5 },
+              { cx: 88, cy: 65, rx: 2, ry: 1.5 },
+              { cx: 58, cy: 80, rx: 2, ry: 1.5 },
             ].map((spot, i) => (
               <ellipse key={i} cx={spot.cx} cy={spot.cy}>
                 <animate
                   attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.rx)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
+                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.rx)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '100' : String(spot.rx)}
                   dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
@@ -218,8 +244,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 />
                 <animate
                   attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.ry)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
+                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.ry)}
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '100' : String(spot.ry)}
                   dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
@@ -233,8 +259,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         <rect
           x="0"
           y="0"
-          width="200"
-          height="200"
+          width="100"
+          height="100"
           style={{ fill: 'hsl(var(--spot-color))' }}
           clipPath="url(#dotsClip)"
         />
