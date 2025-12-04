@@ -181,12 +181,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]" style={{ width: 'calc(100vw - 32px)' }}>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
                   placeholder="32"
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-32 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="text-[14px] text-white ml-4">kg</span>
               </div>
