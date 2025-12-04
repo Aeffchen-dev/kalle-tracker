@@ -88,12 +88,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   const domainMin = minValue - 2;
   const domainMax = maxValue + 2;
   
-  // Calculate chart width: 6 months should fit in viewport
+  // Calculate chart width: always fill container, scroll if more than 6 months of data
   const scrollableWidth = width - Y_AXIS_WIDTH;
-  // Estimate points per 6 months based on data density
-  const pointsPerView = Math.min(data.length, Math.ceil(data.length * (WEIGHT_MONTHS_IN_VIEW / 12)));
-  const pointWidth = scrollableWidth / Math.max(pointsPerView, 1);
-  const chartWidth = Math.max(scrollableWidth, data.length * pointWidth);
+  const pointWidth = scrollableWidth / Math.min(data.length, WEIGHT_MONTHS_IN_VIEW * 4); // ~4 points per month as baseline
+  const chartWidth = data.length <= WEIGHT_MONTHS_IN_VIEW * 4 
+    ? scrollableWidth 
+    : data.length * pointWidth;
 
   // Generate Y-axis ticks
   const yTicks = [];
@@ -186,9 +186,11 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
   const domainMin = minValue - 0.5;
   const domainMax = maxValue + 0.5;
   
-  // Calculate chart width based on data points
+  // Calculate chart width: fill container, scroll if many points (1 day = ~150px when scrolling)
   const scrollableWidth = width - Y_AXIS_WIDTH;
-  const chartWidth = Math.max(scrollableWidth, data.length * PH_MIN_POINT_WIDTH);
+  const chartWidth = data.length <= 3 
+    ? scrollableWidth 
+    : Math.max(scrollableWidth, data.length * PH_MIN_POINT_WIDTH);
 
   // Generate Y-axis ticks
   const yTicks = [];
