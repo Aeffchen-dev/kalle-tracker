@@ -132,15 +132,15 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'collapsing' | 'dots-collapsing'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       // Set body background immediately when opening (for iOS safe areas)
       document.body.style.backgroundColor = 'hsl(var(--spot-color))';
       setAnimationPhase('expanding');
-      // Show dots longer (1200ms) before showing solid background
-      setTimeout(() => setAnimationPhase('visible'), 1200);
+      // Dots expand for 1.8s, then show content
+      setTimeout(() => setAnimationPhase('visible'), 1800);
     }
   }, [isOpen, animationPhase]);
 
@@ -152,17 +152,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // First hide content, then collapse dots
-    setAnimationPhase('collapsing');
+    // Hide content instantly and start dots collapsing
+    setAnimationPhase('dots-collapsing');
+    // After dots collapse, reset everything
     setTimeout(() => {
-      setAnimationPhase('dots-collapsing');
-      // After dots collapse, reset everything
-      setTimeout(() => {
-        document.body.style.backgroundColor = '';
-        setAnimationPhase('idle');
-        onClose();
-      }, 1200);
-    }, 300);
+      document.body.style.backgroundColor = '';
+      setAnimationPhase('idle');
+      onClose();
+    }, 1800);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -194,15 +191,15 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <animate
                   attributeName="rx"
                   from={animationPhase === 'dots-collapsing' ? '200' : String(spot.rx)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' || animationPhase === 'collapsing' ? '200' : String(spot.rx)}
-                  dur="1.2s"
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
+                  dur="1.8s"
                   fill="freeze"
                 />
                 <animate
                   attributeName="ry"
                   from={animationPhase === 'dots-collapsing' ? '200' : String(spot.ry)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' || animationPhase === 'collapsing' ? '200' : String(spot.ry)}
-                  dur="1.2s"
+                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
+                  dur="1.8s"
                   fill="freeze"
                 />
               </ellipse>
