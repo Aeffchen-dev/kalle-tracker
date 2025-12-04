@@ -112,23 +112,11 @@ export default {
           "0%, 100%": {
             transform: "rotate(0deg)",
           },
-          "15%": {
-            transform: "rotate(15deg)",
-          },
-          "30%": {
-            transform: "rotate(-12deg)",
-          },
-          "45%": {
-            transform: "rotate(10deg)",
-          },
-          "60%": {
-            transform: "rotate(-8deg)",
+          "25%": {
+            transform: "rotate(2deg)",
           },
           "75%": {
-            transform: "rotate(5deg)",
-          },
-          "90%": {
-            transform: "rotate(-3deg)",
+            transform: "rotate(-2deg)",
           },
         },
       },
