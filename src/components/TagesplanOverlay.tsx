@@ -225,112 +225,108 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       </svg>
 
       {/* Solid brown background - hide instantly on close */}
-      <div
-        className={`absolute inset-0 pointer-events-auto ${
-          animationPhase === 'visible' ? 'bg-spot opacity-100' : 'opacity-0'
-        }`}
-      />
+      {animationPhase === 'visible' && (
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
+      )}
 
-      {/* Content */}
-      <div
-        className={`absolute inset-0 flex flex-col pointer-events-auto ${
-          animationPhase === 'visible' ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        {/* Header */}
-        <header className="p-4 flex justify-between items-center">
-          <h1 className="text-[14px] uppercase text-white">Tagesplan</h1>
-          <button onClick={handleClose} className="text-white p-1">
-            <X size={20} />
-          </button>
-        </header>
+      {/* Content - only render when visible */}
+      {animationPhase === 'visible' && (
+        <div className="absolute inset-0 flex flex-col pointer-events-auto">
+          {/* Header */}
+          <header className="p-4 flex justify-between items-center">
+            <h1 className="text-[14px] uppercase text-white">Tagesplan</h1>
+            <button onClick={handleClose} className="text-white p-1">
+              <X size={20} />
+            </button>
+          </header>
 
-        {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto px-4 pb-8">
-          {mealsData.map((meal, mealIndex) => (
-            <div key={mealIndex} className="mb-8">
-              <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
-              <div className="border border-white/30 rounded-lg overflow-hidden">
-                {meal.ingredients.map((ingredient, index) => (
-                  <div
-                    key={index}
-                    className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/30' : ''}`}
-                  >
-                    <span className="text-[14px] text-white/60 w-[80px] flex-shrink-0">{ingredient.quantity}</span>
-                    <div className="flex-1">
-                      <span className="text-[14px] text-white/60">{ingredient.name}</span>
-                      {ingredient.description && (
-                        <p className="text-[14px] text-white/60 mt-2 whitespace-pre-line">{ingredient.description}</p>
-                      )}
+          {/* Scrollable content */}
+          <div className="flex-1 overflow-y-auto px-4 pb-8">
+            {mealsData.map((meal, mealIndex) => (
+              <div key={mealIndex} className="mb-8">
+                <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
+                <div className="border border-white/30 rounded-lg overflow-hidden">
+                  {meal.ingredients.map((ingredient, index) => (
+                    <div
+                      key={index}
+                      className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/30' : ''}`}
+                    >
+                      <span className="text-[14px] text-white/60 w-[80px] flex-shrink-0">{ingredient.quantity}</span>
+                      <div className="flex-1">
+                        <span className="text-[14px] text-white/60">{ingredient.name}</span>
+                        {ingredient.description && (
+                          <p className="text-[14px] text-white/60 mt-2 whitespace-pre-line">{ingredient.description}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-
-          {/* Wochenplan Section */}
-          <div className="mb-8">
-            <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
-            
-            {/* Legend */}
-            <div className="flex gap-4 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="text-blue-400">💙</span>
-                <span className="text-[14px] text-white/60">= Niklas</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-pink-400">💗</span>
-                <span className="text-[14px] text-white/60">= Jana</span>
-              </div>
-            </div>
-
-            {/* Schedule Table */}
-            <div className="border border-white/30 rounded-lg overflow-x-auto">
-              <table className="w-full text-[12px]">
-                <thead>
-                  <tr className="border-b border-white/30">
-                    {weekSchedule.map((day, index) => (
-                      <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
-                        <div className="text-white">{day.day}</div>
-                        <div className="text-white/60 font-normal">{day.type}</div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[0, 1, 2, 3, 4].map((slotIndex) => (
-                    <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
-                      {weekSchedule.map((day, dayIndex) => {
-                        const slot = day.slots[slotIndex];
-                        return (
-                          <td
-                            key={dayIndex}
-                            className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                              slot?.person === 'niklas'
-                                ? 'bg-blue-500/20'
-                                : slot?.person === 'jana'
-                                ? 'bg-pink-500/20'
-                                : ''
-                            }`}
-                          >
-                            {slot && (
-                              <>
-                                <div className="text-white/60">{slot.time}</div>
-                                <div className="text-white/60">{slot.activity}</div>
-                              </>
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </div>
+            ))}
+
+            {/* Wochenplan Section */}
+            <div className="mb-8">
+              <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
+              
+              {/* Legend */}
+              <div className="flex gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-blue-400">💙</span>
+                  <span className="text-[14px] text-white/60">= Niklas</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-pink-400">💗</span>
+                  <span className="text-[14px] text-white/60">= Jana</span>
+                </div>
+              </div>
+
+              {/* Schedule Table */}
+              <div className="border border-white/30 rounded-lg overflow-x-auto">
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="border-b border-white/30">
+                      {weekSchedule.map((day, index) => (
+                        <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
+                          <div className="text-white">{day.day}</div>
+                          <div className="text-white/60 font-normal">{day.type}</div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[0, 1, 2, 3, 4].map((slotIndex) => (
+                      <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
+                        {weekSchedule.map((day, dayIndex) => {
+                          const slot = day.slots[slotIndex];
+                          return (
+                            <td
+                              key={dayIndex}
+                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
+                                slot?.person === 'niklas'
+                                  ? 'bg-blue-500/20'
+                                  : slot?.person === 'jana'
+                                  ? 'bg-pink-500/20'
+                                  : ''
+                              }`}
+                            >
+                              {slot && (
+                                <>
+                                  <div className="text-white/60">{slot.time}</div>
+                                  <div className="text-white/60">{slot.activity}</div>
+                                </>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
