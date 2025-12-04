@@ -166,7 +166,7 @@ const Index = () => {
           src={dogInCar}
           alt="Dog in car"
           className="fixed z-50 h-[133px] w-auto pointer-events-none animate-dog-ride"
-          style={{ bottom: 'calc(20vh - 32px)' }}
+          style={{ bottom: 'calc(20vh - 30px)' }}
           onAnimationEnd={() => setShowDogAnimation(false)}
         />
       )}
