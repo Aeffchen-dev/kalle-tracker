@@ -175,96 +175,70 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      {/* Animated spots - rendered as filled shapes */}
-      <svg
-        key={animationPhase}
-        className="absolute inset-0 w-full h-full pointer-events-auto"
-        viewBox="0 0 100 177.78"
-        preserveAspectRatio="xMidYMid slice"
-      >
+      {/* Animated spots using CSS divs for exact position matching */}
+      <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
         {[
-          { cx: 7.4, cy: 10.8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
-          { cx: 73.2, cy: 10.4, w: 6.4, h: 4.8, rotate: -6, seed: 1 },
-          { cx: 37.8, cy: 21.2, w: 5.6, h: 6.4, rotate: 45, seed: 2 },
-          { cx: 84.6, cy: 31, w: 5.2, h: 6, rotate: -12, seed: 3 },
-          { cx: 11, cy: 44.4, w: 6, h: 4.8, rotate: 30, seed: 4 },
-          { cx: 67.4, cy: 54.8, w: 4.8, h: 5.6, rotate: -20, seed: 5 },
-          { cx: 23.2, cy: 70.6, w: 6.4, h: 5.2, rotate: 15, seed: 6 },
-          { cx: 77.6, cy: 81.2, w: 5.2, h: 6.4, rotate: -35, seed: 7 },
-          { cx: 47.8, cy: 87.4, w: 5.6, h: 4.8, rotate: 25, seed: 8 },
-          { cx: 20, cy: 14.2, w: 4, h: 4.4, rotate: -15, seed: 9 },
-          { cx: 50.2, cy: 7.8, w: 4.4, h: 3.6, rotate: 20, seed: 10 },
-          { cx: 89.8, cy: 24.2, w: 3.6, h: 4.4, rotate: -8, seed: 11 },
-          { cx: 57, cy: 36.8, w: 4, h: 3.6, rotate: 35, seed: 12 },
-          { cx: 32.2, cy: 50, w: 4.4, h: 4, rotate: -25, seed: 13 },
-          { cx: 93.8, cy: 60, w: 3.6, h: 4, rotate: 10, seed: 14 },
-          { cx: 52, cy: 74.2, w: 4, h: 4.4, rotate: -40, seed: 15 },
-          { cx: 12.2, cy: 83.8, w: 4.4, h: 3.6, rotate: 5, seed: 16 },
-          { cx: 86.8, cy: 97, w: 3.6, h: 4, rotate: -18, seed: 17 },
-          { cx: 29.4, cy: 3.6, w: 2.8, h: 3.2, rotate: 8, seed: 18 },
-          { cx: 61.6, cy: 16.4, w: 3.2, h: 2.8, rotate: -12, seed: 19 },
-          { cx: 4.4, cy: 26.4, w: 2.8, h: 2.8, rotate: 22, seed: 20 },
-          { cx: 43.6, cy: 39.6, w: 3.2, h: 3.2, rotate: -5, seed: 21 },
-          { cx: 79.4, cy: 46.6, w: 2.8, h: 3.2, rotate: 15, seed: 22 },
-          { cx: 39.6, cy: 63.4, w: 3.2, h: 2.8, rotate: -28, seed: 23 },
-          { cx: 63.4, cy: 76.4, w: 2.8, h: 2.8, rotate: 32, seed: 24 },
-          { cx: 29.6, cy: 86.6, w: 3.2, h: 3.2, rotate: -10, seed: 25 },
-          { cx: 69.4, cy: 93.6, w: 2.8, h: 3.2, rotate: 18, seed: 26 },
-          { cx: 92.8, cy: 11, w: 1.6, h: 2, rotate: 0, seed: 27 },
-          { cx: 26, cy: 32.8, w: 2, h: 1.6, rotate: 0, seed: 28 },
-          { cx: 15.8, cy: 55.8, w: 1.6, h: 1.6, rotate: 0, seed: 29 },
-          { cx: 89, cy: 66, w: 2, h: 2, rotate: 0, seed: 30 },
-          { cx: 58.8, cy: 81, w: 1.6, h: 2, rotate: 0, seed: 31 },
+          { left: 5, top: 8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
+          { left: 70, top: 8, w: 6.4, h: 4.8, rotate: -6, seed: 1 },
+          { left: 35, top: 18, w: 5.6, h: 6.4, rotate: 45, seed: 2 },
+          { left: 82, top: 28, w: 5.2, h: 6, rotate: -12, seed: 3 },
+          { left: 8, top: 42, w: 6, h: 4.8, rotate: 30, seed: 4 },
+          { left: 65, top: 52, w: 4.8, h: 5.6, rotate: -20, seed: 5 },
+          { left: 20, top: 68, w: 6.4, h: 5.2, rotate: 15, seed: 6 },
+          { left: 75, top: 78, w: 5.2, h: 6.4, rotate: -35, seed: 7 },
+          { left: 45, top: 85, w: 5.6, h: 4.8, rotate: 25, seed: 8 },
+          { left: 18, top: 12, w: 4, h: 4.4, rotate: -15, seed: 9 },
+          { left: 48, top: 6, w: 4.4, h: 3.6, rotate: 20, seed: 10 },
+          { left: 88, top: 22, w: 3.6, h: 4.4, rotate: -8, seed: 11 },
+          { left: 55, top: 35, w: 4, h: 3.6, rotate: 35, seed: 12 },
+          { left: 30, top: 48, w: 4.4, h: 4, rotate: -25, seed: 13 },
+          { left: 92, top: 58, w: 3.6, h: 4, rotate: 10, seed: 14 },
+          { left: 50, top: 72, w: 4, h: 4.4, rotate: -40, seed: 15 },
+          { left: 10, top: 82, w: 4.4, h: 3.6, rotate: 5, seed: 16 },
+          { left: 85, top: 95, w: 3.6, h: 4, rotate: -18, seed: 17 },
+          { left: 28, top: 2, w: 2.8, h: 3.2, rotate: 8, seed: 18 },
+          { left: 60, top: 15, w: 3.2, h: 2.8, rotate: -12, seed: 19 },
+          { left: 3, top: 25, w: 2.8, h: 2.8, rotate: 22, seed: 20 },
+          { left: 42, top: 38, w: 3.2, h: 3.2, rotate: -5, seed: 21 },
+          { left: 78, top: 45, w: 2.8, h: 3.2, rotate: 15, seed: 22 },
+          { left: 38, top: 62, w: 3.2, h: 2.8, rotate: -28, seed: 23 },
+          { left: 62, top: 75, w: 2.8, h: 2.8, rotate: 32, seed: 24 },
+          { left: 28, top: 85, w: 3.2, h: 3.2, rotate: -10, seed: 25 },
+          { left: 68, top: 92, w: 2.8, h: 3.2, rotate: 18, seed: 26 },
+          { left: 92, top: 10, w: 1.6, h: 2, rotate: 0, seed: 27 },
+          { left: 25, top: 32, w: 2, h: 1.6, rotate: 0, seed: 28 },
+          { left: 15, top: 55, w: 1.6, h: 1.6, rotate: 0, seed: 29 },
+          { left: 88, top: 65, w: 2, h: 2, rotate: 0, seed: 30 },
+          { left: 58, top: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
         ].map((spot) => {
-          const offsets = [
-            [0.92, 1.08, 0.95, 1.05, 0.88, 1.12, 0.97, 1.03],
-            [1.1, 0.9, 1.05, 0.95, 1.08, 0.92, 0.98, 1.02],
-            [0.88, 1.12, 0.93, 1.07, 0.9, 1.1, 1.05, 0.95],
-            [1.05, 0.95, 1.1, 0.9, 0.92, 1.08, 0.97, 1.03],
-          ][spot.seed % 4];
-          
-          const rx = spot.w / 2;
-          const ry = spot.h / 2;
-          const k = 0.552284749831;
-          
-          // Path centered at origin
-          const top = { x: 0, y: -ry * offsets[0] };
-          const right = { x: rx * offsets[1], y: 0 };
-          const bottom = { x: 0, y: ry * offsets[2] };
-          const left = { x: -rx * offsets[3], y: 0 };
-          
-          const path = `M ${top.x} ${top.y} 
-            C ${top.x + rx * k * offsets[4]} ${top.y}, ${right.x} ${right.y - ry * k * offsets[5]}, ${right.x} ${right.y}
-            C ${right.x} ${right.y + ry * k * offsets[6]}, ${bottom.x + rx * k * offsets[7]} ${bottom.y}, ${bottom.x} ${bottom.y}
-            C ${bottom.x - rx * k * offsets[0]} ${bottom.y}, ${left.x} ${left.y + ry * k * offsets[1]}, ${left.x} ${left.y}
-            C ${left.x} ${left.y - ry * k * offsets[2]}, ${top.x - rx * k * offsets[3]} ${top.y}, ${top.x} ${top.y} Z`;
-          
-          const startScale = animationPhase === 'dots-collapsing' ? 20 : 1;
-          const endScale = animationPhase === 'dots-collapsing' ? 1 : 40;
+          // Irregular border-radius patterns for organic blob shapes
+          const radiusPatterns = [
+            '63% 37% 54% 46% / 55% 48% 52% 45%',
+            '37% 63% 46% 54% / 48% 55% 45% 52%',
+            '54% 46% 63% 37% / 52% 45% 55% 48%',
+            '46% 54% 37% 63% / 45% 52% 48% 55%',
+          ];
           
           return (
-            <path
+            <div
               key={spot.seed}
-              d={path}
-              fill="#5c4033"
-              transform={`translate(${spot.cx}, ${spot.cy}) rotate(${spot.rotate}) scale(${startScale})`}
-            >
-              <animateTransform
-                attributeName="transform"
-                type="scale"
-                from={`${startScale}`}
-                to={`${endScale}`}
-                dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.9s'}
-                fill="freeze"
-                calcMode="spline"
-                keyTimes="0;1"
-                keySplines={animationPhase === 'dots-collapsing' ? "0 0 0.2 1" : "0.8 0 1 1"}
-                additive="sum"
-              />
-            </path>
+              className={animationPhase === 'dots-collapsing' ? 'spot-collapse' : 'spot-expand'}
+              style={{
+                position: 'absolute',
+                left: `${spot.left}%`,
+                top: `${spot.top}%`,
+                width: `${spot.w}%`,
+                height: `${spot.h}%`,
+                backgroundColor: '#5c4033',
+                borderRadius: radiusPatterns[spot.seed % 4],
+                transform: `rotate(${spot.rotate}deg)`,
+                transformOrigin: 'center center',
+                '--spot-rotate': `${spot.rotate}deg`,
+              } as React.CSSProperties}
+            />
           );
         })}
-      </svg>
+      </div>
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (

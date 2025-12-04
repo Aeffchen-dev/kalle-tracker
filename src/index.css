@@ -126,19 +126,19 @@
 
 @keyframes spotExpand {
   0% {
-    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(1);
+    transform: rotate(var(--spot-rotate)) scale(1);
   }
   100% {
-    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(40);
+    transform: rotate(var(--spot-rotate)) scale(40);
   }
 }
 
 @keyframes spotCollapse {
   0% {
-    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(40);
+    transform: rotate(var(--spot-rotate)) scale(40);
   }
   100% {
-    transform: translate(var(--spot-x), var(--spot-y)) rotate(var(--spot-rotate)) scale(1);
+    transform: rotate(var(--spot-rotate)) scale(1);
   }
 }
 
