@@ -70,7 +70,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     // pipi, stuhlgang, phwert all reset the timer
     const onlyGewichtSaved = selectedTypes.size === 1 && selectedTypes.has('gewicht');
     skipTimeReset = onlyGewichtSaved;
-    console.log('Saved types:', Array.from(selectedTypes), 'Skip time reset:', onlyGewichtSaved);
 
     onEventAdded();
     onOpenChange(false);
