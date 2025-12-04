@@ -194,14 +194,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <div className="relative">
+            <div className="relative" style={{ width: 'calc(100vw - 32px)' }}>
               <input
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="box-border w-full h-12 px-3 pr-12 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full"
+                className="box-border w-full h-12 pl-3 pr-10 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] text-white pointer-events-none">Uhr</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] text-white pointer-events-none"> Uhr</span>
             </div>
           </div>
 
