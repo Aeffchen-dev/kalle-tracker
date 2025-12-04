@@ -120,7 +120,7 @@ const Index = () => {
           <img
             src={dogLoading}
             alt="Loading..."
-            className="h-[133px] w-auto"
+            className="h-[173px] w-auto"
           />
         </div>
       )}
@@ -176,7 +176,7 @@ const Index = () => {
           src={dogInCar}
           alt="Dog in car"
           className="fixed z-50 h-[133px] w-auto pointer-events-none animate-dog-ride"
-          style={{ bottom: 'calc(20vh - 16px)' }}
+          style={{ bottom: 'calc(20vh - 20px)' }}
           onAnimationEnd={() => setShowDogAnimation(false)}
         />
       )}
