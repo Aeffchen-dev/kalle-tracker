@@ -140,11 +140,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
-      }, 400);
+      }, 900);
       // Reveal content 200ms later
       setTimeout(() => {
         setAnimationPhase('visible');
-      }, 600);
+      }, 1100);
     }
   }, [isOpen, animationPhase]);
 
