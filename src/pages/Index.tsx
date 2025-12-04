@@ -5,8 +5,8 @@ import TagesplanOverlay from '@/components/TagesplanOverlay';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
-import dalmatianBase from '@/assets/dalmatian-header-base.png';
-import dalmatianTongue from '@/assets/dalmatian-header-tongue.png';
+import dalmatianHeader from '@/assets/dalmatian-header.png';
+import dalmatianNoTongue from '@/assets/dalmatian-header-no-tongue.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
@@ -131,7 +131,7 @@ const Index = () => {
           className="cursor-pointer -mt-2 -ml-2 relative"
         >
           <img 
-            src={showTongueLick ? dalmatianBase : dalmatianTongue} 
+            src={showTongueLick ? dalmatianNoTongue : dalmatianHeader} 
             alt="Kalle" 
             className="h-[100px] w-auto" 
           />
