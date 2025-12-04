@@ -142,17 +142,21 @@ const CalendarView = () => {
   };
 
   const handleItemClick = (eventId: string) => {
-    console.log('click - eventId:', eventId, 'activeEventId:', activeEventId, 'touchJustEnded:', touchJustEnded.current);
     // Prevent click if touch just ended (mobile devices fire both)
-    if (touchJustEnded.current) {
-      console.log('click blocked - touchJustEnded');
-      return;
-    }
+    if (touchJustEnded.current) return;
     
     setIsAnimating(true);
-    // Toggle: if already showing delete for this item, hide it
+    
     if (activeEventId === eventId) {
-      console.log('click - hiding delete');
+      // Same item - toggle off
+      setSwipeOffset(0);
+      setTimeout(() => {
+        setActiveEventId(null);
+        setSwipingId(null);
+        setIsAnimating(false);
+      }, 200);
+    } else if (activeEventId) {
+      // Different item is active - close it first
       setSwipeOffset(0);
       setTimeout(() => {
         setActiveEventId(null);
@@ -160,8 +164,7 @@ const CalendarView = () => {
         setIsAnimating(false);
       }, 200);
     } else {
-      console.log('click - showing delete');
-      // Show delete (also closes any other open item)
+      // No item active - open this one
       setActiveEventId(eventId);
       setSwipingId(eventId);
       setSwipeOffset(80);
