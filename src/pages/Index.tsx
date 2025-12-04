@@ -128,7 +128,7 @@ const Index = () => {
           <img 
             src={dalmatianTail}
             alt=""
-            className={`absolute top-[6px] -left-[7px] h-[30px] w-auto origin-bottom-right rotate-[10deg] -z-10 ${tailWagging ? 'animate-tail-wag' : ''}`}
+            className={`absolute top-[46px] left-[33px] h-[33px] w-auto origin-bottom-right rotate-[10deg] -z-10 ${tailWagging ? 'animate-tail-wag' : ''}`}
             onAnimationEnd={() => setTailWagging(false)}
           />
           <img 
