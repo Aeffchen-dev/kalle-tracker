@@ -11,6 +11,7 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [tailWagging, setTailWagging] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
@@ -117,10 +118,18 @@ const Index = () => {
       {/* Header */}
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
-          onClick={() => setShowDogAnimation(true)}
+          onClick={() => {
+            setShowDogAnimation(true);
+            setTailWagging(true);
+          }}
           className="cursor-pointer -mt-2 -ml-[10px]"
         >
-          <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
+          <img 
+            src={dalmatianHeader} 
+            alt="Kalle" 
+            className={`h-[100px] w-auto origin-bottom-right ${tailWagging ? 'animate-tail-wag' : ''}`}
+            onAnimationEnd={() => setTailWagging(false)}
+          />
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
