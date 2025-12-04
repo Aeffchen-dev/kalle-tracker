@@ -17,24 +17,33 @@ const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
+  const [selectedTime, setSelectedTime] = useState(() => {
+    // Initialize from sessionStorage if we're preserving time, otherwise use current time
+    const preserved = sessionStorage.getItem('preservedTime');
+    if (preserved) {
+      return preserved;
+    }
+    return format(new Date(), 'HH:mm');
+  });
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
-  const lastOpenState = useRef(false);
+  const prevOpen = useRef(open);
 
   // Reset time to current when sheet opens (unless gewicht-only was last saved)
   useEffect(() => {
     // Only run when open changes from false to true
-    if (open && !lastOpenState.current) {
-      const skipReset = sessionStorage.getItem('skipTimeReset') === 'true';
-      if (!skipReset) {
+    if (open && !prevOpen.current) {
+      const preservedTime = sessionStorage.getItem('preservedTime');
+      if (preservedTime) {
+        setSelectedTime(preservedTime);
+        sessionStorage.removeItem('preservedTime');
+      } else {
         setSelectedTime(format(new Date(), 'HH:mm'));
       }
       setSelectedPh(null);
       setWeightValue('');
-      sessionStorage.removeItem('skipTimeReset');
     }
-    lastOpenState.current = open;
+    prevOpen.current = open;
   }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
@@ -67,11 +76,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       await saveEvent(type, eventDate, phValue || undefined, weight);
     }
 
-    // Skip time reset on next open ONLY if gewicht was the only type saved
-    // pipi, stuhlgang, phwert all reset the timer
+    // Preserve time for next open ONLY if gewicht was the only type saved
     const onlyGewichtSaved = selectedTypes.size === 1 && selectedTypes.has('gewicht');
     if (onlyGewichtSaved) {
-      sessionStorage.setItem('skipTimeReset', 'true');
+      sessionStorage.setItem('preservedTime', selectedTime);
+    } else {
+      sessionStorage.removeItem('preservedTime');
     }
 
     onEventAdded();
