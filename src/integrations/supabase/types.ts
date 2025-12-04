@@ -22,6 +22,7 @@ export type Database = {
           ph_value: string | null
           time: string
           type: string
+          weight_value: number | null
         }
         Insert: {
           created_at?: string
@@ -30,6 +31,7 @@ export type Database = {
           ph_value?: string | null
           time?: string
           type: string
+          weight_value?: number | null
         }
         Update: {
           created_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           ph_value?: string | null
           time?: string
           type?: string
+          weight_value?: number | null
         }
         Relationships: []
       }

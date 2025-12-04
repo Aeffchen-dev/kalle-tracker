@@ -7,6 +7,7 @@ export interface Event {
   type: EventType;
   time: Date;
   ph_value?: string | null;
+  weight_value?: number | null;
 }
 
 export const getEvents = async (): Promise<Event[]> => {
@@ -24,14 +25,20 @@ export const getEvents = async (): Promise<Event[]> => {
     id: e.id,
     type: e.type as EventType,
     time: new Date(e.time),
-    ph_value: e.ph_value
+    ph_value: e.ph_value,
+    weight_value: e.weight_value
   }));
 };
 
-export const saveEvent = async (type: EventType, time?: Date, ph_value?: string): Promise<void> => {
+export const saveEvent = async (type: EventType, time?: Date, ph_value?: string, weight_value?: number): Promise<void> => {
   const { error } = await supabase
     .from('events')
-    .insert({ type, time: (time || new Date()).toISOString(), ph_value: ph_value || null });
+    .insert({ 
+      type, 
+      time: (time || new Date()).toISOString(), 
+      ph_value: ph_value || null,
+      weight_value: weight_value || null
+    });
   
   if (error) {
     console.error('Error saving event:', error);

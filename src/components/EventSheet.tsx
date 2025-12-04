@@ -19,12 +19,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
+  const [weightValue, setWeightValue] = useState<string>('');
 
   // Reset time to current when sheet opens
   useEffect(() => {
     if (open) {
       setSelectedTime(format(new Date(), 'HH:mm'));
       setSelectedPh(null);
+      setWeightValue('');
     }
   }, [open]);
 
@@ -54,7 +56,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     for (const type of selectedTypes) {
       // Only include pH value for phwert type
       const phValue = type === 'phwert' ? selectedPh : undefined;
-      await saveEvent(type, eventDate, phValue || undefined);
+      const weight = type === 'gewicht' ? (weightValue ? parseFloat(weightValue.replace(',', '.')) : undefined) : undefined;
+      await saveEvent(type, eventDate, phValue || undefined, weight);
     }
 
     onEventAdded();
@@ -63,6 +66,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     // Reset selections
     setSelectedTypes(new Set());
     setSelectedPh(null);
+    setWeightValue('');
     setIsSubmitting(false);
   };
 
@@ -159,6 +163,20 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {/* Weight Input - only show when gewicht is selected */}
+          {selectedTypes.has('gewicht') && (
+            <div className="flex flex-col gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                value={weightValue}
+                onChange={(e) => setWeightValue(e.target.value)}
+                placeholder="Gewicht eingeben"
+                className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center placeholder:text-white/50"
+              />
             </div>
           )}
 
