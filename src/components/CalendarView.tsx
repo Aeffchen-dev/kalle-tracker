@@ -268,10 +268,12 @@ const CalendarView = () => {
                     <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
                         <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
                         <span>
-                          {event.type === 'pipi' ? 'Pipi' : event.type === 'stuhlgang' ? 'Stuhlgang' : event.type === 'phwert' ? 'pH-Wert' : 'Gewicht'}
-                          {event.type === 'phwert' && event.ph_value && (
+                          {event.type === 'pipi' && 'Pipi'}
+                          {event.type === 'stuhlgang' && 'Stuhlgang'}
+                          {event.type === 'gewicht' && 'Gewicht'}
+                          {event.type === 'phwert' && (
                             <>
-                              : <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>{event.ph_value}</span>
+                              pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
                             </>
                           )}
                         </span>
