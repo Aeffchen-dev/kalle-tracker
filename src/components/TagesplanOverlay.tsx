@@ -136,11 +136,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
-      // Set body background immediately when opening (for iOS safe areas)
-      document.body.style.backgroundColor = 'hsl(var(--spot-color))';
       setAnimationPhase('expanding');
-      // Dots expand for 1.8s, then show content
-      setTimeout(() => setAnimationPhase('visible'), 1800);
+      // Dots expand for 1.8s, then show content and color body
+      setTimeout(() => {
+        document.body.style.backgroundColor = 'hsl(var(--spot-color))';
+        setAnimationPhase('visible');
+      }, 1800);
     }
   }, [isOpen, animationPhase]);
 
