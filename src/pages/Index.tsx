@@ -111,16 +111,16 @@ const Index = () => {
   return (
     <div className="h-dvh flex flex-col bg-transparent relative overflow-hidden">
       
-      {/* Loading state */}
-      {isLoading && imageLoaded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pb-[20vh]">
-          <img
-            src={dogLoading}
-            alt="Loading..."
-            className="h-[102px] w-auto"
-          />
-        </div>
-      )}
+      {/* Loading state - always rendered, visibility controlled by CSS to prevent flickering */}
+      <div 
+        className={`fixed inset-0 z-50 flex items-center justify-center pb-[20vh] transition-opacity duration-300 ${isLoading && imageLoaded ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      >
+        <img
+          src={dogLoading}
+          alt="Loading..."
+          className="h-[102px] w-auto"
+        />
+      </div>
 
       {/* Header */}
       <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
