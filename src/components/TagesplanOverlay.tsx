@@ -18,7 +18,7 @@ const mealsData: MealData[] = [
     ingredients: [
       { quantity: '103g', name: 'Royal Canine Urinary u/c' },
       { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Germüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
+      { quantity: '25g', name: 'Vet-Concept Nudeln mit Gemüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
       { quantity: '6,6g', name: 'Dicalciumphosphat' },
       { quantity: '3,3g', name: 'Elements sensitive' },
       { quantity: '6,6g', name: 'Futteröl Junior' },
@@ -30,6 +30,98 @@ const mealsData: MealData[] = [
       { quantity: '60g', name: 'Ei ohne Schale, gekocht' },
       { quantity: '100g', name: 'Joghurt 1,5% Fett' },
       { quantity: '100g', name: 'Karotten, gekocht' },
+    ],
+  },
+];
+
+interface ScheduleCell {
+  time: string;
+  activity: string;
+  person?: 'niklas' | 'jana';
+}
+
+interface DaySchedule {
+  day: string;
+  type: string;
+  slots: ScheduleCell[];
+}
+
+const weekSchedule: DaySchedule[] = [
+  {
+    day: 'Mo',
+    type: 'Aktion Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
+      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '19-21 Uhr', activity: 'Hundeplatz + Essen' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'Di',
+    type: 'Ruhe Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'Mi',
+    type: 'Aktion Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Joggen + Essen' },
+      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'Do',
+    type: 'Aktion Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Essen + Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'jana' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Hundeplatz + Essen' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'Fr',
+    type: 'Ruhe Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
+      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'jana' },
+      { time: '15-16 Uhr', activity: 'Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'Sa',
+    type: 'Aktion Tag',
+    slots: [
+      { time: '7-9 Uhr', activity: 'Joggen im Wald + Essen' },
+      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
+      { time: '15-16 Uhr', activity: 'Hundeplatz oder Ausflug' },
+      { time: '18-20 Uhr', activity: 'Hundeplatz' },
+      { time: '23 Uhr', activity: 'Pipi' },
+    ],
+  },
+  {
+    day: 'So',
+    type: 'Chill Tag',
+    slots: [
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
 ];
@@ -156,6 +248,67 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               </div>
             </div>
           ))}
+
+          {/* Wochenplan Section */}
+          <div className="mb-8">
+            <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
+            
+            {/* Legend */}
+            <div className="flex gap-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-blue-400">💙</span>
+                <span className="text-[14px] text-white/60">= Niklas</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-pink-400">💗</span>
+                <span className="text-[14px] text-white/60">= Jana</span>
+              </div>
+            </div>
+
+            {/* Schedule Table */}
+            <div className="border border-white/30 rounded-lg overflow-x-auto">
+              <table className="w-full text-[12px]">
+                <thead>
+                  <tr className="border-b border-white/30">
+                    {weekSchedule.map((day, index) => (
+                      <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
+                        <div className="text-white">{day.day}</div>
+                        <div className="text-white/60 font-normal">{day.type}</div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[0, 1, 2, 3, 4].map((slotIndex) => (
+                    <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
+                      {weekSchedule.map((day, dayIndex) => {
+                        const slot = day.slots[slotIndex];
+                        return (
+                          <td
+                            key={dayIndex}
+                            className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
+                              slot?.person === 'niklas'
+                                ? 'bg-blue-500/20'
+                                : slot?.person === 'jana'
+                                ? 'bg-pink-500/20'
+                                : ''
+                            }`}
+                          >
+                            {slot && (
+                              <>
+                                <div className="text-white/60">{slot.time}</div>
+                                <div className="text-white/60">{slot.activity}</div>
+                              </>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
