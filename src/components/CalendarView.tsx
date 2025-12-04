@@ -238,7 +238,7 @@ const CalendarView = () => {
             }`}
           >
           {filteredEvents.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center min-h-[200px]">
+            <div className="flex items-center justify-center py-4">
               <p className="text-center text-[14px] text-white/60">
                 Keine Einträge
               </p>
