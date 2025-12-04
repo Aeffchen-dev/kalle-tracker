@@ -15,7 +15,7 @@ const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
 const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
-  const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang'>>(new Set());
+  const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
@@ -28,7 +28,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     }
   }, [open]);
 
-  const toggleType = (type: 'pipi' | 'stuhlgang') => {
+  const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
     setSelectedTypes(prev => {
       const newSet = new Set(prev);
       if (newSet.has(type)) {
@@ -73,10 +73,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="px-4 pb-4 space-y-4 overflow-hidden">
-          <div className="flex gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`flex-1 h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white hover:text-white border border-white/30'
@@ -87,7 +87,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`flex-1 h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black border border-white'
                   : 'bg-transparent text-white hover:text-white border border-white/30'
@@ -95,6 +95,28 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             >
               <span>💩</span>
               <span>Stuhlgang</span>
+            </button>
+            <button
+              onClick={() => toggleType('phwert')}
+              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                selectedTypes.has('phwert')
+                  ? 'bg-white text-black border border-white'
+                  : 'bg-transparent text-white hover:text-white border border-white/30'
+              }`}
+            >
+              <span>🧪</span>
+              <span>pH-Wert</span>
+            </button>
+            <button
+              onClick={() => toggleType('gewicht')}
+              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                selectedTypes.has('gewicht')
+                  ? 'bg-white text-black border border-white'
+                  : 'bg-transparent text-white hover:text-white border border-white/30'
+              }`}
+            >
+              <span>🏋️</span>
+              <span>Gewicht</span>
             </button>
           </div>
 

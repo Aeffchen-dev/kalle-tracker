@@ -266,9 +266,9 @@ const CalendarView = () => {
                       onTouchEnd={() => handleItemTouchEnd()}
                     >
                     <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
-                        <span>{event.type === 'pipi' ? '💦' : '💩'}</span>
+                        <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
                         <span>
-                          {event.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}
+                          {event.type === 'pipi' ? 'Pipi' : event.type === 'stuhlgang' ? 'Stuhlgang' : event.type === 'phwert' ? 'pH-Wert' : 'Gewicht'}
                           {event.type === 'pipi' && event.ph_value && (
                             <>
                               , pH: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>{event.ph_value}</span>
