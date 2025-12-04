@@ -179,31 +179,31 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           {/* Weight Input - only show when gewicht is selected */}
           {selectedTypes.has('gewicht') && (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]" style={{ width: 'calc(100vw - 32px)' }}>
                 <input
                   type="number"
                   inputMode="decimal"
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
                   placeholder="Gewicht eingeben"
-                  className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center placeholder:text-white/50 flex-1"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-32 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <span className="text-[14px] text-white">kg</span>
+                <span className="text-[14px] text-white ml-1">kg</span>
               </div>
             </div>
           )}
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]" style={{ width: 'calc(100vw - 32px)' }}>
+            <label className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer" style={{ width: 'calc(100vw - 32px)' }}>
               <input
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none [&::-webkit-calendar-picker-indicator]:hidden w-[70px]"
+                className="bg-transparent text-white text-[14px] text-center border-none outline-none [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 w-[70px]"
               />
               <span className="text-[14px] text-white ml-1">Uhr</span>
-            </div>
+            </label>
           </div>
 
           <div className="pb-4">
