@@ -4,7 +4,8 @@ import { getEvents, deleteEvent, Event } from '@/lib/events';
 import { format, subDays, addDays, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp } from 'lucide-react';
+import TrendAnalysis from './TrendAnalysis';
 
 type SnapPoint = number | string;
 
@@ -19,6 +20,7 @@ const CalendarView = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
+  const [showTrends, setShowTrends] = useState(false);
   
   const toggleSnapPoint = () => {
     setSnap(snap === 0.2 ? 0.9 : 0.2);
@@ -210,97 +212,126 @@ const CalendarView = () => {
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
-            <div className="w-6 h-6 flex items-center justify-center">
-              {canGoPrev && (
-                <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
-                  <ArrowLeft size={24} className="text-white" />
+            {showTrends ? (
+              <>
+                <div className="w-6 h-6" />
+                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                  Trend-Analyse
+                </DrawerTitle>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowTrends(false); }} 
+                  className="w-6 h-6 flex items-center justify-center"
+                >
+                  <TrendingUp size={20} className="text-[#5AD940]" />
                 </button>
-              )}
-            </div>
-            <DrawerTitle className="text-center text-[14px] text-white leading-6">
-              {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
-            </DrawerTitle>
-            <div className="w-6 h-6 flex items-center justify-center">
-              {canGoNext && (
-                <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
-                  <ArrowRight size={24} className="text-white" />
-                </button>
-              )}
-            </div>
-          </div>
-        </DrawerHeader>
-        <div className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
-          <div 
-            className={`transition-all duration-150 ${
-              slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
-              slideDirection === 'right' ? 'opacity-0 translate-x-4' : 
-              'opacity-100 translate-x-0'
-            }`}
-          >
-          {filteredEvents.length === 0 ? (
-            <div className="flex items-center justify-center py-4">
-              <p className="text-center text-[14px] text-white/60">
-                Keine Einträge
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2 pb-20">
-              {filteredEvents.map((event) => {
-                const isActive = activeEventId === event.id;
-                const showDelete = isActive && (swipeOffset > 0 || isAnimating);
-                return (
-                  <div key={event.id} className="flex w-full">
-                    <div
-                      className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden cursor-pointer ${isAnimating ? 'transition-all duration-200' : ''}`}
-                      style={{ 
-                        width: showDelete ? `calc(100% - ${swipeOffset}px)` : '100%',
-                        borderTopLeftRadius: '0.5rem',
-                        borderBottomLeftRadius: '0.5rem',
-                        borderTopRightRadius: showDelete ? 0 : '0.5rem',
-                        borderBottomRightRadius: showDelete ? 0 : '0.5rem',
-                        borderRight: showDelete ? 'none' : undefined,
-                      }}
-                      onClick={() => handleItemClick(event.id)}
-                      onTouchStart={(e) => handleItemTouchStart(e, event.id)}
-                      onTouchMove={handleItemTouchMove}
-                      onTouchEnd={() => handleItemTouchEnd()}
-                    >
-                    <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
-                        <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
-                        <span>
-                          {event.type === 'pipi' && 'Pipi'}
-                          {event.type === 'stuhlgang' && 'Stuhlgang'}
-                          {event.type === 'gewicht' && (
-                            <>
-                              Gewicht: {event.weight_value ? `${event.weight_value} kg` : '-'}
-                            </>
-                          )}
-                          {event.type === 'phwert' && (
-                            <>
-                              pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
-                            </>
-                          )}
-                        </span>
-                      </span>
-                      <span className="text-[14px] text-white whitespace-nowrap">
-                        {format(new Date(event.time), 'HH:mm')} Uhr
-                      </span>
-                    </div>
-                    {showDelete && (
-                      <button
-                        onClick={() => handleDelete(event.id)}
-                        className={`bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
-                        style={{ width: swipeOffset }}
-                      >
-                        {swipeOffset > 50 && 'Löschen'}
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); }} 
+                    className="w-6 h-6 flex items-center justify-center"
+                  >
+                    <TrendingUp size={20} className="text-white/60" />
+                  </button>
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {canGoPrev && (
+                      <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
+                        <ArrowLeft size={24} className="text-white" />
                       </button>
                     )}
                   </div>
-                );
-              })}
+                </div>
+                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                  {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
+                </DrawerTitle>
+                <div className="w-6 h-6 flex items-center justify-center">
+                  {canGoNext && (
+                    <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
+                      <ArrowRight size={24} className="text-white" />
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </DrawerHeader>
+        <div className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
+          {showTrends ? (
+            <TrendAnalysis events={events} />
+          ) : (
+            <div 
+              className={`transition-all duration-150 ${
+                slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
+                slideDirection === 'right' ? 'opacity-0 translate-x-4' : 
+                'opacity-100 translate-x-0'
+              }`}
+            >
+              {filteredEvents.length === 0 ? (
+                <div className="flex items-center justify-center py-4">
+                  <p className="text-center text-[14px] text-white/60">
+                    Keine Einträge
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-2 pb-20">
+                  {filteredEvents.map((event) => {
+                    const isActive = activeEventId === event.id;
+                    const showDelete = isActive && (swipeOffset > 0 || isAnimating);
+                    return (
+                      <div key={event.id} className="flex w-full">
+                        <div
+                          className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden cursor-pointer ${isAnimating ? 'transition-all duration-200' : ''}`}
+                          style={{ 
+                            width: showDelete ? `calc(100% - ${swipeOffset}px)` : '100%',
+                            borderTopLeftRadius: '0.5rem',
+                            borderBottomLeftRadius: '0.5rem',
+                            borderTopRightRadius: showDelete ? 0 : '0.5rem',
+                            borderBottomRightRadius: showDelete ? 0 : '0.5rem',
+                            borderRight: showDelete ? 'none' : undefined,
+                          }}
+                          onClick={() => handleItemClick(event.id)}
+                          onTouchStart={(e) => handleItemTouchStart(e, event.id)}
+                          onTouchMove={handleItemTouchMove}
+                          onTouchEnd={() => handleItemTouchEnd()}
+                        >
+                          <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
+                            <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
+                            <span>
+                              {event.type === 'pipi' && 'Pipi'}
+                              {event.type === 'stuhlgang' && 'Stuhlgang'}
+                              {event.type === 'gewicht' && (
+                                <>
+                                  Gewicht: {event.weight_value ? `${event.weight_value} kg` : '-'}
+                                </>
+                              )}
+                              {event.type === 'phwert' && (
+                                <>
+                                  pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
+                                </>
+                              )}
+                            </span>
+                          </span>
+                          <span className="text-[14px] text-white whitespace-nowrap">
+                            {format(new Date(event.time), 'HH:mm')} Uhr
+                          </span>
+                        </div>
+                        {showDelete && (
+                          <button
+                            onClick={() => handleDelete(event.id)}
+                            className={`bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
+                            style={{ width: swipeOffset }}
+                          >
+                            {swipeOffset > 50 && 'Löschen'}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
-          </div>
         </div>
       </DrawerContent>
     </Drawer>
