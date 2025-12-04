@@ -9,7 +9,11 @@ import TrendAnalysis from './TrendAnalysis';
 
 type SnapPoint = number | string;
 
-const CalendarView = () => {
+interface CalendarViewProps {
+  eventSheetOpen?: boolean;
+}
+
+const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [swipingId, setSwipingId] = useState<string | null>(null);
@@ -213,7 +217,7 @@ const CalendarView = () => {
   return (
     <>
       {/* Invisible overlay to catch clicks outside drawer when expanded */}
-      {snap === 0.9 && (
+      {snap === 0.9 && !eventSheetOpen && (
         <div 
           className="fixed inset-0 z-40" 
           onClick={handleOutsideClick}
