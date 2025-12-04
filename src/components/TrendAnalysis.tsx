@@ -61,14 +61,15 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const MIN_POINT_WIDTH = 150;
 const Y_AXIS_WIDTH = 45;
+const WEIGHT_MONTHS_IN_VIEW = 6;
+const PH_MIN_POINT_WIDTH = 150;
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    // Scroll to show last 6 months (right side)
+    // Scroll to show latest data (right side)
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
@@ -87,9 +88,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   const domainMin = minValue - 2;
   const domainMax = maxValue + 2;
   
-  // Calculate chart width based on data points
+  // Calculate chart width: 6 months should fit in viewport
   const scrollableWidth = width - Y_AXIS_WIDTH;
-  const chartWidth = Math.max(scrollableWidth, data.length * MIN_POINT_WIDTH);
+  // Estimate points per 6 months based on data density
+  const pointsPerView = Math.min(data.length, Math.ceil(data.length * (WEIGHT_MONTHS_IN_VIEW / 12)));
+  const pointWidth = scrollableWidth / Math.max(pointsPerView, 1);
+  const chartWidth = Math.max(scrollableWidth, data.length * pointWidth);
 
   // Generate Y-axis ticks
   const yTicks = [];
@@ -184,7 +188,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
   
   // Calculate chart width based on data points
   const scrollableWidth = width - Y_AXIS_WIDTH;
-  const chartWidth = Math.max(scrollableWidth, data.length * MIN_POINT_WIDTH);
+  const chartWidth = Math.max(scrollableWidth, data.length * PH_MIN_POINT_WIDTH);
 
   // Generate Y-axis ticks
   const yTicks = [];
