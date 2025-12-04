@@ -131,7 +131,7 @@ const Index = () => {
           className="text-[20px] cursor-pointer"
           style={{ transform: 'rotate(-15deg)' }}
         >
-          🐕
+          🐶
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
