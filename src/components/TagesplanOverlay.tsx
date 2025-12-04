@@ -159,12 +159,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     // After dots collapse, hide them
     setTimeout(() => {
       setAnimationPhase('dots-hidden');
-      // Small delay then reset
       setTimeout(() => {
         setAnimationPhase('idle');
         onClose();
       }, 50);
-    }, 500);
+    }, 600);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -197,15 +196,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   attributeName="rx"
                   from={animationPhase === 'dots-collapsing' ? '200' : String(spot.rx)}
                   to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
-                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1.8s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
                   fill="freeze"
+                  calcMode="spline"
+                  keyTimes="0;1"
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 0.2 1' : '0.4 0 0.2 1'}
                 />
                 <animate
                   attributeName="ry"
                   from={animationPhase === 'dots-collapsing' ? '200' : String(spot.ry)}
                   to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
-                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1.8s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
                   fill="freeze"
+                  calcMode="spline"
+                  keyTimes="0;1"
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 0.2 1' : '0.4 0 0.2 1'}
                 />
               </ellipse>
             ))}
