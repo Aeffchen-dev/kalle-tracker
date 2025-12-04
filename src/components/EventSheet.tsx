@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,13 +20,17 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
+  const lastSavedWasGewichtOnly = useRef(false);
 
-  // Reset time to current when sheet opens
+  // Reset time to current when sheet opens (unless last save was gewicht-only)
   useEffect(() => {
     if (open) {
-      setSelectedTime(format(new Date(), 'HH:mm'));
+      if (!lastSavedWasGewichtOnly.current) {
+        setSelectedTime(format(new Date(), 'HH:mm'));
+      }
       setSelectedPh(null);
       setWeightValue('');
+      lastSavedWasGewichtOnly.current = false;
     }
   }, [open]);
 
@@ -59,6 +63,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       const weight = type === 'gewicht' ? (weightValue ? parseFloat(weightValue.replace(',', '.')) : undefined) : undefined;
       await saveEvent(type, eventDate, phValue || undefined, weight);
     }
+
+    // Track if only gewicht was saved (to preserve time on next open)
+    lastSavedWasGewichtOnly.current = selectedTypes.size === 1 && selectedTypes.has('gewicht');
 
     onEventAdded();
     onOpenChange(false);
@@ -169,14 +176,17 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           {/* Weight Input - only show when gewicht is selected */}
           {selectedTypes.has('gewicht') && (
             <div className="flex flex-col gap-2">
-              <input
-                type="number"
-                inputMode="decimal"
-                value={weightValue}
-                onChange={(e) => setWeightValue(e.target.value)}
-                placeholder="Gewicht eingeben"
-                className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center placeholder:text-white/50"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  value={weightValue}
+                  onChange={(e) => setWeightValue(e.target.value)}
+                  placeholder="Gewicht eingeben"
+                  className="box-border h-12 px-3 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center placeholder:text-white/50 flex-1"
+                />
+                <span className="text-[14px] text-white">kg</span>
+              </div>
             </div>
           )}
 
