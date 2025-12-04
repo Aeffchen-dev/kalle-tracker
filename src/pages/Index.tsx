@@ -151,6 +151,7 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
         <div className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} style={{ animationFillMode: 'backwards' }}>
+          <p className="text-[14px] mb-2">Ich war zuletzt draußen vor</p>
           <button 
             onClick={() => setEventSheetOpen(true)}
             className="text-[56px] md:text-[72px] leading-none cursor-pointer"
