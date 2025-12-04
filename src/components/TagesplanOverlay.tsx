@@ -172,6 +172,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Animated dots background */}
       <svg
+        key={animationPhase}
         className={`absolute inset-0 w-full h-full pointer-events-auto ${animationPhase === 'dots-hidden' ? 'hidden' : ''}`}
         viewBox="0 0 200 200"
         preserveAspectRatio="xMidYMid slice"
@@ -200,7 +201,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 0.2 1' : '0.4 0 0.2 1'}
+                  keySplines="0.4 0 0.2 1"
                 />
                 <animate
                   attributeName="ry"
@@ -210,7 +211,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 0.2 1' : '0.4 0 0.2 1'}
+                  keySplines="0.4 0 0.2 1"
                 />
               </ellipse>
             ))}
