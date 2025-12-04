@@ -181,44 +181,44 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Exact positions from index.html dalmatian spots (cx=left%, cy=top%) */}
+            {/* Positions adjusted: HTML top-left + offset for center (cx=left+w/2, cy=top+h/2) */}
             {[
-              /* Large spots */
-              { cx: 5, cy: 8, rx: 6, ry: 7 },
-              { cx: 70, cy: 8, rx: 8, ry: 6 },
-              { cx: 35, cy: 18, rx: 7, ry: 8 },
-              { cx: 82, cy: 28, rx: 6.5, ry: 7.5 },
-              { cx: 8, cy: 42, rx: 7.5, ry: 6 },
-              { cx: 65, cy: 52, rx: 6, ry: 7 },
-              { cx: 20, cy: 68, rx: 8, ry: 6.5 },
-              { cx: 75, cy: 78, rx: 6.5, ry: 8 },
-              { cx: 45, cy: 85, rx: 7, ry: 6 },
-              /* Medium spots */
-              { cx: 18, cy: 12, rx: 5, ry: 5.5 },
-              { cx: 48, cy: 6, rx: 5.5, ry: 4.5 },
-              { cx: 88, cy: 22, rx: 4.5, ry: 5.5 },
-              { cx: 55, cy: 35, rx: 5, ry: 4.5 },
-              { cx: 30, cy: 48, rx: 5.5, ry: 5 },
-              { cx: 92, cy: 58, rx: 4.5, ry: 5 },
-              { cx: 50, cy: 72, rx: 5, ry: 5.5 },
-              { cx: 10, cy: 82, rx: 5.5, ry: 4.5 },
-              { cx: 85, cy: 95, rx: 4.5, ry: 5 },
-              /* Small spots */
-              { cx: 28, cy: 2, rx: 3.5, ry: 4 },
-              { cx: 60, cy: 15, rx: 4, ry: 3.5 },
-              { cx: 3, cy: 25, rx: 3.5, ry: 3.5 },
-              { cx: 42, cy: 38, rx: 4, ry: 4 },
-              { cx: 78, cy: 45, rx: 3.5, ry: 4 },
-              { cx: 38, cy: 62, rx: 4, ry: 3.5 },
-              { cx: 62, cy: 75, rx: 3.5, ry: 3.5 },
-              { cx: 28, cy: 85, rx: 4, ry: 4 },
-              { cx: 68, cy: 92, rx: 3.5, ry: 4 },
-              /* Extra small spots */
-              { cx: 92, cy: 10, rx: 2, ry: 2.5 },
-              { cx: 25, cy: 32, rx: 2.5, ry: 2 },
-              { cx: 15, cy: 55, rx: 2, ry: 2 },
-              { cx: 88, cy: 65, rx: 2.5, ry: 2.5 },
-              { cx: 58, cy: 80, rx: 2, ry: 2.5 },
+              /* Large spots (offset ~+6 left, ~+3.5 top) */
+              { cx: 11, cy: 11.5, rx: 6, ry: 7 },
+              { cx: 78, cy: 11.5, rx: 8, ry: 6 },
+              { cx: 42, cy: 22, rx: 7, ry: 8 },
+              { cx: 88.5, cy: 32, rx: 6.5, ry: 7.5 },
+              { cx: 15.5, cy: 45, rx: 7.5, ry: 6 },
+              { cx: 71, cy: 55.5, rx: 6, ry: 7 },
+              { cx: 28, cy: 71.5, rx: 8, ry: 6.5 },
+              { cx: 81.5, cy: 82, rx: 6.5, ry: 8 },
+              { cx: 52, cy: 88, rx: 7, ry: 6 },
+              /* Medium spots (offset ~+5 left, ~+2.5 top) */
+              { cx: 23, cy: 14.5, rx: 5, ry: 5.5 },
+              { cx: 53.5, cy: 8.5, rx: 5.5, ry: 4.5 },
+              { cx: 92.5, cy: 25, rx: 4.5, ry: 5.5 },
+              { cx: 60, cy: 37.5, rx: 5, ry: 4.5 },
+              { cx: 35.5, cy: 50.5, rx: 5.5, ry: 5 },
+              { cx: 96.5, cy: 60.5, rx: 4.5, ry: 5 },
+              { cx: 55, cy: 75, rx: 5, ry: 5.5 },
+              { cx: 15.5, cy: 84.5, rx: 5.5, ry: 4.5 },
+              { cx: 89.5, cy: 97.5, rx: 4.5, ry: 5 },
+              /* Small spots (offset ~+3.5 left, ~+2 top) */
+              { cx: 31.5, cy: 4, rx: 3.5, ry: 4 },
+              { cx: 64, cy: 17, rx: 4, ry: 3.5 },
+              { cx: 6.5, cy: 27, rx: 3.5, ry: 3.5 },
+              { cx: 46, cy: 40, rx: 4, ry: 4 },
+              { cx: 81.5, cy: 47, rx: 3.5, ry: 4 },
+              { cx: 42, cy: 64, rx: 4, ry: 3.5 },
+              { cx: 65.5, cy: 77, rx: 3.5, ry: 3.5 },
+              { cx: 32, cy: 87, rx: 4, ry: 4 },
+              { cx: 71.5, cy: 94, rx: 3.5, ry: 4 },
+              /* Extra small spots (offset ~+2 left, ~+1.2 top) */
+              { cx: 94, cy: 11.2, rx: 2, ry: 2.5 },
+              { cx: 27.5, cy: 33, rx: 2.5, ry: 2 },
+              { cx: 17, cy: 56, rx: 2, ry: 2 },
+              { cx: 90.5, cy: 66.2, rx: 2.5, ry: 2.5 },
+              { cx: 60, cy: 81.2, rx: 2, ry: 2.5 },
             ].map((spot, i) => (
               <ellipse key={i} cx={spot.cx} cy={spot.cy}>
                 <animate
