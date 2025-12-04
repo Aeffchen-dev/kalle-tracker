@@ -132,7 +132,7 @@ const Index = () => {
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] bg-transparent text-black border border-black rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+          className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
         >
           Tagesplan
         </button>
