@@ -110,19 +110,25 @@ export default {
         },
         "tail-wag": {
           "0%, 100%": {
-            transform: "perspective(400px) rotateY(0deg)",
+            transform: "rotate(0deg)",
           },
-          "20%": {
-            transform: "perspective(400px) rotateY(-15deg)",
+          "15%": {
+            transform: "rotate(15deg)",
           },
-          "40%": {
-            transform: "perspective(400px) rotateY(12deg)",
+          "30%": {
+            transform: "rotate(-12deg)",
+          },
+          "45%": {
+            transform: "rotate(10deg)",
           },
           "60%": {
-            transform: "perspective(400px) rotateY(-10deg)",
+            transform: "rotate(-8deg)",
           },
-          "80%": {
-            transform: "perspective(400px) rotateY(6deg)",
+          "75%": {
+            transform: "rotate(5deg)",
+          },
+          "90%": {
+            transform: "rotate(-3deg)",
           },
         },
       },
@@ -132,7 +138,7 @@ export default {
         "dog-ride": "dog-ride 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
-        "tail-wag": "tail-wag 0.5s ease-in-out",
+        "tail-wag": "tail-wag 0.6s ease-in-out",
       },
     },
   },
