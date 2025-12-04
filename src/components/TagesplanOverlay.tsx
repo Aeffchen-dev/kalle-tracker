@@ -132,12 +132,23 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing' | 'dots-hidden'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
+      // Get dalmatian spots and animate them
+      const spotsContainer = document.getElementById('dalmatian-spots');
+      if (spotsContainer) {
+        const spots = spotsContainer.children;
+        Array.from(spots).forEach((spot) => {
+          const el = spot as HTMLElement;
+          el.style.transition = 'transform 1.8s cubic-bezier(0, 0, 0.2, 1)';
+          el.style.transform = el.style.transform.replace(/scale\([^)]*\)/, '') + ' scale(30)';
+        });
+      }
+      
       setAnimationPhase('expanding');
-      // Sync with dot animation (1.8s with ease-out)
+      // Show content after spots have expanded
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         setAnimationPhase('visible');
@@ -153,10 +164,23 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Immediately hide all brown backgrounds and start dots collapsing
+    // Reset body color immediately
     document.body.style.backgroundColor = '';
     setAnimationPhase('dots-collapsing');
-    // After dots collapse, cleanup
+    
+    // Animate spots back to original size
+    const spotsContainer = document.getElementById('dalmatian-spots');
+    if (spotsContainer) {
+      const spots = spotsContainer.children;
+      Array.from(spots).forEach((spot) => {
+        const el = spot as HTMLElement;
+        el.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 1, 1)';
+        // Remove the scale transform, keep original rotation
+        el.style.transform = el.style.transform.replace(/scale\([^)]*\)/, '');
+      });
+    }
+    
+    // Cleanup after animation
     setTimeout(() => {
       setAnimationPhase('idle');
       onClose();
@@ -167,63 +191,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      {/* Animated dots background */}
-      <svg
-        key={animationPhase}
-        className={`absolute inset-0 w-full h-full pointer-events-auto ${animationPhase === 'dots-hidden' ? 'hidden' : ''}`}
-        viewBox="0 0 200 200"
-        preserveAspectRatio="xMidYMid slice"
-      >
-        <defs>
-          <clipPath id="dotsClip">
-            {/* All dalmatian spots that expand together */}
-            {[
-              { cx: 30, cy: 35, rx: 16, ry: 20 },
-              { cx: 150, cy: 25, rx: 20, ry: 15 },
-              { cx: 90, cy: 80, rx: 24, ry: 18 },
-              { cx: 170, cy: 100, rx: 14, ry: 22 },
-              { cx: 50, cy: 130, rx: 18, ry: 14 },
-              { cx: 120, cy: 150, rx: 22, ry: 16 },
-              { cx: 25, cy: 180, rx: 15, ry: 12 },
-              { cx: 180, cy: 170, rx: 12, ry: 18 },
-              { cx: 75, cy: 20, rx: 10, ry: 14 },
-              { cx: 140, cy: 75, rx: 12, ry: 10 },
-            ].map((spot, i) => (
-              <ellipse key={i} cx={spot.cx} cy={spot.cy}>
-                <animate
-                  attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.rx)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.rx)}
-                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
-                />
-                <animate
-                  attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '200' : String(spot.ry)}
-                  to={animationPhase === 'expanding' || animationPhase === 'visible' ? '200' : String(spot.ry)}
-                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.8s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
-                />
-              </ellipse>
-            ))}
-          </clipPath>
-        </defs>
-        <rect
-          x="0"
-          y="0"
-          width="200"
-          height="200"
-          style={{ fill: 'hsl(var(--spot-color))' }}
-          clipPath="url(#dotsClip)"
-        />
-      </svg>
-
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
         <div className="absolute inset-0 bg-spot pointer-events-auto" />
