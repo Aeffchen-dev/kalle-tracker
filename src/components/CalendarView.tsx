@@ -269,9 +269,9 @@ const CalendarView = () => {
                         <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
                         <span>
                           {event.type === 'pipi' ? 'Pipi' : event.type === 'stuhlgang' ? 'Stuhlgang' : event.type === 'phwert' ? 'pH-Wert' : 'Gewicht'}
-                          {event.type === 'pipi' && event.ph_value && (
+                          {event.type === 'phwert' && event.ph_value && (
                             <>
-                              , pH: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>{event.ph_value}</span>
+                              : <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>{event.ph_value}</span>
                             </>
                           )}
                         </span>

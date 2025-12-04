@@ -52,8 +52,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     // Save an event for each selected type
     for (const type of selectedTypes) {
-      // Only include pH value for pipi type
-      const phValue = type === 'pipi' ? selectedPh : undefined;
+      // Only include pH value for phwert type
+      const phValue = type === 'phwert' ? selectedPh : undefined;
       await saveEvent(type, eventDate, phValue || undefined);
     }
 
@@ -120,10 +120,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
           </div>
 
-          {/* pH Value Selection - only show when pipi is selected */}
-          {selectedTypes.has('pipi') && (
+          {/* pH Value Selection - only show when phwert is selected */}
+          {selectedTypes.has('phwert') && (
           <div className="flex flex-col gap-2">
-            <span className="text-[14px] text-white">pH-Wert</span>
+            <span className="text-[14px] text-white">pH-Wert auswählen</span>
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
                   {PH_VALUES_ROW1.map((ph, index) => {
