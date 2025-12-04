@@ -322,7 +322,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={containerRef}>
+      <div ref={containerRef} className="mt-2">
         <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
           <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" width={width} />
