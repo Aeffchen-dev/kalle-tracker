@@ -110,19 +110,19 @@ export default {
         },
         "tail-wag": {
           "0%, 100%": {
-            transform: "perspective(200px) rotateY(0deg)",
+            transform: "perspective(400px) rotateY(0deg)",
           },
           "20%": {
-            transform: "perspective(200px) rotateY(-8deg)",
+            transform: "perspective(400px) rotateY(-15deg)",
           },
           "40%": {
-            transform: "perspective(200px) rotateY(6deg)",
+            transform: "perspective(400px) rotateY(12deg)",
           },
           "60%": {
-            transform: "perspective(200px) rotateY(-5deg)",
+            transform: "perspective(400px) rotateY(-10deg)",
           },
           "80%": {
-            transform: "perspective(200px) rotateY(3deg)",
+            transform: "perspective(400px) rotateY(6deg)",
           },
         },
       },
