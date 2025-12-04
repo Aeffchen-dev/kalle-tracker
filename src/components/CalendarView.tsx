@@ -270,9 +270,9 @@ const CalendarView = () => {
                         <span>
                           {event.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}
                           {event.type === 'pipi' && event.ph_value && (
-                            <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>
-                              , pH: {event.ph_value}
-                            </span>
+                            <>
+                              , pH: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value) ? 'text-red-500' : ''}>{event.ph_value}</span>
+                            </>
                           )}
                         </span>
                       </span>
