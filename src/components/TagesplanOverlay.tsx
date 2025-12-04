@@ -179,8 +179,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       <svg
         key={animationPhase}
         className="absolute inset-0 w-full h-full pointer-events-auto"
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
+        viewBox="0 0 100 177.78"
+        preserveAspectRatio="xMidYMid slice"
       >
         {[
           { cx: 7.4, cy: 10.8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
