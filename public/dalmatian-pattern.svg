@@ -1,38 +1,23 @@
 <svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-  <!-- Large spots -->
-  <ellipse cx="10" cy="16" rx="12" ry="14" fill="#3d2b1f"/>
-  <ellipse cx="140" cy="16" rx="16" ry="12" fill="#3d2b1f"/>
-  <ellipse cx="70" cy="36" rx="14" ry="16" fill="#3d2b1f"/>
-  <ellipse cx="164" cy="56" rx="13" ry="15" fill="#3d2b1f"/>
-  <ellipse cx="16" cy="84" rx="15" ry="12" fill="#3d2b1f"/>
-  <ellipse cx="130" cy="104" rx="12" ry="14" fill="#3d2b1f"/>
-  <ellipse cx="40" cy="136" rx="16" ry="13" fill="#3d2b1f"/>
-  <ellipse cx="150" cy="156" rx="13" ry="16" fill="#3d2b1f"/>
-  <ellipse cx="90" cy="170" rx="14" ry="12" fill="#3d2b1f"/>
-  <!-- Medium spots -->
-  <ellipse cx="36" cy="24" rx="10" ry="11" fill="#3d2b1f"/>
-  <ellipse cx="96" cy="12" rx="11" ry="9" fill="#3d2b1f"/>
-  <ellipse cx="176" cy="44" rx="9" ry="11" fill="#3d2b1f"/>
-  <ellipse cx="110" cy="70" rx="10" ry="9" fill="#3d2b1f"/>
-  <ellipse cx="60" cy="96" rx="11" ry="10" fill="#3d2b1f"/>
-  <ellipse cx="184" cy="116" rx="9" ry="10" fill="#3d2b1f"/>
-  <ellipse cx="100" cy="144" rx="10" ry="11" fill="#3d2b1f"/>
-  <ellipse cx="20" cy="164" rx="11" ry="9" fill="#3d2b1f"/>
-  <ellipse cx="170" cy="190" rx="9" ry="10" fill="#3d2b1f"/>
-  <!-- Small spots -->
-  <ellipse cx="56" cy="4" rx="7" ry="8" fill="#3d2b1f"/>
-  <ellipse cx="120" cy="30" rx="8" ry="7" fill="#3d2b1f"/>
-  <ellipse cx="6" cy="50" rx="7" ry="7" fill="#3d2b1f"/>
-  <ellipse cx="84" cy="76" rx="8" ry="8" fill="#3d2b1f"/>
-  <ellipse cx="156" cy="90" rx="7" ry="8" fill="#3d2b1f"/>
-  <ellipse cx="76" cy="124" rx="8" ry="7" fill="#3d2b1f"/>
-  <ellipse cx="124" cy="150" rx="7" ry="7" fill="#3d2b1f"/>
-  <ellipse cx="56" cy="170" rx="8" ry="8" fill="#3d2b1f"/>
-  <ellipse cx="136" cy="184" rx="7" ry="8" fill="#3d2b1f"/>
-  <!-- Extra small spots -->
-  <ellipse cx="184" cy="20" rx="4" ry="5" fill="#3d2b1f"/>
-  <ellipse cx="50" cy="64" rx="5" ry="4" fill="#3d2b1f"/>
-  <ellipse cx="30" cy="110" rx="4" ry="4" fill="#3d2b1f"/>
-  <ellipse cx="176" cy="130" rx="5" ry="5" fill="#3d2b1f"/>
-  <ellipse cx="116" cy="160" rx="4" ry="5" fill="#3d2b1f"/>
+  <!-- Irregular dalmatian spots matching #dalmatian-spots style -->
+  <!-- Spot 1: top-left area -->
+  <path d="M16 4 Q24 2 28 8 Q32 16 26 22 Q20 28 12 24 Q4 20 6 12 Q8 4 16 4" fill="#3d2b1f"/>
+  <!-- Spot 2: top area -->
+  <path d="M96 6 Q108 4 114 14 Q118 26 108 32 Q96 36 86 28 Q78 20 84 10 Q90 2 96 6" fill="#3d2b1f"/>
+  <!-- Spot 3: top-right area -->
+  <path d="M170 16 Q182 12 188 24 Q194 38 182 46 Q168 52 158 42 Q150 30 160 20 Q166 14 170 16" fill="#3d2b1f"/>
+  <!-- Spot 4: upper-middle-left -->
+  <path d="M38 52 Q50 48 56 60 Q62 74 50 82 Q36 88 26 76 Q18 62 28 54 Q34 48 38 52" fill="#3d2b1f"/>
+  <!-- Spot 5: center-right area -->
+  <path d="M154 68 Q168 64 176 78 Q184 94 170 104 Q154 112 142 98 Q132 82 144 70 Q150 64 154 68" fill="#3d2b1f"/>
+  <!-- Spot 6: middle-left area -->
+  <path d="M22 106 Q36 102 44 118 Q52 136 36 146 Q18 154 8 138 Q0 120 14 110 Q20 104 22 106" fill="#3d2b1f"/>
+  <!-- Spot 7: center area -->
+  <path d="M102 118 Q116 114 124 130 Q132 148 116 158 Q98 166 86 150 Q76 132 90 122 Q98 116 102 118" fill="#3d2b1f"/>
+  <!-- Spot 8: lower-right area -->
+  <path d="M166 144 Q180 140 188 156 Q196 174 180 184 Q162 192 150 176 Q140 158 154 148 Q162 142 166 144" fill="#3d2b1f"/>
+  <!-- Spot 9: bottom-left area -->
+  <path d="M46 166 Q60 162 68 178 Q76 196 60 206 Q42 214 30 198 Q20 180 34 170 Q42 164 46 166" fill="#3d2b1f"/>
+  <!-- Spot 10: bottom-center area -->
+  <path d="M118 180 Q130 176 136 190 Q142 206 128 214 Q112 220 102 206 Q94 190 108 182 Q114 178 118 180" fill="#3d2b1f"/>
 </svg>
