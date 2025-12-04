@@ -92,9 +92,19 @@
     @apply border-border;
   }
 
+  html, body {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+  }
+
   body {
     @apply text-foreground font-rauschen;
     background-color: #f8f8f8;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 }
 
