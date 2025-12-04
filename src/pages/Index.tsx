@@ -31,12 +31,15 @@ const Index = () => {
 
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
-    if (eventList.length === 0) {
+    // Only count pipi and stuhlgang for the countdown, not gewicht/phwert
+    const relevantEvents = eventList.filter(e => e.type === 'pipi' || e.type === 'stuhlgang');
+    
+    if (relevantEvents.length === 0) {
       setTimeDisplay('00h 00m 00s');
       return;
     }
 
-    const sortedEvents = [...eventList].sort((a, b) => 
+    const sortedEvents = [...relevantEvents].sort((a, b) => 
       new Date(b.time).getTime() - new Date(a.time).getTime()
     );
     const lastEvent = sortedEvents[0];
