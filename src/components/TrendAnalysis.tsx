@@ -56,7 +56,7 @@ const WeightChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgVal
   const maxValue = Math.max(...data.map(d => d.value));
 
   return (
-    <div className="h-[180px] w-full overflow-hidden">
+    <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
       <AreaChart 
         width={340} 
         height={180} 
@@ -121,7 +121,7 @@ const PhChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: 
   const maxValue = Math.max(...data.map(d => d.value));
 
   return (
-    <div className="h-[180px] w-full overflow-hidden">
+    <div className="h-[180px] w-full overflow-hidden" data-vaul-no-drag>
       <LineChart 
         width={340} 
         height={180} 
