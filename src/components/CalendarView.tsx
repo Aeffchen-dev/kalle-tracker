@@ -223,9 +223,12 @@ const CalendarView = () => {
                 <DrawerTitle className="text-center text-[14px] text-white leading-6">
                   Trend-Analyse
                 </DrawerTitle>
-                <div className="w-6 h-6 flex items-center justify-center">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowTrends(false); }}
+                  className="w-6 h-6 flex items-center justify-center"
+                >
                   <TrendingUp size={20} className="text-[#5AD940]" />
-                </div>
+                </button>
               </>
             ) : (
               <>
