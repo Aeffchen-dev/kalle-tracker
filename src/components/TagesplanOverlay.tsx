@@ -181,70 +181,79 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Organic blob shapes at dalmatian spot positions */}
+            {/* Irregular circle shapes like dalmatian spots */}
             {[
               /* Large spots */
-              { cx: 11, cy: 11.5, baseSize: 6.5 },
-              { cx: 78, cy: 11.5, baseSize: 7 },
-              { cx: 42, cy: 22, baseSize: 7.5 },
-              { cx: 88.5, cy: 32, baseSize: 7 },
-              { cx: 15.5, cy: 45, baseSize: 6.75 },
-              { cx: 71, cy: 55.5, baseSize: 6.5 },
-              { cx: 28, cy: 71.5, baseSize: 7.25 },
-              { cx: 81.5, cy: 82, baseSize: 7.25 },
-              { cx: 52, cy: 88, baseSize: 6.5 },
+              { cx: 11, cy: 11.5, baseSize: 6.5, seed: 0 },
+              { cx: 78, cy: 11.5, baseSize: 7, seed: 1 },
+              { cx: 42, cy: 22, baseSize: 7.5, seed: 2 },
+              { cx: 88.5, cy: 32, baseSize: 7, seed: 3 },
+              { cx: 15.5, cy: 45, baseSize: 6.75, seed: 4 },
+              { cx: 71, cy: 55.5, baseSize: 6.5, seed: 5 },
+              { cx: 28, cy: 71.5, baseSize: 7.25, seed: 6 },
+              { cx: 81.5, cy: 82, baseSize: 7.25, seed: 7 },
+              { cx: 52, cy: 88, baseSize: 6.5, seed: 8 },
               /* Medium spots */
-              { cx: 23, cy: 14.5, baseSize: 5.25 },
-              { cx: 53.5, cy: 8.5, baseSize: 5 },
-              { cx: 92.5, cy: 25, baseSize: 5 },
-              { cx: 60, cy: 37.5, baseSize: 4.75 },
-              { cx: 35.5, cy: 50.5, baseSize: 5.25 },
-              { cx: 96.5, cy: 60.5, baseSize: 4.75 },
-              { cx: 55, cy: 75, baseSize: 5.25 },
-              { cx: 15.5, cy: 84.5, baseSize: 5 },
-              { cx: 89.5, cy: 97.5, baseSize: 4.75 },
+              { cx: 23, cy: 14.5, baseSize: 5.25, seed: 9 },
+              { cx: 53.5, cy: 8.5, baseSize: 5, seed: 10 },
+              { cx: 92.5, cy: 25, baseSize: 5, seed: 11 },
+              { cx: 60, cy: 37.5, baseSize: 4.75, seed: 12 },
+              { cx: 35.5, cy: 50.5, baseSize: 5.25, seed: 13 },
+              { cx: 96.5, cy: 60.5, baseSize: 4.75, seed: 14 },
+              { cx: 55, cy: 75, baseSize: 5.25, seed: 15 },
+              { cx: 15.5, cy: 84.5, baseSize: 5, seed: 16 },
+              { cx: 89.5, cy: 97.5, baseSize: 4.75, seed: 17 },
               /* Small spots */
-              { cx: 31.5, cy: 4, baseSize: 3.75 },
-              { cx: 64, cy: 17, baseSize: 3.75 },
-              { cx: 6.5, cy: 27, baseSize: 3.5 },
-              { cx: 46, cy: 40, baseSize: 4 },
-              { cx: 81.5, cy: 47, baseSize: 3.75 },
-              { cx: 42, cy: 64, baseSize: 3.75 },
-              { cx: 65.5, cy: 77, baseSize: 3.5 },
-              { cx: 32, cy: 87, baseSize: 4 },
-              { cx: 71.5, cy: 94, baseSize: 3.75 },
+              { cx: 31.5, cy: 4, baseSize: 3.75, seed: 18 },
+              { cx: 64, cy: 17, baseSize: 3.75, seed: 19 },
+              { cx: 6.5, cy: 27, baseSize: 3.5, seed: 20 },
+              { cx: 46, cy: 40, baseSize: 4, seed: 21 },
+              { cx: 81.5, cy: 47, baseSize: 3.75, seed: 22 },
+              { cx: 42, cy: 64, baseSize: 3.75, seed: 23 },
+              { cx: 65.5, cy: 77, baseSize: 3.5, seed: 24 },
+              { cx: 32, cy: 87, baseSize: 4, seed: 25 },
+              { cx: 71.5, cy: 94, baseSize: 3.75, seed: 26 },
               /* Extra small spots */
-              { cx: 94, cy: 11.2, baseSize: 2.25 },
-              { cx: 27.5, cy: 33, baseSize: 2.25 },
-              { cx: 17, cy: 56, baseSize: 2 },
-              { cx: 90.5, cy: 66.2, baseSize: 2.5 },
-              { cx: 60, cy: 81.2, baseSize: 2.25 },
-            ].map((spot, i) => {
-              // Generate organic blob path with slight variations per spot
-              const seed = i * 137.5;
-              const points = 8;
-              const generatePath = (scale: number) => {
-                const path: string[] = [];
-                for (let p = 0; p <= points; p++) {
-                  const angle = (p / points) * Math.PI * 2;
-                  const variance = 0.7 + 0.6 * Math.sin(seed + p * 2.3);
-                  const r = scale * variance;
-                  const x = spot.cx + Math.cos(angle) * r;
-                  const y = spot.cy + Math.sin(angle) * r * 1.1;
-                  path.push(p === 0 ? `M ${x} ${y}` : `L ${x} ${y}`);
-                }
-                return path.join(' ') + ' Z';
+              { cx: 94, cy: 11.2, baseSize: 2.25, seed: 27 },
+              { cx: 27.5, cy: 33, baseSize: 2.25, seed: 28 },
+              { cx: 17, cy: 56, baseSize: 2, seed: 29 },
+              { cx: 90.5, cy: 66.2, baseSize: 2.5, seed: 30 },
+              { cx: 60, cy: 81.2, baseSize: 2.25, seed: 31 },
+            ].map((spot) => {
+              // Create irregular circle using cubic bezier curves
+              const generateIrregularCircle = (scale: number) => {
+                // Pre-computed random-ish offsets per spot for organic look
+                const offsets = [
+                  [0.92, 1.08, 0.95, 1.05, 0.88, 1.12, 0.97, 1.03],
+                  [1.1, 0.9, 1.05, 0.95, 1.08, 0.92, 0.98, 1.02],
+                  [0.88, 1.12, 0.93, 1.07, 0.9, 1.1, 1.05, 0.95],
+                  [1.05, 0.95, 1.1, 0.9, 0.92, 1.08, 0.97, 1.03],
+                ][spot.seed % 4];
+                
+                const r = scale;
+                const k = 0.552284749831; // Bezier approximation constant for circles
+                
+                const top = { x: spot.cx, y: spot.cy - r * offsets[0] };
+                const right = { x: spot.cx + r * offsets[1], y: spot.cy };
+                const bottom = { x: spot.cx, y: spot.cy + r * offsets[2] };
+                const left = { x: spot.cx - r * offsets[3], y: spot.cy };
+                
+                return `M ${top.x} ${top.y} 
+                  C ${top.x + r * k * offsets[4]} ${top.y}, ${right.x} ${right.y - r * k * offsets[5]}, ${right.x} ${right.y}
+                  C ${right.x} ${right.y + r * k * offsets[6]}, ${bottom.x + r * k * offsets[7]} ${bottom.y}, ${bottom.x} ${bottom.y}
+                  C ${bottom.x - r * k * offsets[0]} ${bottom.y}, ${left.x} ${left.y + r * k * offsets[1]}, ${left.x} ${left.y}
+                  C ${left.x} ${left.y - r * k * offsets[2]}, ${top.x - r * k * offsets[3]} ${top.y}, ${top.x} ${top.y} Z`;
               };
               
               const startPath = animationPhase === 'dots-collapsing' 
-                ? generatePath(35) 
-                : generatePath(spot.baseSize);
+                ? generateIrregularCircle(35) 
+                : generateIrregularCircle(spot.baseSize);
               const endPath = animationPhase === 'dots-collapsing' 
-                ? generatePath(spot.baseSize) 
-                : generatePath(100);
+                ? generateIrregularCircle(spot.baseSize) 
+                : generateIrregularCircle(100);
               
               return (
-                <path key={i} d={startPath}>
+                <path key={spot.seed} d={startPath}>
                   <animate
                     attributeName="d"
                     from={startPath}
