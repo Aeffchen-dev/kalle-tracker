@@ -115,17 +115,16 @@ const Index = () => {
       
 
       {/* Header */}
-      <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
           onClick={() => setShowDogAnimation(true)}
-          className="cursor-pointer"
-          style={{ transform: 'rotate(-15deg)' }}
+          className="cursor-pointer -mt-2 -ml-2"
         >
           <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] bg-transparent text-black border border-black rounded-full py-[2px] px-[8px] cursor-pointer"
+          className="text-[14px] bg-transparent text-black border border-black rounded-full py-[2px] px-[8px] cursor-pointer mt-4"
         >
           Tagesplan
         </button>
