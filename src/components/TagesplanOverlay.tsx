@@ -338,11 +338,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               {/* Schedule Table */}
               <div className="overflow-x-auto -mx-4">
                 <div className="pl-4 min-w-fit">
-                <table className="w-full text-[12px] min-w-[700px] border border-white/30 rounded-l-[16px] overflow-hidden">
+                <div className="border border-white/30 rounded-l-[16px] overflow-hidden inline-block min-w-[700px]">
+                <table className="w-full text-[12px]">
                   <thead>
                     <tr className="border-b border-white/30">
                       {weekSchedule.map((day, index) => (
-                        <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${index === 0 ? 'rounded-tl-[16px]' : ''}`}>
+                        <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
                           <div className="text-white">{day.day}</div>
                           <div className="text-white/60 font-normal">{day.type}</div>
                         </th>
@@ -357,7 +358,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           return (
                             <td
                               key={dayIndex}
-                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${dayIndex === 0 && slotIndex === 4 ? 'rounded-bl-[16px]' : ''} ${
+                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
                                 slot?.person === 'niklas'
                                   ? 'bg-blue-500/20'
                                   : slot?.person === 'jana'
@@ -378,6 +379,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     ))}
                   </tbody>
                 </table>
+                </div>
                 </div>
               </div>
             </div>
