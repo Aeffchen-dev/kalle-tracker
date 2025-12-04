@@ -238,17 +238,19 @@ const CalendarView = () => {
               </>
             ) : (
               <>
-                <div className="w-6 h-6 flex items-center justify-center">
-                  {canGoPrev && (
-                    <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
-                      <ArrowLeft size={24} className="text-white" />
-                    </button>
-                  )}
+                <div className="flex items-center gap-2 w-[56px]">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {canGoPrev && (
+                      <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
+                        <ArrowLeft size={24} className="text-white" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                <DrawerTitle className="text-center text-[14px] text-white leading-6 flex-1">
                   {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                 </DrawerTitle>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-[56px] justify-end">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoNext && (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
