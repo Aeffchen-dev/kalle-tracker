@@ -131,7 +131,7 @@ const Index = () => {
           <img 
             src={dalmatianHeader} 
             alt="Kalle" 
-            className="h-[100px] w-auto relative z-10 animate-tail-wag origin-bottom"
+            className="h-[100px] w-auto relative z-10"
           />
         </button>
         <button 
