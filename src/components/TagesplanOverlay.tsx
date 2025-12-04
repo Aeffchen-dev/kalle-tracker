@@ -262,7 +262,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     fill="freeze"
                     calcMode="spline"
                     keyTimes="0;1"
-                    keySplines="0.4 0 0.2 1"
+                    keySplines={animationPhase === 'dots-collapsing' ? "0.4 0 0.2 1" : "0.42 0 0.58 1"}
                   />
                 </path>
               );
