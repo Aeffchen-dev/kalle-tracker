@@ -1,6 +1,6 @@
 import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes, subMonths } from 'date-fns';
+import { format, differenceInMinutes } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 
@@ -61,9 +61,8 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const MIN_POINT_WIDTH = 50;
+const MIN_POINT_WIDTH = 150;
 const Y_AXIS_WIDTH = 45;
-const SIX_MONTHS_AGO = subMonths(new Date(), 6).getTime();
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
