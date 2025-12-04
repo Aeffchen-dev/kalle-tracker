@@ -165,7 +165,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     // Hide SVG after animation completes
     setTimeout(() => {
       setAnimationPhase('idle');
-    }, 800);
+    }, 300);
   };
 
   if (animationPhase === 'idle') return null;
@@ -222,9 +222,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <ellipse key={i} cx={spot.cx} cy={spot.cy}>
                 <animate
                   attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.rx)}
+                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.rx)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.8s' : '1.8s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
@@ -232,9 +232,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 />
                 <animate
                   attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.ry)}
+                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.ry)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.8s' : '1.8s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
