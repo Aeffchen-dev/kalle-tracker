@@ -158,7 +158,7 @@ const Index = () => {
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
-      {showCalendar && !showTagesplan && <CalendarView />}
+      {showCalendar && !showTagesplan && <CalendarView eventSheetOpen={eventSheetOpen} />}
 
       {/* Dog animation */}
       {showDogAnimation && (
