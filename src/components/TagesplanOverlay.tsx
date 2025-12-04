@@ -181,68 +181,70 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Positions adjusted: HTML top-left + offset for center (cx=left+w/2, cy=top+h/2) */}
+            {/* Organic blob shapes matching dalmatian spots */}
             {[
-              /* Large spots (offset ~+6 left, ~+3.5 top) */
-              { cx: 11, cy: 11.5, rx: 6, ry: 7 },
-              { cx: 78, cy: 11.5, rx: 8, ry: 6 },
-              { cx: 42, cy: 22, rx: 7, ry: 8 },
-              { cx: 88.5, cy: 32, rx: 6.5, ry: 7.5 },
-              { cx: 15.5, cy: 45, rx: 7.5, ry: 6 },
-              { cx: 71, cy: 55.5, rx: 6, ry: 7 },
-              { cx: 28, cy: 71.5, rx: 8, ry: 6.5 },
-              { cx: 81.5, cy: 82, rx: 6.5, ry: 8 },
-              { cx: 52, cy: 88, rx: 7, ry: 6 },
-              /* Medium spots (offset ~+5 left, ~+2.5 top) */
-              { cx: 23, cy: 14.5, rx: 5, ry: 5.5 },
-              { cx: 53.5, cy: 8.5, rx: 5.5, ry: 4.5 },
-              { cx: 92.5, cy: 25, rx: 4.5, ry: 5.5 },
-              { cx: 60, cy: 37.5, rx: 5, ry: 4.5 },
-              { cx: 35.5, cy: 50.5, rx: 5.5, ry: 5 },
-              { cx: 96.5, cy: 60.5, rx: 4.5, ry: 5 },
-              { cx: 55, cy: 75, rx: 5, ry: 5.5 },
-              { cx: 15.5, cy: 84.5, rx: 5.5, ry: 4.5 },
-              { cx: 89.5, cy: 97.5, rx: 4.5, ry: 5 },
-              /* Small spots (offset ~+3.5 left, ~+2 top) */
-              { cx: 31.5, cy: 4, rx: 3.5, ry: 4 },
-              { cx: 64, cy: 17, rx: 4, ry: 3.5 },
-              { cx: 6.5, cy: 27, rx: 3.5, ry: 3.5 },
-              { cx: 46, cy: 40, rx: 4, ry: 4 },
-              { cx: 81.5, cy: 47, rx: 3.5, ry: 4 },
-              { cx: 42, cy: 64, rx: 4, ry: 3.5 },
-              { cx: 65.5, cy: 77, rx: 3.5, ry: 3.5 },
-              { cx: 32, cy: 87, rx: 4, ry: 4 },
-              { cx: 71.5, cy: 94, rx: 3.5, ry: 4 },
-              /* Extra small spots (offset ~+2 left, ~+1.2 top) */
-              { cx: 94, cy: 11.2, rx: 2, ry: 2.5 },
-              { cx: 27.5, cy: 33, rx: 2.5, ry: 2 },
-              { cx: 17, cy: 56, rx: 2, ry: 2 },
-              { cx: 90.5, cy: 66.2, rx: 2.5, ry: 2.5 },
-              { cx: 60, cy: 81.2, rx: 2, ry: 2.5 },
-            ].map((spot, i) => (
-              <ellipse key={i} cx={spot.cx} cy={spot.cy}>
-                <animate
-                  attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.rx)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.4 0 0.2 1"
-                />
-                <animate
-                  attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.ry)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.35 0 0.25 1"
-                />
-              </ellipse>
-            ))}
+              /* Large spots */
+              { cx: 11, cy: 11.5, size: 7, blob: "M0.3,0.5 C0.3,0.2 0.5,0 0.7,0.1 C0.9,0.2 1,0.5 0.9,0.7 C0.8,0.9 0.5,1 0.3,0.9 C0.1,0.8 0.1,0.6 0.3,0.5" },
+              { cx: 78, cy: 11.5, size: 8, blob: "M0.2,0.4 C0.2,0.1 0.6,0 0.8,0.2 C1,0.4 0.9,0.7 0.7,0.9 C0.5,1 0.2,0.9 0.1,0.7 C0,0.5 0.1,0.4 0.2,0.4" },
+              { cx: 42, cy: 22, size: 8, blob: "M0.5,0.1 C0.8,0.1 1,0.4 0.9,0.7 C0.8,1 0.4,1 0.2,0.8 C0,0.6 0.1,0.3 0.3,0.1 C0.4,0 0.5,0.1 0.5,0.1" },
+              { cx: 88.5, cy: 32, size: 7, blob: "M0.4,0.1 C0.7,0 0.9,0.3 0.9,0.6 C0.9,0.9 0.6,1 0.3,0.9 C0,0.8 0,0.4 0.2,0.2 C0.3,0.1 0.4,0.1 0.4,0.1" },
+              { cx: 15.5, cy: 45, size: 7, blob: "M0.3,0.2 C0.6,0 0.9,0.2 1,0.5 C1,0.8 0.7,1 0.4,0.9 C0.1,0.8 0,0.5 0.1,0.3 C0.2,0.2 0.3,0.2 0.3,0.2" },
+              { cx: 71, cy: 55.5, size: 7, blob: "M0.5,0 C0.8,0.1 1,0.4 0.9,0.7 C0.8,1 0.4,1 0.2,0.8 C0,0.5 0.2,0.2 0.4,0.1 C0.5,0 0.5,0 0.5,0" },
+              { cx: 28, cy: 71.5, size: 8, blob: "M0.2,0.3 C0.3,0 0.7,0 0.9,0.3 C1,0.6 0.8,0.9 0.5,1 C0.2,1 0,0.7 0.1,0.4 C0.1,0.3 0.2,0.3 0.2,0.3" },
+              { cx: 81.5, cy: 82, size: 7, blob: "M0.4,0.1 C0.7,0 1,0.3 0.9,0.6 C0.8,0.9 0.5,1 0.2,0.9 C0,0.7 0,0.4 0.2,0.2 C0.3,0.1 0.4,0.1 0.4,0.1" },
+              { cx: 52, cy: 88, size: 7, blob: "M0.3,0.2 C0.6,0 0.9,0.2 0.9,0.5 C0.9,0.8 0.6,1 0.3,0.9 C0,0.8 0,0.4 0.2,0.2 C0.3,0.2 0.3,0.2 0.3,0.2" },
+              /* Medium spots */
+              { cx: 23, cy: 14.5, size: 5.5, blob: "M0.3,0.3 C0.5,0 0.9,0.2 0.9,0.5 C0.9,0.8 0.6,1 0.3,0.9 C0,0.7 0,0.4 0.3,0.3" },
+              { cx: 53.5, cy: 8.5, size: 5, blob: "M0.4,0.1 C0.8,0.1 1,0.4 0.8,0.8 C0.6,1 0.2,0.9 0.1,0.6 C0,0.3 0.2,0.1 0.4,0.1" },
+              { cx: 92.5, cy: 25, size: 5, blob: "M0.5,0.1 C0.8,0.2 0.9,0.5 0.8,0.8 C0.6,1 0.2,0.9 0.1,0.6 C0.1,0.3 0.3,0.1 0.5,0.1" },
+              { cx: 60, cy: 37.5, size: 5, blob: "M0.2,0.4 C0.3,0.1 0.7,0 0.9,0.3 C1,0.6 0.8,0.9 0.5,0.9 C0.2,0.9 0,0.6 0.2,0.4" },
+              { cx: 35.5, cy: 50.5, size: 5.5, blob: "M0.4,0.2 C0.7,0 1,0.3 0.9,0.6 C0.8,0.9 0.4,1 0.2,0.8 C0,0.5 0.2,0.2 0.4,0.2" },
+              { cx: 96.5, cy: 60.5, size: 5, blob: "M0.3,0.3 C0.6,0 0.9,0.2 0.9,0.6 C0.9,0.9 0.5,1 0.2,0.8 C0,0.5 0.1,0.3 0.3,0.3" },
+              { cx: 55, cy: 75, size: 5.5, blob: "M0.5,0.1 C0.8,0.2 1,0.5 0.8,0.8 C0.6,1 0.2,0.9 0.1,0.5 C0.1,0.2 0.3,0.1 0.5,0.1" },
+              { cx: 15.5, cy: 84.5, size: 5, blob: "M0.3,0.2 C0.6,0 0.9,0.3 0.9,0.6 C0.8,0.9 0.5,1 0.2,0.8 C0,0.5 0.1,0.2 0.3,0.2" },
+              { cx: 89.5, cy: 97.5, size: 5, blob: "M0.4,0.1 C0.7,0.1 0.9,0.4 0.8,0.7 C0.7,1 0.3,1 0.1,0.7 C0,0.4 0.2,0.1 0.4,0.1" },
+              /* Small spots */
+              { cx: 31.5, cy: 4, size: 4, blob: "M0.5,0.2 C0.8,0.2 0.9,0.5 0.8,0.8 C0.6,1 0.3,0.9 0.2,0.6 C0.1,0.3 0.3,0.2 0.5,0.2" },
+              { cx: 64, cy: 17, size: 4, blob: "M0.3,0.3 C0.5,0.1 0.8,0.2 0.9,0.5 C0.9,0.8 0.6,0.9 0.3,0.8 C0.1,0.6 0.1,0.4 0.3,0.3" },
+              { cx: 6.5, cy: 27, size: 3.5, blob: "M0.4,0.2 C0.7,0.1 0.9,0.4 0.8,0.7 C0.7,0.9 0.3,0.9 0.2,0.6 C0.1,0.3 0.2,0.2 0.4,0.2" },
+              { cx: 46, cy: 40, size: 4, blob: "M0.5,0.1 C0.8,0.2 0.9,0.5 0.7,0.8 C0.5,1 0.2,0.8 0.1,0.5 C0.1,0.2 0.3,0.1 0.5,0.1" },
+              { cx: 81.5, cy: 47, size: 4, blob: "M0.3,0.2 C0.6,0.1 0.9,0.3 0.9,0.6 C0.8,0.9 0.5,1 0.2,0.8 C0.1,0.5 0.1,0.3 0.3,0.2" },
+              { cx: 42, cy: 64, size: 4, blob: "M0.4,0.2 C0.7,0.1 0.9,0.4 0.8,0.7 C0.6,0.9 0.3,0.9 0.2,0.6 C0.1,0.3 0.2,0.2 0.4,0.2" },
+              { cx: 65.5, cy: 77, size: 3.5, blob: "M0.5,0.2 C0.8,0.3 0.9,0.6 0.7,0.8 C0.5,0.9 0.2,0.8 0.1,0.5 C0.2,0.3 0.3,0.2 0.5,0.2" },
+              { cx: 32, cy: 87, size: 4, blob: "M0.3,0.3 C0.6,0.1 0.9,0.3 0.9,0.6 C0.8,0.9 0.4,1 0.2,0.7 C0,0.5 0.1,0.3 0.3,0.3" },
+              { cx: 71.5, cy: 94, size: 4, blob: "M0.4,0.2 C0.7,0.1 0.9,0.4 0.8,0.7 C0.7,0.9 0.3,0.9 0.2,0.6 C0.1,0.3 0.2,0.2 0.4,0.2" },
+              /* Extra small spots */
+              { cx: 94, cy: 11.2, size: 2.5, blob: "M0.5,0.2 C0.8,0.3 0.9,0.6 0.7,0.8 C0.4,0.9 0.2,0.7 0.2,0.4 C0.3,0.2 0.4,0.2 0.5,0.2" },
+              { cx: 27.5, cy: 33, size: 2.5, blob: "M0.4,0.3 C0.7,0.2 0.9,0.5 0.8,0.7 C0.6,0.9 0.3,0.8 0.2,0.5 C0.2,0.3 0.3,0.3 0.4,0.3" },
+              { cx: 17, cy: 56, size: 2, blob: "M0.5,0.2 C0.8,0.3 0.9,0.6 0.7,0.8 C0.4,0.9 0.2,0.6 0.3,0.3 C0.4,0.2 0.5,0.2 0.5,0.2" },
+              { cx: 90.5, cy: 66.2, size: 2.5, blob: "M0.4,0.2 C0.7,0.2 0.9,0.5 0.8,0.8 C0.6,0.9 0.2,0.8 0.2,0.5 C0.2,0.3 0.3,0.2 0.4,0.2" },
+              { cx: 60, cy: 81.2, size: 2.5, blob: "M0.5,0.3 C0.8,0.3 0.9,0.6 0.7,0.8 C0.4,0.9 0.2,0.7 0.2,0.4 C0.3,0.2 0.4,0.3 0.5,0.3" },
+            ].map((spot, i) => {
+              const scale = animationPhase === 'dots-collapsing' ? 5 : (animationPhase === 'expanding' || animationPhase === 'visible' ? 50 : 1);
+              const fromScale = animationPhase === 'dots-collapsing' ? 50 : 1;
+              const toScale = animationPhase === 'dots-collapsing' ? 1 : 50;
+              return (
+                <g key={i} transform={`translate(${spot.cx}, ${spot.cy})`}>
+                  <path
+                    d={spot.blob}
+                    transform={`translate(${-spot.size/2}, ${-spot.size/2}) scale(${spot.size})`}
+                  >
+                    <animateTransform
+                      attributeName="transform"
+                      type="scale"
+                      from={`${spot.size * fromScale}`}
+                      to={`${spot.size * toScale}`}
+                      dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
+                      fill="freeze"
+                      calcMode="spline"
+                      keyTimes="0;1"
+                      keySplines="0.4 0 0.2 1"
+                      additive="replace"
+                    />
+                  </path>
+                </g>
+              );
+            })}
           </clipPath>
         </defs>
         <rect
