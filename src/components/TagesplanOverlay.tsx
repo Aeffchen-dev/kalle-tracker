@@ -106,7 +106,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           y="0"
           width="200"
           height="200"
-          fill="hsl(30 30% 25%)"
+          style={{ fill: 'hsl(var(--spot-color))' }}
           clipPath="url(#dotsClip)"
           className={`transition-opacity duration-300 ${animationPhase === 'collapsing' ? 'opacity-0' : 'opacity-100'}`}
         />
@@ -117,7 +117,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         className={`absolute inset-0 bg-spot transition-opacity duration-500 pointer-events-auto ${
           animationPhase === 'visible' ? 'opacity-100' : 'opacity-0'
         }`}
-        style={{ backgroundColor: 'hsl(30 30% 25%)' }}
       />
 
       {/* Content */}
