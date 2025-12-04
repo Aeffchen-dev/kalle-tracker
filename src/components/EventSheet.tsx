@@ -32,8 +32,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       }
       setSelectedPh(null);
       setWeightValue('');
-      // Reset flag for next time
-      shouldResetTimerOnOpen = true;
     }
   }, [open]);
 
@@ -198,14 +196,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <div className="relative" style={{ width: 'calc(100vw - 32px)' }}>
+            <div className="flex items-center justify-center gap-1 h-12 bg-transparent border border-white/30 rounded-[4px] w-40 mx-auto">
               <input
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="box-border w-full h-12 pl-3 pr-10 bg-transparent border border-white/30 text-white text-[14px] rounded-[4px] text-center [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full"
+                className="bg-transparent text-white text-[14px] text-center border-none outline-none [&::-webkit-calendar-picker-indicator]:hidden w-[70px]"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[14px] text-white pointer-events-none"> Uhr</span>
+              <span className="text-[14px] text-white">Uhr</span>
             </div>
           </div>
 
