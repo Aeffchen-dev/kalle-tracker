@@ -101,7 +101,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           {/* pH Value Selection - only show when pipi is selected */}
           {selectedTypes.has('pipi') && (
             <div className="flex flex-col gap-2">
-              <span className="text-[14px] text-white">PH-Wert</span>
+              <span className="text-[14px] text-white">pH-Wert</span>
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
                   {PH_VALUES_ROW1.map((ph) => (
