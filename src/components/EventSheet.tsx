@@ -14,8 +14,8 @@ interface EventSheetProps {
 const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
 const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 
-// Module-level variable to track if timer should reset on next open
-let shouldResetTimerOnOpen = true;
+// Module-level: skip reset only when gewicht-only was saved
+let skipTimeReset = false;
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
@@ -24,16 +24,15 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
 
-  // Reset time to current when sheet opens (based on what was last saved)
+  // Reset time to current when sheet opens (unless gewicht-only was last saved)
   useEffect(() => {
     if (open) {
-      if (shouldResetTimerOnOpen) {
+      if (!skipTimeReset) {
         setSelectedTime(format(new Date(), 'HH:mm'));
       }
       setSelectedPh(null);
       setWeightValue('');
-      // Reset flag to true for next time (default behavior is to reset)
-      shouldResetTimerOnOpen = true;
+      skipTimeReset = false;
     }
   }, [open]);
 
@@ -67,11 +66,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       await saveEvent(type, eventDate, phValue || undefined, weight);
     }
 
-    // Determine if timer should reset on next open:
-    // Reset if pipi, stuhlgang, or phwert was saved
-    // Don't reset only if gewicht was the only type saved
-    const savedResetTypes = selectedTypes.has('pipi') || selectedTypes.has('stuhlgang') || selectedTypes.has('phwert');
-    shouldResetTimerOnOpen = savedResetTypes;
+    // Skip time reset on next open ONLY if gewicht was the only type saved
+    const onlyGewichtSaved = selectedTypes.size === 1 && selectedTypes.has('gewicht');
+    skipTimeReset = onlyGewichtSaved;
 
     onEventAdded();
     onOpenChange(false);
@@ -198,14 +195,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
-            <div className="flex items-center justify-center gap-1 h-12 bg-transparent border border-white/30 rounded-[4px] w-40 mx-auto">
+            <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]" style={{ width: 'calc(100vw - 32px)' }}>
               <input
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
                 className="bg-transparent text-white text-[14px] text-center border-none outline-none [&::-webkit-calendar-picker-indicator]:hidden w-[70px]"
               />
-              <span className="text-[14px] text-white">Uhr</span>
+              <span className="text-[14px] text-white ml-1">Uhr</span>
             </div>
           </div>
 
