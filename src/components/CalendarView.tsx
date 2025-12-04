@@ -212,7 +212,7 @@ const CalendarView = () => {
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
     >
-      <DrawerContent className="bg-black border-black flex flex-col h-full pb-[env(safe-area-inset-bottom)]">
+      <DrawerContent className="bg-black border-black flex flex-col h-full">
         <DrawerHeader 
           className="sticky top-0 bg-black z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
@@ -269,7 +269,7 @@ const CalendarView = () => {
             )}
           </div>
         </DrawerHeader>
-        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
+        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0 pb-[env(safe-area-inset-bottom)]">
           {showTrends ? (
             <TrendAnalysis events={events} />
           ) : (
