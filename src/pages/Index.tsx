@@ -13,6 +13,7 @@ const Index = () => {
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExiting, setIsExiting] = useState(false);
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const eventsRef = useRef<Event[]>([]);
@@ -62,17 +63,23 @@ const Index = () => {
     if (!imageLoaded) return;
     
     const timer1 = setTimeout(() => {
-      setIsLoading(false);
+      setIsExiting(true);
       setShowCard(true);
     }, 1000);
 
     const timer2 = setTimeout(() => {
-      setShowCalendar(true);
+      setIsLoading(false);
+      setIsExiting(false);
     }, 1600);
+
+    const timer3 = setTimeout(() => {
+      setShowCalendar(true);
+    }, 1800);
 
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
+      clearTimeout(timer3);
     };
   }, [imageLoaded]);
 
@@ -113,11 +120,15 @@ const Index = () => {
       
       {/* Loading state */}
       {isLoading && imageLoaded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50">
           <img
             src={dogLoading}
             alt="Loading..."
-            className="h-[102px] w-auto"
+            className={`absolute left-1/2 h-[102px] w-auto ${
+              isExiting 
+                ? 'animate-slide-to-bottom' 
+                : 'top-1/2 -translate-x-1/2 -translate-y-1/2'
+            }`}
           />
         </div>
       )}

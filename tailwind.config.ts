@@ -107,6 +107,18 @@ export default {
             opacity: "1",
           },
         },
+        "slide-to-bottom": {
+          "0%": {
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            opacity: "1",
+          },
+          "100%": {
+            top: "calc(100% - 20vh)",
+            transform: "translate(-50%, 0)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -114,6 +126,7 @@ export default {
         "dog-ride": "dog-ride 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
+        "slide-to-bottom": "slide-to-bottom 0.6s ease-in-out forwards",
       },
     },
   },
