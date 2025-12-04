@@ -137,11 +137,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setAnimationPhase('expanding');
-      // Dots expand for 1.8s, then show content and color body
+      // Dots expand, show content after 300ms
       setTimeout(() => {
         document.body.style.backgroundColor = 'hsl(var(--spot-color))';
         setAnimationPhase('visible');
-      }, 1800);
+      }, 300);
     }
   }, [isOpen, animationPhase]);
 
