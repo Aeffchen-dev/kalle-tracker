@@ -121,15 +121,19 @@ const Index = () => {
         <button 
           onClick={() => {
             setShowDogAnimation(true);
+            // Rapid licking animation - toggle tongue multiple times
             setShowTongueLick(true);
-            setTimeout(() => setShowTongueLick(false), 800);
+            setTimeout(() => setShowTongueLick(false), 150);
+            setTimeout(() => setShowTongueLick(true), 300);
+            setTimeout(() => setShowTongueLick(false), 450);
+            setTimeout(() => setShowTongueLick(true), 600);
           }}
           className="cursor-pointer -mt-2 -ml-2 relative"
         >
           <img 
-            src={showTongueLick ? dalmatianTongue : dalmatianBase} 
+            src={showTongueLick ? dalmatianBase : dalmatianTongue} 
             alt="Kalle" 
-            className="h-[100px] w-auto transition-opacity duration-100" 
+            className="h-[100px] w-auto" 
           />
         </button>
         <button 
