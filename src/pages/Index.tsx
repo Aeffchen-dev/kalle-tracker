@@ -120,14 +120,18 @@ const Index = () => {
         <button 
           onClick={() => {
             setShowDogAnimation(true);
+            // Rapid licking animation - toggle tongue multiple times
             setShowTongueLick(true);
-            setTimeout(() => setShowTongueLick(false), 600);
+            setTimeout(() => setShowTongueLick(false), 150);
+            setTimeout(() => setShowTongueLick(true), 300);
+            setTimeout(() => setShowTongueLick(false), 450);
+            setTimeout(() => setShowTongueLick(true), 600);
           }}
           className="cursor-pointer -mt-2 -ml-4 relative"
         >
           <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
           {showTongueLick && (
-            <span className="absolute bottom-[18px] left-[42px] animate-tongue-lick">
+            <span className="absolute bottom-[18px] left-[42px]">
               <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
                 <path d="M9 0C6 0 4 3 4 7C4 11 6 14 9 14C12 14 14 11 14 7C14 3 12 0 9 0Z" fill="#FF6B8A"/>
                 <path d="M9 2C7.5 2 6 4 6 7C6 10 7.5 12 9 12C10.5 12 12 10 12 7C12 4 10.5 2 9 2Z" fill="#FF8FA3"/>
