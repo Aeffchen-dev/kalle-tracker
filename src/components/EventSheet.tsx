@@ -122,45 +122,42 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           {/* pH Value Selection - only show when phwert is selected */}
           {selectedTypes.has('phwert') && (
-          <div className="flex flex-col gap-2">
-            <span className="text-[14px] text-white">pH-Wert auswählen</span>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  {PH_VALUES_ROW1.map((ph, index) => {
-                    const isRed = index < 3; // first 3 values
-                    return (
-                      <button
-                        key={ph}
-                        onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
-                        className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
-                          selectedPh === ph
-                            ? 'bg-white text-black border border-white'
-                            : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
-                        }`}
-                      >
-                        {ph}
-                      </button>
-                    );
-                  })}
-                </div>
-                <div className="flex gap-2">
-                  {PH_VALUES_ROW2.map((ph, index) => {
-                    const isRed = index >= 2; // last 3 values
-                    return (
-                      <button
-                        key={ph}
-                        onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
-                        className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
-                          selectedPh === ph
-                            ? 'bg-white text-black border border-white'
-                            : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
-                        }`}
-                      >
-                        {ph}
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                {PH_VALUES_ROW1.map((ph, index) => {
+                  const isRed = index < 3; // first 3 values
+                  return (
+                    <button
+                      key={ph}
+                      onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
+                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                        selectedPh === ph
+                          ? 'bg-white text-black border border-white'
+                          : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
+                      }`}
+                    >
+                      {ph}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-2">
+                {PH_VALUES_ROW2.map((ph, index) => {
+                  const isRed = index >= 2; // last 3 values
+                  return (
+                    <button
+                      key={ph}
+                      onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
+                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                        selectedPh === ph
+                          ? 'bg-white text-black border border-white'
+                          : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
+                      }`}
+                    >
+                      {ph}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
