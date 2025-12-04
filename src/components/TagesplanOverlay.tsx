@@ -143,11 +143,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       }
       
       setAnimationPhase('expanding');
-      // Show content when dots have fully covered the screen
+      // Show content when dots have covered the screen
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         setAnimationPhase('visible');
-      }, 1200);
+      }, 1000);
     }
   }, [isOpen, animationPhase]);
 
@@ -177,7 +177,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     setTimeout(() => {
       setAnimationPhase('idle');
       onClose();
-    }, 600);
+    }, 500);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -236,21 +236,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   attributeName="rx"
                   from={animationPhase === 'dots-collapsing' ? '100' : String(spot.rx)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.2s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.33 0 0.67 1' : '0.22 0.61 0.36 1'}
                 />
                 <animate
                   attributeName="ry"
                   from={animationPhase === 'dots-collapsing' ? '100' : String(spot.ry)}
                   to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.2s'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.5s' : '1s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.33 0 0.67 1' : '0.22 0.61 0.36 1'}
                 />
               </ellipse>
             ))}
