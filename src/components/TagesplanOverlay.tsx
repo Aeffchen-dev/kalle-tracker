@@ -133,15 +133,17 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
+      document.body.style.backgroundColor = '#3d2b1f';
       setAnimationPhase('expanding');
-      // Reveal content after 300ms
+      // Reveal content after 150ms
       setTimeout(() => {
-        document.body.style.backgroundColor = '#3d2b1f';
+        setShowContent(true);
         setAnimationPhase('visible');
-      }, 300);
+      }, 150);
     }
   }, [isOpen, animationPhase]);
 
@@ -154,6 +156,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   const handleClose = () => {
     // Start animation immediately
+    setShowContent(false);
     setAnimationPhase('dots-collapsing');
     document.body.style.backgroundColor = '';
     
@@ -280,12 +283,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       </svg>
 
       {/* Solid brown background - hide instantly on close */}
-      {animationPhase === 'visible' && (
+      {showContent && (
         <div className="absolute inset-0 bg-spot pointer-events-auto" />
       )}
 
       {/* Content - only render when visible */}
-      {animationPhase === 'visible' && (
+      {showContent && (
         <div className="absolute inset-0 flex flex-col pointer-events-auto">
           {/* Header */}
           <header className="p-4 flex justify-between items-center">
