@@ -95,7 +95,7 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[20vh] px-4">
-        <div className="w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-white/25 flex flex-col items-center justify-center py-12">
+        <div className="w-full bg-white/15 backdrop-blur-[4px] rounded-[16px] border border-white/40 flex flex-col items-center justify-center py-12">
           <div className="text-[56px] md:text-[72px] leading-none">
             {timeDisplay}
           </div>
