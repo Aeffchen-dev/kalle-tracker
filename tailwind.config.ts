@@ -111,7 +111,7 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "dog-ride": "dog-ride 3s ease-in-out forwards",
+        "dog-ride": "dog-ride 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
       },
