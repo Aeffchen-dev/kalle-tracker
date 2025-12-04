@@ -177,7 +177,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         key={animationPhase}
         className="absolute inset-0 w-full h-full pointer-events-auto"
         viewBox="0 0 100 100"
-        preserveAspectRatio="none"
+        preserveAspectRatio="xMidYMid slice"
       >
         <defs>
           <clipPath id="dotsClip">
