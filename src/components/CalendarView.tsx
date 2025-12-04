@@ -203,15 +203,30 @@ const CalendarView = () => {
     }, 150);
   };
 
+  // Handle clicks outside the drawer to snap to default
+  const handleOutsideClick = () => {
+    if (snap === 0.9) {
+      setSnap(0.2);
+    }
+  };
+
   return (
-    <Drawer 
-      open={true} 
-      dismissible={false}
-      modal={false}
-      snapPoints={[0.2, 0.9]}
-      activeSnapPoint={snap}
-      setActiveSnapPoint={setSnap}
-    >
+    <>
+      {/* Invisible overlay to catch clicks outside drawer when expanded */}
+      {snap === 0.9 && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={handleOutsideClick}
+        />
+      )}
+      <Drawer 
+        open={true} 
+        dismissible={false}
+        modal={false}
+        snapPoints={[0.2, 0.9]}
+        activeSnapPoint={snap}
+        setActiveSnapPoint={setSnap}
+      >
       <DrawerContent className="bg-black border-black flex flex-col h-full">
         <DrawerHeader 
           className="sticky top-0 bg-black z-10 pb-4 cursor-pointer" 
@@ -348,6 +363,7 @@ const CalendarView = () => {
         </div>
       </DrawerContent>
     </Drawer>
+    </>
   );
 };
 
