@@ -153,7 +153,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Immediately reset body color and start dots collapsing
+    // Immediately hide all brown backgrounds and start dots collapsing
     document.body.style.backgroundColor = '';
     setAnimationPhase('dots-collapsing');
     // After dots collapse, cleanup
@@ -224,10 +224,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         />
       </svg>
 
-      {/* Solid brown background */}
+      {/* Solid brown background - hide instantly on close */}
       <div
-        className={`absolute inset-0 bg-spot pointer-events-auto ${
-          animationPhase === 'visible' ? 'opacity-100' : 'opacity-0'
+        className={`absolute inset-0 pointer-events-auto ${
+          animationPhase === 'visible' ? 'bg-spot opacity-100' : 'opacity-0'
         }`}
       />
 
