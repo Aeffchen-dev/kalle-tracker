@@ -126,15 +126,15 @@ const Index = () => {
           className="cursor-pointer -mt-2 -ml-[10px] relative"
         >
           <img 
-            src={dalmatianHeader} 
-            alt="Kalle" 
-            className="h-[100px] w-auto"
-          />
-          <img 
             src={dalmatianTail}
             alt=""
-            className={`absolute -top-[2px] -left-[7px] h-[48px] w-auto origin-bottom ${tailWagging ? 'animate-tail-wag' : ''}`}
+            className={`absolute top-[6px] -left-[7px] h-[43px] w-auto origin-bottom rotate-[10deg] -z-10 ${tailWagging ? 'animate-tail-wag' : ''}`}
             onAnimationEnd={() => setTailWagging(false)}
+          />
+          <img 
+            src={dalmatianHeader} 
+            alt="Kalle" 
+            className="h-[100px] w-auto relative z-10"
           />
         </button>
         <button 
