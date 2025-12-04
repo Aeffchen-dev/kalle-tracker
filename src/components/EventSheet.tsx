@@ -185,10 +185,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   inputMode="decimal"
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
-                  placeholder="Gewicht eingeben"
+                  placeholder="32"
                   className="bg-transparent text-white text-[14px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-32 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <span className="text-[14px] text-white ml-1">kg</span>
+                <span className="text-[14px] text-white ml-4">kg</span>
               </div>
             </div>
           )}
