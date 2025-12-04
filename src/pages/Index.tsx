@@ -120,11 +120,11 @@ const Index = () => {
           onClick={() => setShowDogAnimation(true)}
           className="cursor-pointer -mt-2 -ml-2"
         >
-          <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
+          <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto sepia-[0.2] brightness-[0.95]" />
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] bg-transparent text-black border border-black rounded-full py-[2px] px-[8px] cursor-pointer mt-4"
+          className="text-[14px] bg-transparent text-black border border-black rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
         >
           Tagesplan
         </button>
