@@ -120,42 +120,44 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
     avgValue?: number | null;
     showArea?: boolean;
   }) => (
-    <div className="mb-5">
-      <h3 className="text-[12px] text-white/50 uppercase tracking-wide mb-2">{title}</h3>
+    <div className="mb-6">
+      <h3 className="text-[13px] text-white/60 font-medium mb-3">{title}</h3>
       {data.length < 2 ? (
-        <div className="h-[80px] flex items-center justify-center bg-white/5 rounded-lg border border-white/10">
-          <p className="text-[12px] text-white/30">Nicht genügend Daten</p>
+        <div className="h-[160px] flex items-center justify-center bg-white/5 rounded-xl border border-white/10">
+          <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
         </div>
       ) : (
-        <div className="h-[100px] w-full bg-white/5 rounded-lg border border-white/10 p-2">
+        <div className="h-[160px] w-full bg-white/5 rounded-xl border border-white/10 p-3">
           <ResponsiveContainer width="100%" height="100%">
             {showArea ? (
-              <AreaChart data={data} margin={{ top: 5, right: 5, bottom: 0, left: -25 }}>
+              <AreaChart data={data} margin={{ top: 10, right: 10, bottom: 5, left: -15 }}>
                 <defs>
                   <linearGradient id={`gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={color} stopOpacity={0.3} />
-                    <stop offset="100%" stopColor={color} stopOpacity={0} />
+                    <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+                    <stop offset="100%" stopColor={color} stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
                 <XAxis 
                   dataKey="date" 
-                  tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 9 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
                   axisLine={false}
                   tickLine={false}
                   interval="preserveStartEnd"
                 />
                 <YAxis 
-                  tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 9 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
                   axisLine={false}
                   tickLine={false}
-                  width={35}
+                  width={40}
                   domain={['dataMin - 1', 'dataMax + 1']}
+                  tickFormatter={(v) => `${v}${unit}`}
                 />
                 {avgValue && (
                   <ReferenceLine 
                     y={avgValue} 
-                    stroke="rgba(255,255,255,0.2)" 
-                    strokeDasharray="3 3" 
+                    stroke="rgba(255,255,255,0.25)" 
+                    strokeDasharray="4 4" 
+                    label={{ value: `Ø ${avgValue}`, fill: 'rgba(255,255,255,0.4)', fontSize: 10, position: 'right' }}
                   />
                 )}
                 <Area
@@ -165,30 +167,31 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
                   strokeWidth={2}
                   fill={`url(#gradient-${color.replace('#', '')})`}
                   isAnimationActive={false}
-                  dot={false}
+                  dot={{ fill: color, strokeWidth: 0, r: 3 }}
                 />
               </AreaChart>
             ) : (
-              <LineChart data={data} margin={{ top: 5, right: 5, bottom: 0, left: -25 }}>
+              <LineChart data={data} margin={{ top: 10, right: 10, bottom: 5, left: -15 }}>
                 <XAxis 
                   dataKey="date" 
-                  tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 9 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
                   axisLine={false}
                   tickLine={false}
                   interval="preserveStartEnd"
                 />
                 <YAxis 
-                  tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 9 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
                   axisLine={false}
                   tickLine={false}
-                  width={35}
+                  width={40}
                   domain={['dataMin - 0.5', 'dataMax + 0.5']}
                 />
                 {avgValue && (
                   <ReferenceLine 
                     y={avgValue} 
-                    stroke="rgba(255,255,255,0.2)" 
-                    strokeDasharray="3 3" 
+                    stroke="rgba(255,255,255,0.25)" 
+                    strokeDasharray="4 4"
+                    label={{ value: `Ø ${avgValue}`, fill: 'rgba(255,255,255,0.4)', fontSize: 10, position: 'right' }}
                   />
                 )}
                 <Line 
@@ -196,7 +199,7 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
                   dataKey="value" 
                   stroke={color} 
                   strokeWidth={2}
-                  dot={{ fill: color, strokeWidth: 0, r: 2 }}
+                  dot={{ fill: color, strokeWidth: 0, r: 3 }}
                   isAnimationActive={false}
                 />
               </LineChart>
@@ -261,22 +264,6 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
           unit="" 
           color="#FFD700"
           avgValue={phStats.avg}
-        />
-        <ChartSection 
-          title="Pipi-Intervalle" 
-          data={pipiIntervalData} 
-          unit="h" 
-          color="#00BFFF"
-          avgValue={pipiStats.avg}
-          showArea
-        />
-        <ChartSection 
-          title="Stuhlgang-Intervalle" 
-          data={stuhlgangIntervalData} 
-          unit="h" 
-          color="#CD853F"
-          avgValue={stuhlgangStats.avg}
-          showArea
         />
       </div>
     </div>
