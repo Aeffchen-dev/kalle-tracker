@@ -175,7 +175,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none">
-      {/* Animated spots using SVG paths for sharp scaling */}
+      {/* Animated spots using SVG with SMIL animation for sharp scaling */}
       <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
         {[
           { left: 5, top: 8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
@@ -211,7 +211,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           { left: 88, top: 65, w: 2, h: 2, rotate: 0, seed: 30 },
           { left: 58, top: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
         ].map((spot) => {
-          // Generate irregular blob path for each seed
           const blobPaths = [
             'M50,5 C75,5 95,20 95,45 C95,70 80,95 50,95 C20,95 5,75 5,50 C5,25 25,5 50,5 Z',
             'M50,8 C80,8 92,25 92,50 C92,75 75,92 50,92 C25,92 8,70 8,45 C8,20 20,8 50,8 Z',
@@ -219,29 +218,38 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             'M55,8 C85,8 92,30 92,55 C92,80 75,92 50,92 C20,92 8,65 8,40 C8,15 30,8 55,8 Z',
           ];
           
+          const startScale = animationPhase === 'dots-collapsing' ? 40 : 1;
+          const endScale = animationPhase === 'dots-collapsing' ? 1 : 40;
+          
           return (
-            <div
+            <svg
               key={spot.seed}
-              className={animationPhase === 'dots-collapsing' ? 'spot-collapse' : 'spot-expand'}
               style={{
                 position: 'absolute',
-                left: `${spot.left}%`,
-                top: `${spot.top}%`,
+                left: `calc(${spot.left}% + 8px)`,
+                top: `calc(${spot.top}% + 8px)`,
                 width: `${spot.w}vw`,
                 height: `${spot.h}vw`,
-                transform: `translate(8px, 8px) rotate(${spot.rotate}deg)`,
-                transformOrigin: 'center center',
-                '--spot-rotate': `${spot.rotate}deg`,
-              } as React.CSSProperties}
+                overflow: 'visible',
+              }}
+              viewBox="0 0 100 100"
             >
-              <svg
-                viewBox="0 0 100 100"
-                preserveAspectRatio="none"
-                style={{ width: '100%', height: '100%' }}
-              >
-                <path d={blobPaths[spot.seed % 4]} fill="#5c4033" />
-              </svg>
-            </div>
+              <g transform={`rotate(${spot.rotate} 50 50)`}>
+                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
+                  <animateTransform
+                    attributeName="transform"
+                    type="scale"
+                    from={`${startScale} ${startScale}`}
+                    to={`${endScale} ${endScale}`}
+                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.9s'}
+                    fill="freeze"
+                    calcMode="spline"
+                    keyTimes="0;1"
+                    keySplines={animationPhase === 'dots-collapsing' ? "0 0 0.2 1" : "0.8 0 1 1"}
+                  />
+                </path>
+              </g>
+            </svg>
           );
         })}
       </div>
