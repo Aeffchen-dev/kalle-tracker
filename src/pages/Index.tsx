@@ -154,7 +154,7 @@ const Index = () => {
           <p className="text-[14px] mb-2">Ich war zuletzt draußen vor</p>
           <button 
             onClick={() => setEventSheetOpen(true)}
-            className="text-[56px] md:text-[72px] leading-none cursor-pointer tabular-nums"
+            className="text-[48px] md:text-[64px] leading-none cursor-pointer tabular-nums"
           >
             {timeDisplay}
           </button>
