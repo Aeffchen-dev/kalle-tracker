@@ -181,68 +181,83 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Positions adjusted: HTML top-left + offset for center (cx=left+w/2, cy=top+h/2) */}
+            {/* Organic blob shapes at dalmatian spot positions */}
             {[
-              /* Large spots (offset ~+6 left, ~+3.5 top) */
-              { cx: 11, cy: 11.5, rx: 6, ry: 7 },
-              { cx: 78, cy: 11.5, rx: 8, ry: 6 },
-              { cx: 42, cy: 22, rx: 7, ry: 8 },
-              { cx: 88.5, cy: 32, rx: 6.5, ry: 7.5 },
-              { cx: 15.5, cy: 45, rx: 7.5, ry: 6 },
-              { cx: 71, cy: 55.5, rx: 6, ry: 7 },
-              { cx: 28, cy: 71.5, rx: 8, ry: 6.5 },
-              { cx: 81.5, cy: 82, rx: 6.5, ry: 8 },
-              { cx: 52, cy: 88, rx: 7, ry: 6 },
-              /* Medium spots (offset ~+5 left, ~+2.5 top) */
-              { cx: 23, cy: 14.5, rx: 5, ry: 5.5 },
-              { cx: 53.5, cy: 8.5, rx: 5.5, ry: 4.5 },
-              { cx: 92.5, cy: 25, rx: 4.5, ry: 5.5 },
-              { cx: 60, cy: 37.5, rx: 5, ry: 4.5 },
-              { cx: 35.5, cy: 50.5, rx: 5.5, ry: 5 },
-              { cx: 96.5, cy: 60.5, rx: 4.5, ry: 5 },
-              { cx: 55, cy: 75, rx: 5, ry: 5.5 },
-              { cx: 15.5, cy: 84.5, rx: 5.5, ry: 4.5 },
-              { cx: 89.5, cy: 97.5, rx: 4.5, ry: 5 },
-              /* Small spots (offset ~+3.5 left, ~+2 top) */
-              { cx: 31.5, cy: 4, rx: 3.5, ry: 4 },
-              { cx: 64, cy: 17, rx: 4, ry: 3.5 },
-              { cx: 6.5, cy: 27, rx: 3.5, ry: 3.5 },
-              { cx: 46, cy: 40, rx: 4, ry: 4 },
-              { cx: 81.5, cy: 47, rx: 3.5, ry: 4 },
-              { cx: 42, cy: 64, rx: 4, ry: 3.5 },
-              { cx: 65.5, cy: 77, rx: 3.5, ry: 3.5 },
-              { cx: 32, cy: 87, rx: 4, ry: 4 },
-              { cx: 71.5, cy: 94, rx: 3.5, ry: 4 },
-              /* Extra small spots (offset ~+2 left, ~+1.2 top) */
-              { cx: 94, cy: 11.2, rx: 2, ry: 2.5 },
-              { cx: 27.5, cy: 33, rx: 2.5, ry: 2 },
-              { cx: 17, cy: 56, rx: 2, ry: 2 },
-              { cx: 90.5, cy: 66.2, rx: 2.5, ry: 2.5 },
-              { cx: 60, cy: 81.2, rx: 2, ry: 2.5 },
-            ].map((spot, i) => (
-              <ellipse key={i} cx={spot.cx} cy={spot.cy}>
-                <animate
-                  attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.rx)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.4 0 0.2 1"
-                />
-                <animate
-                  attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.ry)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.35 0 0.25 1"
-                />
-              </ellipse>
-            ))}
+              /* Large spots */
+              { cx: 11, cy: 11.5, baseSize: 6.5 },
+              { cx: 78, cy: 11.5, baseSize: 7 },
+              { cx: 42, cy: 22, baseSize: 7.5 },
+              { cx: 88.5, cy: 32, baseSize: 7 },
+              { cx: 15.5, cy: 45, baseSize: 6.75 },
+              { cx: 71, cy: 55.5, baseSize: 6.5 },
+              { cx: 28, cy: 71.5, baseSize: 7.25 },
+              { cx: 81.5, cy: 82, baseSize: 7.25 },
+              { cx: 52, cy: 88, baseSize: 6.5 },
+              /* Medium spots */
+              { cx: 23, cy: 14.5, baseSize: 5.25 },
+              { cx: 53.5, cy: 8.5, baseSize: 5 },
+              { cx: 92.5, cy: 25, baseSize: 5 },
+              { cx: 60, cy: 37.5, baseSize: 4.75 },
+              { cx: 35.5, cy: 50.5, baseSize: 5.25 },
+              { cx: 96.5, cy: 60.5, baseSize: 4.75 },
+              { cx: 55, cy: 75, baseSize: 5.25 },
+              { cx: 15.5, cy: 84.5, baseSize: 5 },
+              { cx: 89.5, cy: 97.5, baseSize: 4.75 },
+              /* Small spots */
+              { cx: 31.5, cy: 4, baseSize: 3.75 },
+              { cx: 64, cy: 17, baseSize: 3.75 },
+              { cx: 6.5, cy: 27, baseSize: 3.5 },
+              { cx: 46, cy: 40, baseSize: 4 },
+              { cx: 81.5, cy: 47, baseSize: 3.75 },
+              { cx: 42, cy: 64, baseSize: 3.75 },
+              { cx: 65.5, cy: 77, baseSize: 3.5 },
+              { cx: 32, cy: 87, baseSize: 4 },
+              { cx: 71.5, cy: 94, baseSize: 3.75 },
+              /* Extra small spots */
+              { cx: 94, cy: 11.2, baseSize: 2.25 },
+              { cx: 27.5, cy: 33, baseSize: 2.25 },
+              { cx: 17, cy: 56, baseSize: 2 },
+              { cx: 90.5, cy: 66.2, baseSize: 2.5 },
+              { cx: 60, cy: 81.2, baseSize: 2.25 },
+            ].map((spot, i) => {
+              // Generate organic blob path with slight variations per spot
+              const seed = i * 137.5;
+              const points = 8;
+              const generatePath = (scale: number) => {
+                const path: string[] = [];
+                for (let p = 0; p <= points; p++) {
+                  const angle = (p / points) * Math.PI * 2;
+                  const variance = 0.7 + 0.6 * Math.sin(seed + p * 2.3);
+                  const r = scale * variance;
+                  const x = spot.cx + Math.cos(angle) * r;
+                  const y = spot.cy + Math.sin(angle) * r * 1.1;
+                  path.push(p === 0 ? `M ${x} ${y}` : `L ${x} ${y}`);
+                }
+                return path.join(' ') + ' Z';
+              };
+              
+              const startPath = animationPhase === 'dots-collapsing' 
+                ? generatePath(35) 
+                : generatePath(spot.baseSize);
+              const endPath = animationPhase === 'dots-collapsing' 
+                ? generatePath(spot.baseSize) 
+                : generatePath(100);
+              
+              return (
+                <path key={i} d={startPath}>
+                  <animate
+                    attributeName="d"
+                    from={startPath}
+                    to={endPath}
+                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.9s'}
+                    fill="freeze"
+                    calcMode="spline"
+                    keyTimes="0;1"
+                    keySplines="0.4 0 0.2 1"
+                  />
+                </path>
+              );
+            })}
           </clipPath>
         </defs>
         <rect
