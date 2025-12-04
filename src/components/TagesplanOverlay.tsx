@@ -18,7 +18,7 @@ const mealsData: MealData[] = [
     ingredients: [
       { quantity: '103g', name: 'Royal Canine Urinary u/c' },
       { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Germüse', description: 'Die vorgegebene Menge Nudeln mit heißem Wasser übergießen und 10 bis 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
+      { quantity: '25g', name: 'Vet-Concept Nudeln mit Germüse', description: 'Die vorgegebene Menge Nudeln mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
       { quantity: '6,6g', name: 'Dicalciumphosphat' },
       { quantity: '3,3g', name: 'Elements sensitive' },
       { quantity: '6,6g', name: 'Futteröl Junior' },
