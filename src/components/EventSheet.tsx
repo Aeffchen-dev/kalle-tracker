@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,10 +20,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
+  const lastOpenState = useRef(false);
 
   // Reset time to current when sheet opens (unless gewicht-only was last saved)
   useEffect(() => {
-    if (open) {
+    // Only run when open changes from false to true
+    if (open && !lastOpenState.current) {
       const skipReset = sessionStorage.getItem('skipTimeReset') === 'true';
       if (!skipReset) {
         setSelectedTime(format(new Date(), 'HH:mm'));
@@ -32,6 +34,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       setWeightValue('');
       sessionStorage.removeItem('skipTimeReset');
     }
+    lastOpenState.current = open;
   }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
