@@ -140,17 +140,12 @@ const Index = () => {
             />
           </span>
         </button>
-        <div className="flex items-center gap-2">
-          <button className="text-[14px] bg-black text-white rounded-full py-[2px] px-[4px]">
-            Samson
-          </button>
-          <button 
-            onClick={() => setShowTagesplan(true)}
-            className="text-[14px] cursor-pointer"
-          >
-            Tagesplan
-          </button>
-        </div>
+        <button 
+          onClick={() => setShowTagesplan(true)}
+          className="text-[14px] bg-black text-white rounded-full py-[2px] px-[4px] cursor-pointer"
+        >
+          Tagesplan
+        </button>
       </header>
 
       {/* Main countdown area */}
