@@ -6,7 +6,6 @@ import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
-import dalmatianTail from '@/assets/dalmatian-tail.png';
 
 
 const Index = () => {
@@ -132,17 +131,7 @@ const Index = () => {
           <img 
             src={dalmatianHeader} 
             alt="Kalle" 
-            className="h-[100px] w-auto relative z-10"
-          />
-          <img 
-            src={dalmatianTail}
-            alt=""
-            className="absolute h-[28px] w-auto z-0 animate-tail-wag"
-            style={{ 
-              top: '28px', 
-              left: '72px',
-              transformOrigin: 'left center'
-            }}
+            className="h-[100px] w-auto relative z-10 animate-tail-wag origin-bottom"
           />
         </button>
         <button 
