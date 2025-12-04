@@ -95,7 +95,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-black overflow-hidden">
         <DrawerHeader className="pb-4">
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
