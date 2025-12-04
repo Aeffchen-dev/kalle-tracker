@@ -34,7 +34,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     setSnap(newSnap);
   };
   
-  // Detect keyboard open/close via visualViewport and preserve snap state
+  // Detect keyboard open/close via visualViewport and restore drawer
   useEffect(() => {
     const viewport = window.visualViewport;
     if (!viewport) return;
@@ -43,18 +43,17 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     
     const handleResize = () => {
       const heightDiff = initialHeight - viewport.height;
-      const keyboardNowOpen = heightDiff > 150; // Keyboard is likely open if viewport shrunk significantly
+      const keyboardNowOpen = heightDiff > 150;
       
       if (keyboardNowOpen && !isKeyboardOpen.current) {
-        // Keyboard just opened - store current snap
         isKeyboardOpen.current = true;
       } else if (!keyboardNowOpen && isKeyboardOpen.current) {
-        // Keyboard just closed - restore snap state
+        // Keyboard just closed - force restore drawer to saved snap
         isKeyboardOpen.current = false;
-        const savedSnap = snapRef.current;
-        if (savedSnap !== null) {
-          setTimeout(() => setSnap(savedSnap), 100);
-        }
+        const savedSnap = snapRef.current ?? 0.2;
+        // Force re-render by setting to null then restoring
+        setSnap(null);
+        setTimeout(() => setSnap(savedSnap), 50);
       }
     };
     
@@ -62,14 +61,11 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     return () => viewport.removeEventListener('resize', handleResize);
   }, []);
   
-  // Also preserve snap state when EventSheet opens/closes
+  // Restore drawer when EventSheet closes
   useEffect(() => {
     if (!eventSheetOpen) {
-      // Restore snap when EventSheet closes
-      const savedSnap = snapRef.current;
-      if (savedSnap !== null) {
-        setTimeout(() => setSnap(savedSnap), 100);
-      }
+      const savedSnap = snapRef.current ?? 0.2;
+      setTimeout(() => setSnap(savedSnap), 100);
     }
   }, [eventSheetOpen]);
   
