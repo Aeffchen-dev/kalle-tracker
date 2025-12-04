@@ -153,12 +153,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Reset body color and close modal immediately
-    document.body.style.backgroundColor = '';
-    onClose();
-    
-    // Keep SVG animating
+    // Start animation immediately
     setAnimationPhase('dots-collapsing');
+    document.body.style.backgroundColor = '';
+    
+    // Close modal after brief delay so animation starts
+    requestAnimationFrame(() => {
+      onClose();
+    });
     
     // Hide SVG after animation completes
     setTimeout(() => {
