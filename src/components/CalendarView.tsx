@@ -205,6 +205,7 @@ const CalendarView = () => {
       snapPoints={[0.2, 0.9]}
       activeSnapPoint={snap}
       setActiveSnapPoint={setSnap}
+      handleOnly
     >
       <DrawerContent className="bg-black border-black flex flex-col h-full pb-[env(safe-area-inset-bottom)]">
         <DrawerHeader 
@@ -258,10 +259,15 @@ const CalendarView = () => {
             )}
           </div>
         </DrawerHeader>
-        <div className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
-          {showTrends ? (
+        <div 
+          className="px-4 pb-4 flex-1 min-h-0 overflow-y-auto overscroll-contain"
+          onPointerDownCapture={(e) => e.stopPropagation()}
+        >
+          {/* Keep both views mounted, toggle visibility */}
+          <div className={showTrends ? 'block' : 'hidden'}>
             <TrendAnalysis events={events} />
-          ) : (
+          </div>
+          <div className={showTrends ? 'hidden' : 'block'}>
             <div 
               className={`transition-all duration-150 ${
                 slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
@@ -333,7 +339,7 @@ const CalendarView = () => {
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>
