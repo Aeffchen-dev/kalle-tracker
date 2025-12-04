@@ -143,11 +143,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       }
       
       setAnimationPhase('expanding');
-      // Show content when dots have fully covered the screen (match animation duration)
+      // Show content when dots have fully covered the screen
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         setAnimationPhase('visible');
-      }, 800);
+      }, 1200);
     }
   }, [isOpen, animationPhase]);
 
@@ -164,14 +164,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [animationPhase, isOpen]);
 
   const handleClose = () => {
-    // Reset everything and close immediately
+    // Reset body color and show dalmatian spots
     document.body.style.backgroundColor = '';
     const spotsContainer = document.getElementById('dalmatian-spots');
     if (spotsContainer) {
       spotsContainer.style.opacity = '1';
     }
-    setAnimationPhase('idle');
-    onClose();
+    
+    setAnimationPhase('dots-collapsing');
+    
+    // Cleanup after animation
+    setTimeout(() => {
+      setAnimationPhase('idle');
+      onClose();
+    }, 600);
   };
 
   if (!isOpen && animationPhase === 'idle') return null;
@@ -228,23 +234,23 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <ellipse key={i} cx={spot.cx} cy={spot.cy}>
                 <animate
                   attributeName="rx"
-                  from={String(spot.rx)}
-                  to="100"
-                  dur="0.8s"
+                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.rx)}
+                  to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.2s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines="0 0 0.2 1"
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
                 />
                 <animate
                   attributeName="ry"
-                  from={String(spot.ry)}
-                  to="100"
-                  dur="0.8s"
+                  from={animationPhase === 'dots-collapsing' ? '100' : String(spot.ry)}
+                  to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
+                  dur={animationPhase === 'dots-collapsing' ? '0.6s' : '1.2s'}
                   fill="freeze"
                   calcMode="spline"
                   keyTimes="0;1"
-                  keySplines="0 0 0.2 1"
+                  keySplines={animationPhase === 'dots-collapsing' ? '0.4 0 1 1' : '0 0 0.2 1'}
                 />
               </ellipse>
             ))}
