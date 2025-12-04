@@ -249,7 +249,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           y="0"
           width="100"
           height="100"
-          style={{ fill: 'hsl(var(--spot-color))' }}
+          fill="#5c4033"
           clipPath="url(#dotsClip)"
         />
       </svg>
