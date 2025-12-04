@@ -14,8 +14,8 @@ interface EventSheetProps {
 const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
 const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 
-// Module-level variable to persist across component remounts
-let lastSavedWasGewichtOnly = false;
+// Module-level variable to track if timer should reset on next open
+let shouldResetTimerOnOpen = true;
 
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
@@ -24,15 +24,16 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
 
-  // Reset time to current when sheet opens (unless last save was gewicht-only)
+  // Reset time to current when sheet opens (based on what was last saved)
   useEffect(() => {
     if (open) {
-      if (!lastSavedWasGewichtOnly) {
+      if (shouldResetTimerOnOpen) {
         setSelectedTime(format(new Date(), 'HH:mm'));
       }
       setSelectedPh(null);
       setWeightValue('');
-      lastSavedWasGewichtOnly = false;
+      // Reset flag for next time
+      shouldResetTimerOnOpen = true;
     }
   }, [open]);
 
@@ -66,8 +67,11 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       await saveEvent(type, eventDate, phValue || undefined, weight);
     }
 
-    // Track if only gewicht was saved (to preserve time on next open)
-    lastSavedWasGewichtOnly = selectedTypes.size === 1 && selectedTypes.has('gewicht');
+    // Determine if timer should reset on next open:
+    // Reset if pipi, stuhlgang, or phwert was saved
+    // Don't reset only if gewicht was the only type saved
+    const savedResetTypes = selectedTypes.has('pipi') || selectedTypes.has('stuhlgang') || selectedTypes.has('phwert');
+    shouldResetTimerOnOpen = savedResetTypes;
 
     onEventAdded();
     onOpenChange(false);
