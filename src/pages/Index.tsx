@@ -117,7 +117,7 @@ const Index = () => {
           <img
             src={dogLoading}
             alt="Loading..."
-            className="h-[120px] w-auto animate-gentle-pulse"
+            className="h-[102px] w-auto"
           />
         </div>
       )}

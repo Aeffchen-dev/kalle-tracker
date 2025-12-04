@@ -37,13 +37,6 @@
         font-style: normal;
         font-display: swap;
       }
-      @keyframes gentle-pulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.08); }
-      }
-      .static-loader {
-        animation: gentle-pulse 1.5s ease-in-out infinite;
-      }
     </style>
     <!-- Persistent spots - outside #root so they stay when React loads -->
     <div id="dalmatian-spots" style="position: fixed; inset: 0; pointer-events: none; z-index: 0;">
@@ -87,7 +80,7 @@
     <div id="root">
       <!-- Static loading state -->
       <div id="static-loader" style="position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;">
-        <img src="/dog-loading.png" alt="Loading..." class="static-loader" style="height: 120px; width: auto;" />
+        <img src="/dog-loading.png" alt="Loading..." style="height: 102px; width: auto;" />
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
