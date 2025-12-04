@@ -11,6 +11,7 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [showTongueLick, setShowTongueLick] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
@@ -117,10 +118,22 @@ const Index = () => {
       {/* Header */}
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
-          onClick={() => setShowDogAnimation(true)}
-          className="cursor-pointer -mt-2 -ml-2"
+          onClick={() => {
+            setShowDogAnimation(true);
+            setShowTongueLick(true);
+            setTimeout(() => setShowTongueLick(false), 600);
+          }}
+          className="cursor-pointer -mt-2 -ml-2 relative"
         >
           <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
+          {showTongueLick && (
+            <span className="absolute bottom-[18px] left-[42px] animate-tongue-lick">
+              <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+                <path d="M9 0C6 0 4 3 4 7C4 11 6 14 9 14C12 14 14 11 14 7C14 3 12 0 9 0Z" fill="#FF6B8A"/>
+                <path d="M9 2C7.5 2 6 4 6 7C6 10 7.5 12 9 12C10.5 12 12 10 12 7C12 4 10.5 2 9 2Z" fill="#FF8FA3"/>
+              </svg>
+            </span>
+          )}
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
