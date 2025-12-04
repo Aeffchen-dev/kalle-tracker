@@ -181,68 +181,71 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       >
         <defs>
           <clipPath id="dotsClip">
-            {/* Positions adjusted: HTML top-left + offset for center (cx=left+w/2, cy=top+h/2) */}
+            {/* Organic blob spots matching HTML border-radius shapes */}
             {[
-              /* Large spots (offset ~+6 left, ~+3.5 top) */
-              { cx: 11, cy: 11.5, rx: 6, ry: 7 },
-              { cx: 78, cy: 11.5, rx: 8, ry: 6 },
-              { cx: 42, cy: 22, rx: 7, ry: 8 },
-              { cx: 88.5, cy: 32, rx: 6.5, ry: 7.5 },
-              { cx: 15.5, cy: 45, rx: 7.5, ry: 6 },
-              { cx: 71, cy: 55.5, rx: 6, ry: 7 },
-              { cx: 28, cy: 71.5, rx: 8, ry: 6.5 },
-              { cx: 81.5, cy: 82, rx: 6.5, ry: 8 },
-              { cx: 52, cy: 88, rx: 7, ry: 6 },
-              /* Medium spots (offset ~+5 left, ~+2.5 top) */
-              { cx: 23, cy: 14.5, rx: 5, ry: 5.5 },
-              { cx: 53.5, cy: 8.5, rx: 5.5, ry: 4.5 },
-              { cx: 92.5, cy: 25, rx: 4.5, ry: 5.5 },
-              { cx: 60, cy: 37.5, rx: 5, ry: 4.5 },
-              { cx: 35.5, cy: 50.5, rx: 5.5, ry: 5 },
-              { cx: 96.5, cy: 60.5, rx: 4.5, ry: 5 },
-              { cx: 55, cy: 75, rx: 5, ry: 5.5 },
-              { cx: 15.5, cy: 84.5, rx: 5.5, ry: 4.5 },
-              { cx: 89.5, cy: 97.5, rx: 4.5, ry: 5 },
-              /* Small spots (offset ~+3.5 left, ~+2 top) */
-              { cx: 31.5, cy: 4, rx: 3.5, ry: 4 },
-              { cx: 64, cy: 17, rx: 4, ry: 3.5 },
-              { cx: 6.5, cy: 27, rx: 3.5, ry: 3.5 },
-              { cx: 46, cy: 40, rx: 4, ry: 4 },
-              { cx: 81.5, cy: 47, rx: 3.5, ry: 4 },
-              { cx: 42, cy: 64, rx: 4, ry: 3.5 },
-              { cx: 65.5, cy: 77, rx: 3.5, ry: 3.5 },
-              { cx: 32, cy: 87, rx: 4, ry: 4 },
-              { cx: 71.5, cy: 94, rx: 3.5, ry: 4 },
-              /* Extra small spots (offset ~+2 left, ~+1.2 top) */
-              { cx: 94, cy: 11.2, rx: 2, ry: 2.5 },
-              { cx: 27.5, cy: 33, rx: 2.5, ry: 2 },
-              { cx: 17, cy: 56, rx: 2, ry: 2 },
-              { cx: 90.5, cy: 66.2, rx: 2.5, ry: 2.5 },
-              { cx: 60, cy: 81.2, rx: 2, ry: 2.5 },
-            ].map((spot, i) => (
-              <ellipse key={i} cx={spot.cx} cy={spot.cy}>
-                <animate
-                  attributeName="rx"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.rx)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.rx) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.4 0 0.2 1"
-                />
-                <animate
-                  attributeName="ry"
-                  from={animationPhase === 'dots-collapsing' ? '35' : String(spot.ry)}
-                  to={animationPhase === 'dots-collapsing' ? String(spot.ry) : '100'}
-                  dur={animationPhase === 'dots-collapsing' ? '0.35s' : '2s'}
-                  fill="freeze"
-                  calcMode="spline"
-                  keyTimes="0;1"
-                  keySplines="0.35 0 0.25 1"
-                />
-              </ellipse>
-            ))}
+              /* Large spots - matching HTML dimensions and border-radius */
+              { cx: 11, cy: 11.5, w: 6, h: 7, rotate: 12, blob: '60% 40% 55% 45% / 55% 60% 40% 45%' },
+              { cx: 78, cy: 11.5, w: 8, h: 6, rotate: -6, blob: '45% 55% 40% 60% / 50% 45% 55% 50%' },
+              { cx: 42, cy: 22, w: 7, h: 8, rotate: 45, blob: '55% 45% 60% 40% / 45% 55% 45% 55%' },
+              { cx: 88.5, cy: 32, w: 6.5, h: 7.5, rotate: -12, blob: '40% 60% 45% 55% / 60% 40% 55% 45%' },
+              { cx: 15.5, cy: 45, w: 7.5, h: 6, rotate: 30, blob: '50% 50% 45% 55% / 55% 45% 50% 50%' },
+              { cx: 71, cy: 55.5, w: 6, h: 7, rotate: -20, blob: '65% 35% 50% 50% / 45% 55% 45% 55%' },
+              { cx: 28, cy: 71.5, w: 8, h: 6.5, rotate: 15, blob: '45% 55% 55% 45% / 50% 50% 50% 50%' },
+              { cx: 81.5, cy: 82, w: 6.5, h: 8, rotate: -35, blob: '55% 45% 40% 60% / 60% 40% 55% 45%' },
+              { cx: 52, cy: 88, w: 7, h: 6, rotate: 25, blob: '40% 60% 50% 50% / 50% 50% 45% 55%' },
+              /* Medium spots */
+              { cx: 23, cy: 14.5, w: 5, h: 5.5, rotate: -15, blob: '55% 45% 60% 40% / 40% 60% 45% 55%' },
+              { cx: 53.5, cy: 8.5, w: 5.5, h: 4.5, rotate: 20, blob: '45% 55% 50% 50% / 55% 45% 55% 45%' },
+              { cx: 92.5, cy: 25, w: 4.5, h: 5.5, rotate: -8, blob: '50% 50% 40% 60% / 60% 40% 50% 50%' },
+              { cx: 60, cy: 37.5, w: 5, h: 4.5, rotate: 35, blob: '60% 40% 55% 45% / 45% 55% 50% 50%' },
+              { cx: 35.5, cy: 50.5, w: 5.5, h: 5, rotate: -25, blob: '45% 55% 45% 55% / 55% 45% 55% 45%' },
+              { cx: 96.5, cy: 60.5, w: 4.5, h: 5, rotate: 10, blob: '55% 45% 50% 50% / 50% 50% 45% 55%' },
+              { cx: 55, cy: 75, w: 5, h: 5.5, rotate: -40, blob: '40% 60% 55% 45% / 55% 45% 60% 40%' },
+              { cx: 15.5, cy: 84.5, w: 5.5, h: 4.5, rotate: 5, blob: '50% 50% 45% 55% / 45% 55% 50% 50%' },
+              { cx: 89.5, cy: 97.5, w: 4.5, h: 5, rotate: -18, blob: '55% 45% 60% 40% / 50% 50% 45% 55%' },
+              /* Small spots */
+              { cx: 31.5, cy: 4, w: 3.5, h: 4, rotate: 8, blob: '60% 40% 50% 50% / 50% 50% 55% 45%' },
+              { cx: 64, cy: 17, w: 4, h: 3.5, rotate: -12, blob: '45% 55% 55% 45% / 55% 45% 50% 50%' },
+              { cx: 6.5, cy: 27, w: 3.5, h: 3.5, rotate: 22, blob: '50% 50% 45% 55% / 45% 55% 55% 45%' },
+              { cx: 46, cy: 40, w: 4, h: 4, rotate: -5, blob: '55% 45% 50% 50% / 50% 50% 45% 55%' },
+              { cx: 81.5, cy: 47, w: 3.5, h: 4, rotate: 15, blob: '45% 55% 60% 40% / 55% 45% 50% 50%' },
+              { cx: 42, cy: 64, w: 4, h: 3.5, rotate: -28, blob: '50% 50% 45% 55% / 45% 55% 55% 45%' },
+              { cx: 65.5, cy: 77, w: 3.5, h: 3.5, rotate: 32, blob: '60% 40% 55% 45% / 50% 50% 50% 50%' },
+              { cx: 32, cy: 87, w: 4, h: 4, rotate: -10, blob: '45% 55% 50% 50% / 55% 45% 45% 55%' },
+              { cx: 71.5, cy: 94, w: 3.5, h: 4, rotate: 18, blob: '55% 45% 45% 55% / 50% 50% 55% 45%' },
+              /* Extra small spots */
+              { cx: 94, cy: 11.2, w: 2, h: 2.5, rotate: 0, blob: '50% 50% 45% 55% / 55% 45% 50% 50%' },
+              { cx: 27.5, cy: 33, w: 2.5, h: 2, rotate: 0, blob: '45% 55% 50% 50% / 50% 50% 55% 45%' },
+              { cx: 17, cy: 56, w: 2, h: 2, rotate: 0, blob: '55% 45% 55% 45% / 45% 55% 45% 55%' },
+              { cx: 90.5, cy: 66.2, w: 2.5, h: 2.5, rotate: 0, blob: '50% 50% 50% 50% / 55% 45% 55% 45%' },
+              { cx: 60, cy: 81.2, w: 2, h: 2.5, rotate: 0, blob: '45% 55% 45% 55% / 50% 50% 50% 50%' },
+            ].map((spot, i) => {
+              const scale = animationPhase === 'dots-collapsing' ? 1 : 15;
+              const fromScale = animationPhase === 'dots-collapsing' ? 15 : 1;
+              return (
+                <ellipse
+                  key={i}
+                  cx={spot.cx}
+                  cy={spot.cy}
+                  rx={spot.w}
+                  ry={spot.h}
+                  transform={`rotate(${spot.rotate} ${spot.cx} ${spot.cy})`}
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    type="scale"
+                    from={`${fromScale}`}
+                    to={`${scale}`}
+                    dur={animationPhase === 'dots-collapsing' ? '0.3s' : '1.8s'}
+                    fill="freeze"
+                    calcMode="spline"
+                    keyTimes="0;1"
+                    keySplines="0.4 0 0.2 1"
+                    additive="sum"
+                  />
+                </ellipse>
+              );
+            })}
           </clipPath>
         </defs>
         <rect
