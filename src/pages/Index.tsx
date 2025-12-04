@@ -6,7 +6,7 @@ import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { PawPrint } from 'lucide-react';
 import dogInCar from '@/assets/dog-in-car.png';
-import dogLoading from '@/assets/dog-loading.png';
+const dogLoading = '/dog-loading.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
