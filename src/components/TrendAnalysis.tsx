@@ -1,14 +1,172 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine, Area, AreaChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
 
 interface TrendAnalysisProps {
   events: Event[];
 }
 
-const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
+interface ChartData {
+  date: string;
+  value: number;
+}
+
+const StatCard = memo(({ 
+  emoji, 
+  label, 
+  value, 
+  unit, 
+  subtext,
+  color 
+}: { 
+  emoji: string; 
+  label: string; 
+  value: string | number | null; 
+  unit: string;
+  subtext?: string;
+  color: string;
+}) => (
+  <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+    <div className="flex items-center gap-2 mb-1">
+      <span className="text-lg">{emoji}</span>
+      <span className="text-[11px] text-white/50 uppercase tracking-wide">{label}</span>
+    </div>
+    <div className="flex items-baseline gap-1">
+      <span className="text-2xl font-semibold" style={{ color }}>{value ?? '-'}</span>
+      <span className="text-[12px] text-white/40">{unit}</span>
+    </div>
+    {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
+  </div>
+));
+
+StatCard.displayName = 'StatCard';
+
+const WeightChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: number | null; color: string }) => {
+  if (data.length < 2) {
+    return (
+      <div className="h-[180px] flex items-center justify-center">
+        <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
+      </div>
+    );
+  }
+
+  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map(d => d.value));
+
+  return (
+    <div className="h-[180px] w-full overflow-hidden">
+      <AreaChart 
+        width={340} 
+        height={180} 
+        data={data} 
+        margin={{ top: 10, right: 10, bottom: 25, left: 5 }}
+      >
+        <defs>
+          <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+          </linearGradient>
+        </defs>
+        <XAxis 
+          dataKey="date" 
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+          axisLine={false}
+          tickLine={false}
+          interval="preserveStartEnd"
+          dy={8}
+        />
+        <YAxis 
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+          axisLine={false}
+          tickLine={false}
+          width={40}
+          domain={[minValue - 2, maxValue + 2]}
+          tickFormatter={(v) => `${v}kg`}
+        />
+        {avgValue && (
+          <ReferenceLine 
+            y={avgValue} 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeDasharray="4 4" 
+          />
+        )}
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={color}
+          strokeWidth={2}
+          fill="url(#weightGradient)"
+          isAnimationActive={false}
+          dot={{ fill: color, strokeWidth: 0, r: 3 }}
+        />
+      </AreaChart>
+    </div>
+  );
+});
+
+WeightChart.displayName = 'WeightChart';
+
+const PhChart = memo(({ data, avgValue, color }: { data: ChartData[]; avgValue: number | null; color: string }) => {
+  if (data.length < 2) {
+    return (
+      <div className="h-[180px] flex items-center justify-center">
+        <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
+      </div>
+    );
+  }
+
+  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map(d => d.value));
+
+  return (
+    <div className="h-[180px] w-full overflow-hidden">
+      <LineChart 
+        width={340} 
+        height={180} 
+        data={data} 
+        margin={{ top: 10, right: 10, bottom: 25, left: 5 }}
+      >
+        <XAxis 
+          dataKey="date" 
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+          axisLine={false}
+          tickLine={false}
+          interval="preserveStartEnd"
+          dy={8}
+        />
+        <YAxis 
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+          axisLine={false}
+          tickLine={false}
+          width={35}
+          domain={[minValue - 0.5, maxValue + 0.5]}
+          tickFormatter={(v) => v.toFixed(1)}
+        />
+        {avgValue && (
+          <ReferenceLine 
+            y={avgValue} 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeDasharray="4 4"
+          />
+        )}
+        <Line 
+          type="monotone" 
+          dataKey="value" 
+          stroke={color} 
+          strokeWidth={2}
+          dot={{ fill: color, strokeWidth: 0, r: 3 }}
+          isAnimationActive={false}
+        />
+      </LineChart>
+    </div>
+  );
+});
+
+PhChart.displayName = 'PhChart';
+
+const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   const weightData = useMemo(() => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -34,7 +192,7 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'pipi')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
     
-    const intervals: { date: string; value: number }[] = [];
+    const intervals: ChartData[] = [];
     for (let i = 1; i < pipiEvents.length; i++) {
       const diff = differenceInMinutes(new Date(pipiEvents[i].time), new Date(pipiEvents[i - 1].time));
       intervals.push({
@@ -50,7 +208,7 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'stuhlgang')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
     
-    const intervals: { date: string; value: number }[] = [];
+    const intervals: ChartData[] = [];
     for (let i = 1; i < stuhlgangEvents.length; i++) {
       const diff = differenceInMinutes(new Date(stuhlgangEvents[i].time), new Date(stuhlgangEvents[i - 1].time));
       intervals.push({
@@ -61,155 +219,49 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
     return intervals;
   }, [events]);
 
-  const getStats = (data: { value: number }[]) => {
-    if (data.length === 0) return { avg: null, min: null, max: null, latest: null };
-    const values = data.map(d => d.value);
+  const weightStats = useMemo(() => {
+    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    const values = weightData.map(d => d.value);
     return {
       avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
       min: Math.min(...values),
       max: Math.max(...values),
       latest: values[values.length - 1],
     };
-  };
+  }, [weightData]);
 
-  const weightStats = getStats(weightData);
-  const phStats = getStats(phData);
-  const pipiStats = getStats(pipiIntervalData);
-  const stuhlgangStats = getStats(stuhlgangIntervalData);
+  const phStats = useMemo(() => {
+    if (phData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    const values = phData.map(d => d.value);
+    return {
+      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
+      min: Math.min(...values),
+      max: Math.max(...values),
+      latest: values[values.length - 1],
+    };
+  }, [phData]);
 
-  const StatCard = ({ 
-    emoji, 
-    label, 
-    value, 
-    unit, 
-    subtext,
-    color 
-  }: { 
-    emoji: string; 
-    label: string; 
-    value: string | number | null; 
-    unit: string;
-    subtext?: string;
-    color: string;
-  }) => (
-    <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-      <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg">{emoji}</span>
-        <span className="text-[11px] text-white/50 uppercase tracking-wide">{label}</span>
-      </div>
-      <div className="flex items-baseline gap-1">
-        <span className="text-2xl font-semibold" style={{ color }}>{value ?? '-'}</span>
-        <span className="text-[12px] text-white/40">{unit}</span>
-      </div>
-      {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
-    </div>
-  );
+  const pipiStats = useMemo(() => {
+    if (pipiIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    const values = pipiIntervalData.map(d => d.value);
+    return {
+      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
+      min: Math.min(...values),
+      max: Math.max(...values),
+      latest: values[values.length - 1],
+    };
+  }, [pipiIntervalData]);
 
-  const ChartSection = ({ 
-    title, 
-    data, 
-    unit, 
-    color,
-    avgValue,
-    showArea = false
-  }: { 
-    title: string; 
-    data: { date: string; value: number }[]; 
-    unit: string; 
-    color: string;
-    avgValue?: number | null;
-    showArea?: boolean;
-  }) => (
-    <div className="mb-6">
-      <h3 className="text-[13px] text-white/60 font-medium mb-3">{title}</h3>
-      {data.length < 2 ? (
-        <div className="h-[180px] flex items-center justify-center">
-          <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
-        </div>
-      ) : (
-        <div className="h-[180px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            {showArea ? (
-              <AreaChart data={data} margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-                <defs>
-                  <linearGradient id={`gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-                    <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-                  </linearGradient>
-                </defs>
-                <XAxis 
-                  dataKey="date" 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  dy={10}
-                />
-                <YAxis 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
-                  axisLine={false}
-                  tickLine={false}
-                  width={45}
-                  domain={['dataMin - 2', 'dataMax + 2']}
-                  tickFormatter={(v) => `${v} ${unit}`}
-                />
-                {avgValue && (
-                  <ReferenceLine 
-                    y={avgValue} 
-                    stroke="rgba(255,255,255,0.25)" 
-                    strokeDasharray="4 4" 
-                  />
-                )}
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke={color}
-                  strokeWidth={2}
-                  fill={`url(#gradient-${color.replace('#', '')})`}
-                  isAnimationActive={false}
-                  dot={{ fill: color, strokeWidth: 0, r: 3 }}
-                />
-              </AreaChart>
-            ) : (
-              <LineChart data={data} margin={{ top: 10, right: 10, bottom: 20, left: 10 }}>
-                <XAxis 
-                  dataKey="date" 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
-                  axisLine={false}
-                  tickLine={false}
-                  interval="preserveStartEnd"
-                  dy={10}
-                />
-                <YAxis 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} 
-                  axisLine={false}
-                  tickLine={false}
-                  width={45}
-                  domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                  tickFormatter={(v) => `${v}`}
-                />
-                {avgValue && (
-                  <ReferenceLine 
-                    y={avgValue} 
-                    stroke="rgba(255,255,255,0.25)" 
-                    strokeDasharray="4 4"
-                  />
-                )}
-                <Line 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke={color} 
-                  strokeWidth={2}
-                  dot={{ fill: color, strokeWidth: 0, r: 3 }}
-                  isAnimationActive={false}
-                />
-              </LineChart>
-            )}
-          </ResponsiveContainer>
-        </div>
-      )}
-    </div>
-  );
+  const stuhlgangStats = useMemo(() => {
+    if (stuhlgangIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    const values = stuhlgangIntervalData.map(d => d.value);
+    return {
+      avg: Math.round(values.reduce((a, b) => a + b, 0) / values.length * 10) / 10,
+      min: Math.min(...values),
+      max: Math.max(...values),
+      latest: values[values.length - 1],
+    };
+  }, [stuhlgangIntervalData]);
 
   return (
     <div className="pb-20 space-y-6">
@@ -251,24 +303,19 @@ const TrendAnalysis = ({ events }: TrendAnalysisProps) => {
 
       {/* Charts */}
       <div>
-        <ChartSection 
-          title="Gewichtsverlauf" 
-          data={weightData} 
-          unit="kg" 
-          color="#5AD940"
-          avgValue={weightStats.avg}
-          showArea
-        />
-        <ChartSection 
-          title="pH-Wert Verlauf" 
-          data={phData} 
-          unit="" 
-          color="#FFD700"
-          avgValue={phStats.avg}
-        />
+        <div className="mb-6">
+          <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
+          <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" />
+        </div>
+        <div className="mb-6">
+          <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
+          <PhChart data={phData} avgValue={phStats.avg} color="#FFD700" />
+        </div>
       </div>
     </div>
   );
-};
+});
+
+TrendAnalysis.displayName = 'TrendAnalysis';
 
 export default TrendAnalysis;
