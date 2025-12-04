@@ -342,7 +342,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <thead>
                     <tr className="border-b border-white/30">
                       {weekSchedule.map((day, index) => (
-                        <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${index === 0 ? 'sticky left-0 bg-spot z-10' : ''}`}>
+                        <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
                           <div className="text-white">{day.day}</div>
                           <div className="text-white/60 font-normal">{day.type}</div>
                         </th>
@@ -358,13 +358,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             <td
                               key={dayIndex}
                               className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                dayIndex === 0 ? 'sticky left-0 z-10 ' : ''
-                              }${
                                 slot?.person === 'niklas'
                                   ? 'bg-blue-500/20'
                                   : slot?.person === 'jana'
                                   ? 'bg-pink-500/20'
-                                  : dayIndex === 0 ? 'bg-spot' : ''
+                                  : ''
                               }`}
                             >
                               {slot && (
