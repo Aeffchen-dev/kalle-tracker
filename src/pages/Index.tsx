@@ -112,7 +112,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-dvh flex flex-col bg-transparent relative overflow-hidden pb-[env(safe-area-inset-bottom)]">
+    <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
       
       {/* Loading state */}
       {isLoading && imageLoaded && (
@@ -140,12 +140,17 @@ const Index = () => {
             />
           </span>
         </button>
-        <button 
-          onClick={() => setShowTagesplan(true)}
-          className="text-[14px] uppercase cursor-pointer"
-        >
-          Tagesplan
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="text-[14px] bg-black text-white rounded-full py-[2px] px-[4px]">
+            Samson
+          </button>
+          <button 
+            onClick={() => setShowTagesplan(true)}
+            className="text-[14px] cursor-pointer"
+          >
+            Tagesplan
+          </button>
+        </div>
       </header>
 
       {/* Main countdown area */}
