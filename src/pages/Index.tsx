@@ -5,7 +5,7 @@ import TagesplanOverlay from '@/components/TagesplanOverlay';
 import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
-const dogLoading = '/dog-loading.png';
+import dalmatianHeader from '@/assets/dalmatian-header.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00h 00m 00s');
@@ -113,25 +113,15 @@ const Index = () => {
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
       
-      {/* Loading state */}
-      {isLoading && imageLoaded && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pb-[20vh]">
-          <img
-            src={dogLoading}
-            alt="Loading..."
-            className="h-[202px] w-auto mt-[70px]"
-          />
-        </div>
-      )}
 
       {/* Header */}
       <header className={`p-4 flex justify-between items-center relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
           onClick={() => setShowDogAnimation(true)}
-          className="text-[20px] cursor-pointer"
+          className="cursor-pointer"
           style={{ transform: 'rotate(-15deg)' }}
         >
-          🐶
+          <img src={dalmatianHeader} alt="Kalle" className="h-[100px] w-auto" />
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
