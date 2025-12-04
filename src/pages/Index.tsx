@@ -11,17 +11,18 @@ const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00.00.00');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const eventsRef = useRef<Event[]>([]);
 
-  // Preload loading image
+  // Remove static loader on mount to prevent flicker
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => setImageLoaded(true);
-    img.src = dogLoading;
+    const staticLoader = document.getElementById('static-loader');
+    if (staticLoader) {
+      staticLoader.remove();
+    }
   }, []);
 
   const calculateTimeDisplay = () => {
