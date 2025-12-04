@@ -95,7 +95,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} modal={false}>
       <DrawerContent className="bg-black border-black overflow-hidden">
         <DrawerHeader className="pb-4">
           <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
@@ -199,18 +199,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   inputMode="decimal"
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
-                  onBlur={() => {
-                    // Reset zoom and scroll position after mobile keyboard closes
-                    window.scrollTo(0, 0);
-                    // Reset viewport zoom on iOS
-                    const viewport = document.querySelector('meta[name="viewport"]');
-                    if (viewport) {
-                      viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
-                      setTimeout(() => {
-                        viewport.setAttribute('content', 'width=device-width, initial-scale=1');
-                      }, 100);
-                    }
-                  }}
                   placeholder="32"
                   className="bg-transparent text-white text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />

@@ -25,9 +25,26 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
   const [showTrends, setShowTrends] = useState(false);
+  const snapRef = useRef<SnapPoint | null>(0.2);
+  
+  // Preserve snap state when EventSheet opens/closes
+  useEffect(() => {
+    if (eventSheetOpen) {
+      // Store current snap when EventSheet opens
+      snapRef.current = snap;
+    } else {
+      // Restore snap when EventSheet closes (with slight delay to let drawer settle)
+      const savedSnap = snapRef.current;
+      if (savedSnap !== null && savedSnap !== snap) {
+        setTimeout(() => setSnap(savedSnap), 50);
+      }
+    }
+  }, [eventSheetOpen]);
   
   const toggleSnapPoint = () => {
-    setSnap(snap === 0.2 ? 0.9 : 0.2);
+    const newSnap = snap === 0.2 ? 0.9 : 0.2;
+    snapRef.current = newSnap;
+    setSnap(newSnap);
   };
   const itemTouchStartX = useRef<number>(0);
   const itemTouchStartY = useRef<number>(0);
@@ -210,6 +227,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   // Handle clicks outside the drawer to snap to default
   const handleOutsideClick = () => {
     if (snap === 0.9) {
+      snapRef.current = 0.2;
       setSnap(0.2);
     }
   };
