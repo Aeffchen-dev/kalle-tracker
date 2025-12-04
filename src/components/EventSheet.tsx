@@ -32,6 +32,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       }
       setSelectedPh(null);
       setWeightValue('');
+      // Reset flag to true for next time (default behavior is to reset)
+      shouldResetTimerOnOpen = true;
     }
   }, [open]);
 
