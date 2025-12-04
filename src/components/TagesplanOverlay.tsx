@@ -211,11 +211,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           { left: 88, top: 65, w: 2, h: 2, rotate: 0, seed: 30 },
           { left: 58, top: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
         ].map((spot) => {
+          // Blob paths centered at origin (0,0)
           const blobPaths = [
-            'M50,5 C75,5 95,20 95,45 C95,70 80,95 50,95 C20,95 5,75 5,50 C5,25 25,5 50,5 Z',
-            'M50,8 C80,8 92,25 92,50 C92,75 75,92 50,92 C25,92 8,70 8,45 C8,20 20,8 50,8 Z',
-            'M45,5 C70,5 95,25 95,50 C95,80 70,95 45,95 C15,95 5,70 5,45 C5,15 20,5 45,5 Z',
-            'M55,8 C85,8 92,30 92,55 C92,80 75,92 50,92 C20,92 8,65 8,40 C8,15 30,8 55,8 Z',
+            'M0,-45 C25,-45 45,-30 45,-5 C45,20 30,45 0,45 C-30,45 -45,25 -45,0 C-45,-25 -25,-45 0,-45 Z',
+            'M0,-42 C30,-42 42,-25 42,0 C42,25 25,42 0,42 C-25,42 -42,20 -42,-5 C-42,-30 -30,-42 0,-42 Z',
+            'M-5,-45 C20,-45 45,-25 45,0 C45,30 20,45 -5,45 C-35,45 -45,20 -45,-5 C-45,-35 -30,-45 -5,-45 Z',
+            'M5,-42 C35,-42 42,-20 42,5 C42,30 25,42 0,42 C-30,42 -42,15 -42,-10 C-42,-35 -20,-42 5,-42 Z',
           ];
           
           const startScale = animationPhase === 'dots-collapsing' ? 40 : 1;
@@ -233,10 +234,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 overflow: 'visible',
                 transform: 'translate(-50%, -50%)',
               }}
-              viewBox="0 0 100 100"
+              viewBox="-50 -50 100 100"
             >
-              <g transform={`translate(50, 50) rotate(${spot.rotate})`}>
-                <path d={blobPaths[spot.seed % 4]} fill="#5c4033" transform="translate(-50, -50)">
+              <g transform={`rotate(${spot.rotate})`}>
+                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
                   <animateTransform
                     attributeName="transform"
                     type="scale"
@@ -247,7 +248,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     calcMode="spline"
                     keyTimes="0;1"
                     keySplines={animationPhase === 'dots-collapsing' ? "0 0 0.2 1" : "0.8 0 1 1"}
-                    additive="sum"
                   />
                 </path>
               </g>
