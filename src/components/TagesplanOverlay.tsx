@@ -243,7 +243,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     type="scale"
                     from={`${startScale} ${startScale}`}
                     to={`${endScale} ${endScale}`}
-                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.9s'}
+                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.4s'}
                     fill="freeze"
                     calcMode="spline"
                     keyTimes="0;1"
