@@ -22,9 +22,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [weightValue, setWeightValue] = useState<string>('');
   const wasOpen = useRef(false);
 
-  // Reset time when sheet opens
+  // Reset time when sheet opens, reset all fields when closing
   useEffect(() => {
     const justOpened = open && !wasOpen.current;
+    const justClosed = !open && wasOpen.current;
     wasOpen.current = open;
     
     if (justOpened) {
@@ -39,6 +40,14 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       }
       setSelectedPh(null);
       setWeightValue('');
+    }
+    
+    if (justClosed) {
+      // Reset all form fields when modal closes
+      setSelectedTypes(new Set());
+      setSelectedPh(null);
+      setWeightValue('');
+      setSelectedTime(format(new Date(), 'HH:mm'));
     }
   }, [open]);
 
