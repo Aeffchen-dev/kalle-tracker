@@ -194,13 +194,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     if (isInitialLoad.current) return;
     
     const saveData = async () => {
+      console.log('Saving tagesplan data...');
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase.from('tagesplan') as any).upsert({
+      const { error } = await (supabase.from('tagesplan') as any).upsert({
         id: 'default',
         meals_data: meals,
         schedule_data: schedule,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
+      
+      if (error) {
+        console.error('Error saving tagesplan:', error);
+      } else {
+        console.log('Tagesplan saved successfully');
+      }
     };
     
     const timeout = setTimeout(saveData, 500);
