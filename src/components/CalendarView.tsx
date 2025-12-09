@@ -279,7 +279,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             <CalendarIcon size={20} className="text-white" />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start">
+                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
                           <Calendar
                             mode="single"
                             selected={selectedDate}
