@@ -1,11 +1,13 @@
-import { useState, useRef, TouchEvent, useEffect } from 'react';
+import { useState, useRef, TouchEvent, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { getEvents, deleteEvent, Event } from '@/lib/events';
-import { format, subDays, addDays, isSameDay } from 'date-fns';
+import { format, subDays, addDays, isSameDay, startOfDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon } from 'lucide-react';
 import TrendAnalysis from './TrendAnalysis';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 type SnapPoint = number | string;
 
@@ -192,6 +194,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const canGoNext = addDays(selectedDate, 1) <= today;
   const canGoPrev = subDays(selectedDate, 1) >= sevenDaysAgo;
 
+  // Calculate which days have entries for the calendar
+  const daysWithEntries = useMemo(() => {
+    return events.map(event => startOfDay(new Date(event.time)));
+  }, [events]);
+
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
   const changeDate = (direction: 'left' | 'right') => {
     if (direction === 'left' && !canGoNext) return;
     if (direction === 'right' && !canGoPrev) return;
@@ -259,10 +268,35 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
               <>
                 <div className="flex items-center gap-2 w-[56px]">
                   <div className="w-6 h-6 flex items-center justify-center">
-                    {canGoPrev && (
+                    {canGoPrev ? (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
                         <ArrowLeft size={24} className="text-white" />
                       </button>
+                    ) : (
+                      <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                        <PopoverTrigger asChild>
+                          <button onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
+                            <CalendarIcon size={20} className="text-white" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(date) => {
+                              if (date) {
+                                setSelectedDate(date);
+                                setCalendarOpen(false);
+                              }
+                            }}
+                            disabled={(date) => date > today}
+                            modifiers={{ hasEntry: daysWithEntries }}
+                            modifiersClassNames={{ hasEntry: 'has-entry' }}
+                            className="pointer-events-auto [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative"
+                            locale={de}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     )}
                   </div>
                 </div>
