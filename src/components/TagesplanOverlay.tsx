@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Ingredient {
   quantity: string;
@@ -133,9 +134,78 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [meals, setMeals] = useState<MealData[]>(mealsData);
   const [schedule, setSchedule] = useState<DaySchedule[]>(weekSchedule);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
+  const [editingMeal, setEditingMeal] = useState<{ mealIndex: number; ingredientIndex: number; field: 'quantity' | 'name' | 'description' } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isInitialLoad = useRef(true);
+
+  // Load data from database
+  useEffect(() => {
+    const loadData = async () => {
+      const { data } = await supabase
+        .from('tagesplan')
+        .select('*')
+        .eq('id', 'default')
+        .maybeSingle();
+      
+      if (data) {
+        if (data.meals_data && Array.isArray(data.meals_data) && data.meals_data.length > 0) {
+          setMeals(data.meals_data as unknown as MealData[]);
+        }
+        if (data.schedule_data && Array.isArray(data.schedule_data) && data.schedule_data.length > 0) {
+          setSchedule(data.schedule_data as unknown as DaySchedule[]);
+        }
+      }
+      isInitialLoad.current = false;
+    };
+    loadData();
+  }, []);
+
+  // Subscribe to realtime updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('tagesplan-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tagesplan',
+          filter: 'id=eq.default'
+        },
+        (payload) => {
+          const newData = payload.new as { meals_data?: MealData[]; schedule_data?: DaySchedule[] };
+          if (newData.meals_data) setMeals(newData.meals_data);
+          if (newData.schedule_data) setSchedule(newData.schedule_data);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Save to database when data changes
+  useEffect(() => {
+    if (isInitialLoad.current) return;
+    
+    const saveData = async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (supabase.from('tagesplan') as any).upsert({
+        id: 'default',
+        meals_data: meals,
+        schedule_data: schedule,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+    };
+    
+    const timeout = setTimeout(saveData, 500);
+    return () => clearTimeout(timeout);
+  }, [meals, schedule]);
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -164,7 +234,46 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       inputRef.current.focus();
       inputRef.current.select();
     }
-  }, [editingCell]);
+    if (editingMeal && editingMeal.field !== 'description' && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+    if (editingMeal && editingMeal.field === 'description' && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [editingCell, editingMeal]);
+
+  const handleMealClick = (mealIndex: number, ingredientIndex: number, field: 'quantity' | 'name' | 'description') => {
+    setEditingMeal({ mealIndex, ingredientIndex, field });
+  };
+
+  const handleMealChange = (value: string) => {
+    if (!editingMeal) return;
+    const { mealIndex, ingredientIndex, field } = editingMeal;
+    setMeals(prev => {
+      const newMeals = [...prev];
+      newMeals[mealIndex] = {
+        ...newMeals[mealIndex],
+        ingredients: newMeals[mealIndex].ingredients.map((ing, i) =>
+          i === ingredientIndex ? { ...ing, [field]: value } : ing
+        ),
+      };
+      return newMeals;
+    });
+  };
+
+  const handleMealBlur = () => {
+    setEditingMeal(null);
+  };
+
+  const handleMealKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setEditingMeal(null);
+    }
+    if (e.key === 'Enter' && editingMeal?.field !== 'description') {
+      setEditingMeal(null);
+    }
+  };
 
   const handleCellClick = (dayIndex: number, slotIndex: number, field: 'time' | 'activity') => {
     setEditingCell({ dayIndex, slotIndex, field });
@@ -333,24 +442,85 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto px-4 pb-8">
-            {mealsData.map((meal, mealIndex) => (
+            {meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
                 <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
                 <div className="border border-white/30 rounded-lg overflow-hidden">
-                  {meal.ingredients.map((ingredient, index) => (
-                    <div
-                      key={index}
-                      className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/30' : ''}`}
-                    >
-                      <span className="text-[14px] text-white/60 w-[80px] flex-shrink-0">{ingredient.quantity}</span>
-                      <div className="flex-1">
-                        <span className="text-[14px] text-white/60">{ingredient.name}</span>
-                        {ingredient.description && (
-                          <p className="text-[14px] text-white/60 mt-2 whitespace-pre-line">{ingredient.description}</p>
+                  {meal.ingredients.map((ingredient, index) => {
+                    const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
+                    const isEditingName = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'name';
+                    const isEditingDescription = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'description';
+                    
+                    return (
+                      <div
+                        key={index}
+                        className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/30' : ''}`}
+                      >
+                        {isEditingQuantity ? (
+                          <input
+                            ref={inputRef}
+                            type="text"
+                            value={ingredient.quantity}
+                            onChange={(e) => handleMealChange(e.target.value)}
+                            onBlur={handleMealBlur}
+                            onKeyDown={handleMealKeyDown}
+                            className="bg-white/10 text-white/60 text-[14px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
+                          />
+                        ) : (
+                          <span
+                            className="text-[14px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                            onClick={() => handleMealClick(mealIndex, index, 'quantity')}
+                          >
+                            {ingredient.quantity}
+                          </span>
                         )}
+                        <div className="flex-1">
+                          {isEditingName ? (
+                            <input
+                              ref={inputRef}
+                              type="text"
+                              value={ingredient.name}
+                              onChange={(e) => handleMealChange(e.target.value)}
+                              onBlur={handleMealBlur}
+                              onKeyDown={handleMealKeyDown}
+                              className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                            />
+                          ) : (
+                            <span
+                              className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
+                              onClick={() => handleMealClick(mealIndex, index, 'name')}
+                            >
+                              {ingredient.name}
+                            </span>
+                          )}
+                          {isEditingDescription ? (
+                            <textarea
+                              ref={textareaRef}
+                              value={ingredient.description || ''}
+                              onChange={(e) => handleMealChange(e.target.value)}
+                              onBlur={handleMealBlur}
+                              onKeyDown={handleMealKeyDown}
+                              className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
+                            />
+                          ) : ingredient.description ? (
+                            <p
+                              className="text-[14px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                              onClick={() => handleMealClick(mealIndex, index, 'description')}
+                            >
+                              {ingredient.description}
+                            </p>
+                          ) : (
+                            <p
+                              className="text-[14px] text-white/30 mt-2 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 italic"
+                              onClick={() => handleMealClick(mealIndex, index, 'description')}
+                            >
+                              + Beschreibung
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}

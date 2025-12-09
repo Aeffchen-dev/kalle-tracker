@@ -44,6 +44,27 @@ export type Database = {
         }
         Relationships: []
       }
+      tagesplan: {
+        Row: {
+          id: string
+          meals_data: Json
+          schedule_data: Json
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          meals_data?: Json
+          schedule_data?: Json
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          meals_data?: Json
+          schedule_data?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
