@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 interface Ingredient {
@@ -133,6 +133,9 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [schedule, setSchedule] = useState<DaySchedule[]>(weekSchedule);
+  const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -154,6 +157,43 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       document.body.style.backgroundColor = '';
     }
   }, [animationPhase, isOpen]);
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (editingCell && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editingCell]);
+
+  const handleCellClick = (dayIndex: number, slotIndex: number, field: 'time' | 'activity') => {
+    setEditingCell({ dayIndex, slotIndex, field });
+  };
+
+  const handleCellChange = (value: string) => {
+    if (!editingCell) return;
+    const { dayIndex, slotIndex, field } = editingCell;
+    setSchedule(prev => {
+      const newSchedule = [...prev];
+      newSchedule[dayIndex] = {
+        ...newSchedule[dayIndex],
+        slots: newSchedule[dayIndex].slots.map((slot, i) =>
+          i === slotIndex ? { ...slot, [field]: value } : slot
+        ),
+      };
+      return newSchedule;
+    });
+  };
+
+  const handleCellBlur = () => {
+    setEditingCell(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setEditingCell(null);
+    }
+  };
 
   const handleClose = () => {
     // Start animation immediately
@@ -330,8 +370,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <tbody>
                     {[0, 1, 2, 3, 4].map((slotIndex) => (
                       <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
-                        {weekSchedule.map((day, dayIndex) => {
+                        {schedule.map((day, dayIndex) => {
                           const slot = day.slots[slotIndex];
+                          const isEditingTime = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'time';
+                          const isEditingActivity = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'activity';
                           return (
                             <td
                               key={dayIndex}
@@ -345,8 +387,42 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             >
                               {slot && (
                                 <>
-                                  <div className="text-white/60">{slot.time}</div>
-                                  <div className="text-white/60">{slot.activity}</div>
+                                  {isEditingTime ? (
+                                    <input
+                                      ref={inputRef}
+                                      type="text"
+                                      value={slot.time}
+                                      onChange={(e) => handleCellChange(e.target.value)}
+                                      onBlur={handleCellBlur}
+                                      onKeyDown={handleKeyDown}
+                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
+                                    >
+                                      {slot.time}
+                                    </div>
+                                  )}
+                                  {isEditingActivity ? (
+                                    <input
+                                      ref={inputRef}
+                                      type="text"
+                                      value={slot.activity}
+                                      onChange={(e) => handleCellChange(e.target.value)}
+                                      onBlur={handleCellBlur}
+                                      onKeyDown={handleKeyDown}
+                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
+                                    >
+                                      {slot.activity}
+                                    </div>
+                                  )}
                                 </>
                               )}
                             </td>
