@@ -509,14 +509,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             >
                               {ingredient.description}
                             </p>
-                          ) : (
-                            <p
-                              className="text-[14px] text-white/30 mt-2 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 italic"
-                              onClick={() => handleMealClick(mealIndex, index, 'description')}
-                            >
-                              + Beschreibung
-                            </p>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     );
