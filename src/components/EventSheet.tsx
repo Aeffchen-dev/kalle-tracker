@@ -214,7 +214,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 w-[70px]"
+                className="bg-transparent text-white text-[14px] text-center border-none outline-none w-[70px] md:[&::-webkit-calendar-picker-indicator]:filter md:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 md:[&::-webkit-calendar-picker-indicator]:static md:[&::-webkit-calendar-picker-indicator]:w-auto md:[&::-webkit-calendar-picker-indicator]:h-auto md:[&::-webkit-calendar-picker-indicator]:opacity-100 md:[&::-webkit-calendar-picker-indicator]:ml-2"
               />
               <span className="text-[14px] text-white ml-1">Uhr</span>
             </label>
