@@ -195,6 +195,25 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     }
   };
 
+  const togglePerson = (dayIndex: number, slotIndex: number) => {
+    setSchedule(prev => {
+      const newSchedule = [...prev];
+      const currentPerson = newSchedule[dayIndex].slots[slotIndex]?.person;
+      let nextPerson: 'niklas' | 'jana' | undefined;
+      if (currentPerson === 'niklas') nextPerson = 'jana';
+      else if (currentPerson === 'jana') nextPerson = undefined;
+      else nextPerson = 'niklas';
+      
+      newSchedule[dayIndex] = {
+        ...newSchedule[dayIndex],
+        slots: newSchedule[dayIndex].slots.map((slot, i) =>
+          i === slotIndex ? { ...slot, person: nextPerson } : slot
+        ),
+      };
+      return newSchedule;
+    });
+  };
+
   const handleClose = () => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
@@ -386,44 +405,53 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               }`}
                             >
                               {slot && (
-                                <>
-                                  {isEditingTime ? (
-                                    <input
-                                      ref={inputRef}
-                                      type="text"
-                                      value={slot.time}
-                                      onChange={(e) => handleCellChange(e.target.value)}
-                                      onBlur={handleCellBlur}
-                                      onKeyDown={handleKeyDown}
-                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
-                                    />
-                                  ) : (
-                                    <div
-                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
-                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
-                                    >
-                                      {slot.time}
-                                    </div>
-                                  )}
-                                  {isEditingActivity ? (
-                                    <input
-                                      ref={inputRef}
-                                      type="text"
-                                      value={slot.activity}
-                                      onChange={(e) => handleCellChange(e.target.value)}
-                                      onBlur={handleCellBlur}
-                                      onKeyDown={handleKeyDown}
-                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
-                                    />
-                                  ) : (
-                                    <div
-                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
-                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
-                                    >
-                                      {slot.activity}
-                                    </div>
-                                  )}
-                                </>
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => togglePerson(dayIndex, slotIndex)}
+                                    className="w-5 h-5 flex-shrink-0 rounded flex items-center justify-center text-[10px] border border-white/30 hover:border-white/50 transition-colors"
+                                    title="Person wechseln"
+                                  >
+                                    {slot.person === 'niklas' ? '💙' : slot.person === 'jana' ? '💗' : '○'}
+                                  </button>
+                                  <div className="flex-1 min-w-0">
+                                    {isEditingTime ? (
+                                      <input
+                                        ref={inputRef}
+                                        type="text"
+                                        value={slot.time}
+                                        onChange={(e) => handleCellChange(e.target.value)}
+                                        onBlur={handleCellBlur}
+                                        onKeyDown={handleKeyDown}
+                                        className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                                      />
+                                    ) : (
+                                      <div
+                                        className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                        onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
+                                      >
+                                        {slot.time}
+                                      </div>
+                                    )}
+                                    {isEditingActivity ? (
+                                      <input
+                                        ref={inputRef}
+                                        type="text"
+                                        value={slot.activity}
+                                        onChange={(e) => handleCellChange(e.target.value)}
+                                        onBlur={handleCellBlur}
+                                        onKeyDown={handleKeyDown}
+                                        className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
+                                      />
+                                    ) : (
+                                      <div
+                                        className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                        onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
+                                      >
+                                        {slot.activity}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               )}
                             </td>
                           );
