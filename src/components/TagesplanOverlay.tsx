@@ -164,6 +164,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     loadData();
   }, []);
 
+  // Track if user is currently editing
+  const isEditing = editingCell !== null || editingMeal !== null;
+
   // Subscribe to realtime updates
   useEffect(() => {
     const channel = supabase
@@ -177,6 +180,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           filter: 'id=eq.default'
         },
         (payload) => {
+          // Don't update while user is editing to prevent overwriting their input
+          if (isEditing) return;
+          
           const newData = payload.new as { meals_data?: MealData[]; schedule_data?: DaySchedule[] };
           if (newData.meals_data) setMeals(newData.meals_data);
           if (newData.schedule_data) setSchedule(newData.schedule_data);
@@ -187,7 +193,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [isEditing]);
 
   // Save to database when data changes
   useEffect(() => {
