@@ -290,7 +290,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               }
                             }}
                             disabled={(date) => date > today}
-                            modifiers={{ hasEntry: daysWithEntries, today: [new Date()] }}
+                            modifiers={{ hasEntry: daysWithEntries, today: startOfDay(new Date()) }}
                             modifiersClassNames={{ 
                               hasEntry: 'has-entry',
                               today: 'ring-2 ring-[#5AD940] ring-offset-1 ring-offset-black'
