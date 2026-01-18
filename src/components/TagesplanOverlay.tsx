@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
+import { X, Phone, MapPin } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Ingredient {
@@ -15,7 +15,7 @@ interface MealData {
 
 const mealsData: MealData[] = [
   {
-    title: 'Morgens, mittags, abends',
+    title: 'Morgens, mittags und abends jeweils',
     ingredients: [
       { quantity: '103g', name: 'Royal Canine Urinary u/c' },
       { quantity: '309g', name: 'Wasser' },
@@ -23,14 +23,6 @@ const mealsData: MealData[] = [
       { quantity: '6,6g', name: 'Dicalciumphosphat' },
       { quantity: '3,3g', name: 'Elements sensitive' },
       { quantity: '6,6g', name: 'Futteröl Junior' },
-    ],
-  },
-  {
-    title: 'Schleckpaste',
-    ingredients: [
-      { quantity: '60g', name: 'Ei ohne Schale, gekocht' },
-      { quantity: '100g', name: 'Joghurt 1,5% Fett' },
-      { quantity: '100g', name: 'Karotten, gekocht' },
     ],
   },
 ];
@@ -638,6 +630,62 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 </table>
                 </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Emergency Section */}
+            <div className="mb-8">
+              <h2 className="text-[14px] text-white mb-4">🚑 im Notfall</h2>
+              
+              {/* Tierarztpraxis Sonnenallee */}
+              <div className="border border-white/30 rounded-lg p-4 mb-4">
+                <a 
+                  href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] text-white underline block mb-3"
+                >
+                  Tierarztpraxis Sonnenallee
+                </a>
+                <a 
+                  href="tel:+49306814455"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
+                >
+                  <Phone size={16} />
+                  <span>Anrufen</span>
+                </a>
+              </div>
+
+              {/* Tierklinik Bärenwiese */}
+              <div className="border border-white/30 rounded-lg p-4">
+                <a 
+                  href="https://tierarzt-baerenwiese.de/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[14px] text-white underline block mb-3"
+                >
+                  Tierklinik: Tierarztpraxis Bärenwiese
+                </a>
+                <a 
+                  href="tel:+493023362627"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors mb-3"
+                >
+                  <Phone size={16} />
+                  <span>Anrufen</span>
+                </a>
+                <a 
+                  href="https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
+                >
+                  <MapPin size={16} />
+                  <span>Wegbeschreibung</span>
+                </a>
+                <p className="text-[14px] text-white/60 mt-2 ml-6">
+                  Uhlandstraße 151<br />
+                  10719 Berlin
+                </p>
               </div>
             </div>
           </div>
