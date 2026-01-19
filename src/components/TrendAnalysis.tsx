@@ -327,125 +327,101 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   }
 
   return (
-    <div className="h-[280px]" data-vaul-no-drag>
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          data={growthCurveData}
-          margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
-        >
-          {/* Upper bound line (+5%) */}
-          <Line
-            type="monotone"
-            dataKey="upperBound"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={1}
-            dot={false}
-            isAnimationActive={false}
-          />
-          {/* Lower bound line (-5%) */}
-          <Line
-            type="monotone"
-            dataKey="lowerBound"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={1}
-            dot={false}
-            isAnimationActive={false}
-          />
-          {/* Main growth curve */}
-          <Line
-            type="monotone"
-            dataKey="expected"
-            stroke="#ffffff"
-            strokeWidth={3}
-            dot={false}
-            isAnimationActive={false}
-          />
-          <XAxis
-            dataKey="month"
-            type="number"
-            domain={[2, 18]}
-            ticks={[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]}
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-            tickLine={false}
-            label={{ value: 'Alter (Monate)', position: 'bottom', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
-          />
-          <YAxis
-            domain={[0, 36]}
-            ticks={[0, 5, 10, 15, 20, 25, 30, 35]}
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-            tickLine={false}
-            label={{ value: 'Gewicht (kg)', angle: -90, position: 'insideLeft', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
-          />
-          {/* Weight measurement points */}
-          {weightMeasurements.map((point, index) => (
-            <ReferenceLine
-              key={index}
-              x={point.month}
-              stroke="transparent"
-              label={{
-                value: '●',
-                position: 'center',
-                fill: point.isOutOfBounds ? '#FF4444' : '#FFD700',
-                fontSize: 16,
-                offset: point.weight - getExpectedWeight(point.month),
-              }}
+    <div data-vaul-no-drag>
+      <div className="h-[280px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart
+            data={growthCurveData}
+            margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
+          >
+            {/* Upper bound line (+5%) */}
+            <Line
+              type="monotone"
+              dataKey="upperBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
             />
-          ))}
-        </ComposedChart>
-      </ResponsiveContainer>
-      {/* Custom scatter points overlay */}
-      <svg 
-        className="absolute inset-0 pointer-events-none" 
-        style={{ 
-          width: '100%', 
-          height: '280px',
-          marginTop: '-280px'
-        }}
-      >
-        {weightMeasurements.map((point, index) => {
-          // Calculate position based on chart dimensions
-          const chartLeft = 50;
-          const chartRight = width - 20;
-          const chartTop = 10;
-          const chartBottom = 250;
-          const chartWidth = chartRight - chartLeft;
-          const chartHeight = chartBottom - chartTop;
-          
-          const xPos = chartLeft + ((point.month - 2) / 16) * chartWidth;
-          const yPos = chartBottom - (point.weight / 36) * chartHeight;
-          
-          return (
-            <circle
-              key={index}
-              cx={xPos}
-              cy={yPos}
-              r={6}
-              fill={point.isOutOfBounds ? '#FF4444' : '#FFD700'}
-              stroke={point.isOutOfBounds ? '#CC0000' : '#CCB000'}
-              strokeWidth={2}
+            {/* Lower bound line (-5%) */}
+            <Line
+              type="monotone"
+              dataKey="lowerBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
             />
-          );
-        })}
-      </svg>
+            {/* Main growth curve */}
+            <Line
+              type="monotone"
+              dataKey="expected"
+              stroke="#ffffff"
+              strokeWidth={3}
+              dot={false}
+              isAnimationActive={false}
+            />
+            <XAxis
+              dataKey="month"
+              type="number"
+              domain={[2, 18]}
+              ticks={[2, 4, 6, 8, 10, 12, 14, 16, 18]}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+              tickLine={false}
+              label={{ value: 'Alter (Monate)', position: 'bottom', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
+            />
+            <YAxis
+              domain={[0, 36]}
+              ticks={[0, 10, 20, 30]}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+              tickLine={false}
+              width={30}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
+      {/* Weight measurement points as separate overlay */}
+      {weightMeasurements.length > 0 && (
+        <div className="relative" style={{ marginTop: '-250px', height: '220px', marginLeft: '40px', marginRight: '10px' }}>
+          {weightMeasurements.map((point, index) => {
+            const xPercent = ((point.month - 2) / 16) * 100;
+            const yPercent = 100 - (point.weight / 36) * 100;
+            
+            return (
+              <div
+                key={index}
+                className="absolute w-3 h-3 rounded-full border-2 transform -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  left: `${xPercent}%`,
+                  top: `${yPercent}%`,
+                  backgroundColor: point.isOutOfBounds ? '#FF4444' : '#FFD700',
+                  borderColor: point.isOutOfBounds ? '#CC0000' : '#CCB000',
+                }}
+                title={`${point.month} Monate: ${point.weight} kg`}
+              />
+            );
+          })}
+        </div>
+      )}
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mt-2 text-[10px] text-white/60 justify-center">
+      <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-4 pt-2">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[3px] bg-white rounded"></div>
-          <span>Wachstumskurve: Endgewicht {TARGET_WEIGHT} kg</span>
+          <span>Ziel: {TARGET_WEIGHT} kg</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-4 h-[1px] bg-white/30"></div>
-          <span>Abweichung ±5%</span>
+          <span>±5%</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-[#FFD700]"></div>
-          <span>Wachstumspunkte</span>
+          <span>Normal</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-2 h-2 rounded-full bg-[#FF4444]"></div>
-          <span>Außerhalb ±5%</span>
+          <span>Abweichung</span>
         </div>
       </div>
     </div>
@@ -654,7 +630,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       <div ref={containerRef} className="mt-2">
         {/* Growth Curve Chart */}
         <div className="mb-8 relative">
-          <h3 className="text-[13px] text-white/60 font-medium mb-3">📈 Wachstumskurve</h3>
+          <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
           <GrowthCurveChart events={events} width={width} />
         </div>
         
