@@ -272,19 +272,40 @@ const getExpectedWeight = (ageInMonths: number): number => {
   return a * (1 - Math.exp(-b * (ageInMonths - c)));
 };
 
-// Generate growth curve data points
-const generateGrowthCurveData = () => {
+// Generate growth curve data points with optional weight measurement
+const generateGrowthCurveData = (weightMeasurements: GrowthDataPoint[]) => {
   const data = [];
   for (let month = 2; month <= 18; month += 0.5) {
     const expected = getExpectedWeight(month);
+    // Find if there's a weight measurement close to this month
+    const measurement = weightMeasurements.find(m => Math.abs(m.month - month) < 0.3);
     data.push({
       month,
       expected,
       upperBound: expected * 1.05,
       lowerBound: expected * 0.95,
+      weight: measurement?.weight,
+      isOutOfBounds: measurement?.isOutOfBounds,
     });
   }
-  return data;
+  
+  // Also add exact measurement points that might not align with 0.5 increments
+  weightMeasurements.forEach(m => {
+    const exists = data.some(d => Math.abs(d.month - m.month) < 0.3);
+    if (!exists) {
+      const expected = getExpectedWeight(m.month);
+      data.push({
+        month: m.month,
+        expected,
+        upperBound: expected * 1.05,
+        lowerBound: expected * 0.95,
+        weight: m.weight,
+        isOutOfBounds: m.isOutOfBounds,
+      });
+    }
+  });
+  
+  return data.sort((a, b) => a.month - b.month);
 };
 
 interface GrowthDataPoint {
@@ -294,8 +315,6 @@ interface GrowthDataPoint {
 }
 
 const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
-  const growthCurveData = useMemo(() => generateGrowthCurveData(), []);
-  
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -318,6 +337,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       .filter(d => d.month >= 2 && d.month <= 18);
   }, [events]);
 
+  const growthCurveData = useMemo(() => generateGrowthCurveData(weightMeasurements), [weightMeasurements]);
+
   if (width === 0) {
     return (
       <div className="h-[280px] flex items-center justify-center">
@@ -326,41 +347,17 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
     );
   }
 
+  // Separate data for normal and out-of-bounds points
+  const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
+  const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
+
   return (
     <div data-vaul-no-drag>
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
-            data={growthCurveData}
             margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
           >
-            {/* Upper bound line (+5%) */}
-            <Line
-              type="monotone"
-              dataKey="upperBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Lower bound line (-5%) */}
-            <Line
-              type="monotone"
-              dataKey="lowerBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Main growth curve */}
-            <Line
-              type="monotone"
-              dataKey="expected"
-              stroke="#ffffff"
-              strokeWidth={3}
-              dot={false}
-              isAnimationActive={false}
-            />
             <XAxis
               dataKey="month"
               type="number"
@@ -379,32 +376,53 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               tickLine={false}
               width={30}
             />
+            {/* Upper bound line (+5%) */}
+            <Line
+              data={growthCurveData}
+              type="monotone"
+              dataKey="upperBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Lower bound line (-5%) */}
+            <Line
+              data={growthCurveData}
+              type="monotone"
+              dataKey="lowerBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Main growth curve */}
+            <Line
+              data={growthCurveData}
+              type="monotone"
+              dataKey="expected"
+              stroke="#ffffff"
+              strokeWidth={3}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Normal weight points (yellow) */}
+            <Scatter
+              data={normalPoints}
+              dataKey="weight"
+              fill="#FFD700"
+              isAnimationActive={false}
+            />
+            {/* Out of bounds weight points (red) */}
+            <Scatter
+              data={outOfBoundsPoints}
+              dataKey="weight"
+              fill="#FF4444"
+              isAnimationActive={false}
+            />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-      {/* Weight measurement points as separate overlay */}
-      {weightMeasurements.length > 0 && (
-        <div className="relative" style={{ marginTop: '-250px', height: '220px', marginLeft: '40px', marginRight: '10px' }}>
-          {weightMeasurements.map((point, index) => {
-            const xPercent = ((point.month - 2) / 16) * 100;
-            const yPercent = 100 - (point.weight / 36) * 100;
-            
-            return (
-              <div
-                key={index}
-                className="absolute w-3 h-3 rounded-full border-2 transform -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  left: `${xPercent}%`,
-                  top: `${yPercent}%`,
-                  backgroundColor: point.isOutOfBounds ? '#FF4444' : '#FFD700',
-                  borderColor: point.isOutOfBounds ? '#CC0000' : '#CCB000',
-                }}
-                title={`${point.month} Monate: ${point.weight} kg`}
-              />
-            );
-          })}
-        </div>
-      )}
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-4 pt-2">
         <div className="flex items-center gap-1">
