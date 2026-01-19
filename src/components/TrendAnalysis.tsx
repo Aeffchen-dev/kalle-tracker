@@ -116,7 +116,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain'
+          overscrollBehaviorX: 'contain',
+          touchAction: 'pan-x'
         }}
       >
         <AreaChart 
@@ -216,6 +217,11 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
+          touchAction: 'pan-x'
+        }}
       >
         <LineChart 
           width={chartWidth} 
