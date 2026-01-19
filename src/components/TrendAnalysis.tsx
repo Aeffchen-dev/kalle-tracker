@@ -62,20 +62,28 @@ const StatCard = memo(({
 StatCard.displayName = 'StatCard';
 
 const Y_AXIS_WIDTH = 45;
-const WEIGHT_POINTS_IN_VIEW = 12; // Show ~6 months of data (assuming ~2 points per month)
-const PH_POINTS_IN_VIEW = 10;
+const WEIGHT_MONTHS_IN_VIEW = 6;
+const PH_MIN_POINT_WIDTH = 80;
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
-  const [viewStart, setViewStart] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   
-  // Calculate view range - show last WEIGHT_POINTS_IN_VIEW points by default
+  // Filter to show only last 6 months of data initially visible, but allow scrolling to see all
+  const sixMonthsAgo = useMemo(() => {
+    const now = new Date();
+    now.setMonth(now.getMonth() - WEIGHT_MONTHS_IN_VIEW);
+    return now;
+  }, []);
+
+  // Calculate chart width based on data points (min 80px per point for readability)
+  const chartWidth = Math.max(width - Y_AXIS_WIDTH, data.length * 60);
+  
+  // Scroll to end (most recent data) on mount
   useEffect(() => {
-    if (data.length > WEIGHT_POINTS_IN_VIEW) {
-      setViewStart(data.length - WEIGHT_POINTS_IN_VIEW);
-    } else {
-      setViewStart(0);
+    if (scrollRef.current && data.length > 0) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
-  }, [data.length]);
+  }, [data.length, width]);
 
   if (data.length < 2 || width === 0) {
     return (
@@ -85,18 +93,10 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     );
   }
 
-  const viewEnd = Math.min(viewStart + WEIGHT_POINTS_IN_VIEW, data.length);
-  const visibleData = data.slice(viewStart, viewEnd);
-  
-  const canGoBack = viewStart > 0;
-  const canGoForward = viewEnd < data.length;
-
-  const minValue = Math.min(...visibleData.map(d => d.value));
-  const maxValue = Math.max(...visibleData.map(d => d.value));
+  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map(d => d.value));
   const domainMin = minValue - 2;
   const domainMax = maxValue + 2;
-  
-  const chartWidth = width - Y_AXIS_WIDTH;
 
   // Generate Y-axis ticks (rounded to whole numbers)
   const yTicks: number[] = [];
@@ -107,41 +107,27 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   return (
     <div data-vaul-no-drag>
-      {/* Navigation */}
-      {data.length > WEIGHT_POINTS_IN_VIEW && (
-        <div className="flex justify-between items-center mb-2 px-1">
-          <button 
-            onClick={() => setViewStart(Math.max(0, viewStart - WEIGHT_POINTS_IN_VIEW))}
-            disabled={!canGoBack}
-            className={`text-[11px] px-2 py-1 rounded ${canGoBack ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
-          >
-            ← Älter
-          </button>
-          <span className="text-[10px] text-white/40">
-            {viewStart + 1}-{viewEnd} von {data.length}
-          </span>
-          <button 
-            onClick={() => setViewStart(Math.min(data.length - WEIGHT_POINTS_IN_VIEW, viewStart + WEIGHT_POINTS_IN_VIEW))}
-            disabled={!canGoForward}
-            className={`text-[11px] px-2 py-1 rounded ${canGoForward ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
-          >
-            Neuer →
-          </button>
-        </div>
-      )}
       <div className="flex h-[180px]">
-        {/* Y-Axis */}
+        {/* Y-Axis - fixed */}
         <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
           ))}
         </div>
-        {/* Chart - fits viewport */}
-        <div className="flex-1">
+        {/* Scrollable Chart */}
+        <div 
+          ref={scrollRef}
+          className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+          style={{ 
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-x',
+            overscrollBehaviorX: 'contain'
+          }}
+        >
           <AreaChart 
             width={chartWidth} 
             height={180} 
-            data={visibleData} 
+            data={data} 
             margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
           >
             <defs>
@@ -155,7 +141,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
               axisLine={false}
               tickLine={false}
-              interval={Math.max(0, Math.floor(visibleData.length / 5) - 1)}
+              interval={0}
               dy={8}
               tickMargin={4}
             />
@@ -189,16 +175,17 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 WeightChart.displayName = 'WeightChart';
 
 const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
-  const [viewStart, setViewStart] = useState(0);
+  const scrollRef = useRef<HTMLDivElement>(null);
   
-  // Calculate view range - show last PH_POINTS_IN_VIEW points by default
+  // Calculate chart width based on data points
+  const chartWidth = Math.max(width - Y_AXIS_WIDTH, data.length * PH_MIN_POINT_WIDTH);
+  
+  // Scroll to end (most recent data) on mount
   useEffect(() => {
-    if (data.length > PH_POINTS_IN_VIEW) {
-      setViewStart(data.length - PH_POINTS_IN_VIEW);
-    } else {
-      setViewStart(0);
+    if (scrollRef.current && data.length > 0) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
-  }, [data.length]);
+  }, [data.length, width]);
 
   if (data.length < 2 || width === 0) {
     return (
@@ -208,18 +195,10 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
     );
   }
 
-  const viewEnd = Math.min(viewStart + PH_POINTS_IN_VIEW, data.length);
-  const visibleData = data.slice(viewStart, viewEnd);
-  
-  const canGoBack = viewStart > 0;
-  const canGoForward = viewEnd < data.length;
-
-  const minValue = Math.min(...visibleData.map(d => d.value));
-  const maxValue = Math.max(...visibleData.map(d => d.value));
+  const minValue = Math.min(...data.map(d => d.value));
+  const maxValue = Math.max(...data.map(d => d.value));
   const domainMin = minValue - 0.5;
   const domainMax = maxValue + 0.5;
-  
-  const chartWidth = width - Y_AXIS_WIDTH;
 
   // Generate Y-axis ticks
   const yTicks: number[] = [];
@@ -230,41 +209,27 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
 
   return (
     <div data-vaul-no-drag>
-      {/* Navigation */}
-      {data.length > PH_POINTS_IN_VIEW && (
-        <div className="flex justify-between items-center mb-2 px-1">
-          <button 
-            onClick={() => setViewStart(Math.max(0, viewStart - PH_POINTS_IN_VIEW))}
-            disabled={!canGoBack}
-            className={`text-[11px] px-2 py-1 rounded ${canGoBack ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
-          >
-            ← Älter
-          </button>
-          <span className="text-[10px] text-white/40">
-            {viewStart + 1}-{viewEnd} von {data.length}
-          </span>
-          <button 
-            onClick={() => setViewStart(Math.min(data.length - PH_POINTS_IN_VIEW, viewStart + PH_POINTS_IN_VIEW))}
-            disabled={!canGoForward}
-            className={`text-[11px] px-2 py-1 rounded ${canGoForward ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
-          >
-            Neuer →
-          </button>
-        </div>
-      )}
       <div className="flex h-[180px]">
-        {/* Y-Axis */}
+        {/* Y-Axis - fixed */}
         <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
           ))}
         </div>
-        {/* Chart - fits viewport */}
-        <div className="flex-1">
+        {/* Scrollable Chart */}
+        <div 
+          ref={scrollRef}
+          className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+          style={{ 
+            WebkitOverflowScrolling: 'touch',
+            touchAction: 'pan-x',
+            overscrollBehaviorX: 'contain'
+          }}
+        >
           <LineChart 
             width={chartWidth} 
             height={180} 
-            data={visibleData} 
+            data={data} 
             margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
           >
             <XAxis 
@@ -272,7 +237,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
               axisLine={false}
               tickLine={false}
-              interval={Math.max(0, Math.floor(visibleData.length / 6) - 1)}
+              interval={0}
               dy={8}
             />
             <YAxis 
