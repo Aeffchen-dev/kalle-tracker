@@ -11,6 +11,19 @@ export interface Event {
   synced?: boolean;
 }
 
+export interface SaveResult {
+  success: boolean;
+  savedLocally: boolean;
+  error?: string;
+}
+
+export interface LoadResult {
+  events: Event[];
+  fromLocal: boolean;
+  syncedCount: number;
+  pendingCount: number;
+}
+
 const LOCAL_STORAGE_KEY = 'kalle_events_backup';
 const PENDING_SYNC_KEY = 'kalle_events_pending';
 
@@ -115,9 +128,10 @@ export const syncPendingEvents = async (): Promise<number> => {
   return syncedCount;
 };
 
-export const getEvents = async (): Promise<Event[]> => {
+export const getEvents = async (): Promise<LoadResult> => {
   // First, try to sync any pending events
-  await syncPendingEvents();
+  const syncedCount = await syncPendingEvents();
+  const pendingCount = getPendingCount();
 
   try {
     const { data, error } = await supabase
@@ -129,7 +143,12 @@ export const getEvents = async (): Promise<Event[]> => {
       console.error('Error fetching events from server:', error);
       // Fallback to local events
       console.log('Falling back to local events');
-      return getLocalEvents();
+      return {
+        events: getLocalEvents(),
+        fromLocal: true,
+        syncedCount,
+        pendingCount
+      };
     }
     
     const events = data.map(e => ({
@@ -144,16 +163,26 @@ export const getEvents = async (): Promise<Event[]> => {
     // Update local backup
     saveLocalEvents(events);
     
-    return events;
+    return {
+      events,
+      fromLocal: false,
+      syncedCount,
+      pendingCount: getPendingCount()
+    };
   } catch (err) {
     console.error('Network error fetching events:', err);
     // Fallback to local events
     console.log('Falling back to local events');
-    return getLocalEvents();
+    return {
+      events: getLocalEvents(),
+      fromLocal: true,
+      syncedCount,
+      pendingCount
+    };
   }
 };
 
-export const saveEvent = async (type: EventType, time?: Date, ph_value?: string, weight_value?: number): Promise<void> => {
+export const saveEvent = async (type: EventType, time?: Date, ph_value?: string, weight_value?: number): Promise<SaveResult> => {
   const eventId = crypto.randomUUID();
   const eventTime = time || new Date();
   
@@ -189,6 +218,11 @@ export const saveEvent = async (type: EventType, time?: Date, ph_value?: string,
       pending.push(newEvent);
       savePendingEvents(pending);
       console.log('Event saved locally, will sync later');
+      return {
+        success: false,
+        savedLocally: true,
+        error: 'Verbindungsfehler - Event lokal gespeichert'
+      };
     } else {
       console.log('Event saved successfully');
       // Update local event as synced
@@ -196,6 +230,10 @@ export const saveEvent = async (type: EventType, time?: Date, ph_value?: string,
         e.id === eventId ? { ...e, synced: true } : e
       );
       saveLocalEvents(updated);
+      return {
+        success: true,
+        savedLocally: false
+      };
     }
   } catch (err) {
     console.error('Network error saving event:', err);
@@ -204,10 +242,15 @@ export const saveEvent = async (type: EventType, time?: Date, ph_value?: string,
     pending.push(newEvent);
     savePendingEvents(pending);
     console.log('Event saved locally, will sync later');
+    return {
+      success: false,
+      savedLocally: true,
+      error: 'Backend nicht erreichbar - Event lokal gespeichert'
+    };
   }
 };
 
-export const deleteEvent = async (eventId: string): Promise<void> => {
+export const deleteEvent = async (eventId: string): Promise<boolean> => {
   // Remove from local storage
   const localEvents = getLocalEvents().filter(e => e.id !== eventId);
   saveLocalEvents(localEvents);
@@ -224,9 +267,12 @@ export const deleteEvent = async (eventId: string): Promise<void> => {
     
     if (error) {
       console.error('Error deleting event from server:', error);
+      return false;
     }
+    return true;
   } catch (err) {
     console.error('Network error deleting event:', err);
+    return false;
   }
 };
 

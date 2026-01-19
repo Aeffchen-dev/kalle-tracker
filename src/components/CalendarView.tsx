@@ -1,13 +1,14 @@
 import { useState, useRef, TouchEvent, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getEvents, deleteEvent, Event } from '@/lib/events';
+import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
 import { format, subDays, addDays, isSameDay, startOfDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff } from 'lucide-react';
 import TrendAnalysis from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/hooks/use-toast';
 
 type SnapPoint = number | string;
 
@@ -27,6 +28,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
   const [showTrends, setShowTrends] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const { toast } = useToast();
   
   const toggleSnapPoint = () => {
     setSnap(snap === 0.2 ? 0.9 : 0.2);
@@ -39,8 +43,23 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const loadEvents = async () => {
-    const fetchedEvents = await getEvents();
-    setEvents(fetchedEvents);
+    const result = await getEvents();
+    setEvents(result.events);
+    setIsOffline(result.fromLocal);
+    setPendingCount(result.pendingCount);
+    
+    if (result.fromLocal) {
+      toast({
+        title: "Offline-Modus",
+        description: "Backend nicht erreichbar. Zeige lokale Daten.",
+        variant: "destructive",
+      });
+    } else if (result.syncedCount > 0) {
+      toast({
+        title: "Synchronisiert",
+        description: `${result.syncedCount} Event(s) erfolgreich synchronisiert.`,
+      });
+    }
   };
 
   useEffect(() => {
