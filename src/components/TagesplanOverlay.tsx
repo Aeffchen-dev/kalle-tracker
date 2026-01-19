@@ -549,8 +549,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
-                  <ExternalLink size={16} />
                   <span>Tierarztpraxis Sonnenallee</span>
+                  <ExternalLink size={16} />
                 </a>
                 <a 
                   href="tel:+49306814455"
@@ -569,8 +569,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
-                  <ExternalLink size={16} />
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
+                  <ExternalLink size={16} />
                 </a>
                 <a 
                   href="tel:+493023362627"
