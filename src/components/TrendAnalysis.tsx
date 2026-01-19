@@ -138,8 +138,9 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
             axisLine={false}
             tickLine={false}
-            interval={Math.max(0, Math.floor(data.length / 8) - 1)}
+            interval={Math.max(0, Math.floor(data.length / 5) - 1)}
             dy={8}
+            tickMargin={4}
           />
           <YAxis 
             hide
@@ -463,7 +464,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
-        date: format(new Date(e.time), 'MM/yy', { locale: de }),
+        date: format(new Date(e.time), 'MMM yy', { locale: de }),
         value: Number(e.weight_value),
       }));
   }, [events]);
