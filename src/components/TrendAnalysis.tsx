@@ -113,8 +113,13 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       {/* Scrollable Chart */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide touch-pan-x"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        className="flex-1 overflow-x-scroll overflow-y-hidden scrollbar-hide"
+        style={{ 
+          WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x',
+          overscrollBehaviorX: 'contain'
+        }}
+        data-vaul-no-drag
       >
         <AreaChart 
           width={chartWidth} 
@@ -372,10 +377,11 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             <YAxis
               domain={[0, 36]}
               ticks={[0, 10, 20, 30]}
+              tickFormatter={(value) => `${value}kg`}
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
               axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
-              width={30}
+              width={40}
             />
             {/* Upper bound line (+5%) */}
             <Line
@@ -457,7 +463,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
-        date: format(new Date(e.time), 'd.M', { locale: de }),
+        date: format(new Date(e.time), 'MM/yy', { locale: de }),
         value: Number(e.weight_value),
       }));
   }, [events]);
