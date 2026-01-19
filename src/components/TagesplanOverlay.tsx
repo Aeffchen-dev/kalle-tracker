@@ -547,9 +547,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[14px] text-white block mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
-                  Tierarztpraxis Sonnenallee
+                  <ExternalLink size={16} />
+                  <span>Tierarztpraxis Sonnenallee</span>
                 </a>
                 <a 
                   href="tel:+49306814455"
@@ -566,9 +567,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[14px] text-white block mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
-                  Tierklinik: Tierarztpraxis Bärenwiese
+                  <ExternalLink size={16} />
+                  <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
                 </a>
                 <a 
                   href="tel:+493023362627"
