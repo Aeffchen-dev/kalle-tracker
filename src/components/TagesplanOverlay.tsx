@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Phone, MapPin } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { supabaseClient as supabase } from '@/lib/supabaseClient';
 
 interface Ingredient {
   quantity: string;
