@@ -62,42 +62,20 @@ const StatCard = memo(({
 StatCard.displayName = 'StatCard';
 
 const Y_AXIS_WIDTH = 45;
-const WEIGHT_MONTHS_IN_VIEW = 6;
-const PH_MIN_POINT_WIDTH = 150;
+const WEIGHT_POINTS_IN_VIEW = 12; // Show ~6 months of data (assuming ~2 points per month)
+const PH_POINTS_IN_VIEW = 10;
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [viewStart, setViewStart] = useState(0);
   
+  // Calculate view range - show last WEIGHT_POINTS_IN_VIEW points by default
   useEffect(() => {
-    // Scroll to show latest data (right side)
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    if (data.length > WEIGHT_POINTS_IN_VIEW) {
+      setViewStart(data.length - WEIGHT_POINTS_IN_VIEW);
+    } else {
+      setViewStart(0);
     }
-  }, [data]);
-
-  // iOS Safari touch fix - use native event listeners
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    
-    const handleTouchStart = (e: TouchEvent) => {
-      // Allow horizontal scrolling by not preventing default
-      e.stopPropagation();
-    };
-    
-    const handleTouchMove = (e: TouchEvent) => {
-      // Stop propagation to prevent drawer from capturing
-      e.stopPropagation();
-    };
-    
-    el.addEventListener('touchstart', handleTouchStart, { passive: true });
-    el.addEventListener('touchmove', handleTouchMove, { passive: true });
-    
-    return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, []);
+  }, [data.length]);
 
   if (data.length < 2 || width === 0) {
     return (
@@ -107,17 +85,18 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     );
   }
 
-  const minValue = Math.min(...data.map(d => d.value));
-  const maxValue = Math.max(...data.map(d => d.value));
+  const viewEnd = Math.min(viewStart + WEIGHT_POINTS_IN_VIEW, data.length);
+  const visibleData = data.slice(viewStart, viewEnd);
+  
+  const canGoBack = viewStart > 0;
+  const canGoForward = viewEnd < data.length;
+
+  const minValue = Math.min(...visibleData.map(d => d.value));
+  const maxValue = Math.max(...visibleData.map(d => d.value));
   const domainMin = minValue - 2;
   const domainMax = maxValue + 2;
   
-  // Calculate chart width: always fill container, scroll if more than 6 months of data
-  const scrollableWidth = width - Y_AXIS_WIDTH;
-  const pointWidth = scrollableWidth / Math.min(data.length, WEIGHT_MONTHS_IN_VIEW * 4); // ~4 points per month as baseline
-  const chartWidth = data.length <= WEIGHT_MONTHS_IN_VIEW * 4 
-    ? scrollableWidth 
-    : data.length * pointWidth;
+  const chartWidth = width - Y_AXIS_WIDTH;
 
   // Generate Y-axis ticks (rounded to whole numbers)
   const yTicks: number[] = [];
@@ -127,66 +106,80 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   }
 
   return (
-    <div className="flex h-[180px]" data-vaul-no-drag>
-      {/* Sticky Y-Axis */}
-      <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
-        {yTicks.reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
-        ))}
-      </div>
-      {/* Scrollable Chart */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-x-scroll overflow-y-hidden scrollbar-hide"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x'
-        }}
-      >
-        <div style={{ pointerEvents: 'none' }}>
-        <AreaChart 
-          width={chartWidth} 
-          height={180} 
-          data={data} 
-          margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
-        >
-          <defs>
-            <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-              <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-            </linearGradient>
-          </defs>
-          <XAxis 
-            dataKey="date" 
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
-            axisLine={false}
-            tickLine={false}
-            interval={Math.max(0, Math.floor(data.length / 5) - 1)}
-            dy={8}
-            tickMargin={4}
-          />
-          <YAxis 
-            hide
-            domain={[domainMin, domainMax]}
-          />
-          {avgValue && (
-            <ReferenceLine 
-              y={avgValue} 
-              stroke="rgba(255,255,255,0.25)" 
-              strokeDasharray="4 4" 
+    <div data-vaul-no-drag>
+      {/* Navigation */}
+      {data.length > WEIGHT_POINTS_IN_VIEW && (
+        <div className="flex justify-between items-center mb-2 px-1">
+          <button 
+            onClick={() => setViewStart(Math.max(0, viewStart - WEIGHT_POINTS_IN_VIEW))}
+            disabled={!canGoBack}
+            className={`text-[11px] px-2 py-1 rounded ${canGoBack ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
+          >
+            ← Älter
+          </button>
+          <span className="text-[10px] text-white/40">
+            {viewStart + 1}-{viewEnd} von {data.length}
+          </span>
+          <button 
+            onClick={() => setViewStart(Math.min(data.length - WEIGHT_POINTS_IN_VIEW, viewStart + WEIGHT_POINTS_IN_VIEW))}
+            disabled={!canGoForward}
+            className={`text-[11px] px-2 py-1 rounded ${canGoForward ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
+          >
+            Neuer →
+          </button>
+        </div>
+      )}
+      <div className="flex h-[180px]">
+        {/* Y-Axis */}
+        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+          {[...yTicks].reverse().map((tick, i) => (
+            <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
+          ))}
+        </div>
+        {/* Chart - fits viewport */}
+        <div className="flex-1">
+          <AreaChart 
+            width={chartWidth} 
+            height={180} 
+            data={visibleData} 
+            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+          >
+            <defs>
+              <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+                <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <XAxis 
+              dataKey="date" 
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+              axisLine={false}
+              tickLine={false}
+              interval={Math.max(0, Math.floor(visibleData.length / 5) - 1)}
+              dy={8}
+              tickMargin={4}
             />
-          )}
-          <Area
-            type="monotone"
-            dataKey="value"
-            stroke={color}
-            strokeWidth={2}
-            fill="url(#weightGradient)"
-            isAnimationActive={false}
-            dot={{ fill: color, strokeWidth: 0, r: 3 }}
-          />
-        </AreaChart>
+            <YAxis 
+              hide
+              domain={[domainMin, domainMax]}
+            />
+            {avgValue && (
+              <ReferenceLine 
+                y={avgValue} 
+                stroke="rgba(255,255,255,0.25)" 
+                strokeDasharray="4 4" 
+              />
+            )}
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke={color}
+              strokeWidth={2}
+              fill="url(#weightGradient)"
+              isAnimationActive={false}
+              dot={{ fill: color, strokeWidth: 0, r: 3 }}
+            />
+          </AreaChart>
         </div>
       </div>
     </div>
@@ -196,36 +189,16 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 WeightChart.displayName = 'WeightChart';
 
 const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [viewStart, setViewStart] = useState(0);
   
+  // Calculate view range - show last PH_POINTS_IN_VIEW points by default
   useEffect(() => {
-    // Scroll to show last 6 months (right side)
-    if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    if (data.length > PH_POINTS_IN_VIEW) {
+      setViewStart(data.length - PH_POINTS_IN_VIEW);
+    } else {
+      setViewStart(0);
     }
-  }, [data]);
-
-  // iOS Safari touch fix - use native event listeners
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    
-    const handleTouchStart = (e: TouchEvent) => {
-      e.stopPropagation();
-    };
-    
-    const handleTouchMove = (e: TouchEvent) => {
-      e.stopPropagation();
-    };
-    
-    el.addEventListener('touchstart', handleTouchStart, { passive: true });
-    el.addEventListener('touchmove', handleTouchMove, { passive: true });
-    
-    return () => {
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove', handleTouchMove);
-    };
-  }, []);
+  }, [data.length]);
 
   if (data.length < 2 || width === 0) {
     return (
@@ -235,16 +208,18 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
     );
   }
 
-  const minValue = Math.min(...data.map(d => d.value));
-  const maxValue = Math.max(...data.map(d => d.value));
+  const viewEnd = Math.min(viewStart + PH_POINTS_IN_VIEW, data.length);
+  const visibleData = data.slice(viewStart, viewEnd);
+  
+  const canGoBack = viewStart > 0;
+  const canGoForward = viewEnd < data.length;
+
+  const minValue = Math.min(...visibleData.map(d => d.value));
+  const maxValue = Math.max(...visibleData.map(d => d.value));
   const domainMin = minValue - 0.5;
   const domainMax = maxValue + 0.5;
   
-  // Calculate chart width: fill container, scroll if many points (1 day = ~150px when scrolling)
-  const scrollableWidth = width - Y_AXIS_WIDTH;
-  const chartWidth = data.length <= 3 
-    ? scrollableWidth 
-    : Math.max(scrollableWidth, data.length * PH_MIN_POINT_WIDTH);
+  const chartWidth = width - Y_AXIS_WIDTH;
 
   // Generate Y-axis ticks
   const yTicks: number[] = [];
@@ -254,58 +229,72 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
   }
 
   return (
-    <div className="flex h-[180px]" data-vaul-no-drag>
-      {/* Sticky Y-Axis */}
-      <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
-        {yTicks.reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
-        ))}
-      </div>
-      {/* Scrollable Chart */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-x-scroll overflow-y-hidden scrollbar-hide"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x'
-        }}
-      >
-        <div style={{ pointerEvents: 'none' }}>
-        <LineChart 
-          width={chartWidth} 
-          height={180} 
-          data={data} 
-          margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
-        >
-          <XAxis 
-            dataKey="date" 
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
-            axisLine={false}
-            tickLine={false}
-            interval={Math.max(0, Math.floor(data.length / 8) - 1)}
-            dy={8}
-          />
-          <YAxis 
-            hide
-            domain={[domainMin, domainMax]}
-          />
-          {avgValue && (
-            <ReferenceLine 
-              y={avgValue} 
-              stroke="rgba(255,255,255,0.25)" 
-              strokeDasharray="4 4"
+    <div data-vaul-no-drag>
+      {/* Navigation */}
+      {data.length > PH_POINTS_IN_VIEW && (
+        <div className="flex justify-between items-center mb-2 px-1">
+          <button 
+            onClick={() => setViewStart(Math.max(0, viewStart - PH_POINTS_IN_VIEW))}
+            disabled={!canGoBack}
+            className={`text-[11px] px-2 py-1 rounded ${canGoBack ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
+          >
+            ← Älter
+          </button>
+          <span className="text-[10px] text-white/40">
+            {viewStart + 1}-{viewEnd} von {data.length}
+          </span>
+          <button 
+            onClick={() => setViewStart(Math.min(data.length - PH_POINTS_IN_VIEW, viewStart + PH_POINTS_IN_VIEW))}
+            disabled={!canGoForward}
+            className={`text-[11px] px-2 py-1 rounded ${canGoForward ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-white/20'}`}
+          >
+            Neuer →
+          </button>
+        </div>
+      )}
+      <div className="flex h-[180px]">
+        {/* Y-Axis */}
+        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+          {[...yTicks].reverse().map((tick, i) => (
+            <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
+          ))}
+        </div>
+        {/* Chart - fits viewport */}
+        <div className="flex-1">
+          <LineChart 
+            width={chartWidth} 
+            height={180} 
+            data={visibleData} 
+            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+          >
+            <XAxis 
+              dataKey="date" 
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+              axisLine={false}
+              tickLine={false}
+              interval={Math.max(0, Math.floor(visibleData.length / 6) - 1)}
+              dy={8}
             />
-          )}
-          <Line 
-            type="monotone" 
-            dataKey="value" 
-            stroke={color} 
-            strokeWidth={2}
-            dot={{ fill: color, strokeWidth: 0, r: 3 }}
-            isAnimationActive={false}
-          />
-        </LineChart>
+            <YAxis 
+              hide
+              domain={[domainMin, domainMax]}
+            />
+            {avgValue && (
+              <ReferenceLine 
+                y={avgValue} 
+                stroke="rgba(255,255,255,0.25)" 
+                strokeDasharray="4 4"
+              />
+            )}
+            <Line 
+              type="monotone" 
+              dataKey="value" 
+              stroke={color} 
+              strokeWidth={2}
+              dot={{ fill: color, strokeWidth: 0, r: 3 }}
+              isAnimationActive={false}
+            />
+          </LineChart>
         </div>
       </div>
     </div>
