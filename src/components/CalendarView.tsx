@@ -334,7 +334,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     )}
                   </div>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); }} 
+                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
                     className="w-6 h-6 flex items-center justify-center"
                   >
                     <TrendingUp size={20} className="text-white" />
