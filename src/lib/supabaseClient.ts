@@ -9,10 +9,6 @@ const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || FALLBACK_KEY;
 
-// Debug logging for GitHub Pages troubleshooting
-console.log('[Supabase] Using URL:', SUPABASE_URL);
-console.log('[Supabase] Has env URL:', !!import.meta.env.VITE_SUPABASE_URL);
-
 export const supabaseClient = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     storage: localStorage,

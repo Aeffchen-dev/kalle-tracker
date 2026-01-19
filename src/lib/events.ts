@@ -134,18 +134,13 @@ export const getEvents = async (): Promise<LoadResult> => {
   const pendingCount = getPendingCount();
 
   try {
-    console.log('[Events] Fetching events from server...');
     const { data, error } = await supabase
       .from('events')
       .select('*')
       .order('time', { ascending: false });
     
-    console.log('[Events] Response - data:', data, 'error:', error);
-    
     if (error) {
-      console.error('[Events] Error fetching events from server:', error);
       // Fallback to local events
-      console.log('[Events] Falling back to local events');
       return {
         events: getLocalEvents(),
         fromLocal: true,
@@ -166,7 +161,7 @@ export const getEvents = async (): Promise<LoadResult> => {
     // Update local backup
     saveLocalEvents(events);
     
-    console.log('[Events] Successfully loaded', events.length, 'events from server');
+    
     return {
       events,
       fromLocal: false,
@@ -174,9 +169,7 @@ export const getEvents = async (): Promise<LoadResult> => {
       pendingCount: getPendingCount()
     };
   } catch (err) {
-    console.error('[Events] Network error fetching events:', err);
     // Fallback to local events
-    console.log('[Events] Falling back to local events');
     return {
       events: getLocalEvents(),
       fromLocal: true,
