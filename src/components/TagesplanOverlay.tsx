@@ -6,6 +6,7 @@ interface Ingredient {
   quantity: string;
   name: string;
   description?: string;
+  link?: string;
 }
 
 interface MealData {
@@ -17,12 +18,12 @@ const mealsData: MealData[] = [
   {
     title: 'Morgens, mittags und abends jeweils',
     ingredients: [
-      { quantity: '103g', name: 'Royal Canine Urinary u/c' },
+      { quantity: '103g', name: 'Royal Canine Urinary u/c', link: 'https://www.fressnapf.de/ul/p/royal-canin-veterinary-urinary-uc-14-kg-1155812/' },
       { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Gemüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
-      { quantity: '6,6g', name: 'Dicalciumphosphat' },
-      { quantity: '3,3g', name: 'Elements sensitive' },
-      { quantity: '6,6g', name: 'Futteröl Junior' },
+      { quantity: '25g', name: 'Vet-Concept Nudeln mit Gemüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht', link: 'https://www.vet-concept.com/p/fuer-den-hund-nudeln-mit-gemuese' },
+      { quantity: '6,6g', name: 'Dicalciumphosphat', link: 'https://www.napfcheck-shop.de/produkt/dicalciumphosphat/' },
+      { quantity: '3,3g', name: 'Calciumglukonat', link: 'https://www.napfcheck-shop.de/produkt/napfcheck-calciumgluconat-fuer-hunde-und-katzen/' },
+      { quantity: '6,6g', name: 'Futteröl Junior', link: 'https://www.napfcheck-shop.de/produkt/napfcheck-futteroel-junior-fuer-hundewelpen-und-zuchthuendinnen/' },
     ],
   },
 ];
@@ -490,6 +491,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               onKeyDown={handleMealKeyDown}
                               className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
+                          ) : ingredient.link ? (
+                            <a
+                              href={ingredient.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[14px] text-white/60 hover:text-white transition-colors px-1 py-0.5 inline-block"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {ingredient.name}
+                            </a>
                           ) : (
                             <span
                               className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
@@ -533,7 +544,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[14px] text-white underline block mb-3"
+                  className="text-[14px] text-white block mb-3 hover:text-white/80 transition-colors"
                 >
                   Tierarztpraxis Sonnenallee
                 </a>
@@ -552,7 +563,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[14px] text-white underline block mb-3"
+                  className="text-[14px] text-white block mb-3 hover:text-white/80 transition-colors"
                 >
                   Tierklinik: Tierarztpraxis Bärenwiese
                 </a>
