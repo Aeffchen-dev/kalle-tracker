@@ -75,6 +75,30 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     }
   }, [data]);
 
+  // iOS Safari touch fix - use native event listeners
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      // Allow horizontal scrolling by not preventing default
+      e.stopPropagation();
+    };
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      // Stop propagation to prevent drawer from capturing
+      e.stopPropagation();
+    };
+    
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: true });
+    
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
+
   if (data.length < 2 || width === 0) {
     return (
       <div className="h-[180px] flex items-center justify-center">
@@ -96,7 +120,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     : data.length * pointWidth;
 
   // Generate Y-axis ticks (rounded to whole numbers)
-  const yTicks = [];
+  const yTicks: number[] = [];
   const step = (domainMax - domainMin) / 4;
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round(domainMin + step * i));
@@ -117,10 +141,10 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x pinch-zoom'
+          touchAction: 'pan-x'
         }}
-        onTouchStart={(e) => e.stopPropagation()}
       >
+        <div style={{ pointerEvents: 'none' }}>
         <AreaChart 
           width={chartWidth} 
           height={180} 
@@ -163,6 +187,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             dot={{ fill: color, strokeWidth: 0, r: 3 }}
           />
         </AreaChart>
+        </div>
       </div>
     </div>
   );
@@ -179,6 +204,28 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data]);
+
+  // iOS Safari touch fix - use native event listeners
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      e.stopPropagation();
+    };
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      e.stopPropagation();
+    };
+    
+    el.addEventListener('touchstart', handleTouchStart, { passive: true });
+    el.addEventListener('touchmove', handleTouchMove, { passive: true });
+    
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, []);
 
   if (data.length < 2 || width === 0) {
     return (
@@ -200,7 +247,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
     : Math.max(scrollableWidth, data.length * PH_MIN_POINT_WIDTH);
 
   // Generate Y-axis ticks
-  const yTicks = [];
+  const yTicks: number[] = [];
   const step = (domainMax - domainMin) / 4;
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
@@ -221,10 +268,10 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x pinch-zoom'
+          touchAction: 'pan-x'
         }}
-        onTouchStart={(e) => e.stopPropagation()}
       >
+        <div style={{ pointerEvents: 'none' }}>
         <LineChart 
           width={chartWidth} 
           height={180} 
@@ -259,6 +306,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
             isAnimationActive={false}
           />
         </LineChart>
+        </div>
       </div>
     </div>
   );
