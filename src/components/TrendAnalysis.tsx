@@ -103,7 +103,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   }
 
   return (
-    <div className="flex h-[180px]">
+    <div className="flex h-[180px]" data-vaul-no-drag>
       {/* Sticky Y-Axis */}
       <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
         {yTicks.reverse().map((tick, i) => (
@@ -113,12 +113,13 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       {/* Scrollable Chart */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        className="flex-1 overflow-x-scroll overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x'
+          touchAction: 'pan-x pinch-zoom'
         }}
+        onTouchStart={(e) => e.stopPropagation()}
       >
         <AreaChart 
           width={chartWidth} 
@@ -216,12 +217,13 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
       {/* Scrollable Chart */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        className="flex-1 overflow-x-scroll overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain',
-          touchAction: 'pan-x'
+          touchAction: 'pan-x pinch-zoom'
         }}
+        onTouchStart={(e) => e.stopPropagation()}
       >
         <LineChart 
           width={chartWidth} 
@@ -363,8 +365,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
   return (
-    <div data-vaul-no-drag>
-      <div className="h-[280px]">
+    <div data-vaul-no-drag style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
+      <div className="h-[280px]" onTouchStart={(e) => e.stopPropagation()}>
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
             margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
@@ -657,7 +659,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={containerRef} className="mt-2">
+      <div ref={containerRef} className="mt-2" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
         {/* Growth Curve Chart */}
         <div className="mb-8 relative">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
