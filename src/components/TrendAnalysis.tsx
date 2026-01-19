@@ -412,11 +412,11 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dot={false}
               isAnimationActive={false}
             />
-            {/* Normal weight points (yellow) */}
+            {/* Normal weight points (green) */}
             <Scatter
               data={normalPoints}
               dataKey="weight"
-              fill="#FFD700"
+              fill="#5AD940"
               isAnimationActive={false}
             />
             {/* Out of bounds weight points (red) */}
@@ -440,7 +440,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           <span>±5%</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-[#FFD700]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#5AD940]"></div>
           <span>Normal</span>
         </div>
         <div className="flex items-center gap-1">
