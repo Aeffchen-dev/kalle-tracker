@@ -95,11 +95,11 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     ? scrollableWidth 
     : data.length * pointWidth;
 
-  // Generate Y-axis ticks
+  // Generate Y-axis ticks (rounded to whole numbers)
   const yTicks = [];
   const step = (domainMax - domainMin) / 4;
   for (let i = 0; i <= 4; i++) {
-    yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
+    yTicks.push(Math.round(domainMin + step * i));
   }
 
   return (
@@ -113,7 +113,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       {/* Scrollable Chart */}
       <div 
         ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide touch-pan-x"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         <AreaChart 
           width={chartWidth} 
@@ -255,7 +256,7 @@ PhChart.displayName = 'PhChart';
 
 // Growth curve constants - Kalle's birthday and target weight
 const KALLE_BIRTHDAY = new Date('2025-01-20'); // Kalle's birthday
-const TARGET_WEIGHT = 34.0; // kg at maturity
+const TARGET_WEIGHT = 34; // kg at maturity (no decimal)
 
 // Growth curve function - logarithmic growth model
 // Based on the reference image: starts at ~7kg at 2 months, reaches ~32kg at 15 months
