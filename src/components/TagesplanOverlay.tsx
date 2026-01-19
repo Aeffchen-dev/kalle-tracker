@@ -127,13 +127,13 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
-  const [meals, setMeals] = useState<MealData[]>(mealsData);
-  const [schedule, setSchedule] = useState<DaySchedule[]>(weekSchedule);
+  const [meals, setMeals] = useState<MealData[] | null>(null);
+  const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
   const [editingMeal, setEditingMeal] = useState<{ mealIndex: number; ingredientIndex: number; field: 'quantity' | 'name' | 'description' } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const isInitialLoad = useRef(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Load data from database
   useEffect(() => {
@@ -147,12 +147,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       if (data) {
         if (data.meals_data && Array.isArray(data.meals_data) && data.meals_data.length > 0) {
           setMeals(data.meals_data as unknown as MealData[]);
+        } else {
+          setMeals(mealsData);
         }
         if (data.schedule_data && Array.isArray(data.schedule_data) && data.schedule_data.length > 0) {
           setSchedule(data.schedule_data as unknown as DaySchedule[]);
+        } else {
+          setSchedule(weekSchedule);
         }
+      } else {
+        // No data in DB, use defaults
+        setMeals(mealsData);
+        setSchedule(weekSchedule);
       }
-      isInitialLoad.current = false;
+      setDataLoaded(true);
     };
     loadData();
   }, []);
@@ -190,7 +198,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   // Save to database when data changes
   useEffect(() => {
-    if (isInitialLoad.current) return;
+    if (!dataLoaded || meals === null || schedule === null) return;
     
     const saveData = async () => {
       console.log('Saving tagesplan data...');
@@ -211,7 +219,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     
     const timeout = setTimeout(saveData, 500);
     return () => clearTimeout(timeout);
-  }, [meals, schedule]);
+  }, [meals, schedule, dataLoaded]);
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -448,7 +456,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto px-4 pb-8">
-            {meals.map((meal, mealIndex) => (
+            {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
                 <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
                 <div className="border border-white/30 rounded-lg overflow-hidden">
@@ -618,7 +626,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <table className="w-full text-[12px]">
                   <thead>
                     <tr className="border-b border-white/30">
-                      {weekSchedule.map((day, index) => (
+                      {schedule && schedule.map((day, index) => (
                         <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
                           <div className="text-white">{day.day}</div>
                           <div className="text-white/60 font-normal">{day.type}</div>
@@ -627,7 +635,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {[0, 1, 2, 3, 4].map((slotIndex) => (
+                    {schedule && [0, 1, 2, 3, 4].map((slotIndex) => (
                       <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
                         {schedule.map((day, dayIndex) => {
                           const slot = day.slots[slotIndex];
