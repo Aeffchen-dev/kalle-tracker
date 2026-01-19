@@ -103,7 +103,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   }
 
   return (
-    <div className="flex h-[180px]" style={{ touchAction: 'pan-y pinch-zoom' }}>
+    <div className="flex h-[180px]">
       {/* Sticky Y-Axis */}
       <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
         {yTicks.reverse().map((tick, i) => (
@@ -116,10 +116,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
-          overflowX: 'scroll',
-          touchAction: 'pan-x'
+          overscrollBehaviorX: 'contain'
         }}
-        onTouchStart={(e) => e.stopPropagation()}
       >
         <AreaChart 
           width={chartWidth} 
