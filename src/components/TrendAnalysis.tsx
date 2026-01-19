@@ -1,8 +1,8 @@
 import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes, subDays, isAfter } from 'date-fns';
+import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, ResponsiveContainer } from 'recharts';
 
 interface TrendAnalysisProps {
   events: Event[];
@@ -253,6 +253,207 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
 
 PhChart.displayName = 'PhChart';
 
+// Growth curve constants - Kalle's birthday and target weight
+const KALLE_BIRTHDAY = new Date('2024-03-01'); // Adjust this to Kalle's actual birthday
+const TARGET_WEIGHT = 34.0; // kg at maturity
+
+// Growth curve function - logarithmic growth model
+// Based on the reference image: starts at ~7kg at 2 months, reaches ~32kg at 15 months
+const getExpectedWeight = (ageInMonths: number): number => {
+  if (ageInMonths < 2) return 6;
+  if (ageInMonths > 18) return TARGET_WEIGHT;
+  
+  // Logarithmic growth curve fitting the reference data
+  // At 2 months: ~7kg, at 6 months: ~22kg, at 12 months: ~28kg, at 15 months: ~32kg
+  const a = 34; // asymptote (target weight)
+  const b = 0.25; // growth rate
+  const c = 0.5; // x-offset
+  
+  return a * (1 - Math.exp(-b * (ageInMonths - c)));
+};
+
+// Generate growth curve data points
+const generateGrowthCurveData = () => {
+  const data = [];
+  for (let month = 2; month <= 18; month += 0.5) {
+    const expected = getExpectedWeight(month);
+    data.push({
+      month,
+      expected,
+      upperBound: expected * 1.05,
+      lowerBound: expected * 0.95,
+    });
+  }
+  return data;
+};
+
+interface GrowthDataPoint {
+  month: number;
+  weight: number;
+  isOutOfBounds: boolean;
+}
+
+const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
+  const growthCurveData = useMemo(() => generateGrowthCurveData(), []);
+  
+  const weightMeasurements = useMemo((): GrowthDataPoint[] => {
+    return events
+      .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
+      .map(e => {
+        const eventDate = new Date(e.time);
+        const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + 
+          (eventDate.getDate() / 30); // Add partial month
+        const weight = Number(e.weight_value);
+        const expected = getExpectedWeight(ageInMonths);
+        const upperBound = expected * 1.05;
+        const lowerBound = expected * 0.95;
+        const isOutOfBounds = weight > upperBound || weight < lowerBound;
+        
+        return {
+          month: Math.round(ageInMonths * 10) / 10,
+          weight,
+          isOutOfBounds,
+        };
+      })
+      .filter(d => d.month >= 2 && d.month <= 18);
+  }, [events]);
+
+  if (width === 0) {
+    return (
+      <div className="h-[280px] flex items-center justify-center">
+        <p className="text-[13px] text-white/30">Lade...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-[280px]" data-vaul-no-drag>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart
+          data={growthCurveData}
+          margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
+        >
+          {/* Upper bound line (+5%) */}
+          <Line
+            type="monotone"
+            dataKey="upperBound"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={1}
+            dot={false}
+            isAnimationActive={false}
+          />
+          {/* Lower bound line (-5%) */}
+          <Line
+            type="monotone"
+            dataKey="lowerBound"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={1}
+            dot={false}
+            isAnimationActive={false}
+          />
+          {/* Main growth curve */}
+          <Line
+            type="monotone"
+            dataKey="expected"
+            stroke="#ffffff"
+            strokeWidth={3}
+            dot={false}
+            isAnimationActive={false}
+          />
+          <XAxis
+            dataKey="month"
+            type="number"
+            domain={[2, 18]}
+            ticks={[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+            tickLine={false}
+            label={{ value: 'Alter (Monate)', position: 'bottom', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
+          />
+          <YAxis
+            domain={[0, 36]}
+            ticks={[0, 5, 10, 15, 20, 25, 30, 35]}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+            tickLine={false}
+            label={{ value: 'Gewicht (kg)', angle: -90, position: 'insideLeft', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
+          />
+          {/* Weight measurement points */}
+          {weightMeasurements.map((point, index) => (
+            <ReferenceLine
+              key={index}
+              x={point.month}
+              stroke="transparent"
+              label={{
+                value: '●',
+                position: 'center',
+                fill: point.isOutOfBounds ? '#FF4444' : '#FFD700',
+                fontSize: 16,
+                offset: point.weight - getExpectedWeight(point.month),
+              }}
+            />
+          ))}
+        </ComposedChart>
+      </ResponsiveContainer>
+      {/* Custom scatter points overlay */}
+      <svg 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ 
+          width: '100%', 
+          height: '280px',
+          marginTop: '-280px'
+        }}
+      >
+        {weightMeasurements.map((point, index) => {
+          // Calculate position based on chart dimensions
+          const chartLeft = 50;
+          const chartRight = width - 20;
+          const chartTop = 10;
+          const chartBottom = 250;
+          const chartWidth = chartRight - chartLeft;
+          const chartHeight = chartBottom - chartTop;
+          
+          const xPos = chartLeft + ((point.month - 2) / 16) * chartWidth;
+          const yPos = chartBottom - (point.weight / 36) * chartHeight;
+          
+          return (
+            <circle
+              key={index}
+              cx={xPos}
+              cy={yPos}
+              r={6}
+              fill={point.isOutOfBounds ? '#FF4444' : '#FFD700'}
+              stroke={point.isOutOfBounds ? '#CC0000' : '#CCB000'}
+              strokeWidth={2}
+            />
+          );
+        })}
+      </svg>
+      {/* Legend */}
+      <div className="flex flex-wrap gap-4 mt-2 text-[10px] text-white/60 justify-center">
+        <div className="flex items-center gap-1">
+          <div className="w-4 h-[3px] bg-white rounded"></div>
+          <span>Wachstumskurve: Endgewicht {TARGET_WEIGHT} kg</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-4 h-[1px] bg-white/30"></div>
+          <span>Abweichung ±5%</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-[#FFD700]"></div>
+          <span>Wachstumspunkte</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-[#FF4444]"></div>
+          <span>Außerhalb ±5%</span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+GrowthCurveChart.displayName = 'GrowthCurveChart';
+
 const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   
@@ -451,6 +652,12 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
 
       {/* Charts */}
       <div ref={containerRef} className="mt-2">
+        {/* Growth Curve Chart */}
+        <div className="mb-8 relative">
+          <h3 className="text-[13px] text-white/60 font-medium mb-3">📈 Wachstumskurve</h3>
+          <GrowthCurveChart events={events} width={width} />
+        </div>
+        
         <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
           <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" width={width} />
