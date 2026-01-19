@@ -254,7 +254,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
 PhChart.displayName = 'PhChart';
 
 // Growth curve constants - Kalle's birthday and target weight
-const KALLE_BIRTHDAY = new Date('2024-03-01'); // Adjust this to Kalle's actual birthday
+const KALLE_BIRTHDAY = new Date('2025-01-20'); // Kalle's birthday
 const TARGET_WEIGHT = 34.0; // kg at maturity
 
 // Growth curve function - logarithmic growth model
