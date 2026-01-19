@@ -135,6 +135,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const isReceivingRealtimeUpdate = useRef(false);
 
   // Load data from database
   useEffect(() => {
@@ -185,9 +187,15 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           // Don't update while user is editing to prevent overwriting their input
           if (isEditing) return;
           
+          // Mark that we're receiving a realtime update to prevent save loop
+          isReceivingRealtimeUpdate.current = true;
           const newData = payload.new as { meals_data?: MealData[]; schedule_data?: DaySchedule[] };
           if (newData.meals_data) setMeals(newData.meals_data);
           if (newData.schedule_data) setSchedule(newData.schedule_data);
+          // Reset the flag after state updates are processed
+          setTimeout(() => {
+            isReceivingRealtimeUpdate.current = false;
+          }, 100);
         }
       )
       .subscribe();
@@ -197,9 +205,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     };
   }, [isEditing]);
 
-  // Save to database when data changes
+  // Save to database only when user makes local changes
   useEffect(() => {
-    if (!dataLoaded || meals === null || schedule === null) return;
+    if (!dataLoaded || meals === null || schedule === null || !hasLocalChanges) return;
+    // Don't save if we're receiving a realtime update
+    if (isReceivingRealtimeUpdate.current) return;
     
     const saveData = async () => {
       console.log('Saving tagesplan data...');
@@ -215,12 +225,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         console.error('Error saving tagesplan:', error);
       } else {
         console.log('Tagesplan saved successfully');
+        setHasLocalChanges(false);
       }
     };
     
     const timeout = setTimeout(saveData, 500);
     return () => clearTimeout(timeout);
-  }, [meals, schedule, dataLoaded]);
+  }, [meals, schedule, dataLoaded, hasLocalChanges]);
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
@@ -265,7 +276,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const handleMealChange = (value: string) => {
     if (!editingMeal) return;
     const { mealIndex, ingredientIndex, field } = editingMeal;
+    setHasLocalChanges(true);
     setMeals(prev => {
+      if (!prev) return prev;
       const newMeals = [...prev];
       newMeals[mealIndex] = {
         ...newMeals[mealIndex],
@@ -297,7 +310,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const handleCellChange = (value: string) => {
     if (!editingCell) return;
     const { dayIndex, slotIndex, field } = editingCell;
+    setHasLocalChanges(true);
     setSchedule(prev => {
+      if (!prev) return prev;
       const newSchedule = [...prev];
       newSchedule[dayIndex] = {
         ...newSchedule[dayIndex],
@@ -320,7 +335,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   };
 
   const togglePerson = (dayIndex: number, slotIndex: number) => {
+    setHasLocalChanges(true);
     setSchedule(prev => {
+      if (!prev) return prev;
       const newSchedule = [...prev];
       const currentPerson = newSchedule[dayIndex].slots[slotIndex]?.person;
       let nextPerson: 'niklas' | 'jana' | undefined;
