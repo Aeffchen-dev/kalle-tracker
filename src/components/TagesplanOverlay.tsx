@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Phone, MapPin } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 
 interface Ingredient {
@@ -491,23 +491,26 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               onKeyDown={handleMealKeyDown}
                               className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
-                          ) : ingredient.link ? (
-                            <a
-                              href={ingredient.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[14px] text-white/60 hover:text-white transition-colors px-1 py-0.5 inline-block"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {ingredient.name}
-                            </a>
                           ) : (
-                            <span
-                              className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
-                              onClick={() => handleMealClick(mealIndex, index, 'name')}
-                            >
-                              {ingredient.name}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
+                                onClick={() => handleMealClick(mealIndex, index, 'name')}
+                              >
+                                {ingredient.name}
+                              </span>
+                              {ingredient.link && (
+                                <a
+                                  href={ingredient.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-white/40 hover:text-white transition-colors p-1"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <ExternalLink size={14} />
+                                </a>
+                              )}
+                            </div>
                           )}
                           {isEditingDescription ? (
                             <textarea
