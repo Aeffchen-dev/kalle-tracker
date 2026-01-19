@@ -102,39 +102,6 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     yTicks.push(Math.round(domainMin + step * i));
   }
 
-  const [scale, setScale] = useState(1);
-  const lastTouchDistance = useRef<number | null>(null);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      lastTouchDistance.current = distance;
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const scaleDelta = distance / lastTouchDistance.current;
-      setScale(prev => Math.min(Math.max(prev * scaleDelta, 1), 3));
-      lastTouchDistance.current = distance;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    lastTouchDistance.current = null;
-  };
-
-  const handleDoubleClick = () => {
-    setScale(prev => prev === 1 ? 2 : 1);
-  };
-
   return (
     <div className="flex h-[180px]">
       {/* Sticky Y-Axis */}
@@ -149,58 +116,51 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain',
-          cursor: scale > 1 ? 'grab' : 'default'
+          overscrollBehaviorX: 'contain'
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onDoubleClick={handleDoubleClick}
       >
-        <div style={{ transform: `scale(${scale})`, transformOrigin: 'left top', transition: 'transform 0.2s' }}>
-          <AreaChart 
-            width={chartWidth * scale} 
-            height={180} 
-            data={data} 
-            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
-          >
-            <defs>
-              <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-                <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
-            <XAxis 
-              dataKey="date" 
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
-              axisLine={false}
-              tickLine={false}
-              interval={Math.max(0, Math.floor(data.length / 5) - 1)}
-              dy={8}
-              tickMargin={4}
+        <AreaChart 
+          width={chartWidth} 
+          height={180} 
+          data={data} 
+          margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+        >
+          <defs>
+            <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+              <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+            </linearGradient>
+          </defs>
+          <XAxis 
+            dataKey="date" 
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+            axisLine={false}
+            tickLine={false}
+            interval={Math.max(0, Math.floor(data.length / 5) - 1)}
+            dy={8}
+            tickMargin={4}
+          />
+          <YAxis 
+            hide
+            domain={[domainMin, domainMax]}
+          />
+          {avgValue && (
+            <ReferenceLine 
+              y={avgValue} 
+              stroke="rgba(255,255,255,0.25)" 
+              strokeDasharray="4 4" 
             />
-            <YAxis 
-              hide
-              domain={[domainMin, domainMax]}
-            />
-            {avgValue && (
-              <ReferenceLine 
-                y={avgValue} 
-                stroke="rgba(255,255,255,0.25)" 
-                strokeDasharray="4 4" 
-              />
-            )}
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={color}
-              strokeWidth={2}
-              fill="url(#weightGradient)"
-              isAnimationActive={false}
-              dot={{ fill: color, strokeWidth: 0, r: 3 }}
-            />
-          </AreaChart>
-        </div>
+          )}
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke={color}
+            strokeWidth={2}
+            fill="url(#weightGradient)"
+            isAnimationActive={false}
+            dot={{ fill: color, strokeWidth: 0, r: 3 }}
+          />
+        </AreaChart>
       </div>
     </div>
   );
@@ -360,39 +320,6 @@ interface GrowthDataPoint {
 }
 
 const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
-  const [scale, setScale] = useState(1);
-  const lastTouchDistance = useRef<number | null>(null);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 2) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      lastTouchDistance.current = distance;
-    }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 2 && lastTouchDistance.current !== null) {
-      const distance = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const scaleDelta = distance / lastTouchDistance.current;
-      setScale(prev => Math.min(Math.max(prev * scaleDelta, 1), 3));
-      lastTouchDistance.current = distance;
-    }
-  };
-
-  const handleTouchEnd = () => {
-    lastTouchDistance.current = null;
-  };
-
-  const handleDoubleClick = () => {
-    setScale(prev => prev === 1 ? 2 : 1);
-  };
-
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -430,14 +357,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
   return (
-    <div 
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onDoubleClick={handleDoubleClick}
-      className="overflow-auto"
-      style={{ cursor: scale > 1 ? 'grab' : 'default' }}
-    >
+    <div data-vaul-no-drag>
       <div className="h-[280px]">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart
