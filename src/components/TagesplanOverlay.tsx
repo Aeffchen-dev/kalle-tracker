@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Phone, MapPin, ExternalLink } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Ingredient {
   quantity: string;
@@ -456,6 +457,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto px-4 pb-8">
+            {/* Loading skeleton for meals */}
+            {!dataLoaded && (
+              <div className="mb-8">
+                <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
+                <div className="border border-white/30 rounded-lg overflow-hidden">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div key={i} className={`flex p-3 gap-3 ${i !== 6 ? 'border-b border-white/30' : ''}`}>
+                      <Skeleton className="h-4 w-16 bg-white/10" />
+                      <Skeleton className="h-4 flex-1 bg-white/10" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
                 <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
@@ -620,6 +636,22 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               </div>
 
               {/* Schedule Table */}
+              {!dataLoaded ? (
+                <div className="border border-white/30 rounded-[16px] overflow-hidden p-4">
+                  <div className="grid grid-cols-7 gap-2 mb-4">
+                    {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                      <Skeleton key={i} className="h-10 bg-white/10" />
+                    ))}
+                  </div>
+                  {[1, 2, 3, 4, 5].map((row) => (
+                    <div key={row} className="grid grid-cols-7 gap-2 mb-2">
+                      {[1, 2, 3, 4, 5, 6, 7].map((col) => (
+                        <Skeleton key={col} className="h-12 bg-white/10" />
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="px-4 min-w-fit">
                 <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
@@ -711,6 +743,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 </div>
                 </div>
               </div>
+              )}
             </div>
           </div>
         </div>
