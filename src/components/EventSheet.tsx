@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { saveEvent } from '@/lib/events';
+import { saveEvent, SaveResult } from '@/lib/events';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface EventSheetProps {
   open: boolean;
@@ -21,6 +22,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
   const wasOpen = useRef(false);
+  const { toast } = useToast();
 
   // Reset time when sheet opens, reset all fields when closing
   useEffect(() => {
@@ -73,12 +75,37 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     const eventDate = new Date();
     eventDate.setHours(hours, minutes, 0, 0);
     
+    let hasError = false;
+    let savedLocally = false;
+    
     // Save an event for each selected type
     for (const type of selectedTypes) {
       // Only include pH value for phwert type
       const phValue = type === 'phwert' ? selectedPh : undefined;
       const weight = type === 'gewicht' ? (weightValue ? parseFloat(weightValue.replace(',', '.')) : undefined) : undefined;
-      await saveEvent(type, eventDate, phValue || undefined, weight);
+      const result: SaveResult = await saveEvent(type, eventDate, phValue || undefined, weight);
+      
+      if (!result.success) {
+        hasError = true;
+        if (result.savedLocally) {
+          savedLocally = true;
+        }
+      }
+    }
+
+    // Show toast based on result
+    if (hasError && savedLocally) {
+      toast({
+        title: "Offline gespeichert",
+        description: "Backend nicht erreichbar. Event wird später synchronisiert.",
+        variant: "destructive",
+      });
+    } else if (hasError) {
+      toast({
+        title: "Fehler",
+        description: "Event konnte nicht gespeichert werden.",
+        variant: "destructive",
+      });
     }
 
     // Preserve time ONLY if gewicht was the only type saved

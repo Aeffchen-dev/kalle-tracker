@@ -6,6 +6,7 @@ import { getEvents, Event } from '@/lib/events';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
+import { useToast } from '@/hooks/use-toast';
 
 
 const Index = () => {
@@ -60,8 +61,8 @@ const Index = () => {
   };
 
   const loadEvents = async () => {
-    const fetchedEvents = await getEvents();
-    eventsRef.current = fetchedEvents;
+    const result = await getEvents();
+    eventsRef.current = result.events;
     calculateTimeDisplay();
   };
 
