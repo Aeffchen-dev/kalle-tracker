@@ -589,7 +589,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [stuhlgangIntervalData, events, sevenDaysAgo]);
 
   return (
-    <div className="pb-20 space-y-6">
+    <div className="pb-20 space-y-6" data-vaul-no-drag>
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-2">
         <StatCard 

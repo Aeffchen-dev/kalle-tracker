@@ -344,9 +344,15 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
             )}
           </div>
         </DrawerHeader>
-        <div ref={scrollContainerRef} className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
+        <div 
+          ref={scrollContainerRef} 
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0"
+          data-vaul-no-drag
+        >
           {showTrends ? (
-            <TrendAnalysis events={events} />
+            <div data-vaul-no-drag>
+              <TrendAnalysis events={events} />
+            </div>
           ) : (
             <div 
               className={`transition-all duration-150 ${
