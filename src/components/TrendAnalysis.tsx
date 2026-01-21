@@ -602,17 +602,24 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [events]);
 
   const phData = useMemo(() => {
-    return events
+    const filtered = events
       .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
-      .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
-      .map(e => {
-        const eventDate = new Date(e.time);
-        return {
-          dateLine1: format(eventDate, 'd. MMM yy', { locale: de }),
-          dateLine2: format(eventDate, 'HH:mm', { locale: de }) + ' Uhr',
-          value: parseFloat(String(e.ph_value).replace(',', '.')),
-        };
-      });
+      .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+    
+    return filtered.map((e, index) => {
+      const eventDate = new Date(e.time);
+      const prevDate = index > 0 ? new Date(filtered[index - 1].time) : null;
+      
+      // Show year only when year changes (between Dec and Jan)
+      const showYear = prevDate && eventDate.getFullYear() !== prevDate.getFullYear();
+      const dateFormat = showYear ? 'd. MMM yy' : 'd. MMM';
+      
+      return {
+        dateLine1: format(eventDate, dateFormat, { locale: de }),
+        dateLine2: format(eventDate, 'HH:mm', { locale: de }) + ' Uhr',
+        value: parseFloat(String(e.ph_value).replace(',', '.')),
+      };
+    });
   }, [events]);
 
   const pipiIntervalData = useMemo(() => {
