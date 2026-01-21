@@ -290,6 +290,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       type: 'value',
       min: domainMin,
       max: domainMax,
+      splitNumber: 4,
+      interval: step,
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: { show: false },
