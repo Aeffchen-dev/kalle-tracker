@@ -122,8 +122,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
+        className="flex-shrink-0 flex flex-col justify-between text-right"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -285,8 +285,8 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
+        className="flex-shrink-0 flex flex-col justify-between text-right"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
@@ -520,6 +520,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
   
+  // Calculate Kalle's current age in months
+  const currentAgeInMonths = differenceInMonths(new Date(), KALLE_BIRTHDAY) + (new Date().getDate() / 30);
+  
   // Y-axis ticks - 5kg steps
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
@@ -529,8 +532,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       <div className="flex">
         {/* Sticky Y-Axis */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
+          className="flex-shrink-0 flex flex-col justify-between text-right"
+          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -566,6 +569,15 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               domain={[5, 35]}
               ticks={yTicks}
             />
+            {/* Current age vertical line */}
+            {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
+              <ReferenceLine 
+                x={Math.round(currentAgeInMonths * 10) / 10}
+                stroke="#5AD940"
+                strokeWidth={2}
+                strokeDasharray="4 4"
+              />
+            )}
             {/* Upper bound line (+5%) */}
             <Line
               type="monotone"
