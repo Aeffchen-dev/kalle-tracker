@@ -194,11 +194,11 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             ticks={yTicks}
             hide={true}
           />
-          {/* Growth curve reference line - blue like Wachstumskurve */}
+          {/* Growth curve reference line - same style as Wachstumskurve */}
           <Line
             type="monotone"
             dataKey="expectedWeight"
-            stroke="rgb(59, 130, 246)"
+            stroke="#ffffff"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
@@ -358,20 +358,10 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           margin={{ top: 8, right: 20, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
-            {/* Green zone gradient (between 6.5 and 7.2) */}
-            <linearGradient id="phGreenGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#5AD940" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#5AD940" stopOpacity={0.1} />
+            <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+              <stop offset="100%" stopColor={color} stopOpacity={0.05} />
             </linearGradient>
-            {/* Red zone gradient (outside bounds) */}
-            <linearGradient id="phRedGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#FF4444" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="#FF4444" stopOpacity={0.1} />
-            </linearGradient>
-            {/* Clip paths for color zones */}
-            <clipPath id="clipGreen">
-              <rect x="0" y="0" width="100%" height="100%" />
-            </clipPath>
           </defs>
           <CartesianGrid 
             horizontal={true} 
@@ -411,32 +401,12 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
               strokeDasharray="4 4"
             />
           )}
-          {/* Red area for values outside 6.5-7.2 range */}
           <Area 
             type="monotone" 
             dataKey="value" 
-            stroke="none"
-            fill="url(#phRedGradient)"
-            isAnimationActive={false}
-            dot={false}
-          />
-          {/* Green area clipped to 6.5-7.2 range - overlays red */}
-          <Area 
-            type="monotone" 
-            dataKey={(d: PhChartData) => Math.min(Math.max(d.value, 6.5), 7.2)} 
-            stroke="none"
-            fill="url(#phGreenGradient)"
-            isAnimationActive={false}
-            dot={false}
-            baseValue={6.5}
-          />
-          {/* Blue line for pH values */}
-          <Area 
-            type="monotone" 
-            dataKey="value" 
-            stroke="rgb(59, 130, 246)"
+            stroke={color} 
             strokeWidth={2}
-            fill="none"
+            fill="url(#phGradient)"
             dot={(props: any) => {
               const phValue = props.payload?.value;
               // pH < 6.5 or > 7.2 is red, otherwise green (matching EventSheet)
@@ -699,11 +669,11 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dot={false}
               isAnimationActive={false}
             />
-            {/* Main growth curve - blue */}
+            {/* Main growth curve */}
             <Line
               type="monotone"
               dataKey="expected"
-              stroke="rgb(59, 130, 246)"
+              stroke="#ffffff"
               strokeWidth={2}
               dot={false}
               isAnimationActive={false}
@@ -741,7 +711,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
-          <div className="w-4 h-[2px] bg-blue-500 rounded"></div>
+          <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
         </div>
         <div className="flex items-center gap-1">
