@@ -175,18 +175,6 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
     },
     series: [
       {
-        name: 'Ideal',
-        type: 'line',
-        data: data.map(d => d.expectedWeight),
-        smooth: true,
-        symbol: 'none',
-        lineStyle: {
-          color: 'rgba(255,255,255,0.3)',
-          width: 1,
-        },
-        z: 1,
-      },
-      {
         name: 'Gewicht',
         type: 'line',
         data: data.map(d => d.value),
