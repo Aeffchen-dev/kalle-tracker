@@ -174,7 +174,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               strokeWidth={2}
               fill="url(#weightGradient)"
               isAnimationActive={false}
-              dot={{ fill: color, strokeWidth: 0, r: 4 }}
+              dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
             />
           </AreaChart>
         </div>
@@ -279,7 +279,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
               stroke={color} 
               strokeWidth={2}
               fill="url(#phGradient)"
-              dot={{ fill: color, strokeWidth: 0, r: 4 }}
+              dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
               isAnimationActive={false}
             />
           </AreaChart>
@@ -429,8 +429,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
               axisLine={false}
               tickLine={false}
-              dy={8}
-              tickMargin={4}
+              tickMargin={8}
               tickFormatter={(value) => `${value}M`}
             />
             <YAxis
@@ -473,7 +472,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="weight"
               fill="#5AD940"
               isAnimationActive={false}
-              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" />}
+              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />}
             />
             {/* Out of bounds weight points (red) */}
             <Scatter
@@ -481,7 +480,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="weight"
               fill="#FF4444"
               isAnimationActive={false}
-              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" />}
+              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />}
             />
           </ComposedChart>
         </div>
@@ -726,7 +725,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={weightStats.latest} 
           unit="kg"
           subtext={weightStats.idealWeight ? `Ideal: ${weightStats.idealWeight} kg` : undefined}
-          trend={weightStats.trend ?? undefined}
         />
         <StatCard 
           emoji="🧪" 
