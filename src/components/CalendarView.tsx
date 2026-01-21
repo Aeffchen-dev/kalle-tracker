@@ -41,6 +41,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const touchJustEnded = useRef<boolean>(false);
   const wasActiveOnTouchStart = useRef<boolean>(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Day swipe refs (for empty day navigation)
+  const daySwipeStartX = useRef<number>(0);
+  const daySwipeEndX = useRef<number>(0);
 
   const loadEvents = async () => {
     const result = await getEvents();
@@ -361,9 +365,33 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
               }`}
             >
               {filteredEvents.length === 0 ? (
-                <div className="flex items-center justify-center py-4">
+                <div 
+                  className="flex items-center justify-center py-4"
+                  onTouchStart={(e) => {
+                    daySwipeStartX.current = e.touches[0].clientX;
+                  }}
+                  onTouchMove={(e) => {
+                    daySwipeEndX.current = e.touches[0].clientX;
+                  }}
+                  onTouchEnd={() => {
+                    const diff = daySwipeStartX.current - daySwipeEndX.current;
+                    const minSwipeDistance = 50;
+                    
+                    if (Math.abs(diff) > minSwipeDistance) {
+                      if (diff > 0 && canGoNext) {
+                        // Swipe left - next day (more recent)
+                        changeDate('left');
+                      } else if (diff < 0 && canGoPrev) {
+                        // Swipe right - previous day (older)
+                        changeDate('right');
+                      }
+                    }
+                    daySwipeStartX.current = 0;
+                    daySwipeEndX.current = 0;
+                  }}
+                >
                   <p className="text-center text-[14px] text-white/60">
-                    Keine Einträge
+                    Keine Einträge – Swipen um Tag zu wechseln
                   </p>
                 </div>
               ) : (
