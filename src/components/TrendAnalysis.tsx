@@ -576,9 +576,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   // Calculate Kalle's current age in months
   const currentAgeInMonths = differenceInMonths(new Date(), KALLE_BIRTHDAY) + (new Date().getDate() / 30);
   
-  // Y-axis ticks - starting at 7kg (2M expected weight)
-  const yTicks = [7, 14, 21, 28, 35];
-  const domainMin = 7;
+  // Y-axis ticks - 5kg steps
+  const yTicks = [5, 10, 15, 20, 25, 30, 35];
+  const domainMin = 5;
   const domainMax = 35;
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
   const chartWidth = width - yAxisWidth;
