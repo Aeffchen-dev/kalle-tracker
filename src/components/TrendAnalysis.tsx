@@ -593,11 +593,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         >
           <svg width={yAxisWidth} height={CHART_HEIGHT}>
             {yTicks.map((tick) => {
-              // Recharts ComposedChart with height=totalHeight(175) and margin.top=8 gives plotting area from y=8 to y=150
-              // The Y-Axis SVG only covers CHART_HEIGHT (150px), so plotting goes from y=8 to y=150 within this SVG
+              // Recharts plotting area: top margin = 8, plotting ends at CHART_HEIGHT
               const topMargin = 8;
-              const bottomPadding = 5; // Recharts internal padding
-              const plotHeight = CHART_HEIGHT - topMargin - bottomPadding;
+              const plotHeight = CHART_HEIGHT - topMargin;
               const y = topMargin + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
                 <text
