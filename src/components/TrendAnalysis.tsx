@@ -84,10 +84,9 @@ const GRID_DASH = "3 3";
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [yAxisWidth, setYAxisWidth] = useState(40);
   
   // Calculate chart width based on data points (min 60px per point for readability)
-  const scrollableWidth = Math.max(width - yAxisWidth, data.length * 60);
+  const scrollableWidth = Math.max(width - Y_AXIS_WIDTH, data.length * 60);
   
   // Scroll to end (most recent data) on mount
   useEffect(() => {
@@ -119,45 +118,21 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
 
-  // Calculate Y-axis width based on max label
-  const maxLabel = `${domainMax}kg`;
-  const estimatedWidth = maxLabel.length * 7 + 8;
-  if (estimatedWidth !== yAxisWidth) {
-    setYAxisWidth(estimatedWidth);
-  }
-
   return (
-    <div className="relative flex">
-      {/* Sticky Y-Axis with X-Axis space at bottom */}
+    <div className="flex">
+      {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 z-10 flex flex-col"
-        style={{ width: yAxisWidth }}
+        className="flex-shrink-0 flex flex-col justify-between text-right"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
       >
-        <svg width={yAxisWidth} height={CHART_HEIGHT}>
-          {yTicks.map((tick, i) => {
-            const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
-            return (
-              <text
-                key={tick}
-                x={yAxisWidth - 4}
-                y={y}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="rgba(255,255,255,0.4)"
-                fontSize={9}
-              >
-                {tick}kg
-              </text>
-            );
-          })}
-        </svg>
-        {/* Spacer for X-axis alignment */}
-        <div style={{ height: X_AXIS_HEIGHT }} />
+        {[...yTicks].reverse().map((tick, i) => (
+          <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
+        ))}
       </div>
-      {/* Scrollable Chart */}
+      {/* Scrollable Chart Area */}
       <div 
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain'
@@ -167,7 +142,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
           width={scrollableWidth} 
           height={totalHeight} 
           data={data} 
-          margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
+          margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -187,12 +162,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             axisLine={false}
             tickLine={false}
             interval={0}
-            tickMargin={16}
+            tickMargin={8}
           />
           <YAxis 
+            hide
             domain={[domainMin, domainMax]}
             ticks={yTicks}
-            hide={true}
           />
           {/* Growth curve reference line - same style as Wachstumskurve */}
           <Line
@@ -243,10 +218,9 @@ WeightChart.displayName = 'WeightChart';
 
 const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [yAxisWidth, setYAxisWidth] = useState(32);
   
   // Calculate chart width based on data points (min 80px per point for readability)
-  const scrollableWidth = Math.max(width - yAxisWidth, data.length * 80);
+  const scrollableWidth = Math.max(width - Y_AXIS_WIDTH, data.length * 80);
   
   // Scroll to end (most recent data) on mount
   useEffect(() => {
@@ -307,45 +281,21 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
 
   const totalHeight = CHART_HEIGHT + PH_X_AXIS_HEIGHT;
 
-  // Calculate Y-axis width based on max label
-  const maxLabel = domainMax.toFixed(1);
-  const estimatedWidth = maxLabel.length * 7 + 8;
-  if (estimatedWidth !== yAxisWidth) {
-    setYAxisWidth(estimatedWidth);
-  }
-
   return (
-    <div className="relative flex">
-      {/* Sticky Y-Axis with X-Axis space at bottom */}
+    <div className="flex">
+      {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 z-10 flex flex-col"
-        style={{ width: yAxisWidth }}
+        className="flex-shrink-0 flex flex-col justify-between text-right"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
       >
-        <svg width={yAxisWidth} height={CHART_HEIGHT}>
-          {yTicks.map((tick) => {
-            const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
-            return (
-              <text
-                key={tick}
-                x={yAxisWidth - 4}
-                y={y}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="rgba(255,255,255,0.4)"
-                fontSize={9}
-              >
-                {tick.toFixed(1)}
-              </text>
-            );
-          })}
-        </svg>
-        {/* Spacer for X-axis alignment */}
-        <div style={{ height: PH_X_AXIS_HEIGHT }} />
+        {[...yTicks].reverse().map((tick, i) => (
+          <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
+        ))}
       </div>
-      {/* Scrollable Chart */}
+      {/* Scrollable Chart Area */}
       <div 
         ref={scrollRef}
-        className="overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
         style={{ 
           WebkitOverflowScrolling: 'touch',
           overscrollBehaviorX: 'contain'
@@ -355,7 +305,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           width={scrollableWidth} 
           height={totalHeight} 
           data={data} 
-          margin={{ top: 8, right: 20, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
+          margin={{ top: 8, right: 10, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -375,25 +325,11 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             axisLine={false}
             tickLine={false}
             interval={0}
-            tickMargin={8}
           />
           <YAxis 
+            hide
             domain={[domainMin, domainMax]}
             ticks={yTicks}
-            hide={true}
-          />
-          {/* pH boundary lines at 6.5 and 7.2 - styled like target line */}
-          <ReferenceLine 
-            y={6.5} 
-            stroke="#ffffff" 
-            strokeWidth={2}
-            label={{ value: '6.5', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
-          />
-          <ReferenceLine 
-            y={7.2} 
-            stroke="#ffffff" 
-            strokeWidth={2}
-            label={{ value: '7.2', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
           />
           {avgValue && (
             <ReferenceLine 
@@ -538,8 +474,6 @@ export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean =>
 };
 
 const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
-  const [yAxisWidth] = useState(40);
-  
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -573,82 +507,36 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
   
-  // Calculate Kalle's current age in months
-  const currentAgeInMonths = differenceInMonths(new Date(), KALLE_BIRTHDAY) + (new Date().getDate() / 30);
-  
-  // Y-axis ticks - 5kg steps with round numbers
+  // Y-axis ticks
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
-  const domainMin = 5;
-  const domainMax = 35;
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
-  const chartWidth = width - yAxisWidth;
 
   return (
     <div>
-      <div className="relative flex">
-        {/* Sticky Y-Axis with X-Axis space at bottom */}
+      <div className="flex">
+        {/* Sticky Y-Axis */}
         <div 
-          className="flex-shrink-0 z-10 flex flex-col"
-          style={{ width: yAxisWidth }}
+          className="flex-shrink-0 flex flex-col justify-between text-right"
+          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
         >
-          <svg width={yAxisWidth} height={totalHeight - X_AXIS_HEIGHT}>
-            {yTicks.map((tick) => {
-              // Match Recharts exactly: plotting area from y=5 to y=145 (with small internal padding)
-              const plotTop = 5;
-              const plotBottom = totalHeight - X_AXIS_HEIGHT - 5; // 145
-              const plotHeight = plotBottom - plotTop; // 140
-              const y = plotTop + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
-              return (
-                <g key={tick}>
-                  {/* Horizontal guide line extending to the right */}
-                  <line
-                    x1={yAxisWidth - 2}
-                    y1={y}
-                    x2={yAxisWidth}
-                    y2={y}
-                    stroke="rgba(255,255,255,0.2)"
-                    strokeWidth={1}
-                  />
-                  <text
-                    x={yAxisWidth - 4}
-                    y={y}
-                    textAnchor="end"
-                    dominantBaseline="middle"
-                    fill="rgba(255,255,255,0.4)"
-                    fontSize={9}
-                  >
-                    {tick}kg
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
-          {/* Spacer for X-axis alignment */}
-          <div style={{ height: X_AXIS_HEIGHT }} />
+          {[...yTicks].reverse().map((tick, i) => (
+            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
+          ))}
         </div>
-        {/* Scrollable Chart */}
-        <div 
-          className="overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehaviorX: 'contain'
-          }}
-        >
+        {/* Chart Area */}
+        <div className="flex-1 overflow-hidden">
           <ComposedChart
-            width={chartWidth}
+            width={width - Y_AXIS_WIDTH}
             height={totalHeight}
             data={growthCurveData}
-            margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
+            margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
           >
-            {/* Horizontal grid lines at Y-axis tick positions */}
-            {yTicks.map((tick) => (
-              <ReferenceLine 
-                key={`grid-${tick}`}
-                y={tick}
-                stroke={GRID_STROKE}
-                strokeDasharray={GRID_DASH}
-              />
-            ))}
+            <CartesianGrid 
+              horizontal={true} 
+              vertical={false} 
+              stroke={GRID_STROKE}
+              strokeDasharray={GRID_DASH}
+            />
             <XAxis
               dataKey="month"
               type="number"
@@ -658,25 +546,13 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
-              tickMargin={16}
-              padding={{ left: 20 }}
+              tickMargin={8}
             />
             <YAxis
-              domain={[domainMin, domainMax]}
+              hide
+              domain={[5, 35]}
               ticks={yTicks}
-              hide={true}
-              padding={{ top: 5, bottom: 5 }}
             />
-            {/* Current age vertical line */}
-            {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
-              <ReferenceLine 
-                x={Math.round(currentAgeInMonths * 10) / 10}
-                stroke="#5AD940"
-                strokeWidth={1}
-                strokeDasharray="3 3"
-                label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9, dy: 4 }}
-              />
-            )}
             {/* Upper bound line (+5%) */}
             <Line
               type="monotone"
