@@ -152,6 +152,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
           tickLine={false}
           interval={0}
           tickMargin={8}
+          padding={{ left: 0, right: 0 }}
         />
         <YAxis 
           domain={[domainMin, domainMax]}
@@ -306,6 +307,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           axisLine={false}
           tickLine={false}
           interval={0}
+          padding={{ left: 0, right: 0 }}
         />
         <YAxis 
           domain={[domainMin, domainMax]}
@@ -539,6 +541,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           tickLine={false}
           tickFormatter={(value) => `${value}M`}
           tickMargin={8}
+          padding={{ left: 0, right: 0 }}
         />
         <YAxis
           domain={[domainMin, domainMax]}
