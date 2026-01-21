@@ -134,7 +134,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-black overflow-hidden">
         <DrawerHeader className="pb-4">
-          <DrawerTitle className="text-center text-[14px] text-white">Ereignis hinzufügen</DrawerTitle>
+          <DrawerTitle className="text-center text-[14px] text-white">Eintrag hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="px-4 pb-4 space-y-4 overflow-hidden">
           <div className="grid grid-cols-2 gap-3">
