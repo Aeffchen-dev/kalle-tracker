@@ -344,7 +344,22 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             stroke={color} 
             strokeWidth={2}
             fill="url(#phGradient)"
-            dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
+            dot={(props: any) => {
+              const phValue = props.payload?.value;
+              // pH < 6.5 or > 7.2 is red, otherwise green (matching EventSheet)
+              const isOutOfRange = phValue < 6.5 || phValue > 7.2;
+              const dotColor = isOutOfRange ? '#FF4444' : '#5AD940';
+              return (
+                <circle 
+                  key={props.key}
+                  cx={props.cx} 
+                  cy={props.cy} 
+                  r={4} 
+                  fill={dotColor} 
+                  fillOpacity={1}
+                />
+              );
+            }}
             isAnimationActive={false}
           />
         </AreaChart>
