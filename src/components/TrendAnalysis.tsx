@@ -535,6 +535,8 @@ export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean =>
 };
 
 const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
+  const [yAxisWidth] = useState(40);
+  
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -573,107 +575,135 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   
   // Y-axis ticks - 5kg steps
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
+  const domainMin = 5;
+  const domainMax = 35;
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
+  const chartWidth = width - yAxisWidth;
 
   return (
     <div>
-      <ComposedChart
-        width={width}
-        height={totalHeight}
-        data={growthCurveData}
-        margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
-      >
-        <CartesianGrid 
-          horizontal={true} 
-          vertical={false} 
-          stroke={GRID_STROKE}
-          strokeDasharray={GRID_DASH}
-        />
-        <XAxis
-          dataKey="month"
-          type="number"
-          domain={[2, 18]}
-          ticks={[2, 6, 10, 14, 18]}
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-          axisLine={false}
-          tickLine={false}
-          tickFormatter={(value) => `${value}M`}
-          tickMargin={8}
-        />
-        <YAxis
-          domain={[5, 35]}
-          ticks={yTicks}
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-          axisLine={false}
-          tickLine={false}
-          tickFormatter={(value) => `${value}kg`}
-          tickMargin={4}
-        />
-        {/* Current age vertical line */}
-        {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
-          <ReferenceLine 
-            x={Math.round(currentAgeInMonths * 10) / 10}
-            stroke="#5AD940"
-            strokeWidth={1}
-            strokeDasharray="3 3"
-            label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9, dy: 4 }}
-          />
-        )}
-        {/* Upper bound line (+5%) */}
-        <Line
-          type="monotone"
-          dataKey="upperBound"
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth={1}
-          dot={false}
-          isAnimationActive={false}
-        />
-        {/* Lower bound line (-5%) */}
-        <Line
-          type="monotone"
-          dataKey="lowerBound"
-          stroke="rgba(255,255,255,0.3)"
-          strokeWidth={1}
-          dot={false}
-          isAnimationActive={false}
-        />
-        {/* Main growth curve */}
-        <Line
-          type="monotone"
-          dataKey="expected"
-          stroke="#ffffff"
-          strokeWidth={2}
-          dot={false}
-          isAnimationActive={false}
-        />
-        {/* Weight measurement points */}
-        {normalPoints.length > 0 && (
-          <Scatter
-            name="normal"
-            data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
-            dataKey="weight"
-            fill="#5AD940"
-            isAnimationActive={false}
+      <div className="relative flex">
+        {/* Sticky Y-Axis */}
+        <div 
+          className="flex-shrink-0 z-10"
+          style={{ width: yAxisWidth }}
+        >
+          <svg width={yAxisWidth} height={totalHeight}>
+            {yTicks.map((tick) => {
+              const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
+              return (
+                <text
+                  key={tick}
+                  x={yAxisWidth - 4}
+                  y={y}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fill="rgba(255,255,255,0.4)"
+                  fontSize={9}
+                >
+                  {tick}kg
+                </text>
+              );
+            })}
+          </svg>
+        </div>
+        {/* Chart */}
+        <div className="flex-1">
+          <ComposedChart
+            width={chartWidth}
+            height={totalHeight}
+            data={growthCurveData}
+            margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
           >
-            {normalPoints.map((_, index) => (
-              <circle key={`normal-${index}`} r={4} fill="#5AD940" fillOpacity={1} />
-            ))}
-          </Scatter>
-        )}
-        {outOfBoundsPoints.length > 0 && (
-          <Scatter
-            name="outOfBounds"
-            data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
-            dataKey="weight"
-            fill="#FF4444"
-            isAnimationActive={false}
-          >
-            {outOfBoundsPoints.map((_, index) => (
-              <circle key={`oob-${index}`} r={4} fill="#FF4444" fillOpacity={1} />
-            ))}
-          </Scatter>
-        )}
-      </ComposedChart>
+            <CartesianGrid 
+              horizontal={true} 
+              vertical={false} 
+              stroke={GRID_STROKE}
+              strokeDasharray={GRID_DASH}
+            />
+            <XAxis
+              dataKey="month"
+              type="number"
+              domain={[2, 18]}
+              ticks={[2, 6, 10, 14, 18]}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value) => `${value}M`}
+              tickMargin={8}
+            />
+            <YAxis
+              domain={[domainMin, domainMax]}
+              ticks={yTicks}
+              hide={true}
+            />
+            {/* Current age vertical line */}
+            {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
+              <ReferenceLine 
+                x={Math.round(currentAgeInMonths * 10) / 10}
+                stroke="#5AD940"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9, dy: 4 }}
+              />
+            )}
+            {/* Upper bound line (+5%) */}
+            <Line
+              type="monotone"
+              dataKey="upperBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Lower bound line (-5%) */}
+            <Line
+              type="monotone"
+              dataKey="lowerBound"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={1}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Main growth curve */}
+            <Line
+              type="monotone"
+              dataKey="expected"
+              stroke="#ffffff"
+              strokeWidth={2}
+              dot={false}
+              isAnimationActive={false}
+            />
+            {/* Weight measurement points */}
+            {normalPoints.length > 0 && (
+              <Scatter
+                name="normal"
+                data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                dataKey="weight"
+                fill="#5AD940"
+                isAnimationActive={false}
+              >
+                {normalPoints.map((_, index) => (
+                  <circle key={`normal-${index}`} r={4} fill="#5AD940" fillOpacity={1} />
+                ))}
+              </Scatter>
+            )}
+            {outOfBoundsPoints.length > 0 && (
+              <Scatter
+                name="outOfBounds"
+                data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                dataKey="weight"
+                fill="#FF4444"
+                isAnimationActive={false}
+              >
+                {outOfBoundsPoints.map((_, index) => (
+                  <circle key={`oob-${index}`} r={4} fill="#FF4444" fillOpacity={1} />
+                ))}
+              </Scatter>
+            )}
+          </ComposedChart>
+        </div>
+      </div>
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
