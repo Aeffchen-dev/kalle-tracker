@@ -309,12 +309,11 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               }
                             }}
                             disabled={(date) => date > today}
-                            modifiers={{ hasEntry: daysWithEntries, today: startOfDay(new Date()) }}
+                            modifiers={{ hasEntry: daysWithEntries }}
                             modifiersClassNames={{ 
-                              hasEntry: 'has-entry',
-                              today: 'ring-2 ring-[#5AD940] ring-offset-1 ring-offset-black'
+                              hasEntry: 'has-entry'
                             }}
-                            className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-white [&_.rdp-day_selected]:text-black"
+                            className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
                             locale={de}
                           />
                         </PopoverContent>
