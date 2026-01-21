@@ -56,8 +56,7 @@ const Index = () => {
     
     const hours = Math.floor(elapsed / (1000 * 60 * 60));
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-    setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`);
+    setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`);
   };
 
   const loadEvents = async () => {
