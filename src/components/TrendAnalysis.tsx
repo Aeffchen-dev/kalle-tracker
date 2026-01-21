@@ -555,12 +555,11 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         <YAxis
           domain={[5, 35]}
           ticks={yTicks}
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, textAnchor: 'start', dx: -35 }}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(value) => `${value}kg`}
           width={40}
-          orientation="left"
         />
         {/* Current age vertical line */}
         {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
