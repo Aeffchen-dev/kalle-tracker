@@ -560,7 +560,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
 
   const weightStats = useMemo(() => {
-    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, previous: null };
+    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, idealWeight: null };
     const allValues = weightData.map(d => d.value);
     
     // Filter weight events from last 7 days for average
@@ -573,15 +573,24 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysWeights.reduce((a, b) => a + b, 0) / last7DaysWeights.length * 10) / 10
       : null;
     
-    // Get previous weight (second to last)
-    const previous = allValues.length >= 2 ? allValues[allValues.length - 2] : null;
+    // Get ideal weight at time of last measurement
+    const lastWeightEvent = events
+      .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())[0];
+    
+    let idealWeight: number | null = null;
+    if (lastWeightEvent) {
+      const eventDate = new Date(lastWeightEvent.time);
+      const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+      idealWeight = Math.round(getExpectedWeight(ageInMonths) * 10) / 10;
+    }
     
     return {
       avg,
       min: Math.min(...allValues),
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
-      previous,
+      idealWeight,
     };
   }, [weightData, events, sevenDaysAgo]);
 
@@ -690,7 +699,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Aktuelles Gewicht" 
           value={weightStats.latest} 
           unit="kg"
-          subtext={weightStats.previous ? `Vorher: ${weightStats.previous} kg` : undefined}
+          subtext={weightStats.idealWeight ? `Ideal: ${weightStats.idealWeight} kg` : undefined}
         />
         <StatCard 
           emoji="🧪" 
