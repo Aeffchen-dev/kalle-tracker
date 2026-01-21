@@ -4,7 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { saveEvent, SaveResult } from '@/lib/events';
 import { format } from 'date-fns';
+import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { CalendarIcon } from 'lucide-react';
 
 interface EventSheetProps {
   open: boolean;
@@ -18,6 +23,7 @@ const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
   const [weightValue, setWeightValue] = useState<string>('');
@@ -40,6 +46,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       } else {
         setSelectedTime(format(new Date(), 'HH:mm'));
       }
+      setSelectedDate(new Date());
       setSelectedPh(null);
       setWeightValue('');
     }
@@ -47,6 +54,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     if (justClosed) {
       // Reset all form fields when modal closes
       setSelectedTypes(new Set());
+      setSelectedDate(new Date());
       setSelectedPh(null);
       setWeightValue('');
       setSelectedTime(format(new Date(), 'HH:mm'));
@@ -70,9 +78,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     
     setIsSubmitting(true);
     
-    // Create date with selected time
+    // Create date with selected date and time
     const [hours, minutes] = selectedTime.split(':').map(Number);
-    const eventDate = new Date();
+    const eventDate = new Date(selectedDate);
     eventDate.setHours(hours, minutes, 0, 0);
     
     let hasError = false;
@@ -142,8 +150,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('pipi')}
               className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
-                  ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white hover:text-white border border-white/30'
+                  ? 'bg-white text-black'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>💦</span>
@@ -153,8 +161,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('stuhlgang')}
               className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
-                  ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white hover:text-white border border-white/30'
+                  ? 'bg-white text-black'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>💩</span>
@@ -164,8 +172,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('phwert')}
               className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
-                  ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white hover:text-white border border-white/30'
+                  ? 'bg-white text-black'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>🧪</span>
@@ -175,8 +183,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               onClick={() => toggleType('gewicht')}
               className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
-                  ? 'bg-white text-black border border-white'
-                  : 'bg-transparent text-white hover:text-white border border-white/30'
+                  ? 'bg-white text-black'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>🏋️</span>
@@ -243,6 +251,31 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </div>
           )}
 
+          {/* Date Selection */}
+          <div className="flex flex-col gap-2">
+            <span className="text-[14px] text-white">Datum:</span>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] gap-2 w-full"
+                >
+                  <CalendarIcon className="h-4 w-4 text-white/60" />
+                  {format(selectedDate, 'd. MMMM yyyy', { locale: de })}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-black border-white/20" align="center">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => date && setSelectedDate(date)}
+                  initialFocus
+                  className={cn("p-3 pointer-events-auto bg-black text-white")}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Time Selection */}
           <div className="flex flex-col gap-2">
             <span className="text-[14px] text-white">Uhrzeit:</span>
             <label className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer" style={{ width: 'calc(100vw - 32px)' }}>
@@ -265,7 +298,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                 (selectedTypes.has('phwert') && !selectedPh) ||
                 (selectedTypes.has('gewicht') && !weightValue.trim())
               }
-              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:opacity-50 rounded-full"
+              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
             >
               {isSubmitting ? 'Speichern...' : 'Speichern'}
             </Button>
