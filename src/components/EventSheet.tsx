@@ -256,9 +256,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             <Popover>
               <PopoverTrigger asChild>
                 <button
-                  className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] gap-2 w-full"
+                  className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] w-full"
                 >
-                  <CalendarIcon className="h-4 w-4 text-white/60" />
                   {format(selectedDate, 'd. MMMM yyyy', { locale: de })}
                 </button>
               </PopoverTrigger>
