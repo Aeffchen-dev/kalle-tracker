@@ -160,6 +160,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             axisLine={false}
             tickLine={false}
             tickFormatter={(value) => `${value}kg`}
+            width={32}
             tickMargin={4}
           />
           {/* Growth curve reference line - same style as Wachstumskurve */}
@@ -314,6 +315,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             axisLine={false}
             tickLine={false}
             tickFormatter={(value) => value.toFixed(1)}
+            width={32}
             tickMargin={4}
           />
           {/* pH boundary lines at 6.5 and 7.2 - styled like target line */}
@@ -545,6 +547,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           axisLine={false}
           tickLine={false}
           tickFormatter={(value) => `${value}kg`}
+          width={32}
           tickMargin={4}
         />
         {/* Current age vertical line */}
