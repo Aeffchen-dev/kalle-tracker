@@ -593,8 +593,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         >
           <svg width={yAxisWidth} height={CHART_HEIGHT}>
             {yTicks.map((tick) => {
-              // Match Recharts internal calculation: top margin = 8, plotting area = CHART_HEIGHT - 8
-              const plotHeight = CHART_HEIGHT - 8;
+              // Match Recharts internal calculation: top margin = 8, bottom margin = 8
+              const plotHeight = CHART_HEIGHT - 16;
               const y = 8 + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
                 <text
