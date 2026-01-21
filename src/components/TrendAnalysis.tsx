@@ -104,7 +104,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   }
 
   return (
-    <div data-vaul-no-drag>
+    <div>
       <div className="flex h-[180px]">
         {/* Y-Axis - fixed */}
         <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
@@ -118,7 +118,6 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
           className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{ 
             WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-x',
             overscrollBehaviorX: 'contain'
           }}
         >
@@ -212,7 +211,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
   }
 
   return (
-    <div data-vaul-no-drag>
+    <div>
       <div className="flex h-[180px]">
         {/* Y-Axis - fixed */}
         <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
@@ -226,7 +225,6 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
           className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
           style={{ 
             WebkitOverflowScrolling: 'touch',
-            touchAction: 'pan-x',
             overscrollBehaviorX: 'contain'
           }}
         >
@@ -394,7 +392,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const yTicks = [10, 15, 20, 25, 30];
 
   return (
-    <div data-vaul-no-drag>
+    <div>
       <div className="flex h-[180px]">
         {/* Y-Axis - fixed, matching WeightChart style */}
         <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
@@ -403,13 +401,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           ))}
         </div>
         {/* Chart */}
-        <div 
-          className="flex-1 overflow-hidden"
-          style={{ 
-            touchAction: 'pan-y',
-            overscrollBehavior: 'contain'
-          }}
-        >
+        <div className="flex-1 overflow-hidden">
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
             height={180}
@@ -703,16 +695,16 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       {/* Charts */}
       <div ref={containerRef} className="mt-2">
         {/* Growth Curve Chart */}
-        <div className="mb-8 relative" data-vaul-no-drag>
+        <div className="mb-8 relative">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
           <GrowthCurveChart events={events} width={width} />
         </div>
         
-        <div className="mb-6" data-vaul-no-drag>
+        <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
           <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" width={width} />
         </div>
-        <div className="mb-6 pb-10" data-vaul-no-drag>
+        <div className="mb-6 pb-10">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
           <PhChart data={phData} avgValue={phStats.avg} color="#FFD700" width={width} />
         </div>
