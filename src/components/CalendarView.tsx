@@ -364,12 +364,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
               }}
             >
               {filteredEvents.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-4 gap-1">
+                <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
-                  </p>
-                  <p className="text-center text-[12px] text-white/30">
-                    Swipen um Tag zu wechseln
                   </p>
                 </div>
               ) : (
