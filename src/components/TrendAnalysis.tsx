@@ -101,14 +101,15 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   const minValue = Math.min(...data.map(d => d.value));
   const maxValue = Math.max(...data.map(d => d.value));
-  const domainMin = minValue - 2;
-  const domainMax = maxValue + 2;
+  
+  // Round to nearest 5 for clean Y-axis ticks
+  const domainMin = Math.floor(minValue / 5) * 5;
+  const domainMax = Math.ceil(maxValue / 5) * 5;
 
-  // Generate Y-axis ticks (rounded to whole numbers)
+  // Generate Y-axis ticks in steps of 5
   const yTicks: number[] = [];
-  const step = (domainMax - domainMin) / 4;
-  for (let i = 0; i <= 4; i++) {
-    yTicks.push(Math.round(domainMin + step * i));
+  for (let i = domainMin; i <= domainMax; i += 5) {
+    yTicks.push(i);
   }
 
   return (
@@ -413,7 +414,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
             height={180}
-            margin={{ top: 10, right: 10, bottom: 0, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 20, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -425,11 +426,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="month"
               type="number"
               domain={[2, 18]}
-              ticks={[2, 6, 10, 14, 18]}
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, dy: -3 }}
+              ticks={[6, 10, 14, 18]}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
+              tickMargin={4}
             />
             <YAxis
               hide
@@ -527,7 +529,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
       .map(e => ({
-        date: format(new Date(e.time), 'd.M', { locale: de }),
+        date: format(new Date(e.time), 'HH:mm d.M.yy', { locale: de }),
         value: parseFloat(String(e.ph_value).replace(',', '.')),
       }));
   }, [events]);
