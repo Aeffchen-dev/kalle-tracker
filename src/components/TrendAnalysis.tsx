@@ -429,8 +429,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
-  // Y-axis ticks for 10-30 range
-  const yTicks = [10, 15, 20, 25, 30];
+  // Y-axis ticks for 5-35 range to show full growth curve from 7kg to 34kg
+  const yTicks = [5, 10, 15, 20, 25, 30, 35];
 
   return (
     <div>
@@ -467,7 +467,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             />
             <YAxis
               hide
-              domain={[10, 30]}
+              domain={[5, 35]}
             />
             {/* Upper bound line (+5%) */}
             <Line
