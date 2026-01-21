@@ -327,6 +327,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
           lineStyle: {
             color: 'rgba(255,255,255,0.3)',
             width: 1,
+            type: 'solid',
           },
           data: [
             { yAxis: 6.5 },
