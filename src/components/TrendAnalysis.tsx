@@ -140,7 +140,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             width={chartWidth} 
             height={180} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 30, left: 0 }}
           >
             <defs>
               <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -277,7 +277,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             width={chartWidth} 
             height={200} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 45, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 30, left: 0 }}
           >
             <defs>
               <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -468,7 +468,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
   const chartHeight = 220;
   const topMargin = 5;
-  const bottomMargin = 25;
+  const bottomMargin = 30;
 
   return (
     <div>
