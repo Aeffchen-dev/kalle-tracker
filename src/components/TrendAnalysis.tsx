@@ -593,22 +593,33 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         >
           <svg width={yAxisWidth} height={totalHeight - X_AXIS_HEIGHT}>
             {yTicks.map((tick) => {
-              // Recharts plotting: height=totalHeight(175), margin.top=8, margin.bottom=25
-              // Actual plotting area height = 175 - 8 - 25 = 142px, from y=8 to y=150
-              const chartPlotHeight = totalHeight - 8 - X_AXIS_HEIGHT; // 142px
-              const y = 8 + chartPlotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
+              // Match Recharts exactly: plotting area from y=5 to y=145 (with small internal padding)
+              const plotTop = 5;
+              const plotBottom = totalHeight - X_AXIS_HEIGHT - 5; // 145
+              const plotHeight = plotBottom - plotTop; // 140
+              const y = plotTop + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
-                <text
-                  key={tick}
-                  x={yAxisWidth - 4}
-                  y={y}
-                  textAnchor="end"
-                  dominantBaseline="middle"
-                  fill="rgba(255,255,255,0.4)"
-                  fontSize={9}
-                >
-                  {tick}kg
-                </text>
+                <g key={tick}>
+                  {/* Horizontal guide line extending to the right */}
+                  <line
+                    x1={yAxisWidth - 2}
+                    y1={y}
+                    x2={yAxisWidth}
+                    y2={y}
+                    stroke="rgba(255,255,255,0.2)"
+                    strokeWidth={1}
+                  />
+                  <text
+                    x={yAxisWidth - 4}
+                    y={y}
+                    textAnchor="end"
+                    dominantBaseline="middle"
+                    fill="rgba(255,255,255,0.4)"
+                    fontSize={9}
+                  >
+                    {tick}kg
+                  </text>
+                </g>
               );
             })}
           </svg>
@@ -654,6 +665,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               domain={[domainMin, domainMax]}
               ticks={yTicks}
               hide={true}
+              padding={{ top: 5, bottom: 5 }}
             />
             {/* Current age vertical line */}
             {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
