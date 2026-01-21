@@ -2,7 +2,7 @@ import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, CartesianGrid } from 'recharts';
 
 interface TrendAnalysisProps {
   events: Event[];
@@ -134,6 +134,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
                 <stop offset="100%" stopColor={color} stopOpacity={0.05} />
               </linearGradient>
             </defs>
+            <CartesianGrid 
+              horizontal={true} 
+              vertical={false} 
+              stroke="rgba(255,255,255,0.1)" 
+              strokeDasharray="3 3"
+            />
             <XAxis 
               dataKey="date" 
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
@@ -224,12 +230,24 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
             overscrollBehaviorX: 'contain'
           }}
         >
-          <LineChart 
+          <AreaChart 
             width={chartWidth} 
             height={180} 
             data={data} 
             margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
           >
+            <defs>
+              <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+                <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid 
+              horizontal={true} 
+              vertical={false} 
+              stroke="rgba(255,255,255,0.1)" 
+              strokeDasharray="3 3"
+            />
             <XAxis 
               dataKey="date" 
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
@@ -249,15 +267,16 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
                 strokeDasharray="4 4"
               />
             )}
-            <Line 
+            <Area 
               type="monotone" 
               dataKey="value" 
               stroke={color} 
               strokeWidth={2}
+              fill="url(#phGradient)"
               dot={{ fill: color, strokeWidth: 0, r: 3 }}
               isAnimationActive={false}
             />
-          </LineChart>
+          </AreaChart>
         </div>
       </div>
     </div>
@@ -371,8 +390,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
-  // Y-axis ticks matching other charts
-  const yTicks = [0, 10, 20, 30];
+  // Y-axis ticks for 10-30 range
+  const yTicks = [10, 15, 20, 25, 30];
 
   return (
     <div data-vaul-no-drag>
@@ -396,6 +415,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             height={180}
             margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
           >
+            <CartesianGrid 
+              horizontal={true} 
+              vertical={false} 
+              stroke="rgba(255,255,255,0.1)" 
+              strokeDasharray="3 3"
+            />
             <XAxis
               dataKey="month"
               type="number"
@@ -409,7 +434,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             />
             <YAxis
               hide
-              domain={[0, 36]}
+              domain={[10, 30]}
             />
             {/* Upper bound line (+5%) */}
             <Line
@@ -676,18 +701,18 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={containerRef} className="mt-2" style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
+      <div ref={containerRef} className="mt-2">
         {/* Growth Curve Chart */}
-        <div className="mb-8 relative">
+        <div className="mb-8 relative" data-vaul-no-drag>
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
           <GrowthCurveChart events={events} width={width} />
         </div>
         
-        <div className="mb-6">
+        <div className="mb-6" data-vaul-no-drag>
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
           <WeightChart data={weightData} avgValue={weightStats.avg} color="#5AD940" width={width} />
         </div>
-        <div className="mb-6">
+        <div className="mb-6 pb-10" data-vaul-no-drag>
           <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
           <PhChart data={phData} avgValue={phStats.avg} color="#FFD700" width={width} />
         </div>
