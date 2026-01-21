@@ -543,9 +543,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         <div className="flex-1 overflow-hidden">
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
-            height={totalHeight}
+            height={CHART_HEIGHT}
             data={growthCurveData}
-            margin={{ top: 8, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
+            margin={{ top: 8, right: 0, bottom: 0, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -557,12 +557,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="month"
               type="number"
               domain={[2, 18]}
-              ticks={[2, 6, 10, 14, 18]}
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-              axisLine={false}
-              tickLine={false}
-              tickFormatter={(value) => `${value}M`}
-              tickMargin={8}
+              hide
             />
             <YAxis
               hide
@@ -576,7 +571,6 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
                 stroke="#5AD940"
                 strokeWidth={1}
                 strokeDasharray="3 3"
-                label={{ value: 'Heute', position: 'insideBottomRight', fill: '#5AD940', fontSize: 9, dy: 12 }}
               />
             )}
             {/* Upper bound line (+5%) */}
@@ -634,6 +628,20 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               </Scatter>
             )}
           </ComposedChart>
+        </div>
+      </div>
+      {/* X-Axis Labels - aligned with chart area */}
+      <div className="flex">
+        <div style={{ width: Y_AXIS_WIDTH }} />
+        <div className="flex-1 flex justify-between text-[9px] text-white/40 pr-0" style={{ paddingTop: 4 }}>
+          {[2, 6, 10, 14, 18].map((month, i) => {
+            const isToday = Math.abs(month - currentAgeInMonths) < 0.5;
+            return (
+              <span key={i} className={isToday ? 'text-[#5AD940]' : ''}>
+                {isToday ? 'Heute' : `${month}M`}
+              </span>
+            );
+          })}
         </div>
       </div>
       {/* Legend */}
