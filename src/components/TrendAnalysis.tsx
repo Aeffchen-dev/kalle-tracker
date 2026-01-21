@@ -14,6 +14,12 @@ interface ChartData {
   value: number;
 }
 
+interface PhChartData {
+  dateLine1: string;
+  dateLine2: string;
+  value: number;
+}
+
 const useContainerWidth = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -186,7 +192,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
 WeightChart.displayName = 'WeightChart';
 
-const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
+const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Calculate chart width based on data points
@@ -219,11 +225,41 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
   }
 
+  // Custom tick component for multiline X-axis labels
+  const CustomXAxisTick = ({ x, y, payload }: any) => {
+    const dataPoint = data[payload.index];
+    if (!dataPoint) return null;
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text 
+          x={0} 
+          y={0} 
+          dy={4} 
+          textAnchor="middle" 
+          fill="rgba(255,255,255,0.4)" 
+          fontSize={9}
+        >
+          {dataPoint.dateLine1}
+        </text>
+        <text 
+          x={0} 
+          y={0} 
+          dy={16} 
+          textAnchor="middle" 
+          fill="rgba(255,255,255,0.4)" 
+          fontSize={9}
+        >
+          {dataPoint.dateLine2}
+        </text>
+      </g>
+    );
+  };
+
   return (
     <div>
-      <div className="flex h-[180px]">
+      <div className="flex h-[200px]">
         {/* Y-Axis - fixed */}
-        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[45px]" style={{ width: Y_AXIS_WIDTH }}>
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
           ))}
@@ -239,9 +275,9 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
         >
           <AreaChart 
             width={chartWidth} 
-            height={180} 
+            height={200} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 45, left: 0 }}
           >
             <defs>
               <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -256,12 +292,11 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
               strokeDasharray="3 3"
             />
             <XAxis 
-              dataKey="date" 
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+              dataKey="dateLine1"
+              tick={<CustomXAxisTick />}
               axisLine={false}
               tickLine={false}
               interval={0}
-              dy={8}
             />
             <YAxis 
               hide
@@ -563,10 +598,14 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     return events
       .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
-      .map(e => ({
-        date: format(new Date(e.time), 'HH:mm d.M.yy', { locale: de }),
-        value: parseFloat(String(e.ph_value).replace(',', '.')),
-      }));
+      .map(e => {
+        const eventDate = new Date(e.time);
+        return {
+          dateLine1: format(eventDate, 'd. MMM yy', { locale: de }),
+          dateLine2: format(eventDate, 'HH:mm', { locale: de }) + ' Uhr',
+          value: parseFloat(String(e.ph_value).replace(',', '.')),
+        };
+      });
   }, [events]);
 
   const pipiIntervalData = useMemo(() => {
