@@ -36,15 +36,13 @@ const StatCard = memo(({
   label, 
   value, 
   unit, 
-  subtext,
-  color 
+  subtext
 }: { 
   emoji: string; 
   label: string; 
   value: string | number | null; 
   unit: string;
   subtext?: string;
-  color: string;
 }) => (
   <div className="bg-white/5 rounded-xl p-3 border border-white/10">
     <div className="flex items-center gap-2 mb-1">
@@ -52,7 +50,7 @@ const StatCard = memo(({
       <span className="text-[11px] text-white/50 uppercase tracking-wide">{label}</span>
     </div>
     <div className="flex items-baseline gap-1">
-      <span className="text-2xl font-semibold" style={{ color }}>{value ?? '-'}</span>
+      <span className="text-2xl font-semibold text-white">{value ?? '-'}</span>
       <span className="text-[12px] text-white/40">{unit}</span>
     </div>
     {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
@@ -329,6 +327,16 @@ interface GrowthDataPoint {
   isOutOfBounds: boolean;
 }
 
+// Helper function to check if a weight is out of bounds (exported for use in CalendarView)
+export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean => {
+  const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+  if (ageInMonths < 2 || ageInMonths > 18) return false;
+  const expected = getExpectedWeight(ageInMonths);
+  const upperBound = expected * 1.05;
+  const lowerBound = expected * 0.95;
+  return weight > upperBound || weight < lowerBound;
+};
+
 const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: number }) => {
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
@@ -338,10 +346,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + 
           (eventDate.getDate() / 30); // Add partial month
         const weight = Number(e.weight_value);
-        const expected = getExpectedWeight(ageInMonths);
-        const upperBound = expected * 1.05;
-        const lowerBound = expected * 0.95;
-        const isOutOfBounds = weight > upperBound || weight < lowerBound;
+        const isOutOfBounds = isWeightOutOfBounds(weight, eventDate);
         
         return {
           month: Math.round(ageInMonths * 10) / 10,
@@ -356,7 +361,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
 
   if (width === 0) {
     return (
-      <div className="h-[280px] flex items-center justify-center">
+      <div className="h-[180px] flex items-center justify-center">
         <p className="text-[13px] text-white/30">Lade...</p>
       </div>
     );
@@ -366,31 +371,45 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
+  // Y-axis ticks matching other charts
+  const yTicks = [0, 10, 20, 30];
+
   return (
-    <div data-vaul-no-drag style={{ touchAction: 'pan-x pan-y pinch-zoom' }}>
-      <div className="h-[280px]" onTouchStart={(e) => e.stopPropagation()}>
-        <ResponsiveContainer width="100%" height="100%">
+    <div data-vaul-no-drag>
+      <div className="flex h-[180px]">
+        {/* Y-Axis - fixed, matching WeightChart style */}
+        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+          {[...yTicks].reverse().map((tick, i) => (
+            <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
+          ))}
+        </div>
+        {/* Chart */}
+        <div 
+          className="flex-1 overflow-hidden"
+          style={{ 
+            touchAction: 'pan-y',
+            overscrollBehavior: 'contain'
+          }}
+        >
           <ComposedChart
-            margin={{ top: 10, right: 10, bottom: 30, left: 10 }}
+            width={width - Y_AXIS_WIDTH}
+            height={180}
+            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
           >
             <XAxis
               dataKey="month"
               type="number"
               domain={[2, 18]}
-              ticks={[2, 4, 6, 8, 10, 12, 14, 16, 18]}
+              ticks={[2, 6, 10, 14, 18]}
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+              axisLine={false}
               tickLine={false}
-              label={{ value: 'Alter (Monate)', position: 'bottom', offset: 10, fill: 'rgba(255,255,255,0.5)', fontSize: 10 }}
+              dy={8}
+              tickFormatter={(value) => `${value}M`}
             />
             <YAxis
+              hide
               domain={[0, 36]}
-              ticks={[0, 10, 20, 30]}
-              tickFormatter={(value) => `${value}kg`}
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-              tickLine={false}
-              width={40}
             />
             {/* Upper bound line (+5%) */}
             <Line
@@ -418,7 +437,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               type="monotone"
               dataKey="expected"
               stroke="#ffffff"
-              strokeWidth={3}
+              strokeWidth={2}
               dot={false}
               isAnimationActive={false}
             />
@@ -437,13 +456,13 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               isAnimationActive={false}
             />
           </ComposedChart>
-        </ResponsiveContainer>
+        </div>
       </div>
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-4 pt-2">
+      <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
-          <div className="w-4 h-[3px] bg-white rounded"></div>
-          <span>Ziel: {TARGET_WEIGHT} kg</span>
+          <div className="w-4 h-[2px] bg-white rounded"></div>
+          <span>Ziel: {TARGET_WEIGHT}kg</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="w-4 h-[1px] bg-white/30"></div>
@@ -632,7 +651,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={weightStats.latest} 
           unit="kg"
           subtext={weightStats.avg ? `Ø ${weightStats.avg} kg` : undefined}
-          color="#5AD940"
         />
         <StatCard 
           emoji="🧪" 
@@ -640,7 +658,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={phStats.latest} 
           unit=""
           subtext={phStats.avg ? `Ø ${phStats.avg}` : undefined}
-          color="#FFD700"
         />
         <StatCard 
           emoji="💦" 
@@ -648,7 +665,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={pipiStats.avg} 
           unit="h"
           subtext={pipiStats.min && pipiStats.max ? `${pipiStats.min}h - ${pipiStats.max}h` : undefined}
-          color="#00BFFF"
         />
         <StatCard 
           emoji="💩" 
@@ -656,7 +672,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={stuhlgangStats.avg} 
           unit="h"
           subtext={stuhlgangStats.min && stuhlgangStats.max ? `${stuhlgangStats.min}h - ${stuhlgangStats.max}h` : undefined}
-          color="#CD853F"
         />
       </div>
 

@@ -5,7 +5,7 @@ import { format, subDays, addDays, isSameDay, startOfDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff } from 'lucide-react';
-import TrendAnalysis from './TrendAnalysis';
+import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
@@ -396,7 +396,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               {event.type === 'stuhlgang' && 'Stuhlgang'}
                               {event.type === 'gewicht' && (
                                 <>
-                                  Gewicht: {event.weight_value ? `${event.weight_value} kg` : '-'}
+                                  Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-red-500' : ''}>{event.weight_value ? `${event.weight_value} kg` : '-'}</span>
                                 </>
                               )}
                               {event.type === 'phwert' && (
