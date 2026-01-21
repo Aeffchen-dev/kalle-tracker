@@ -699,12 +699,19 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
       : null;
     
-    // Calculate average per day (last 30 days)
+    // Calculate average per day (last 30 days) - only count days with entries
     const last30DaysStuhlgang = events
       .filter(e => e.type === 'stuhlgang')
       .filter(e => isAfter(new Date(e.time), thirtyDaysAgo));
-    const avgPerDay = last30DaysStuhlgang.length > 0 
-      ? Math.round(last30DaysStuhlgang.length / 30 * 10) / 10
+    
+    // Get unique days with stuhlgang entries
+    const uniqueDaysWithStuhlgang = new Set(
+      last30DaysStuhlgang.map(e => format(new Date(e.time), 'yyyy-MM-dd'))
+    );
+    const daysWithEntries = uniqueDaysWithStuhlgang.size;
+    
+    const avgPerDay = last30DaysStuhlgang.length > 0 && daysWithEntries > 0
+      ? Math.round(last30DaysStuhlgang.length / daysWithEntries * 10) / 10
       : null;
     
     return {
