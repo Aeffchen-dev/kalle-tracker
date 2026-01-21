@@ -140,7 +140,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     grid: {
       left: 0,
@@ -148,6 +149,37 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       top: 10,
       bottom: 30,
     },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      borderWidth: 1,
+      padding: [8, 12],
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        const dataIndex = params.dataIndex;
+        const point = data[dataIndex];
+        const status = point.isOutOfBounds ? '⚠️ Abweichung' : '✓ Normal';
+        return `<div style="text-align: center;">
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">${point.value} kg</div>
+          <div style="color: rgba(255,255,255,0.6); font-size: 10px;">${point.date}</div>
+          <div style="margin-top: 4px; font-size: 10px; color: ${point.isOutOfBounds ? '#FF4444' : '#5AD940'};">${status}</div>
+        </div>`;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     xAxis: {
       type: 'category',
       data: data.map(d => d.date),
@@ -192,6 +224,13 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
             return data[params.dataIndex]?.isOutOfBounds ? '#FF4444' : '#5AD940';
           },
           opacity: 1,
+        },
+        emphasis: {
+          scale: true,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(90, 217, 64, 0.5)',
+          },
         },
         z: 10,
       },
@@ -266,7 +305,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     grid: {
       left: 0,
@@ -274,6 +314,39 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       top: 10,
       bottom: 45,
     },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      borderWidth: 1,
+      padding: [8, 12],
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        const dataIndex = params.dataIndex;
+        const point = data[dataIndex];
+        const isInRange = point.value >= 6.5 && point.value <= 7.2;
+        const status = isInRange ? '✓ Optimal (6.5-7.2)' : '⚠️ Außerhalb';
+        return `<div style="text-align: center;">
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">pH ${point.value.toFixed(1)}</div>
+          <div style="color: rgba(255,255,255,0.6); font-size: 10px;">${point.dateLine1}</div>
+          <div style="color: rgba(255,255,255,0.6); font-size: 10px;">${point.dateLine2}</div>
+          <div style="margin-top: 4px; font-size: 10px; color: ${isInRange ? '#5AD940' : '#FF4444'};">${status}</div>
+        </div>`;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     xAxis: {
       type: 'category',
       data: data.map(d => `${d.dateLine1}\n${d.dateLine2}`),
@@ -321,6 +394,13 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
             return ph < 6.5 || ph > 7.2 ? '#FF4444' : '#5AD940';
           },
           opacity: 1,
+        },
+        emphasis: {
+          scale: true,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(90, 217, 64, 0.5)',
+          },
         },
         z: 10,
         markLine: {
@@ -414,7 +494,8 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     grid: {
       left: 40,
@@ -422,6 +503,41 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       top: 10,
       bottom: 50,
     },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
+      borderWidth: 1,
+      padding: [8, 12],
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        const [month, weight] = params.data;
+        const expected = getExpectedWeight(month);
+        const diff = ((weight - expected) / expected * 100).toFixed(1);
+        const isNormal = Math.abs(weight - expected) <= expected * 0.05;
+        const status = isNormal ? '✓ Im Zielbereich' : '⚠️ Abweichung';
+        return `<div style="text-align: center;">
+          <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">${weight} kg</div>
+          <div style="color: rgba(255,255,255,0.6); font-size: 10px;">Monat ${month.toFixed(1)}</div>
+          <div style="color: rgba(255,255,255,0.5); font-size: 10px; margin-top: 2px;">Ziel: ${expected.toFixed(1)} kg (${diff > '0' ? '+' : ''}${diff}%)</div>
+          <div style="margin-top: 4px; font-size: 10px; color: ${isNormal ? '#5AD940' : '#FF4444'};">${status}</div>
+        </div>`;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        yAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     xAxis: {
       type: 'value',
       min: 2,
@@ -502,6 +618,13 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           color: '#5AD940',
           opacity: 1,
         },
+        emphasis: {
+          scale: 1.5,
+          itemStyle: {
+            shadowBlur: 15,
+            shadowColor: 'rgba(90, 217, 64, 0.6)',
+          },
+        },
         z: 10,
       },
       {
@@ -512,6 +635,13 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         itemStyle: {
           color: '#FF4444',
           opacity: 1,
+        },
+        emphasis: {
+          scale: 1.5,
+          itemStyle: {
+            shadowBlur: 15,
+            shadowColor: 'rgba(255, 68, 68, 0.6)',
+          },
         },
         z: 10,
       },
