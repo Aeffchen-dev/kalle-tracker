@@ -533,7 +533,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         width={width}
         height={totalHeight}
         data={growthCurveData}
-        margin={{ top: 8, right: 15, bottom: X_AXIS_HEIGHT, left: 5 }}
+        margin={{ top: 8, right: 15, bottom: X_AXIS_HEIGHT, left: 0 }}
       >
         <CartesianGrid 
           horizontal={true} 
@@ -555,11 +555,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         <YAxis
           domain={[5, 35]}
           ticks={yTicks}
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, textAnchor: 'start', dx: -30 }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(value) => `${value}kg`}
           width={35}
+          orientation="left"
         />
         {/* Current age vertical line */}
         {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
