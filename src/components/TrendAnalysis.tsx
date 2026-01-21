@@ -629,12 +629,15 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             data={growthCurveData}
             margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
           >
-            <CartesianGrid 
-              horizontal={true} 
-              vertical={false} 
-              stroke={GRID_STROKE}
-              strokeDasharray={GRID_DASH}
-            />
+            {/* Horizontal grid lines at Y-axis tick positions */}
+            {yTicks.map((tick) => (
+              <ReferenceLine 
+                key={`grid-${tick}`}
+                y={tick}
+                stroke={GRID_STROKE}
+                strokeDasharray={GRID_DASH}
+              />
+            ))}
             <XAxis
               dataKey="month"
               type="number"
