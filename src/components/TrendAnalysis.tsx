@@ -122,8 +122,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+        className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -285,8 +285,8 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+        className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
@@ -516,8 +516,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       <div className="flex">
         {/* Sticky Y-Axis */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+          className="flex-shrink-0 flex flex-col justify-between text-right pl-0"
+          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
