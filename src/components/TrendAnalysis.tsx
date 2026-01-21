@@ -121,10 +121,10 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   return (
     <div className="flex">
-      {/* Sticky Y-Axis */}
+      {/* Sticky Y-Axis - aligned with chart plotting area */}
       <div 
         className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 12, paddingBottom: 4, marginRight: Y_AXIS_MARGIN_RIGHT }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -284,10 +284,10 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
 
   return (
     <div className="flex">
-      {/* Sticky Y-Axis */}
+      {/* Sticky Y-Axis - aligned with chart plotting area */}
       <div 
         className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 12, paddingBottom: 4, marginRight: Y_AXIS_MARGIN_RIGHT }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
@@ -526,10 +526,10 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   return (
     <div>
       <div className="flex">
-        {/* Sticky Y-Axis */}
+        {/* Sticky Y-Axis - aligned with chart plotting area */}
         <div 
           className="flex-shrink-0 flex flex-col justify-between text-right"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
+          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 12, paddingBottom: 4, marginRight: Y_AXIS_MARGIN_RIGHT }}
         >
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
