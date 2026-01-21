@@ -331,6 +331,19 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             domain={[domainMin, domainMax]}
             ticks={yTicks}
           />
+          {/* pH boundary lines at 6.5 and 7.2 */}
+          <ReferenceLine 
+            y={6.5} 
+            stroke="rgba(255,255,255,0.3)" 
+            strokeDasharray="4 4"
+            label={{ value: '6.5', position: 'right', fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          />
+          <ReferenceLine 
+            y={7.2} 
+            stroke="rgba(255,255,255,0.3)" 
+            strokeDasharray="4 4"
+            label={{ value: '7.2', position: 'right', fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          />
           {avgValue && (
             <ReferenceLine 
               y={avgValue} 
