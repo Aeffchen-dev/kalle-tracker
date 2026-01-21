@@ -545,7 +545,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             width={width - Y_AXIS_WIDTH}
             height={totalHeight}
             data={growthCurveData}
-            margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 5 }}
+            margin={{ top: 12, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -574,8 +574,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               <ReferenceLine 
                 x={Math.round(currentAgeInMonths * 10) / 10}
                 stroke="#5AD940"
-                strokeWidth={2}
-                strokeDasharray="4 4"
+                strokeWidth={1}
+                strokeDasharray="3 3"
+                label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9 }}
               />
             )}
             {/* Upper bound line (+5%) */}
