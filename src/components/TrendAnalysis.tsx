@@ -593,12 +593,10 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         >
           <svg width={yAxisWidth} height={totalHeight - X_AXIS_HEIGHT}>
             {yTicks.map((tick) => {
-              // Recharts with height=totalHeight and margin={{ top: 8, bottom: X_AXIS_HEIGHT }}
-              // gives plotting area from y=8 to y=(totalHeight - X_AXIS_HEIGHT) = 150
-              const topMargin = 8;
-              const bottomMargin = 0; // No bottom margin within the visible chart area
-              const plotHeight = (totalHeight - X_AXIS_HEIGHT) - topMargin - bottomMargin;
-              const y = topMargin + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
+              // Recharts plotting: height=totalHeight(175), margin.top=8, margin.bottom=25
+              // Actual plotting area height = 175 - 8 - 25 = 142px, from y=8 to y=150
+              const chartPlotHeight = totalHeight - 8 - X_AXIS_HEIGHT; // 142px
+              const y = 8 + chartPlotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
                 <text
                   key={tick}
