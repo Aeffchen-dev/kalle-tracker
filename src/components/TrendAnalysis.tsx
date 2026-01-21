@@ -169,7 +169,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
               interval={0}
-              dy={15}
+              dy={4}
             />
             <YAxis 
               hide
@@ -264,7 +264,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
         <text 
           x={0} 
           y={0} 
-          dy={12} 
+          dy={4} 
           textAnchor="middle" 
           fill="rgba(255,255,255,0.4)" 
           fontSize={9}
@@ -274,7 +274,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
         <text 
           x={0} 
           y={0} 
-          dy={24} 
+          dy={16} 
           textAnchor="middle" 
           fill="rgba(255,255,255,0.4)" 
           fontSize={9}
@@ -542,7 +542,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
-              dy={15}
+              dy={4}
               allowDataOverflow={false}
             />
             <YAxis
