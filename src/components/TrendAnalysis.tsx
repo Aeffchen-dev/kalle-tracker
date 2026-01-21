@@ -165,6 +165,13 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       min: domainMin,
       max: domainMax,
       show: false,
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: 'rgba(255,255,255,0.1)',
+          type: 'dashed',
+        },
+      },
     },
     series: [
       {
@@ -177,6 +184,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
+        z: 1,
       },
       {
         name: 'Gewicht',
@@ -193,7 +201,9 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
           color: (params: any) => {
             return data[params.dataIndex]?.isOutOfBounds ? '#FF4444' : '#5AD940';
           },
+          opacity: 1,
         },
+        z: 10,
       },
     ],
   };
@@ -291,6 +301,13 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       min: domainMin,
       max: domainMax,
       show: false,
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: 'rgba(255,255,255,0.1)',
+          type: 'dashed',
+        },
+      },
     },
     series: [
       {
@@ -309,7 +326,9 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
             const ph = data[params.dataIndex]?.value;
             return ph < 6.5 || ph > 7.2 ? '#FF4444' : '#5AD940';
           },
+          opacity: 1,
         },
+        z: 10,
         markLine: {
           silent: true,
           symbol: 'none',
@@ -400,6 +419,8 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
   const option = {
     backgroundColor: 'transparent',
+    animation: false,
+    textStyle: { fontFamily: FONT_FAMILY },
     grid: {
       left: 40,
       right: 10,
@@ -415,6 +436,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       axisLabel: {
         color: 'rgba(255,255,255,0.4)',
         fontSize: 9,
+        fontFamily: FONT_FAMILY,
         formatter: '{value}M',
       },
       splitLine: { show: false },
@@ -428,6 +450,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       axisLabel: {
         color: 'rgba(255,255,255,0.4)',
         fontSize: 9,
+        fontFamily: FONT_FAMILY,
         formatter: '{value}kg',
       },
       splitLine: {
@@ -448,6 +471,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           color: '#ffffff',
           width: 2,
         },
+        z: 1,
       },
       {
         name: '+5%',
@@ -459,6 +483,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
+        z: 1,
       },
       {
         name: '-5%',
@@ -470,6 +495,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
+        z: 1,
       },
       {
         name: 'Normal',
@@ -478,7 +504,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         symbolSize: 8,
         itemStyle: {
           color: '#5AD940',
+          opacity: 1,
         },
+        z: 10,
       },
       {
         name: 'Abweichung',
@@ -487,7 +515,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         symbolSize: 8,
         itemStyle: {
           color: '#FF4444',
+          opacity: 1,
         },
+        z: 10,
       },
     ],
   };
