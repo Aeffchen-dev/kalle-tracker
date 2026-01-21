@@ -296,19 +296,51 @@ PhChart.displayName = 'PhChart';
 const KALLE_BIRTHDAY = new Date('2025-01-20'); // Kalle's birthday
 const TARGET_WEIGHT = 34; // kg at maturity (no decimal)
 
-// Growth curve function - logarithmic growth model
-// Based on the reference image: starts at ~7kg at 2 months, reaches ~32kg at 15 months
+// Expected weight data points based on Dalmatian growth chart
+const EXPECTED_WEIGHTS: { [month: number]: number } = {
+  2: 7,
+  3: 11,
+  4: 15,
+  5: 19,
+  6: 22,
+  7: 24,
+  8: 26,
+  9: 27,
+  10: 28,
+  11: 29,
+  12: 30,
+  13: 31,
+  14: 32,
+  15: 33,
+  18: 34,
+};
+
+// Growth curve function - linear interpolation between known data points
 const getExpectedWeight = (ageInMonths: number): number => {
-  if (ageInMonths < 2) return 6;
-  if (ageInMonths > 18) return TARGET_WEIGHT;
+  if (ageInMonths < 2) return 7;
+  if (ageInMonths >= 18) return TARGET_WEIGHT;
   
-  // Logarithmic growth curve fitting the reference data
-  // At 2 months: ~7kg, at 6 months: ~22kg, at 12 months: ~28kg, at 15 months: ~32kg
-  const a = 34; // asymptote (target weight)
-  const b = 0.25; // growth rate
-  const c = 0.5; // x-offset
+  // Get the two closest months for interpolation
+  const months = Object.keys(EXPECTED_WEIGHTS).map(Number).sort((a, b) => a - b);
   
-  return a * (1 - Math.exp(-b * (ageInMonths - c)));
+  // Find the two months to interpolate between
+  let lowerMonth = months[0];
+  let upperMonth = months[months.length - 1];
+  
+  for (let i = 0; i < months.length - 1; i++) {
+    if (ageInMonths >= months[i] && ageInMonths <= months[i + 1]) {
+      lowerMonth = months[i];
+      upperMonth = months[i + 1];
+      break;
+    }
+  }
+  
+  // Linear interpolation
+  const lowerWeight = EXPECTED_WEIGHTS[lowerMonth];
+  const upperWeight = EXPECTED_WEIGHTS[upperMonth];
+  const ratio = (ageInMonths - lowerMonth) / (upperMonth - lowerMonth);
+  
+  return lowerWeight + (upperWeight - lowerWeight) * ratio;
 };
 
 // Generate growth curve data points with optional weight measurement
