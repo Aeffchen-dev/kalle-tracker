@@ -611,8 +611,14 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           {/* Spacer for X-axis alignment */}
           <div style={{ height: X_AXIS_HEIGHT }} />
         </div>
-        {/* Chart */}
-        <div className="flex-1">
+        {/* Scrollable Chart */}
+        <div 
+          className="overflow-x-auto overflow-y-hidden scrollbar-hide flex-1"
+          style={{ 
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehaviorX: 'contain'
+          }}
+        >
           <ComposedChart
             width={chartWidth}
             height={totalHeight}
