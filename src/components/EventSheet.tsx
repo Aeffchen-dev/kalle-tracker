@@ -252,8 +252,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           )}
 
           {/* Date Selection */}
-          <div className="flex flex-col gap-2">
-            <span className="text-[14px] text-white">Datum:</span>
+          <div>
             <Popover>
               <PopoverTrigger asChild>
                 <button
@@ -276,8 +275,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           </div>
 
           {/* Time Selection */}
-          <div className="flex flex-col gap-2">
-            <span className="text-[14px] text-white">Uhrzeit:</span>
+          <div>
             <label className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer" style={{ width: 'calc(100vw - 32px)' }}>
               <input
                 type="time"
