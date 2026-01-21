@@ -555,11 +555,12 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     return intervals;
   }, [events]);
 
-  // Filter events from last 7 days for average calculations
+  // Filter events from last 7 days and last 30 days for calculations
   const sevenDaysAgo = useMemo(() => subDays(new Date(), 7), []);
+  const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
 
   const weightStats = useMemo(() => {
-    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, previous: null };
     const allValues = weightData.map(d => d.value);
     
     // Filter weight events from last 7 days for average
@@ -572,11 +573,15 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysWeights.reduce((a, b) => a + b, 0) / last7DaysWeights.length * 10) / 10
       : null;
     
+    // Get previous weight (second to last)
+    const previous = allValues.length >= 2 ? allValues[allValues.length - 2] : null;
+    
     return {
       avg,
       min: Math.min(...allValues),
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
+      previous,
     };
   }, [weightData, events, sevenDaysAgo]);
 
@@ -603,7 +608,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [phData, events, sevenDaysAgo]);
 
   const pipiStats = useMemo(() => {
-    if (pipiIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    if (pipiIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null, avgPerDay: null };
     const allValues = pipiIntervalData.map(d => d.value);
     
     // Calculate intervals only from last 7 days for average
@@ -622,16 +627,25 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
       : null;
     
+    // Calculate average per day (last 30 days)
+    const last30DaysPipi = events
+      .filter(e => e.type === 'pipi')
+      .filter(e => isAfter(new Date(e.time), thirtyDaysAgo));
+    const avgPerDay = last30DaysPipi.length > 0 
+      ? Math.round(last30DaysPipi.length / 30 * 10) / 10
+      : null;
+    
     return {
       avg,
       min: Math.min(...allValues),
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
+      avgPerDay,
     };
-  }, [pipiIntervalData, events, sevenDaysAgo]);
+  }, [pipiIntervalData, events, sevenDaysAgo, thirtyDaysAgo]);
 
   const stuhlgangStats = useMemo(() => {
-    if (stuhlgangIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    if (stuhlgangIntervalData.length === 0) return { avg: null, min: null, max: null, latest: null, avgPerDay: null };
     const allValues = stuhlgangIntervalData.map(d => d.value);
     
     // Calculate intervals only from last 7 days for average
@@ -650,13 +664,22 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
       : null;
     
+    // Calculate average per day (last 30 days)
+    const last30DaysStuhlgang = events
+      .filter(e => e.type === 'stuhlgang')
+      .filter(e => isAfter(new Date(e.time), thirtyDaysAgo));
+    const avgPerDay = last30DaysStuhlgang.length > 0 
+      ? Math.round(last30DaysStuhlgang.length / 30 * 10) / 10
+      : null;
+    
     return {
       avg,
       min: Math.min(...allValues),
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
+      avgPerDay,
     };
-  }, [stuhlgangIntervalData, events, sevenDaysAgo]);
+  }, [stuhlgangIntervalData, events, sevenDaysAgo, thirtyDaysAgo]);
 
   return (
     <div className="pb-20 space-y-6" data-vaul-no-drag>
@@ -667,7 +690,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Aktuelles Gewicht" 
           value={weightStats.latest} 
           unit="kg"
-          subtext={weightStats.avg ? `Ø ${weightStats.avg} kg` : undefined}
+          subtext={weightStats.previous ? `Vorher: ${weightStats.previous} kg` : undefined}
         />
         <StatCard 
           emoji="🧪" 
@@ -681,14 +704,14 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Ø Pipi-Intervall" 
           value={pipiStats.avg} 
           unit="h"
-          subtext={pipiStats.min && pipiStats.max ? `${pipiStats.min}h - ${pipiStats.max}h` : undefined}
+          subtext={pipiStats.avgPerDay ? `Ø ${pipiStats.avgPerDay}x pro Tag` : undefined}
         />
         <StatCard 
           emoji="💩" 
           label="Ø Stuhlgang" 
           value={stuhlgangStats.avg} 
           unit="h"
-          subtext={stuhlgangStats.min && stuhlgangStats.max ? `${stuhlgangStats.min}h - ${stuhlgangStats.max}h` : undefined}
+          subtext={stuhlgangStats.avgPerDay ? `Ø ${stuhlgangStats.avgPerDay}x pro Tag` : undefined}
         />
       </div>
 
