@@ -343,6 +343,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           ref={scrollContainerRef} 
           className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 min-h-0"
           data-vaul-no-drag
+          onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
+          onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
+          onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
         >
           {showTrends ? (
             <div data-vaul-no-drag>
@@ -350,7 +353,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
             </div>
           ) : (
             <div 
-              className={`${
+              className={`min-h-full ${
                 slideDirection === 'left' ? 'opacity-0 -translate-x-4 transition-all duration-150' : 
                 slideDirection === 'right' ? 'opacity-0 translate-x-4 transition-all duration-150' : 
                 swipeOffset === 0 ? 'opacity-100 translate-x-0 transition-all duration-200' : 'opacity-100'
@@ -359,9 +362,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 transform: swipeOffset !== 0 ? `translateX(${swipeOffset}px)` : undefined,
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
-              onTouchStart={(e) => handleDaySwipeStart(e)}
-              onTouchMove={(e) => handleDaySwipeMove(e)}
-              onTouchEnd={handleDaySwipeEnd}
             >
               {filteredEvents.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-4 gap-1">
