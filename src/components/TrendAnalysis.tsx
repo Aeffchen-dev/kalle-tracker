@@ -63,6 +63,7 @@ const StatCard = memo(({
 StatCard.displayName = 'StatCard';
 
 const CHART_HEIGHT = 180;
+const FONT_FAMILY = "'Rauschen B', system-ui, sans-serif";
 
 // Growth curve constants - Kalle's birthday and target weight
 const KALLE_BIRTHDAY = new Date('2025-01-20');
@@ -112,7 +113,15 @@ interface WeightChartData {
   isOutOfBounds: boolean;
 }
 
-const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
+const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data.length]);
+
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
@@ -125,14 +134,19 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
   const maxValue = Math.max(...data.map(d => Math.max(d.value, d.expectedWeight)));
   const domainMin = Math.floor(minValue / 5) * 5;
   const domainMax = Math.ceil(maxValue / 5) * 5;
+  
+  // Calculate width based on data points
+  const chartWidth = Math.max(width - 45, data.length * 60);
 
   const option = {
     backgroundColor: 'transparent',
+    animation: false,
+    textStyle: { fontFamily: FONT_FAMILY },
     grid: {
-      left: 40,
+      left: 0,
       right: 10,
       top: 10,
-      bottom: 50,
+      bottom: 30,
     },
     xAxis: {
       type: 'category',
@@ -142,6 +156,7 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
       axisLabel: {
         color: 'rgba(255,255,255,0.4)',
         fontSize: 9,
+        fontFamily: FONT_FAMILY,
         interval: 0,
       },
     },
@@ -149,31 +164,8 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
       type: 'value',
       min: domainMin,
       max: domainMax,
-      axisLine: { show: false },
-      axisTick: { show: false },
-      axisLabel: {
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: 9,
-        formatter: '{value}kg',
-      },
-      splitLine: {
-        lineStyle: {
-          color: 'rgba(255,255,255,0.1)',
-          type: 'dashed',
-        },
-      },
+      show: false,
     },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: 0,
-        start: Math.max(0, 100 - (6 / data.length) * 100),
-        end: 100,
-        zoomOnMouseWheel: false,
-        moveOnMouseMove: true,
-        moveOnMouseWheel: true,
-      },
-    ],
     series: [
       {
         name: 'Ideal',
@@ -182,8 +174,8 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
         smooth: true,
         symbol: 'none',
         lineStyle: {
-          color: '#ffffff',
-          width: 2,
+          color: 'rgba(255,255,255,0.3)',
+          width: 1,
         },
       },
       {
@@ -194,21 +186,8 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
         symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
-          color: '#5AD940',
+          color: '#ffffff',
           width: 2,
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(90, 217, 64, 0.4)' },
-              { offset: 1, color: 'rgba(90, 217, 64, 0.05)' },
-            ],
-          },
         },
         itemStyle: {
           color: (params: any) => {
@@ -220,11 +199,28 @@ const WeightChart = memo(({ data }: { data: WeightChartData[] }) => {
   };
 
   return (
-    <ReactECharts
-      option={option}
-      style={{ height: CHART_HEIGHT }}
-      opts={{ renderer: 'svg' }}
-    />
+    <div className="flex">
+      {/* Static Y-Axis */}
+      <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 40, height: CHART_HEIGHT - 30, marginTop: 10 }}>
+        {Array.from({ length: Math.floor((domainMax - domainMin) / 5) + 1 }, (_, i) => domainMax - i * 5).map((tick, i) => (
+          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{tick}kg</span>
+        ))}
+      </div>
+      {/* Scrollable Chart */}
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
+        <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
+          <ReactECharts
+            option={option}
+            style={{ height: CHART_HEIGHT, width: chartWidth }}
+            opts={{ renderer: 'svg' }}
+          />
+        </div>
+      </div>
+    </div>
   );
 });
 
@@ -236,7 +232,15 @@ interface PhChartData {
   value: number;
 }
 
-const PhChart = memo(({ data }: { data: PhChartData[] }) => {
+const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+    }
+  }, [data.length]);
+
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
@@ -249,14 +253,26 @@ const PhChart = memo(({ data }: { data: PhChartData[] }) => {
   const maxValue = Math.max(...data.map(d => d.value));
   const domainMin = Math.floor((minValue - 0.5) * 10) / 10;
   const domainMax = Math.ceil((maxValue + 0.5) * 10) / 10;
+  
+  // Calculate width based on data points
+  const chartWidth = Math.max(width - 45, data.length * 80);
+  
+  // Generate Y ticks
+  const yTicks: number[] = [];
+  const step = (domainMax - domainMin) / 4;
+  for (let i = 0; i <= 4; i++) {
+    yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
+  }
 
   const option = {
     backgroundColor: 'transparent',
+    animation: false,
+    textStyle: { fontFamily: FONT_FAMILY },
     grid: {
-      left: 35,
+      left: 0,
       right: 10,
       top: 10,
-      bottom: 55,
+      bottom: 45,
     },
     xAxis: {
       type: 'category',
@@ -266,6 +282,7 @@ const PhChart = memo(({ data }: { data: PhChartData[] }) => {
       axisLabel: {
         color: 'rgba(255,255,255,0.4)',
         fontSize: 9,
+        fontFamily: FONT_FAMILY,
         interval: 0,
       },
     },
@@ -273,31 +290,8 @@ const PhChart = memo(({ data }: { data: PhChartData[] }) => {
       type: 'value',
       min: domainMin,
       max: domainMax,
-      axisLine: { show: false },
-      axisTick: { show: false },
-      axisLabel: {
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: 9,
-        formatter: (v: number) => v.toFixed(1),
-      },
-      splitLine: {
-        lineStyle: {
-          color: 'rgba(255,255,255,0.1)',
-          type: 'dashed',
-        },
-      },
+      show: false,
     },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: 0,
-        start: Math.max(0, 100 - (6 / data.length) * 100),
-        end: 100,
-        zoomOnMouseWheel: false,
-        moveOnMouseMove: true,
-        moveOnMouseWheel: true,
-      },
-    ],
     series: [
       {
         name: 'pH-Wert',
@@ -307,21 +301,8 @@ const PhChart = memo(({ data }: { data: PhChartData[] }) => {
         symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
-          color: '#FFD700',
+          color: '#ffffff',
           width: 2,
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(255, 215, 0, 0.4)' },
-              { offset: 1, color: 'rgba(255, 215, 0, 0.05)' },
-            ],
-          },
         },
         itemStyle: {
           color: (params: any) => {
@@ -347,11 +328,28 @@ const PhChart = memo(({ data }: { data: PhChartData[] }) => {
   };
 
   return (
-    <ReactECharts
-      option={option}
-      style={{ height: CHART_HEIGHT }}
-      opts={{ renderer: 'svg' }}
-    />
+    <div className="flex">
+      {/* Static Y-Axis */}
+      <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 35, height: CHART_HEIGHT - 45, marginTop: 10 }}>
+        {[...yTicks].reverse().map((tick, i) => (
+          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{tick.toFixed(1)}</span>
+        ))}
+      </div>
+      {/* Scrollable Chart */}
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
+        <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
+          <ReactECharts
+            option={option}
+            style={{ height: CHART_HEIGHT, width: chartWidth }}
+            opts={{ renderer: 'svg' }}
+          />
+        </div>
+      </div>
+    </div>
   );
 });
 
@@ -747,11 +745,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         
         <div className="mb-6">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
-          <WeightChart data={weightData} />
+          <WeightChart data={weightData} width={width} />
         </div>
         <div className="mb-6 pb-10">
           <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
-          <PhChart data={phData} />
+          <PhChart data={phData} width={width} />
         </div>
       </div>
     </div>
