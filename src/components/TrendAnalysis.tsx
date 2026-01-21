@@ -535,7 +535,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           className="flex-shrink-0 flex flex-col justify-between text-right"
           style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
         >
-          {[...yTicks].reverse().map((tick, i) => (
+          {[...yTicks].filter(t => t !== 5).reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
           ))}
         </div>
@@ -630,10 +630,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           </ComposedChart>
         </div>
       </div>
-      {/* X-Axis Labels - aligned with chart area */}
-      <div className="flex">
-        <div style={{ width: Y_AXIS_WIDTH }} />
-        <div className="flex-1 flex justify-between text-[9px] text-white/40 pr-0" style={{ paddingTop: 4 }}>
+      {/* X-Axis Labels - aligned with Y=5kg level */}
+      <div className="flex" style={{ marginTop: -12 }}>
+        <div style={{ width: Y_AXIS_WIDTH }} className="text-right pr-1">
+          <span className="text-[9px] text-white/40 leading-none">5kg</span>
+        </div>
+        <div className="flex-1 flex justify-between text-[9px] text-white/40 pr-0">
           {[2, 6, 10, 14, 18].map((month, i) => {
             const isToday = Math.abs(month - currentAgeInMonths) < 0.5;
             return (
