@@ -128,12 +128,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   return (
     <div className="relative flex">
-      {/* Sticky Y-Axis */}
+      {/* Sticky Y-Axis with X-Axis space at bottom */}
       <div 
-        className="flex-shrink-0 z-10"
+        className="flex-shrink-0 z-10 flex flex-col"
         style={{ width: yAxisWidth }}
       >
-        <svg width={yAxisWidth} height={totalHeight}>
+        <svg width={yAxisWidth} height={CHART_HEIGHT}>
           {yTicks.map((tick, i) => {
             const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
             return (
@@ -151,6 +151,8 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             );
           })}
         </svg>
+        {/* Spacer for X-axis alignment */}
+        <div style={{ height: X_AXIS_HEIGHT }} />
       </div>
       {/* Scrollable Chart */}
       <div 
@@ -314,12 +316,12 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
 
   return (
     <div className="relative flex">
-      {/* Sticky Y-Axis */}
+      {/* Sticky Y-Axis with X-Axis space at bottom */}
       <div 
-        className="flex-shrink-0 z-10"
+        className="flex-shrink-0 z-10 flex flex-col"
         style={{ width: yAxisWidth }}
       >
-        <svg width={yAxisWidth} height={totalHeight}>
+        <svg width={yAxisWidth} height={CHART_HEIGHT}>
           {yTicks.map((tick) => {
             const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
             return (
@@ -337,6 +339,8 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             );
           })}
         </svg>
+        {/* Spacer for X-axis alignment */}
+        <div style={{ height: PH_X_AXIS_HEIGHT }} />
       </div>
       {/* Scrollable Chart */}
       <div 
@@ -581,12 +585,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   return (
     <div>
       <div className="relative flex">
-        {/* Sticky Y-Axis */}
+        {/* Sticky Y-Axis with X-Axis space at bottom */}
         <div 
-          className="flex-shrink-0 z-10"
+          className="flex-shrink-0 z-10 flex flex-col"
           style={{ width: yAxisWidth }}
         >
-          <svg width={yAxisWidth} height={totalHeight}>
+          <svg width={yAxisWidth} height={CHART_HEIGHT}>
             {yTicks.map((tick) => {
               const y = 8 + (CHART_HEIGHT - 8) * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
@@ -604,6 +608,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               );
             })}
           </svg>
+          {/* Spacer for X-axis alignment */}
+          <div style={{ height: X_AXIS_HEIGHT }} />
         </div>
         {/* Chart */}
         <div className="flex-1">
