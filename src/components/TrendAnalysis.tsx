@@ -75,7 +75,8 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const Y_AXIS_WIDTH = 40;
+const Y_AXIS_WIDTH = 26;
+const Y_AXIS_MARGIN_RIGHT = 4;
 const CHART_HEIGHT = 150;
 const X_AXIS_HEIGHT = 25;
 const PH_X_AXIS_HEIGHT = 35;
@@ -123,7 +124,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       {/* Sticky Y-Axis */}
       <div 
         className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -286,7 +287,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
       {/* Sticky Y-Axis */}
       <div 
         className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
       >
         {[...yTicks].reverse().map((tick, i) => (
           <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
@@ -301,7 +302,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           overscrollBehaviorX: 'contain'
         }}
       >
-        <AreaChart 
+        <ComposedChart 
           width={scrollableWidth} 
           height={totalHeight} 
           data={data} 
@@ -330,6 +331,17 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             hide
             domain={[domainMin, domainMax]}
             ticks={yTicks}
+          />
+          {/* pH reference lines at 6.5 and 7.2 - same style as ±5% lines in growth curve */}
+          <ReferenceLine 
+            y={6.5} 
+            stroke="rgba(255,255,255,0.3)" 
+            strokeWidth={1}
+          />
+          <ReferenceLine 
+            y={7.2} 
+            stroke="rgba(255,255,255,0.3)" 
+            strokeWidth={1}
           />
           {avgValue && (
             <ReferenceLine 
@@ -362,7 +374,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             }}
             isAnimationActive={false}
           />
-        </AreaChart>
+        </ComposedChart>
       </div>
     </div>
   );
@@ -517,7 +529,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         {/* Sticky Y-Axis */}
         <div 
           className="flex-shrink-0 flex flex-col justify-between text-right"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
+          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, marginRight: Y_AXIS_MARGIN_RIGHT }}
         >
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
