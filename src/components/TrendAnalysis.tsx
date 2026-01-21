@@ -529,123 +529,103 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
 
   return (
     <div>
-      <div className="flex">
-        {/* Sticky Y-Axis */}
-        <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
-        >
-          {[...yTicks].filter(t => t !== 5).reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
-          ))}
-        </div>
-        {/* Chart Area */}
-        <div className="flex-1 overflow-hidden">
-          <ComposedChart
-            width={width - Y_AXIS_WIDTH}
-            height={CHART_HEIGHT}
-            data={growthCurveData}
-            margin={{ top: 8, right: 0, bottom: 0, left: 0 }}
+      <ComposedChart
+        width={width}
+        height={totalHeight}
+        data={growthCurveData}
+        margin={{ top: 8, right: 15, bottom: X_AXIS_HEIGHT, left: 5 }}
+      >
+        <CartesianGrid 
+          horizontal={true} 
+          vertical={false} 
+          stroke={GRID_STROKE}
+          strokeDasharray={GRID_DASH}
+        />
+        <XAxis
+          dataKey="month"
+          type="number"
+          domain={[2, 18]}
+          ticks={[2, 6, 10, 14, 18]}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => `${value}M`}
+          tickMargin={8}
+        />
+        <YAxis
+          domain={[5, 35]}
+          ticks={yTicks}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => `${value}kg`}
+          width={35}
+        />
+        {/* Current age vertical line */}
+        {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
+          <ReferenceLine 
+            x={Math.round(currentAgeInMonths * 10) / 10}
+            stroke="#5AD940"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+            label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9 }}
+          />
+        )}
+        {/* Upper bound line (+5%) */}
+        <Line
+          type="monotone"
+          dataKey="upperBound"
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth={1}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {/* Lower bound line (-5%) */}
+        <Line
+          type="monotone"
+          dataKey="lowerBound"
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth={1}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {/* Main growth curve */}
+        <Line
+          type="monotone"
+          dataKey="expected"
+          stroke="#ffffff"
+          strokeWidth={2}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {/* Weight measurement points */}
+        {normalPoints.length > 0 && (
+          <Scatter
+            name="normal"
+            data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
+            dataKey="weight"
+            fill="#5AD940"
+            isAnimationActive={false}
           >
-            <CartesianGrid 
-              horizontal={true} 
-              vertical={false} 
-              stroke={GRID_STROKE}
-              strokeDasharray={GRID_DASH}
-            />
-            <XAxis
-              dataKey="month"
-              type="number"
-              domain={[2, 18]}
-              hide
-            />
-            <YAxis
-              hide
-              domain={[5, 35]}
-              ticks={yTicks}
-            />
-            {/* Current age vertical line */}
-            {currentAgeInMonths >= 2 && currentAgeInMonths <= 18 && (
-              <ReferenceLine 
-                x={Math.round(currentAgeInMonths * 10) / 10}
-                stroke="#5AD940"
-                strokeWidth={1}
-                strokeDasharray="3 3"
-              />
-            )}
-            {/* Upper bound line (+5%) */}
-            <Line
-              type="monotone"
-              dataKey="upperBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Lower bound line (-5%) */}
-            <Line
-              type="monotone"
-              dataKey="lowerBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Main growth curve */}
-            <Line
-              type="monotone"
-              dataKey="expected"
-              stroke="#ffffff"
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Weight measurement points */}
-            {normalPoints.length > 0 && (
-              <Scatter
-                name="normal"
-                data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
-                dataKey="weight"
-                fill="#5AD940"
-                isAnimationActive={false}
-              >
-                {normalPoints.map((_, index) => (
-                  <circle key={`normal-${index}`} r={4} fill="#5AD940" fillOpacity={1} />
-                ))}
-              </Scatter>
-            )}
-            {outOfBoundsPoints.length > 0 && (
-              <Scatter
-                name="outOfBounds"
-                data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
-                dataKey="weight"
-                fill="#FF4444"
-                isAnimationActive={false}
-              >
-                {outOfBoundsPoints.map((_, index) => (
-                  <circle key={`oob-${index}`} r={4} fill="#FF4444" fillOpacity={1} />
-                ))}
-              </Scatter>
-            )}
-          </ComposedChart>
-        </div>
-      </div>
-      {/* X-Axis Labels - aligned with Y=5kg level */}
-      <div className="flex" style={{ marginTop: -12 }}>
-        <div style={{ width: Y_AXIS_WIDTH }} className="text-right pr-1">
-          <span className="text-[9px] text-white/40 leading-none">5kg</span>
-        </div>
-        <div className="flex-1 flex justify-between text-[9px] text-white/40 pr-0">
-          {[2, 6, 10, 14, 18].map((month, i) => {
-            const isToday = Math.abs(month - currentAgeInMonths) < 0.5;
-            return (
-              <span key={i} className={isToday ? 'text-[#5AD940]' : ''}>
-                {isToday ? 'Heute' : `${month}M`}
-              </span>
-            );
-          })}
-        </div>
-      </div>
+            {normalPoints.map((_, index) => (
+              <circle key={`normal-${index}`} r={4} fill="#5AD940" fillOpacity={1} />
+            ))}
+          </Scatter>
+        )}
+        {outOfBoundsPoints.length > 0 && (
+          <Scatter
+            name="outOfBounds"
+            data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
+            dataKey="weight"
+            fill="#FF4444"
+            isAnimationActive={false}
+          >
+            {outOfBoundsPoints.map((_, index) => (
+              <circle key={`oob-${index}`} r={4} fill="#FF4444" fillOpacity={1} />
+            ))}
+          </Scatter>
+        )}
+      </ComposedChart>
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
