@@ -446,7 +446,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
             height={180}
-            margin={{ top: 10, right: 10, bottom: 20, left: 0 }}
+            data={growthCurveData}
+            margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -464,6 +465,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
               tickMargin={4}
+              allowDataOverflow={false}
+              padding={{ left: 5, right: 5 }}
             />
             <YAxis
               hide
