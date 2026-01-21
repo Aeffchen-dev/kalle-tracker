@@ -164,7 +164,9 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       type: 'value',
       min: domainMin,
       max: domainMax,
-      show: false,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { show: false },
       splitLine: {
         show: true,
         lineStyle: {
@@ -288,7 +290,9 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       type: 'value',
       min: domainMin,
       max: domainMax,
-      show: false,
+      axisLine: { show: false },
+      axisTick: { show: false },
+      axisLabel: { show: false },
       splitLine: {
         show: true,
         lineStyle: {
