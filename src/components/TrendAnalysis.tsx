@@ -140,7 +140,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             width={chartWidth} 
             height={180} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 30, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 30, left: 5 }}
           >
             <defs>
               <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -157,7 +157,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             <XAxis 
               dataKey="date" 
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
-              axisLine={false}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
               interval={0}
               dy={8}
@@ -166,6 +166,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             <YAxis 
               hide
               domain={[domainMin, domainMax]}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
             />
             {avgValue && (
               <ReferenceLine 
@@ -277,7 +278,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             width={chartWidth} 
             height={200} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 30, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 30, left: 5 }}
           >
             <defs>
               <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -294,13 +295,14 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             <XAxis 
               dataKey="dateLine1"
               tick={<CustomXAxisTick />}
-              axisLine={false}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
               interval={0}
             />
             <YAxis 
               hide
               domain={[domainMin, domainMax]}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
             />
             {avgValue && (
               <ReferenceLine 
@@ -492,7 +494,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             width={width - Y_AXIS_WIDTH}
             height={chartHeight}
             data={growthCurveData}
-            margin={{ top: topMargin, right: 10, bottom: bottomMargin, left: 0 }}
+            margin={{ top: topMargin, right: 10, bottom: bottomMargin, left: 5 }}
           >
             <CartesianGrid 
               horizontal={true} 
