@@ -637,13 +637,13 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="month"
               type="number"
               domain={[2, 18]}
-              ticks={[6, 10, 14, 18]}
+              ticks={[2, 6, 10, 14, 18]}
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
               tickMargin={8}
-              padding={{ left: 10 }}
+              padding={{ left: 20 }}
             />
             <YAxis
               domain={[domainMin, domainMax]}
