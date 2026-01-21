@@ -381,15 +381,13 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           <ReferenceLine 
             y={6.5} 
             stroke="#ffffff" 
-            strokeWidth={1}
-            strokeDasharray="4 4"
+            strokeWidth={2}
             label={{ value: '6.5', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
           />
           <ReferenceLine 
             y={7.2} 
             stroke="#ffffff" 
-            strokeWidth={1}
-            strokeDasharray="4 4"
+            strokeWidth={2}
             label={{ value: '7.2', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
           />
           {avgValue && (
