@@ -119,30 +119,19 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
 
   return (
-    <div className="flex">
-      {/* Sticky Y-Axis */}
-      <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
-      >
-        {[...yTicks].reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
-        ))}
-      </div>
-      {/* Scrollable Chart Area */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain'
-        }}
-      >
-        <ComposedChart 
-          width={scrollableWidth} 
-          height={totalHeight} 
-          data={data} 
-          margin={{ top: 8, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
+    <div 
+      ref={scrollRef}
+      className="overflow-x-auto overflow-y-hidden scrollbar-hide"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain'
+      }}
+    >
+      <ComposedChart 
+        width={scrollableWidth} 
+        height={totalHeight} 
+        data={data} 
+        margin={{ top: 8, right: 20, bottom: X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -165,9 +154,14 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             tickMargin={8}
           />
           <YAxis 
-            hide
             domain={[domainMin, domainMax]}
             ticks={yTicks}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(value) => `${value}kg`}
+            width={32}
+            tickMargin={4}
           />
           {/* Growth curve reference line - same style as Wachstumskurve */}
           <Line
@@ -209,7 +203,6 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             }}
           />
         </ComposedChart>
-      </div>
     </div>
   );
 });
@@ -282,30 +275,19 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
   const totalHeight = CHART_HEIGHT + PH_X_AXIS_HEIGHT;
 
   return (
-    <div className="flex">
-      {/* Sticky Y-Axis */}
-      <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8, paddingLeft: 0, paddingRight: 4 }}
-      >
-        {[...yTicks].reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
-        ))}
-      </div>
-      {/* Scrollable Chart Area */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ 
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain'
-        }}
-      >
-        <AreaChart 
-          width={scrollableWidth} 
-          height={totalHeight} 
-          data={data} 
-          margin={{ top: 8, right: 0, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
+    <div 
+      ref={scrollRef}
+      className="overflow-x-auto overflow-y-hidden scrollbar-hide"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain'
+      }}
+    >
+      <AreaChart 
+        width={scrollableWidth} 
+        height={totalHeight} 
+        data={data} 
+        margin={{ top: 8, right: 20, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -327,9 +309,14 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             interval={0}
           />
           <YAxis 
-            hide
             domain={[domainMin, domainMax]}
             ticks={yTicks}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={(value) => value.toFixed(1)}
+            width={32}
+            tickMargin={4}
           />
           {/* pH boundary lines at 6.5 and 7.2 - styled like target line */}
           <ReferenceLine 
@@ -378,7 +365,6 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             isAnimationActive={false}
           />
         </AreaChart>
-      </div>
     </div>
   );
 });
