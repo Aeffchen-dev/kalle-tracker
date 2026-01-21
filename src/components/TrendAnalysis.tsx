@@ -2,7 +2,7 @@ import { useMemo, memo, useRef, useState, useEffect } from 'react';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, CartesianGrid } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ZAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, CartesianGrid } from 'recharts';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface TrendAnalysisProps {
@@ -506,10 +506,10 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             <YAxis
               hide
               domain={[5, 35]}
+              allowDataOverflow={false}
             />
             {/* Upper bound line (+5%) */}
             <Line
-              data={growthCurveData}
               type="monotone"
               dataKey="upperBound"
               stroke="rgba(255,255,255,0.3)"
@@ -519,7 +519,6 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             />
             {/* Lower bound line (-5%) */}
             <Line
-              data={growthCurveData}
               type="monotone"
               dataKey="lowerBound"
               stroke="rgba(255,255,255,0.3)"
@@ -529,7 +528,6 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             />
             {/* Main growth curve */}
             <Line
-              data={growthCurveData}
               type="monotone"
               dataKey="expected"
               stroke="#ffffff"
@@ -537,22 +535,31 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dot={false}
               isAnimationActive={false}
             />
+            <ZAxis dataKey="weight" range={[16, 16]} />
             {/* Normal weight points (green) */}
-            <Scatter
-              data={normalPoints}
-              dataKey="weight"
-              fill="#5AD940"
-              isAnimationActive={false}
-              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />}
-            />
+            {normalPoints.length > 0 && (
+              <Scatter
+                name="normal"
+                data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                fill="#5AD940"
+                isAnimationActive={false}
+                shape={(props: any) => (
+                  <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />
+                )}
+              />
+            )}
             {/* Out of bounds weight points (red) */}
-            <Scatter
-              data={outOfBoundsPoints}
-              dataKey="weight"
-              fill="#FF4444"
-              isAnimationActive={false}
-              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />}
-            />
+            {outOfBoundsPoints.length > 0 && (
+              <Scatter
+                name="outOfBounds"
+                data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                fill="#FF4444"
+                isAnimationActive={false}
+                shape={(props: any) => (
+                  <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />
+                )}
+              />
+            )}
           </ComposedChart>
         </div>
       </div>
