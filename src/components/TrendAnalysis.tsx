@@ -118,13 +118,20 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     yTicks.push(i);
   }
 
+  const chartAreaHeight = 140;
+  const xAxisHeight = 30;
+  const totalHeight = chartAreaHeight + xAxisHeight;
+
   return (
     <div>
-      <div className="flex h-[180px]">
-        {/* Y-Axis - fixed */}
-        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+      <div className="flex">
+        {/* Y-Axis - aligned with chart area only */}
+        <div 
+          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
+        >
           {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
+            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
           ))}
         </div>
         {/* Scrollable Chart */}
@@ -138,9 +145,9 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
         >
           <AreaChart 
             width={chartWidth} 
-            height={180} 
+            height={totalHeight} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 30, left: 5 }}
+            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
           >
             <defs>
               <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -161,12 +168,10 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               tickLine={false}
               interval={0}
               dy={8}
-              tickMargin={4}
             />
             <YAxis 
               hide
               domain={[domainMin, domainMax]}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
             />
             {avgValue && (
               <ReferenceLine 
@@ -256,13 +261,20 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
     );
   };
 
+  const chartAreaHeight = 140;
+  const xAxisHeight = 45;
+  const totalHeight = chartAreaHeight + xAxisHeight;
+
   return (
     <div>
-      <div className="flex h-[200px]">
-        {/* Y-Axis - fixed */}
-        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[45px]" style={{ width: Y_AXIS_WIDTH }}>
+      <div className="flex">
+        {/* Y-Axis - aligned with chart area only */}
+        <div 
+          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
+        >
           {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40">{tick.toFixed(1)}</span>
+            <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
           ))}
         </div>
         {/* Scrollable Chart */}
@@ -276,9 +288,9 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
         >
           <AreaChart 
             width={chartWidth} 
-            height={200} 
+            height={totalHeight} 
             data={data} 
-            margin={{ top: 10, right: 10, bottom: 30, left: 5 }}
+            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
           >
             <defs>
               <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -302,7 +314,6 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             <YAxis 
               hide
               domain={[domainMin, domainMax]}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
             />
             {avgValue && (
               <ReferenceLine 
@@ -468,21 +479,17 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
 
   // Y-axis ticks for 5-35 range to show full growth curve from 7kg to 34kg
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
-  const chartHeight = 220;
-  const topMargin = 5;
-  const bottomMargin = 30;
+  const chartAreaHeight = 180;
+  const xAxisHeight = 30;
+  const totalHeight = chartAreaHeight + xAxisHeight;
 
   return (
     <div>
-      <div className="flex" style={{ height: chartHeight }}>
-        {/* Y-Axis - fixed, aligned with chart area */}
+      <div className="flex">
+        {/* Y-Axis - aligned with chart area only */}
         <div 
           className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
-          style={{ 
-            width: Y_AXIS_WIDTH,
-            paddingTop: topMargin,
-            paddingBottom: bottomMargin,
-          }}
+          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
@@ -492,9 +499,9 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         <div className="flex-1 overflow-hidden">
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
-            height={chartHeight}
+            height={totalHeight}
             data={growthCurveData}
-            margin={{ top: topMargin, right: 10, bottom: bottomMargin, left: 5 }}
+            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -508,10 +515,10 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               domain={[2, 18]}
               ticks={[2, 6, 10, 14, 18]}
               tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-              axisLine={false}
+              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
-              tickMargin={8}
+              dy={8}
               allowDataOverflow={false}
             />
             <YAxis
