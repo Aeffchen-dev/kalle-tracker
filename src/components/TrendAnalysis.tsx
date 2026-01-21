@@ -75,10 +75,10 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const Y_AXIS_WIDTH = 45;
-const CHART_HEIGHT = 160;
+const Y_AXIS_WIDTH = 40;
+const CHART_HEIGHT = 150;
 const X_AXIS_HEIGHT = 25;
-const PH_X_AXIS_HEIGHT = 40;
+const PH_X_AXIS_HEIGHT = 35;
 const GRID_STROKE = "rgba(255,255,255,0.1)";
 const GRID_DASH = "3 3";
 
@@ -122,7 +122,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right pr-1"
+        className="flex-shrink-0 flex flex-col justify-between text-right"
         style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
@@ -169,12 +169,12 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             domain={[domainMin, domainMax]}
             ticks={yTicks}
           />
-          {/* Growth curve reference line */}
+          {/* Growth curve reference line - same style as Wachstumskurve */}
           <Line
             type="monotone"
             dataKey="expectedWeight"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth={1.5}
+            stroke="#ffffff"
+            strokeWidth={2}
             dot={false}
             isAnimationActive={false}
           />
@@ -285,7 +285,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
     <div className="flex">
       {/* Sticky Y-Axis */}
       <div 
-        className="flex-shrink-0 flex flex-col justify-between text-right pr-1"
+        className="flex-shrink-0 flex flex-col justify-between text-right"
         style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
       >
         {[...yTicks].reverse().map((tick, i) => (
@@ -501,7 +501,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       <div className="flex">
         {/* Sticky Y-Axis */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right pr-1"
+          className="flex-shrink-0 flex flex-col justify-between text-right"
           style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, paddingTop: 8, paddingBottom: 8 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
@@ -565,30 +565,32 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dot={false}
               isAnimationActive={false}
             />
-            <ZAxis dataKey="weight" range={[16, 16]} />
-            {/* Normal weight points (green) */}
+            {/* Weight measurement points */}
             {normalPoints.length > 0 && (
               <Scatter
                 name="normal"
                 data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                dataKey="weight"
                 fill="#5AD940"
                 isAnimationActive={false}
-                shape={(props: any) => (
-                  <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />
-                )}
-              />
+              >
+                {normalPoints.map((_, index) => (
+                  <circle key={`normal-${index}`} r={4} fill="#5AD940" fillOpacity={1} />
+                ))}
+              </Scatter>
             )}
-            {/* Out of bounds weight points (red) */}
             {outOfBoundsPoints.length > 0 && (
               <Scatter
                 name="outOfBounds"
                 data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
+                dataKey="weight"
                 fill="#FF4444"
                 isAnimationActive={false}
-                shape={(props: any) => (
-                  <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />
-                )}
-              />
+              >
+                {outOfBoundsPoints.map((_, index) => (
+                  <circle key={`oob-${index}`} r={4} fill="#FF4444" fillOpacity={1} />
+                ))}
+              </Scatter>
             )}
           </ComposedChart>
         </div>
