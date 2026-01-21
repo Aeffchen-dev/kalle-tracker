@@ -3,6 +3,7 @@ import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { LineChart, Line, XAxis, YAxis, ReferenceLine, Area, AreaChart, ComposedChart, Scatter, CartesianGrid } from 'recharts';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface TrendAnalysisProps {
   events: Event[];
@@ -36,22 +37,29 @@ const StatCard = memo(({
   label, 
   value, 
   unit, 
-  subtext
+  subtext,
+  trend
 }: { 
   emoji: string; 
   label: string; 
   value: string | number | null; 
   unit: string;
   subtext?: string;
+  trend?: 'up' | 'down' | 'neutral';
 }) => (
   <div className="bg-white/5 rounded-xl p-3 border border-white/10">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-lg">{emoji}</span>
       <span className="text-[11px] text-white/50 uppercase tracking-wide">{label}</span>
     </div>
-    <div className="flex items-baseline gap-1">
-      <span className="text-2xl font-semibold text-white">{value ?? '-'}</span>
-      <span className="text-[12px] text-white/40">{unit}</span>
+    <div className="flex items-center gap-2">
+      <div className="flex items-baseline gap-1">
+        <span className="text-2xl font-semibold text-white">{value ?? '-'}</span>
+        <span className="text-[12px] text-white/40">{unit}</span>
+      </div>
+      {trend === 'up' && <TrendingUp size={18} className="text-[#5AD940]" />}
+      {trend === 'down' && <TrendingDown size={18} className="text-[#FF4444]" />}
+      {trend === 'neutral' && <Minus size={18} className="text-white/40" />}
     </div>
     {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
   </div>
@@ -560,7 +568,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
 
   const weightStats = useMemo(() => {
-    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, idealWeight: null };
+    if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, idealWeight: null, trend: null as 'up' | 'down' | 'neutral' | null };
     const allValues = weightData.map(d => d.value);
     
     // Filter weight events from last 7 days for average
@@ -579,10 +587,24 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())[0];
     
     let idealWeight: number | null = null;
+    let trend: 'up' | 'down' | 'neutral' | null = null;
+    
     if (lastWeightEvent) {
       const eventDate = new Date(lastWeightEvent.time);
       const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
       idealWeight = Math.round(getExpectedWeight(ageInMonths) * 10) / 10;
+      
+      const latestWeight = Number(lastWeightEvent.weight_value);
+      const diff = latestWeight - idealWeight;
+      const tolerance = idealWeight * 0.02; // 2% tolerance for neutral
+      
+      if (Math.abs(diff) <= tolerance) {
+        trend = 'neutral';
+      } else if (diff > 0) {
+        trend = 'up';
+      } else {
+        trend = 'down';
+      }
     }
     
     return {
@@ -591,6 +613,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
       idealWeight,
+      trend,
     };
   }, [weightData, events, sevenDaysAgo]);
 
@@ -700,6 +723,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           value={weightStats.latest} 
           unit="kg"
           subtext={weightStats.idealWeight ? `Ideal: ${weightStats.idealWeight} kg` : undefined}
+          trend={weightStats.trend ?? undefined}
         />
         <StatCard 
           emoji="🧪" 
