@@ -178,7 +178,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         name: 'Ideal',
         type: 'line',
         data: data.map(d => d.expectedWeight),
-        smooth: false,
+        smooth: true,
         symbol: 'none',
         lineStyle: {
           color: 'rgba(255,255,255,0.3)',
@@ -190,7 +190,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         name: 'Gewicht',
         type: 'line',
         data: data.map(d => d.value),
-        smooth: false,
+        smooth: true,
         symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
@@ -314,7 +314,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         name: 'pH-Wert',
         type: 'line',
         data: data.map(d => d.value),
-        smooth: false,
+        smooth: true,
         symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
