@@ -442,6 +442,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         formatter: '{value}kg',
       },
       splitLine: {
+        show: true,
         lineStyle: {
           color: 'rgba(255,255,255,0.1)',
           type: 'dashed',
