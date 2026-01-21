@@ -181,8 +181,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         smooth: true,
         symbol: 'none',
         lineStyle: {
-          color: 'rgba(255,255,255,0.3)',
-          width: 1,
+          color: '#ffffff',
+          width: 2,
         },
         z: 1,
       },
