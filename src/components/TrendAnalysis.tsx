@@ -331,18 +331,20 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
             domain={[domainMin, domainMax]}
             ticks={yTicks}
           />
-          {/* pH boundary lines at 6.5 and 7.2 */}
+          {/* pH boundary lines at 6.5 and 7.2 - styled like target line */}
           <ReferenceLine 
             y={6.5} 
-            stroke="rgba(255,255,255,0.3)" 
+            stroke="#ffffff" 
+            strokeWidth={1}
             strokeDasharray="4 4"
-            label={{ value: '6.5', position: 'right', fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            label={{ value: '6.5', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
           />
           <ReferenceLine 
             y={7.2} 
-            stroke="rgba(255,255,255,0.3)" 
+            stroke="#ffffff" 
+            strokeWidth={1}
             strokeDasharray="4 4"
-            label={{ value: '7.2', position: 'right', fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            label={{ value: '7.2', position: 'right', fill: 'rgba(255,255,255,0.6)', fontSize: 9 }}
           />
           {avgValue && (
             <ReferenceLine 
@@ -533,7 +535,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
         width={width}
         height={totalHeight}
         data={growthCurveData}
-        margin={{ top: 8, right: 15, bottom: X_AXIS_HEIGHT, left: 0 }}
+        margin={{ top: 8, right: 15, bottom: X_AXIS_HEIGHT, left: -5 }}
       >
         <CartesianGrid 
           horizontal={true} 
@@ -568,7 +570,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             stroke="#5AD940"
             strokeWidth={1}
             strokeDasharray="3 3"
-            label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9 }}
+            label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9, dy: 4 }}
           />
         )}
         {/* Upper bound line (+5%) */}
