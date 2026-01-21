@@ -174,7 +174,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               strokeWidth={2}
               fill="url(#weightGradient)"
               isAnimationActive={false}
-              dot={{ fill: color, strokeWidth: 0, r: 3 }}
+              dot={{ fill: color, strokeWidth: 0, r: 4 }}
             />
           </AreaChart>
         </div>
@@ -279,7 +279,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avg
               stroke={color} 
               strokeWidth={2}
               fill="url(#phGradient)"
-              dot={{ fill: color, strokeWidth: 0, r: 3 }}
+              dot={{ fill: color, strokeWidth: 0, r: 4 }}
               isAnimationActive={false}
             />
           </AreaChart>
@@ -430,6 +430,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               axisLine={false}
               tickLine={false}
               dy={8}
+              tickMargin={4}
               tickFormatter={(value) => `${value}M`}
             />
             <YAxis
@@ -472,6 +473,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="weight"
               fill="#5AD940"
               isAnimationActive={false}
+              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" />}
             />
             {/* Out of bounds weight points (red) */}
             <Scatter
@@ -479,6 +481,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               dataKey="weight"
               fill="#FF4444"
               isAnimationActive={false}
+              shape={(props: any) => <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" />}
             />
           </ComposedChart>
         </div>
