@@ -82,15 +82,8 @@ const PH_MIN_POINT_WIDTH = 80;
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   
-  // Filter to show only last 6 months of data initially visible, but allow scrolling to see all
-  const sixMonthsAgo = useMemo(() => {
-    const now = new Date();
-    now.setMonth(now.getMonth() - WEIGHT_MONTHS_IN_VIEW);
-    return now;
-  }, []);
-
-  // Calculate chart width based on data points (min 80px per point for readability)
-  const chartWidth = Math.max(width - Y_AXIS_WIDTH, data.length * 60);
+  // Calculate chart width based on data points (min 60px per point for readability)
+  const chartWidth = Math.max(width, data.length * 60);
   
   // Scroll to end (most recent data) on mount
   useEffect(() => {
@@ -114,108 +107,89 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
   const domainMin = Math.floor(minValue / 5) * 5;
   const domainMax = Math.ceil(maxValue / 5) * 5;
 
-  // Generate Y-axis ticks in steps of 5
-  const yTicks: number[] = [];
-  for (let i = domainMin; i <= domainMax; i += 5) {
-    yTicks.push(i);
-  }
-
-  const chartAreaHeight = 140;
-  const xAxisHeight = 30;
-  const totalHeight = chartAreaHeight + xAxisHeight;
-
   return (
-    <div>
-      <div className="flex">
-        {/* Y-Axis - aligned with chart area only */}
-        <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right" 
-          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
-        >
-          {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
-          ))}
-        </div>
-        {/* Scrollable Chart */}
-        <div 
-          ref={scrollRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehaviorX: 'contain'
-          }}
-        >
-          <ComposedChart 
-            width={chartWidth} 
-            height={totalHeight} 
-            data={data} 
-            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
-          >
-            <defs>
-              <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-                <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid 
-              horizontal={true} 
-              vertical={false} 
-              stroke="rgba(255,255,255,0.1)" 
-              strokeDasharray="3 3"
-            />
-            <XAxis 
-              dataKey="date" 
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-              tickLine={false}
-              interval={0}
-              dy={4}
-            />
-            <YAxis 
-              hide
-              domain={[domainMin, domainMax]}
-            />
-            {/* Growth curve reference line */}
-            <Line
-              type="monotone"
-              dataKey="expectedWeight"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth={1.5}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {avgValue && (
-              <ReferenceLine 
-                y={avgValue} 
-                stroke="rgba(255,255,255,0.25)" 
-                strokeDasharray="4 4" 
+    <div 
+      ref={scrollRef}
+      className="overflow-x-auto overflow-y-hidden scrollbar-hide"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain'
+      }}
+    >
+      <ComposedChart 
+        width={chartWidth} 
+        height={180} 
+        data={data} 
+        margin={{ top: 10, right: 15, bottom: 25, left: 5 }}
+      >
+        <defs>
+          <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid 
+          horizontal={true} 
+          vertical={false} 
+          stroke="rgba(255,255,255,0.1)" 
+          strokeDasharray="3 3"
+        />
+        <XAxis 
+          dataKey="date" 
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }} 
+          axisLine={false}
+          tickLine={false}
+          interval={0}
+          tickMargin={8}
+        />
+        <YAxis 
+          domain={[domainMin, domainMax]}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => `${value}kg`}
+          width={40}
+        />
+        {/* Growth curve reference line */}
+        <Line
+          type="monotone"
+          dataKey="expectedWeight"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth={1.5}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {avgValue && (
+          <ReferenceLine 
+            y={avgValue} 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeDasharray="4 4" 
+          />
+        )}
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={color}
+          strokeWidth={2}
+          fill="url(#weightGradient)"
+          isAnimationActive={false}
+          dot={(props: any) => {
+            const { cx, cy, payload } = props;
+            if (cx === undefined || cy === undefined) return null;
+            const dotColor = payload.isOutOfBounds ? '#FF4444' : '#5AD940';
+            return (
+              <circle
+                key={`dot-${cx}-${cy}`}
+                cx={cx}
+                cy={cy}
+                r={4}
+                fill={dotColor}
+                fillOpacity={1}
               />
-            )}
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke={color}
-              strokeWidth={2}
-              fill="url(#weightGradient)"
-              isAnimationActive={false}
-              dot={(props: any) => {
-                const { cx, cy, payload } = props;
-                const dotColor = payload.isOutOfBounds ? '#FF4444' : '#5AD940';
-                return (
-                  <circle
-                    key={`dot-${cx}-${cy}`}
-                    cx={cx}
-                    cy={cy}
-                    r={4}
-                    fill={dotColor}
-                    fillOpacity={1}
-                  />
-                );
-              }}
-            />
-          </ComposedChart>
-        </div>
-      </div>
+            );
+          }}
+        />
+      </ComposedChart>
     </div>
   );
 });
@@ -226,7 +200,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Calculate chart width based on data points
-  const chartWidth = Math.max(width - Y_AXIS_WIDTH, data.length * PH_MIN_POINT_WIDTH);
+  const chartWidth = Math.max(width, data.length * PH_MIN_POINT_WIDTH);
   
   // Scroll to end (most recent data) on mount
   useEffect(() => {
@@ -237,7 +211,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
 
   if (data.length < 2 || width === 0) {
     return (
-      <div className="h-[180px] flex items-center justify-center">
+      <div className="h-[200px] flex items-center justify-center">
         <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
       </div>
     );
@@ -245,15 +219,8 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
 
   const minValue = Math.min(...data.map(d => d.value));
   const maxValue = Math.max(...data.map(d => d.value));
-  const domainMin = minValue - 0.5;
-  const domainMax = maxValue + 0.5;
-
-  // Generate Y-axis ticks
-  const yTicks: number[] = [];
-  const step = (domainMax - domainMin) / 4;
-  for (let i = 0; i <= 4; i++) {
-    yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
-  }
+  const domainMin = Math.floor((minValue - 0.5) * 10) / 10;
+  const domainMax = Math.ceil((maxValue + 0.5) * 10) / 10;
 
   // Custom tick component for multiline X-axis labels
   const CustomXAxisTick = ({ x, y, payload }: any) => {
@@ -264,7 +231,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
         <text 
           x={0} 
           y={0} 
-          dy={4} 
+          dy={12} 
           textAnchor="middle" 
           fill="rgba(255,255,255,0.4)" 
           fontSize={9}
@@ -274,7 +241,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
         <text 
           x={0} 
           y={0} 
-          dy={16} 
+          dy={24} 
           textAnchor="middle" 
           fill="rgba(255,255,255,0.4)" 
           fontSize={9}
@@ -285,79 +252,65 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
     );
   };
 
-  const chartAreaHeight = 140;
-  const xAxisHeight = 45;
-  const totalHeight = chartAreaHeight + xAxisHeight;
-
   return (
-    <div>
-      <div className="flex">
-        {/* Y-Axis - aligned with chart area only */}
-        <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right" 
-          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
-        >
-          {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40 leading-none">{tick.toFixed(1)}</span>
-          ))}
-        </div>
-        {/* Scrollable Chart */}
-        <div 
-          ref={scrollRef}
-          className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-          style={{ 
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehaviorX: 'contain'
-          }}
-        >
-          <AreaChart 
-            width={chartWidth} 
-            height={totalHeight} 
-            data={data} 
-            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
-          >
-            <defs>
-              <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={color} stopOpacity={0.4} />
-                <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid 
-              horizontal={true} 
-              vertical={false} 
-              stroke="rgba(255,255,255,0.1)" 
-              strokeDasharray="3 3"
-            />
-            <XAxis 
-              dataKey="dateLine1"
-              tick={<CustomXAxisTick />}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-              tickLine={false}
-              interval={0}
-            />
-            <YAxis 
-              hide
-              domain={[domainMin, domainMax]}
-            />
-            {avgValue && (
-              <ReferenceLine 
-                y={avgValue} 
-                stroke="rgba(255,255,255,0.25)" 
-                strokeDasharray="4 4"
-              />
-            )}
-            <Area 
-              type="monotone" 
-              dataKey="value" 
-              stroke={color} 
-              strokeWidth={2}
-              fill="url(#phGradient)"
-              dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
-              isAnimationActive={false}
-            />
-          </AreaChart>
-        </div>
-      </div>
+    <div 
+      ref={scrollRef}
+      className="overflow-x-auto overflow-y-hidden scrollbar-hide"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain'
+      }}
+    >
+      <AreaChart 
+        width={chartWidth} 
+        height={200} 
+        data={data} 
+        margin={{ top: 10, right: 15, bottom: 40, left: 5 }}
+      >
+        <defs>
+          <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid 
+          horizontal={true} 
+          vertical={false} 
+          stroke="rgba(255,255,255,0.1)" 
+          strokeDasharray="3 3"
+        />
+        <XAxis 
+          dataKey="dateLine1"
+          tick={<CustomXAxisTick />}
+          axisLine={false}
+          tickLine={false}
+          interval={0}
+        />
+        <YAxis 
+          domain={[domainMin, domainMax]}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => value.toFixed(1)}
+          width={35}
+        />
+        {avgValue && (
+          <ReferenceLine 
+            y={avgValue} 
+            stroke="rgba(255,255,255,0.25)" 
+            strokeDasharray="4 4"
+          />
+        )}
+        <Area 
+          type="monotone" 
+          dataKey="value" 
+          stroke={color} 
+          strokeWidth={2}
+          fill="url(#phGradient)"
+          dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
+          isAnimationActive={false}
+        />
+      </AreaChart>
     </div>
   );
 });
@@ -474,7 +427,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       .map(e => {
         const eventDate = new Date(e.time);
         const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + 
-          (eventDate.getDate() / 30); // Add partial month
+          (eventDate.getDate() / 30);
         const weight = Number(e.weight_value);
         const isOutOfBounds = isWeightOutOfBounds(weight, eventDate);
         
@@ -491,7 +444,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
 
   if (width === 0) {
     return (
-      <div className="h-[180px] flex items-center justify-center">
+      <div className="h-[220px] flex items-center justify-center">
         <p className="text-[13px] text-white/30">Lade...</p>
       </div>
     );
@@ -501,111 +454,93 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
-  // Y-axis ticks for 5-35 range to show full growth curve from 7kg to 34kg
-  const yTicks = [5, 10, 15, 20, 25, 30, 35];
-  const chartAreaHeight = 180;
-  const xAxisHeight = 30;
-  const totalHeight = chartAreaHeight + xAxisHeight;
-
   return (
     <div>
-      <div className="flex">
-        {/* Y-Axis - aligned with chart area only */}
-        <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right" 
-          style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
-        >
-          {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
-          ))}
-        </div>
-        {/* Chart */}
-        <div className="flex-1 overflow-hidden">
-          <ComposedChart
-            width={width - Y_AXIS_WIDTH}
-            height={totalHeight}
-            data={growthCurveData}
-            margin={{ top: 5, right: 10, bottom: xAxisHeight, left: 0 }}
-          >
-            <CartesianGrid 
-              horizontal={true} 
-              vertical={false} 
-              stroke="rgba(255,255,255,0.1)" 
-              strokeDasharray="3 3"
-            />
-            <XAxis
-              dataKey="month"
-              type="number"
-              domain={[2, 18]}
-              ticks={[2, 6, 10, 14, 18]}
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-              tickLine={false}
-              tickFormatter={(value) => `${value}M`}
-              dy={4}
-              allowDataOverflow={false}
-            />
-            <YAxis
-              hide
-              domain={[5, 35]}
-              ticks={yTicks}
-              allowDataOverflow={false}
-            />
-            {/* Upper bound line (+5%) */}
-            <Line
-              type="monotone"
-              dataKey="upperBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Lower bound line (-5%) */}
-            <Line
-              type="monotone"
-              dataKey="lowerBound"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth={1}
-              dot={false}
-              isAnimationActive={false}
-            />
-            {/* Main growth curve */}
-            <Line
-              type="monotone"
-              dataKey="expected"
-              stroke="#ffffff"
-              strokeWidth={2}
-              dot={false}
-              isAnimationActive={false}
-            />
-            <ZAxis dataKey="weight" range={[16, 16]} />
-            {/* Normal weight points (green) */}
-            {normalPoints.length > 0 && (
-              <Scatter
-                name="normal"
-                data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
-                fill="#5AD940"
-                isAnimationActive={false}
-                shape={(props: any) => (
-                  <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />
-                )}
-              />
+      <ComposedChart
+        width={width}
+        height={220}
+        data={growthCurveData}
+        margin={{ top: 10, right: 15, bottom: 25, left: 5 }}
+      >
+        <CartesianGrid 
+          horizontal={true} 
+          vertical={false} 
+          stroke="rgba(255,255,255,0.1)" 
+          strokeDasharray="3 3"
+        />
+        <XAxis
+          dataKey="month"
+          type="number"
+          domain={[2, 18]}
+          ticks={[2, 6, 10, 14, 18]}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => `${value}M`}
+          tickMargin={8}
+        />
+        <YAxis
+          domain={[5, 35]}
+          ticks={[5, 10, 15, 20, 25, 30, 35]}
+          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+          axisLine={false}
+          tickLine={false}
+          tickFormatter={(value) => `${value}kg`}
+          width={40}
+        />
+        {/* Upper bound line (+5%) */}
+        <Line
+          type="monotone"
+          dataKey="upperBound"
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth={1}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {/* Lower bound line (-5%) */}
+        <Line
+          type="monotone"
+          dataKey="lowerBound"
+          stroke="rgba(255,255,255,0.3)"
+          strokeWidth={1}
+          dot={false}
+          isAnimationActive={false}
+        />
+        {/* Main growth curve */}
+        <Line
+          type="monotone"
+          dataKey="expected"
+          stroke="#ffffff"
+          strokeWidth={2}
+          dot={false}
+          isAnimationActive={false}
+        />
+        <ZAxis dataKey="weight" range={[16, 16]} />
+        {/* Normal weight points (green) */}
+        {normalPoints.length > 0 && (
+          <Scatter
+            name="normal"
+            data={normalPoints.map(p => ({ month: p.month, weight: p.weight }))}
+            fill="#5AD940"
+            isAnimationActive={false}
+            shape={(props: any) => (
+              <circle cx={props.cx} cy={props.cy} r={4} fill="#5AD940" fillOpacity={1} />
             )}
-            {/* Out of bounds weight points (red) */}
-            {outOfBoundsPoints.length > 0 && (
-              <Scatter
-                name="outOfBounds"
-                data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
-                fill="#FF4444"
-                isAnimationActive={false}
-                shape={(props: any) => (
-                  <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />
-                )}
-              />
+          />
+        )}
+        {/* Out of bounds weight points (red) */}
+        {outOfBoundsPoints.length > 0 && (
+          <Scatter
+            name="outOfBounds"
+            data={outOfBoundsPoints.map(p => ({ month: p.month, weight: p.weight }))}
+            fill="#FF4444"
+            isAnimationActive={false}
+            shape={(props: any) => (
+              <circle cx={props.cx} cy={props.cy} r={4} fill="#FF4444" fillOpacity={1} />
             )}
-          </ComposedChart>
-        </div>
-      </div>
+          />
+        )}
+      </ComposedChart>
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
