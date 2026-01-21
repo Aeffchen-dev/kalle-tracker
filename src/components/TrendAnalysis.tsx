@@ -520,8 +520,8 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
   
-  // Y-axis ticks - start at 7kg (matching 2M start)
-  const yTicks = [7, 14, 21, 28, 35];
+  // Y-axis ticks - 5kg steps
+  const yTicks = [5, 10, 15, 20, 25, 30, 35];
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
 
   return (
@@ -542,7 +542,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             width={width - Y_AXIS_WIDTH}
             height={totalHeight}
             data={growthCurveData}
-            margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
+            margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 5 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -563,7 +563,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             />
             <YAxis
               hide
-              domain={[7, 35]}
+              domain={[5, 35]}
               ticks={yTicks}
             />
             {/* Upper bound line (+5%) */}
