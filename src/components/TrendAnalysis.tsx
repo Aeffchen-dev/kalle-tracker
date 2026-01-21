@@ -142,7 +142,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
           width={scrollableWidth} 
           height={totalHeight} 
           data={data} 
-          margin={{ top: 8, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
+          margin={{ top: 8, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="weightGradient" x1="0" y1="0" x2="0" y2="1">
@@ -305,7 +305,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
           width={scrollableWidth} 
           height={totalHeight} 
           data={data} 
-          margin={{ top: 8, right: 10, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
+          margin={{ top: 8, right: 0, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
         >
           <defs>
             <linearGradient id="phGradient" x1="0" y1="0" x2="0" y2="1">
@@ -545,7 +545,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
             width={width - Y_AXIS_WIDTH}
             height={totalHeight}
             data={growthCurveData}
-            margin={{ top: 12, right: 10, bottom: X_AXIS_HEIGHT, left: 0 }}
+            margin={{ top: 8, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -576,7 +576,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
                 stroke="#5AD940"
                 strokeWidth={1}
                 strokeDasharray="3 3"
-                label={{ value: 'Heute', position: 'top', fill: '#5AD940', fontSize: 9 }}
+                label={{ value: 'Heute', position: 'insideBottomRight', fill: '#5AD940', fontSize: 9, dy: 12 }}
               />
             )}
             {/* Upper bound line (+5%) */}
