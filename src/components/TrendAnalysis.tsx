@@ -75,20 +75,13 @@ const StatCard = memo(({
 
 StatCard.displayName = 'StatCard';
 
-const Y_AXIS_WIDTH = 30;
-const Y_AXIS_MARGIN_RIGHT = 4;
+const Y_AXIS_WIDTH = 36;
 const CHART_HEIGHT = 150;
 const X_AXIS_HEIGHT = 25;
 const PH_X_AXIS_HEIGHT = 35;
 const CHART_MARGIN_TOP = 8;
 const GRID_STROKE = "rgba(255,255,255,0.1)";
 const GRID_DASH = "3 3";
-
-// Calculate Y position for a tick value within the plotting area
-const getYPosition = (value: number, domainMin: number, domainMax: number, plotHeight: number): number => {
-  const ratio = (value - domainMin) / (domainMax - domainMin);
-  return plotHeight - (ratio * plotHeight);
-};
 
 const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[]; avgValue: number | null; color: string; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -126,34 +119,27 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
 
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
 
-  // Plot area height (chart height minus top margin)
-  const plotHeight = CHART_HEIGHT - CHART_MARGIN_TOP;
-
   return (
     <div className="flex">
-      {/* Sticky Y-Axis with SVG for precise positioning */}
-      <div 
-        className="flex-shrink-0 relative"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, marginRight: Y_AXIS_MARGIN_RIGHT }}
-      >
-        <svg width={Y_AXIS_WIDTH} height={CHART_HEIGHT} className="overflow-visible">
-          {yTicks.map((tick, i) => {
-            const y = CHART_MARGIN_TOP + getYPosition(tick, domainMin, domainMax, plotHeight);
-            return (
-              <text
-                key={i}
-                x={Y_AXIS_WIDTH - 2}
-                y={y}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="rgba(255,255,255,0.4)"
-                fontSize={9}
-              >
-                {tick}kg
-              </text>
-            );
-          })}
-        </svg>
+      {/* Static Y-Axis Chart - uses same Recharts calculations for perfect alignment */}
+      <div className="flex-shrink-0 overflow-hidden" style={{ width: Y_AXIS_WIDTH }}>
+        <ComposedChart 
+          width={Y_AXIS_WIDTH + 100} 
+          height={totalHeight} 
+          data={[]} 
+          margin={{ top: CHART_MARGIN_TOP, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
+        >
+          <YAxis 
+            domain={[domainMin, domainMax]}
+            ticks={yTicks}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            tickFormatter={(v) => `${v}kg`}
+            axisLine={false}
+            tickLine={false}
+            width={Y_AXIS_WIDTH}
+            orientation="right"
+          />
+        </ComposedChart>
       </div>
       {/* Scrollable Chart Area */}
       <div 
@@ -306,35 +292,28 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
   };
 
   const totalHeight = CHART_HEIGHT + PH_X_AXIS_HEIGHT;
-  
-  // Plot area height (chart height minus top margin)
-  const plotHeight = CHART_HEIGHT - CHART_MARGIN_TOP;
 
   return (
     <div className="flex">
-      {/* Sticky Y-Axis with SVG for precise positioning */}
-      <div 
-        className="flex-shrink-0 relative"
-        style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, marginRight: Y_AXIS_MARGIN_RIGHT }}
-      >
-        <svg width={Y_AXIS_WIDTH} height={CHART_HEIGHT} className="overflow-visible">
-          {yTicks.map((tick, i) => {
-            const y = CHART_MARGIN_TOP + getYPosition(tick, domainMin, domainMax, plotHeight);
-            return (
-              <text
-                key={i}
-                x={Y_AXIS_WIDTH - 2}
-                y={y}
-                textAnchor="end"
-                dominantBaseline="middle"
-                fill="rgba(255,255,255,0.4)"
-                fontSize={9}
-              >
-                {tick.toFixed(1)}
-              </text>
-            );
-          })}
-        </svg>
+      {/* Static Y-Axis Chart - uses same Recharts calculations for perfect alignment */}
+      <div className="flex-shrink-0 overflow-hidden" style={{ width: Y_AXIS_WIDTH }}>
+        <ComposedChart 
+          width={Y_AXIS_WIDTH + 100} 
+          height={totalHeight} 
+          data={[]} 
+          margin={{ top: CHART_MARGIN_TOP, right: 0, bottom: PH_X_AXIS_HEIGHT, left: 0 }}
+        >
+          <YAxis 
+            domain={[domainMin, domainMax]}
+            ticks={yTicks}
+            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+            tickFormatter={(v) => v.toFixed(1)}
+            axisLine={false}
+            tickLine={false}
+            width={Y_AXIS_WIDTH}
+            orientation="right"
+          />
+        </ComposedChart>
       </div>
       {/* Scrollable Chart Area */}
       <div 
@@ -565,38 +544,31 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
   // Y-axis ticks
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
   const totalHeight = CHART_HEIGHT + X_AXIS_HEIGHT;
-  
-  // Plot area height and domain for growth curve
-  const plotHeight = CHART_HEIGHT - CHART_MARGIN_TOP;
   const domainMin = 5;
   const domainMax = 35;
 
   return (
     <div>
       <div className="flex">
-        {/* Sticky Y-Axis with SVG for precise positioning */}
-        <div 
-          className="flex-shrink-0 relative"
-          style={{ width: Y_AXIS_WIDTH, height: CHART_HEIGHT, marginRight: Y_AXIS_MARGIN_RIGHT }}
-        >
-          <svg width={Y_AXIS_WIDTH} height={CHART_HEIGHT} className="overflow-visible">
-            {yTicks.map((tick, i) => {
-              const y = CHART_MARGIN_TOP + getYPosition(tick, domainMin, domainMax, plotHeight);
-              return (
-                <text
-                  key={i}
-                  x={Y_AXIS_WIDTH - 2}
-                  y={y}
-                  textAnchor="end"
-                  dominantBaseline="middle"
-                  fill="rgba(255,255,255,0.4)"
-                  fontSize={9}
-                >
-                  {tick}kg
-                </text>
-              );
-            })}
-          </svg>
+        {/* Static Y-Axis Chart - uses same Recharts calculations for perfect alignment */}
+        <div className="flex-shrink-0 overflow-hidden" style={{ width: Y_AXIS_WIDTH }}>
+          <ComposedChart 
+            width={Y_AXIS_WIDTH + 100} 
+            height={totalHeight} 
+            data={[]} 
+            margin={{ top: CHART_MARGIN_TOP, right: 0, bottom: X_AXIS_HEIGHT, left: 0 }}
+          >
+            <YAxis 
+              domain={[domainMin, domainMax]}
+              ticks={yTicks}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+              tickFormatter={(v) => `${v}kg`}
+              axisLine={false}
+              tickLine={false}
+              width={Y_AXIS_WIDTH}
+              orientation="right"
+            />
+          </ComposedChart>
         </div>
         {/* Chart Area */}
         <div className="flex-1 overflow-hidden">
