@@ -19,11 +19,7 @@ interface CalendarViewProps {
 const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
-  const [swipingId, setSwipingId] = useState<string | null>(null);
-  const [swipeOffset, setSwipeOffset] = useState(0);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [isHorizontalSwipe, setIsHorizontalSwipe] = useState(false);
-  const [swipeStartOffset, setSwipeStartOffset] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(0.2);
@@ -35,16 +31,19 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const toggleSnapPoint = () => {
     setSnap(snap === 0.2 ? 0.9 : 0.2);
   };
-  const itemTouchStartX = useRef<number>(0);
-  const itemTouchStartY = useRef<number>(0);
-  const swipeDecided = useRef<boolean>(false);
-  const touchJustEnded = useRef<boolean>(false);
-  const wasActiveOnTouchStart = useRef<boolean>(false);
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   
-  // Day swipe refs (for empty day navigation)
+  // Day swipe refs
   const daySwipeStartX = useRef<number>(0);
   const daySwipeEndX = useRef<number>(0);
+  const daySwipeStartY = useRef<number>(0);
+  const isHorizontalSwipe = useRef<boolean>(false);
+  const swipeDecided = useRef<boolean>(false);
+  
+  // Long press refs
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTriggered = useRef<boolean>(false);
 
   const loadEvents = async () => {
     const result = await getEvents();
@@ -101,108 +100,91 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const handleDelete = async (eventId: string) => {
     await deleteEvent(eventId);
     await loadEvents();
-    setSwipingId(null);
-    setSwipeOffset(0);
+    setActiveEventId(null);
   };
 
-  const handleItemTouchStart = (e: TouchEvent, eventId: string) => {
-    itemTouchStartX.current = e.touches[0].clientX;
-    itemTouchStartY.current = e.touches[0].clientY;
-    swipeDecided.current = false;
-    setIsHorizontalSwipe(false);
-    // Store if this item was already active (showing delete)
-    wasActiveOnTouchStart.current = activeEventId === eventId;
-    setSwipeStartOffset(wasActiveOnTouchStart.current ? 80 : 0);
-    setSwipingId(eventId);
-    setIsAnimating(false);
-  };
-
-  const handleItemTouchMove = (e: TouchEvent) => {
-    if (!swipingId) return;
-    
-    const diffX = itemTouchStartX.current - e.touches[0].clientX;
-    const diffY = Math.abs(e.touches[0].clientY - itemTouchStartY.current);
-    
-    // Decide direction once after minimum movement
-    if (!swipeDecided.current && (Math.abs(diffX) > 10 || diffY > 10)) {
-      swipeDecided.current = true;
-      const isHorizontal = Math.abs(diffX) > diffY * 1.5;
-      setIsHorizontalSwipe(isHorizontal);
-      if (!isHorizontal) {
-        setSwipingId(null);
-        return;
-      }
-    }
-    
-    if (!isHorizontalSwipe && swipeDecided.current) return;
-    
-    e.preventDefault();
-    const newOffset = swipeStartOffset + diffX;
-    setSwipeOffset(Math.max(0, Math.min(newOffset, 80)));
-    setActiveEventId(swipingId);
-  };
-
-  const handleItemTouchEnd = () => {
-    touchJustEnded.current = true;
-    setTimeout(() => { touchJustEnded.current = false; }, 300);
-    
-    setIsAnimating(true);
-    if (swipeOffset > 60) {
-      setSwipeOffset(80);
-      setActiveEventId(swipingId);
-    } else if (swipeDecided.current) {
-      setSwipeOffset(0);
-      setTimeout(() => {
+  // Long press handlers
+  const handleLongPressStart = (eventId: string) => {
+    longPressTriggered.current = false;
+    longPressTimer.current = setTimeout(() => {
+      longPressTriggered.current = true;
+      // Toggle: if already showing delete, hide it; otherwise show it
+      if (activeEventId === eventId) {
         setActiveEventId(null);
-        setSwipingId(null);
-        setIsAnimating(false);
-      }, 200);
-    } else {
-      // Tap on touch device - toggle delete using ref
-      if (wasActiveOnTouchStart.current) {
-        // Was already showing, hide it
-        setSwipeOffset(0);
-        setTimeout(() => {
-          setActiveEventId(null);
-          setSwipingId(null);
-          setIsAnimating(false);
-        }, 200);
       } else {
-        // Show delete
-        setActiveEventId(swipingId);
-        setSwipeOffset(80);
-        setTimeout(() => setIsAnimating(false), 200);
+        setActiveEventId(eventId);
+      }
+    }, 500); // 500ms for long press
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleLongPressMove = () => {
+    // Cancel long press if user moves finger
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  // Day swipe handlers (for the content area)
+  const handleDaySwipeStart = (e: TouchEvent) => {
+    daySwipeStartX.current = e.touches[0].clientX;
+    daySwipeStartY.current = e.touches[0].clientY;
+    daySwipeEndX.current = e.touches[0].clientX;
+    isHorizontalSwipe.current = false;
+    swipeDecided.current = false;
+  };
+
+  const handleDaySwipeMove = (e: TouchEvent) => {
+    daySwipeEndX.current = e.touches[0].clientX;
+    const diffX = Math.abs(daySwipeEndX.current - daySwipeStartX.current);
+    const diffY = Math.abs(e.touches[0].clientY - daySwipeStartY.current);
+    
+    // Decide direction once
+    if (!swipeDecided.current && (diffX > 10 || diffY > 10)) {
+      swipeDecided.current = true;
+      isHorizontalSwipe.current = diffX > diffY * 1.5;
+    }
+    
+    // Cancel long press on any movement
+    handleLongPressMove();
+  };
+
+  const handleDaySwipeEnd = () => {
+    if (!isHorizontalSwipe.current) return;
+    
+    const diff = daySwipeStartX.current - daySwipeEndX.current;
+    const minSwipeDistance = 50;
+    
+    if (Math.abs(diff) > minSwipeDistance) {
+      if (diff > 0 && canGoNext) {
+        // Swipe left - next day (more recent)
+        changeDate('left');
+      } else if (diff < 0 && canGoPrev) {
+        // Swipe right - previous day (older)
+        changeDate('right');
       }
     }
-    setIsHorizontalSwipe(false);
-    swipeDecided.current = false;
+    
+    daySwipeStartX.current = 0;
+    daySwipeEndX.current = 0;
   };
 
   const handleItemClick = (eventId: string) => {
-    console.log('click - eventId:', eventId, 'activeEventId:', activeEventId, 'touchJustEnded:', touchJustEnded.current);
-    // Prevent click if touch just ended (mobile devices fire both)
-    if (touchJustEnded.current) {
-      console.log('click blocked - touchJustEnded');
+    // If long press was triggered, don't toggle on click
+    if (longPressTriggered.current) {
+      longPressTriggered.current = false;
       return;
     }
-    
-    setIsAnimating(true);
-    // Toggle: if already showing delete for this item, hide it
+    // Hide delete if showing
     if (activeEventId === eventId) {
-      console.log('click - hiding delete');
-      setSwipeOffset(0);
-      setTimeout(() => {
-        setActiveEventId(null);
-        setSwipingId(null);
-        setIsAnimating(false);
-      }, 200);
-    } else {
-      console.log('click - showing delete');
-      // Show delete (also closes any other open item)
-      setActiveEventId(eventId);
-      setSwipingId(eventId);
-      setSwipeOffset(80);
-      setTimeout(() => setIsAnimating(false), 200);
+      setActiveEventId(null);
     }
   };
   
@@ -363,58 +345,32 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 slideDirection === 'right' ? 'opacity-0 translate-x-4' : 
                 'opacity-100 translate-x-0'
               }`}
+              onTouchStart={(e) => handleDaySwipeStart(e)}
+              onTouchMove={(e) => handleDaySwipeMove(e)}
+              onTouchEnd={handleDaySwipeEnd}
             >
               {filteredEvents.length === 0 ? (
-                <div 
-                  className="flex items-center justify-center py-4"
-                  onTouchStart={(e) => {
-                    daySwipeStartX.current = e.touches[0].clientX;
-                  }}
-                  onTouchMove={(e) => {
-                    daySwipeEndX.current = e.touches[0].clientX;
-                  }}
-                  onTouchEnd={() => {
-                    const diff = daySwipeStartX.current - daySwipeEndX.current;
-                    const minSwipeDistance = 50;
-                    
-                    if (Math.abs(diff) > minSwipeDistance) {
-                      if (diff > 0 && canGoNext) {
-                        // Swipe left - next day (more recent)
-                        changeDate('left');
-                      } else if (diff < 0 && canGoPrev) {
-                        // Swipe right - previous day (older)
-                        changeDate('right');
-                      }
-                    }
-                    daySwipeStartX.current = 0;
-                    daySwipeEndX.current = 0;
-                  }}
-                >
+                <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
-                    Keine Einträge – Swipen um Tag zu wechseln
+                    Keine Einträge
                   </p>
                 </div>
               ) : (
                 <div className="space-y-2 pb-20">
                   {filteredEvents.map((event) => {
                     const isActive = activeEventId === event.id;
-                    const showDelete = isActive && (swipeOffset > 0 || isAnimating);
                     return (
-                      <div key={event.id} className="flex w-full">
+                      <div key={event.id} className="flex w-full gap-2">
                         <div
-                          className={`flex items-center justify-between p-3 bg-black border border-white/30 overflow-hidden cursor-pointer ${isAnimating ? 'transition-all duration-200' : ''}`}
-                          style={{ 
-                            width: showDelete ? `calc(100% - ${swipeOffset}px)` : '100%',
-                            borderTopLeftRadius: '0.5rem',
-                            borderBottomLeftRadius: '0.5rem',
-                            borderTopRightRadius: showDelete ? 0 : '0.5rem',
-                            borderBottomRightRadius: showDelete ? 0 : '0.5rem',
-                            borderRight: showDelete ? 'none' : undefined,
-                          }}
+                          className="flex-1 flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none"
                           onClick={() => handleItemClick(event.id)}
-                          onTouchStart={(e) => handleItemTouchStart(e, event.id)}
-                          onTouchMove={handleItemTouchMove}
-                          onTouchEnd={() => handleItemTouchEnd()}
+                          onTouchStart={() => handleLongPressStart(event.id)}
+                          onTouchMove={handleLongPressMove}
+                          onTouchEnd={handleLongPressEnd}
+                          onMouseDown={() => handleLongPressStart(event.id)}
+                          onMouseMove={handleLongPressMove}
+                          onMouseUp={handleLongPressEnd}
+                          onMouseLeave={handleLongPressEnd}
                         >
                           <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2">
                             <span>{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : '🏋️'}</span>
@@ -437,13 +393,12 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             {format(new Date(event.time), 'HH:mm')} Uhr
                           </span>
                         </div>
-                        {showDelete && (
+                        {isActive && (
                           <button
                             onClick={() => handleDelete(event.id)}
-                            className={`bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-lg overflow-hidden ${isAnimating ? 'transition-all duration-200' : ''}`}
-                            style={{ width: swipeOffset }}
+                            className="bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg px-4 animate-fade-in"
                           >
-                            {swipeOffset > 50 && 'Löschen'}
+                            Löschen
                           </button>
                         )}
                       </div>
