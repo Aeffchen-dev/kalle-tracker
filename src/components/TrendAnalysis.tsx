@@ -129,7 +129,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
       <div className="flex">
         {/* Y-Axis - aligned with chart area only */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          className="flex-shrink-0 flex flex-col justify-between text-right" 
           style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
@@ -294,7 +294,7 @@ const PhChart = memo(({ data, avgValue, color, width }: { data: PhChartData[]; a
       <div className="flex">
         {/* Y-Axis - aligned with chart area only */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          className="flex-shrink-0 flex flex-col justify-between text-right" 
           style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
@@ -512,7 +512,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
       <div className="flex">
         {/* Y-Axis - aligned with chart area only */}
         <div 
-          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          className="flex-shrink-0 flex flex-col justify-between text-right" 
           style={{ width: Y_AXIS_WIDTH, height: chartAreaHeight, paddingTop: 5, paddingBottom: 5 }}
         >
           {[...yTicks].reverse().map((tick, i) => (
