@@ -12,6 +12,7 @@ interface TrendAnalysisProps {
 interface ChartData {
   date: string;
   value: number;
+  isOutOfBounds?: boolean;
 }
 
 interface PhChartData {
@@ -187,7 +188,20 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
               strokeWidth={2}
               fill="url(#weightGradient)"
               isAnimationActive={false}
-              dot={{ fill: color, strokeWidth: 0, r: 4, fillOpacity: 1 }}
+              dot={(props: any) => {
+                const { cx, cy, payload } = props;
+                const dotColor = payload.isOutOfBounds ? '#FF4444' : '#5AD940';
+                return (
+                  <circle
+                    key={`dot-${cx}-${cy}`}
+                    cx={cx}
+                    cy={cy}
+                    r={4}
+                    fill={dotColor}
+                    fillOpacity={1}
+                  />
+                );
+              }}
             />
           </AreaChart>
         </div>
@@ -614,10 +628,15 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
-      .map(e => ({
-        date: format(new Date(e.time), 'MMM yy', { locale: de }),
-        value: Number(e.weight_value),
-      }));
+      .map(e => {
+        const eventDate = new Date(e.time);
+        const weight = Number(e.weight_value);
+        return {
+          date: format(eventDate, 'MMM yy', { locale: de }),
+          value: weight,
+          isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
+        };
+      });
   }, [events]);
 
   const phData = useMemo(() => {
