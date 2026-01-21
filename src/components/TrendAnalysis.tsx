@@ -466,23 +466,33 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
 
   // Y-axis ticks for 5-35 range to show full growth curve from 7kg to 34kg
   const yTicks = [5, 10, 15, 20, 25, 30, 35];
+  const chartHeight = 220;
+  const topMargin = 5;
+  const bottomMargin = 25;
 
   return (
     <div>
-      <div className="flex h-[180px]">
-        {/* Y-Axis - fixed, matching WeightChart style */}
-        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-0" style={{ width: Y_AXIS_WIDTH }}>
+      <div className="flex" style={{ height: chartHeight }}>
+        {/* Y-Axis - fixed, aligned with chart area */}
+        <div 
+          className="flex-shrink-0 flex flex-col justify-between text-right pr-2" 
+          style={{ 
+            width: Y_AXIS_WIDTH,
+            paddingTop: topMargin,
+            paddingBottom: bottomMargin,
+          }}
+        >
           {[...yTicks].reverse().map((tick, i) => (
-            <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
+            <span key={i} className="text-[9px] text-white/40 leading-none">{tick}kg</span>
           ))}
         </div>
         {/* Chart */}
         <div className="flex-1 overflow-hidden">
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
-            height={180}
+            height={chartHeight}
             data={growthCurveData}
-            margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
+            margin={{ top: topMargin, right: 10, bottom: bottomMargin, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -499,13 +509,13 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
-              tickMargin={4}
+              tickMargin={8}
               allowDataOverflow={false}
-              padding={{ left: 5, right: 5 }}
             />
             <YAxis
               hide
               domain={[5, 35]}
+              ticks={yTicks}
               allowDataOverflow={false}
             />
             {/* Upper bound line (+5%) */}
