@@ -403,7 +403,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
     <div>
       <div className="flex h-[180px]">
         {/* Y-Axis - fixed, matching WeightChart style */}
-        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-[25px]" style={{ width: Y_AXIS_WIDTH }}>
+        <div className="flex-shrink-0 h-full flex flex-col justify-between py-[10px] pb-0" style={{ width: Y_AXIS_WIDTH }}>
           {[...yTicks].reverse().map((tick, i) => (
             <span key={i} className="text-[9px] text-white/40">{tick}kg</span>
           ))}
@@ -413,7 +413,7 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           <ComposedChart
             width={width - Y_AXIS_WIDTH}
             height={180}
-            margin={{ top: 10, right: 10, bottom: 25, left: 0 }}
+            margin={{ top: 10, right: 10, bottom: 0, left: 0 }}
           >
             <CartesianGrid 
               horizontal={true} 
@@ -426,11 +426,12 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               type="number"
               domain={[2, 18]}
               ticks={[2, 6, 10, 14, 18]}
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9 }}
+              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, dy: -3 }}
               axisLine={false}
               tickLine={false}
-              tickMargin={8}
               tickFormatter={(value) => `${value}M`}
+              orientation="bottom"
+              xAxisId="main"
             />
             <YAxis
               hide
