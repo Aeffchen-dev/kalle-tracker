@@ -13,6 +13,7 @@ interface ChartData {
   date: string;
   value: number;
   isOutOfBounds?: boolean;
+  expectedWeight?: number;
 }
 
 interface PhChartData {
@@ -144,7 +145,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             overscrollBehaviorX: 'contain'
           }}
         >
-          <AreaChart 
+          <ComposedChart 
             width={chartWidth} 
             height={totalHeight} 
             data={data} 
@@ -173,6 +174,15 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
             <YAxis 
               hide
               domain={[domainMin, domainMax]}
+            />
+            {/* Growth curve reference line */}
+            <Line
+              type="monotone"
+              dataKey="expectedWeight"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth={1.5}
+              dot={false}
+              isAnimationActive={false}
             />
             {avgValue && (
               <ReferenceLine 
@@ -203,7 +213,7 @@ const WeightChart = memo(({ data, avgValue, color, width }: { data: ChartData[];
                 );
               }}
             />
-          </AreaChart>
+          </ComposedChart>
         </div>
       </div>
     </div>
@@ -631,10 +641,13 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .map(e => {
         const eventDate = new Date(e.time);
         const weight = Number(e.weight_value);
+        const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+        const expectedWeight = getExpectedWeight(ageInMonths);
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
           value: weight,
           isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
+          expectedWeight: Math.round(expectedWeight * 10) / 10,
         };
       });
   }, [events]);
