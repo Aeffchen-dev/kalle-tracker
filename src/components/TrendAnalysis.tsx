@@ -430,8 +430,6 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
               axisLine={false}
               tickLine={false}
               tickFormatter={(value) => `${value}M`}
-              orientation="bottom"
-              xAxisId="main"
             />
             <YAxis
               hide
