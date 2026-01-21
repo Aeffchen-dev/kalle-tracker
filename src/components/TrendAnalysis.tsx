@@ -728,7 +728,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [events, sevenDaysAgo, thirtyDaysAgo]);
 
   return (
-    <div className="pb-20 space-y-6" data-vaul-no-drag>
+    <div className="space-y-6" data-vaul-no-drag>
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
@@ -773,7 +773,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
           <WeightChart data={weightData} width={width} />
         </div>
-        <div className="mb-6 pb-10">
+        <div>
           <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
           <PhChart data={phData} width={width} />
         </div>
