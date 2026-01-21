@@ -26,6 +26,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [showTrends, setShowTrends] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -139,17 +140,26 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     daySwipeEndX.current = e.touches[0].clientX;
     isHorizontalSwipe.current = false;
     swipeDecided.current = false;
+    setSwipeOffset(0);
   };
 
   const handleDaySwipeMove = (e: TouchEvent) => {
     daySwipeEndX.current = e.touches[0].clientX;
-    const diffX = Math.abs(daySwipeEndX.current - daySwipeStartX.current);
+    const diffX = daySwipeEndX.current - daySwipeStartX.current;
     const diffY = Math.abs(e.touches[0].clientY - daySwipeStartY.current);
     
     // Decide direction once
-    if (!swipeDecided.current && (diffX > 10 || diffY > 10)) {
+    if (!swipeDecided.current && (Math.abs(diffX) > 10 || diffY > 10)) {
       swipeDecided.current = true;
-      isHorizontalSwipe.current = diffX > diffY * 1.5;
+      isHorizontalSwipe.current = Math.abs(diffX) > diffY * 1.5;
+    }
+    
+    // Update visual offset for horizontal swipes
+    if (isHorizontalSwipe.current) {
+      // Limit the offset and add resistance at edges
+      const maxOffset = 100;
+      const resistedOffset = diffX * 0.4;
+      setSwipeOffset(Math.max(-maxOffset, Math.min(maxOffset, resistedOffset)));
     }
     
     // Cancel long press on any movement
@@ -157,12 +167,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   };
 
   const handleDaySwipeEnd = () => {
-    if (!isHorizontalSwipe.current) return;
-    
     const diff = daySwipeStartX.current - daySwipeEndX.current;
     const minSwipeDistance = 50;
     
-    if (Math.abs(diff) > minSwipeDistance) {
+    if (isHorizontalSwipe.current && Math.abs(diff) > minSwipeDistance) {
       if (diff > 0 && canGoNext) {
         // Swipe left - next day (more recent)
         changeDate('left');
@@ -172,6 +180,8 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       }
     }
     
+    // Reset offset with animation
+    setSwipeOffset(0);
     daySwipeStartX.current = 0;
     daySwipeEndX.current = 0;
   };
@@ -340,11 +350,15 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
             </div>
           ) : (
             <div 
-              className={`transition-all duration-150 ${
-                slideDirection === 'left' ? 'opacity-0 -translate-x-4' : 
-                slideDirection === 'right' ? 'opacity-0 translate-x-4' : 
-                'opacity-100 translate-x-0'
+              className={`${
+                slideDirection === 'left' ? 'opacity-0 -translate-x-4 transition-all duration-150' : 
+                slideDirection === 'right' ? 'opacity-0 translate-x-4 transition-all duration-150' : 
+                swipeOffset === 0 ? 'opacity-100 translate-x-0 transition-all duration-200' : 'opacity-100'
               }`}
+              style={{ 
+                transform: swipeOffset !== 0 ? `translateX(${swipeOffset}px)` : undefined,
+                opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
+              }}
               onTouchStart={(e) => handleDaySwipeStart(e)}
               onTouchMove={(e) => handleDaySwipeMove(e)}
               onTouchEnd={handleDaySwipeEnd}
