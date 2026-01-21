@@ -591,11 +591,13 @@ const GrowthCurveChart = memo(({ events, width }: { events: Event[]; width: numb
           className="flex-shrink-0 z-10 flex flex-col"
           style={{ width: yAxisWidth }}
         >
-          <svg width={yAxisWidth} height={CHART_HEIGHT}>
+          <svg width={yAxisWidth} height={totalHeight - X_AXIS_HEIGHT}>
             {yTicks.map((tick) => {
-              // Recharts plotting area: top margin = 8, plotting ends at CHART_HEIGHT
+              // Recharts with height=totalHeight and margin={{ top: 8, bottom: X_AXIS_HEIGHT }}
+              // gives plotting area from y=8 to y=(totalHeight - X_AXIS_HEIGHT) = 150
               const topMargin = 8;
-              const plotHeight = CHART_HEIGHT - topMargin;
+              const bottomMargin = 0; // No bottom margin within the visible chart area
+              const plotHeight = (totalHeight - X_AXIS_HEIGHT) - topMargin - bottomMargin;
               const y = topMargin + plotHeight * (1 - (tick - domainMin) / (domainMax - domainMin));
               return (
                 <text
