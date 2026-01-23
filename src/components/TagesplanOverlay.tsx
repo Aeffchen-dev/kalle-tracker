@@ -138,22 +138,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const isReceivingRealtimeUpdate = useRef(false);
 
-  // Change body background color when overlay opens/closes
-  useEffect(() => {
-    const originalBgColor = '#e8e2db';
-    const brownBgColor = '#d4c4b0';
-    
-    if (isOpen) {
-      document.body.style.backgroundColor = brownBgColor;
-    } else {
-      document.body.style.backgroundColor = originalBgColor;
-    }
-    
-    return () => {
-      document.body.style.backgroundColor = originalBgColor;
-    };
-  }, [isOpen]);
-
   // Load data from database
   useEffect(() => {
     const loadData = async () => {
@@ -607,7 +591,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
-                  <ExternalLink size={16} className="text-white/40" />
+                  <ExternalLink size={16} />
                 </a>
                 <a 
                   href="tel:+49306814455"
@@ -627,7 +611,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
-                  <ExternalLink size={16} className="text-white/40" />
+                  <ExternalLink size={16} />
                 </a>
                 <a 
                   href="tel:+493023362627"
