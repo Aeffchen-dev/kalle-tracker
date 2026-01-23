@@ -1020,25 +1020,25 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       const kpiData = [
         {
-          emoji: '🏋️',
+          icon: 'KG',
           label: 'Aktuelles Gewicht',
           value: weightStats.latest ? `${String(weightStats.latest).replace('.', ',')} kg` : '-',
           subtext: weightStats.idealWeight ? `Ideal: ${String(weightStats.idealWeight).replace('.', ',')} kg` : '',
         },
         {
-          emoji: '🧪',
+          icon: 'pH',
           label: 'Letzter pH-Wert',
           value: phStats.latest ? String(phStats.latest).replace('.', ',') : '-',
           subtext: phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Normbereich (3M)` : '',
         },
         {
-          emoji: '💦',
+          icon: 'PI',
           label: 'Ø Pipi-Intervall',
           value: pipiStats.avg ? `${String(pipiStats.avg).replace('.', ',')} h` : '-',
           subtext: pipiStats.avgPerDay ? `Ø ${String(pipiStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
         },
         {
-          emoji: '💩',
+          icon: 'ST',
           label: 'Ø Stuhlgang',
           value: stuhlgangStats.avg ? `${String(stuhlgangStats.avg).replace('.', ',')} h` : '-',
           subtext: stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
@@ -1055,25 +1055,30 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         pdf.setFillColor(245, 245, 245);
         pdf.roundedRect(x, y, cardWidth, cardHeight, 4, 4, 'F');
         
-        // Emoji
-        pdf.setFontSize(20);
-        pdf.text(kpi.emoji, x + cardPadding, y + 18);
+        // Icon circle
+        pdf.setFillColor(220, 220, 220);
+        pdf.circle(x + cardPadding + 10, y + 22, 10, 'F');
+        
+        // Icon text
+        pdf.setFontSize(10);
+        pdf.setTextColor(80, 80, 80);
+        pdf.text(kpi.icon, x + cardPadding + 5, y + 25);
         
         // Label
         pdf.setFontSize(10);
         pdf.setTextColor(100, 100, 100);
-        pdf.text(kpi.label, x + cardPadding + 25, y + 15);
+        pdf.text(kpi.label, x + cardPadding + 28, y + 15);
         
         // Value
         pdf.setFontSize(18);
         pdf.setTextColor(0, 0, 0);
-        pdf.text(kpi.value, x + cardPadding + 25, y + 30);
+        pdf.text(kpi.value, x + cardPadding + 28, y + 30);
         
         // Subtext
         if (kpi.subtext) {
           pdf.setFontSize(9);
           pdf.setTextColor(120, 120, 120);
-          pdf.text(kpi.subtext, x + cardPadding + 25, y + 40);
+          pdf.text(kpi.subtext, x + cardPadding + 28, y + 40);
         }
       });
       
@@ -1110,38 +1115,44 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
-      // Capture Weight chart - get the inner scrollable content with full width
+      // Capture Weight chart - capture full wrapper including Y-axis
       const weightChartWrapper = chartsRef.current.querySelector('.mb-6');
       if (weightChartWrapper) {
-        const scrollContainer = weightChartWrapper.querySelector('.overflow-x-auto');
+        // Find scrollable container and expand it temporarily
+        const scrollContainer = weightChartWrapper.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
-        if (innerChart && scrollContainer) {
-          // Save original scroll position and styles
-          const originalScroll = (scrollContainer as HTMLElement).scrollLeft;
-          const originalOverflow = (scrollContainer as HTMLElement).style.overflow;
-          
-          // Temporarily show full width
-          (scrollContainer as HTMLElement).style.overflow = 'visible';
-          (scrollContainer as HTMLElement).scrollLeft = 0;
-          
-          const canvas = await html2canvas(innerChart, {
-            backgroundColor: '#000000',
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            width: innerChart.scrollWidth,
-          });
-          
-          // Restore original state
-          (scrollContainer as HTMLElement).style.overflow = originalOverflow;
-          (scrollContainer as HTMLElement).scrollLeft = originalScroll;
-          
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = pageWidth - margin * 2;
-          const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        let originalStyles: { overflow: string; width: string } | null = null;
+        
+        if (scrollContainer && innerChart) {
+          originalStyles = {
+            overflow: scrollContainer.style.overflow,
+            width: scrollContainer.style.width,
+          };
+          scrollContainer.style.overflow = 'visible';
+          scrollContainer.style.width = `${innerChart.scrollWidth}px`;
+          scrollContainer.scrollLeft = 0;
         }
+        
+        // Capture the entire wrapper including Y-axis labels
+        const canvas = await html2canvas(weightChartWrapper as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
+        });
+        
+        // Restore original state
+        if (scrollContainer && originalStyles) {
+          scrollContainer.style.overflow = originalStyles.overflow;
+          scrollContainer.style.width = originalStyles.width;
+        }
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
       }
       
       // ===== PAGE 4: pH Chart =====
@@ -1153,38 +1164,44 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
-      // Capture pH chart - get the inner scrollable content with full width
+      // Capture pH chart - capture full wrapper including Y-axis
       const phChartWrapper = chartsRef.current.querySelector('.pt-16');
       if (phChartWrapper) {
-        const scrollContainer = phChartWrapper.querySelector('.overflow-x-auto');
+        // Find scrollable container and expand it temporarily
+        const scrollContainer = phChartWrapper.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
-        if (innerChart && scrollContainer) {
-          // Save original scroll position and styles
-          const originalScroll = (scrollContainer as HTMLElement).scrollLeft;
-          const originalOverflow = (scrollContainer as HTMLElement).style.overflow;
-          
-          // Temporarily show full width
-          (scrollContainer as HTMLElement).style.overflow = 'visible';
-          (scrollContainer as HTMLElement).scrollLeft = 0;
-          
-          const canvas = await html2canvas(innerChart, {
-            backgroundColor: '#000000',
-            scale: 2,
-            logging: false,
-            useCORS: true,
-            width: innerChart.scrollWidth,
-          });
-          
-          // Restore original state
-          (scrollContainer as HTMLElement).style.overflow = originalOverflow;
-          (scrollContainer as HTMLElement).scrollLeft = originalScroll;
-          
-          const imgData = canvas.toDataURL('image/png');
-          const imgWidth = pageWidth - margin * 2;
-          const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        let originalPhStyles: { overflow: string; width: string } | null = null;
+        
+        if (scrollContainer && innerChart) {
+          originalPhStyles = {
+            overflow: scrollContainer.style.overflow,
+            width: scrollContainer.style.width,
+          };
+          scrollContainer.style.overflow = 'visible';
+          scrollContainer.style.width = `${innerChart.scrollWidth}px`;
+          scrollContainer.scrollLeft = 0;
         }
+        
+        // Capture the entire wrapper including Y-axis labels
+        const canvas = await html2canvas(phChartWrapper as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
+        });
+        
+        // Restore original state
+        if (scrollContainer && originalPhStyles) {
+          scrollContainer.style.overflow = originalPhStyles.overflow;
+          scrollContainer.style.width = originalPhStyles.width;
+        }
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
       }
       
       // ===== PAGE 5+: Data Table =====
