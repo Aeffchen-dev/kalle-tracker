@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { X, Phone, MapPin, ExternalLink } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -136,7 +136,19 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
+  const [addressCopied, setAddressCopied] = useState(false);
   const isReceivingRealtimeUpdate = useRef(false);
+
+  const copyAddress = async () => {
+    const address = 'Uhlandstraße 151, 10719 Berlin';
+    try {
+      await navigator.clipboard.writeText(address);
+      setAddressCopied(true);
+      setTimeout(() => setAddressCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy address:', err);
+    }
+  };
 
   // Load data from database
   useEffect(() => {
@@ -634,21 +646,29 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
                 </a>
-                <a 
-                  href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
-                  onClick={(e) => {
-                    // Check if iOS - if not, use Google Maps instead
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    if (!isIOS) {
-                      e.preventDefault();
-                      window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
-                    }
-                  }}
-                  className="block text-[14px] text-white/60 mt-2 ml-6 hover:text-white transition-colors"
-                >
-                  Uhlandstraße 151<br />
-                  10719 Berlin
-                </a>
+                <div className="flex items-start gap-2 mt-2 ml-6">
+                  <a 
+                    href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
+                    onClick={(e) => {
+                      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                      if (!isIOS) {
+                        e.preventDefault();
+                        window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
+                      }
+                    }}
+                    className="text-[14px] text-white/60 hover:text-white transition-colors"
+                  >
+                    Uhlandstraße 151<br />
+                    10719 Berlin
+                  </a>
+                  <button
+                    onClick={copyAddress}
+                    className="p-1 text-white/60 hover:text-white transition-colors"
+                    title="Adresse kopieren"
+                  >
+                    {addressCopied ? <Check size={14} /> : <Copy size={14} />}
+                  </button>
+                </div>
               </div>
             </div>
 
