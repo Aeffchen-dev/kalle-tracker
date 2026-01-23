@@ -1023,9 +1023,10 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           useCORS: true,
         });
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = pageWidth - margin * 2;
+        // Maintain aspect ratio without squeezing
+        const imgWidth = Math.min(pageWidth - margin * 2, 200); // Max width
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, Math.min(imgHeight, 80));
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
       }
       
       // ===== PAGE 2: Growth Curve Chart =====
