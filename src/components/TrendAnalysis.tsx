@@ -1208,7 +1208,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="w-full bg-white text-black hover:bg-white/90 font-medium py-3 rounded-xl"
+          className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
         >
           <Download className="w-4 h-4 mr-2" />
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
