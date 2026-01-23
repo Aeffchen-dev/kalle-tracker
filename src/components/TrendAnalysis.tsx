@@ -998,7 +998,12 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 15;
       
+      // Body background color
+      const bgColor = '#e8e2db';
+      
       // ===== PAGE 1: Title + KPIs =====
+      pdf.setFillColor(232, 226, 219); // #e8e2db
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       let yPos = margin;
       
       // Title
@@ -1031,6 +1036,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 2: Growth Curve Chart =====
       pdf.addPage('l');
+      pdf.setFillColor(232, 226, 219);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       yPos = margin;
       
       pdf.setFontSize(16);
@@ -1055,6 +1062,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 3: Weight Chart =====
       pdf.addPage('l');
+      pdf.setFillColor(232, 226, 219);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       yPos = margin;
       
       pdf.setFontSize(16);
@@ -1104,6 +1113,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 4: pH Chart =====
       pdf.addPage('l');
+      pdf.setFillColor(232, 226, 219);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       yPos = margin;
       
       pdf.setFontSize(16);
@@ -1153,6 +1164,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 5+: Data Table =====
       pdf.addPage('l');
+      pdf.setFillColor(232, 226, 219);
+      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
       yPos = margin;
       
       pdf.setFontSize(16);
@@ -1181,6 +1194,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       sortedEvents.forEach((event) => {
         if (yPos > pageHeight - 15) {
           pdf.addPage('l');
+          pdf.setFillColor(232, 226, 219);
+          pdf.rect(0, 0, pageWidth, pageHeight, 'F');
           yPos = margin;
           
           // Repeat header on new page
