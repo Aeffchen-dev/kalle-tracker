@@ -809,9 +809,10 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     });
   }, [events]);
 
-  // Filter events from last 7 days and last 30 days for calculations
+  // Filter events from last 7 days, 30 days, and 90 days for calculations
   const sevenDaysAgo = useMemo(() => subDays(new Date(), 7), []);
   const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
+  const ninetyDaysAgo = useMemo(() => subDays(new Date(), 90), []);
 
   const weightStats = useMemo(() => {
     if (weightData.length === 0) return { avg: null, min: null, max: null, latest: null, idealWeight: null, trend: null as 'up' | 'down' | 'neutral' | null };
@@ -862,7 +863,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [weightData, events, sevenDaysAgo]);
 
   const phStats = useMemo(() => {
-    if (phData.length === 0) return { avg: null, min: null, max: null, latest: null };
+    if (phData.length === 0) return { avg: null, min: null, max: null, latest: null, inRangeCount: 0, totalCount: 0 };
     const allValues = phData.map(d => d.value);
     
     const last7DaysPh = events
@@ -874,13 +875,24 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       ? Math.round(last7DaysPh.reduce((a, b) => a + b, 0) / last7DaysPh.length * 10) / 10
       : null;
     
+    // Calculate in-range stats for last 3 months
+    const last90DaysPh = events
+      .filter(e => e.type === 'phwert' && e.ph_value !== null && e.ph_value !== undefined && e.ph_value !== '')
+      .filter(e => isAfter(new Date(e.time), ninetyDaysAgo))
+      .map(e => parseFloat(String(e.ph_value).replace(',', '.')));
+    
+    const inRangeCount = last90DaysPh.filter(ph => ph >= 6.5 && ph <= 7.2).length;
+    const totalCount = last90DaysPh.length;
+    
     return {
       avg,
       min: Math.min(...allValues),
       max: Math.max(...allValues),
       latest: allValues[allValues.length - 1],
+      inRangeCount,
+      totalCount,
     };
-  }, [phData, events, sevenDaysAgo]);
+  }, [phData, events, sevenDaysAgo, ninetyDaysAgo]);
 
   const pipiStats = useMemo(() => {
     const pipiEvents = events
@@ -962,7 +974,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Letzter pH-Wert" 
           value={phStats.latest} 
           unit=""
-          subtext={phStats.avg ? `Ø ${phStats.avg}` : undefined}
+          subtext={phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Bereich (3M)` : undefined}
         />
         <StatCard 
           emoji="💦" 
