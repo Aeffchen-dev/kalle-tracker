@@ -591,13 +591,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
-                  <ExternalLink size={16} />
+                  <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+49306814455"
                   className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
                 >
-                  <Phone size={16} />
+                  <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
                 </a>
               </div>
@@ -611,13 +611,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
-                  <ExternalLink size={16} />
+                  <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+493023362627"
                   className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors mb-3"
                 >
-                  <Phone size={16} />
+                  <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
                 </a>
                 <a 
@@ -626,7 +626,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
                 >
-                  <MapPin size={16} />
+                  <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
                 </a>
                 <p className="text-[14px] text-white/60 mt-2 ml-6">
