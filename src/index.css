@@ -160,6 +160,20 @@
   }
 }
 
+/* Chart pulse animation for out-of-bounds data points */
+@keyframes chartPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  50% {
+    filter: drop-shadow(0 0 6px #FF4444);
+  }
+}
+
+.chart-pulse-red {
+  animation: chartPulse 2s ease-in-out infinite;
+}
+
 /* Prevent horizontal scroll on page */
 html, body {
   overflow-x: hidden;
