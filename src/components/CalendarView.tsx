@@ -384,9 +384,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                   {filteredEvents.map((event) => {
                     const isActive = activeEventId === event.id;
                     return (
-                      <div key={event.id} className="flex w-full gap-2">
+                      <div key={event.id} className="flex w-full gap-2 items-stretch">
                         <div
-                          className="flex-1 flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none"
+                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none transition-all duration-300 ease-out ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
@@ -418,14 +418,16 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             {format(new Date(event.time), 'HH:mm')} Uhr
                           </span>
                         </div>
-                        {isActive && (
+                        <div 
+                          className={`overflow-hidden transition-all duration-300 ease-out ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
+                        >
                           <button
                             onClick={() => handleDelete(event.id)}
-                            className="bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg px-4 animate-fade-in"
+                            className="h-full w-full bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg px-4"
                           >
                             Löschen
                           </button>
-                        )}
+                        </div>
                       </div>
                     );
                   })}
