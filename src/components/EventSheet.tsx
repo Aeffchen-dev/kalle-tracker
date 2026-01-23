@@ -3,7 +3,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { saveEvent, SaveResult } from '@/lib/events';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar } from '@/components/ui/calendar';
@@ -252,43 +252,46 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </div>
           )}
 
-          {/* Date Selection */}
+          {/* Time and Date Selection - Combined */}
           <div>
-            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] w-full"
-                >
-                  {format(selectedDate, 'd. MMMM yyyy', { locale: de })}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-black border-white/20" align="center">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(date) => {
-                    if (date) {
-                      setSelectedDate(date);
-                      setDatePickerOpen(false);
-                    }
-                  }}
-                  initialFocus
-                  className={cn("p-3 pointer-events-auto bg-black text-white")}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Time Selection */}
-          <div>
-            <label className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer" style={{ width: 'calc(100vw - 32px)' }}>
+            <label className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer gap-2" style={{ width: 'calc(100vw - 32px)' }}>
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className="flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <CalendarIcon size={18} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-black border-white/20" align="center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setSelectedDate(date);
+                        setDatePickerOpen(false);
+                      }
+                    }}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto bg-black text-white")}
+                  />
+                </PopoverContent>
+              </Popover>
+              {!isSameDay(selectedDate, new Date()) && (
+                <span className="text-[14px] text-white">
+                  {format(selectedDate, 'dd.MM.')}
+                </span>
+              )}
               <input
                 type="time"
                 value={selectedTime}
                 onChange={(e) => setSelectedTime(e.target.value)}
                 className="bg-transparent text-white text-[14px] text-center border-none outline-none w-[70px] md:[&::-webkit-calendar-picker-indicator]:filter md:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 md:[&::-webkit-calendar-picker-indicator]:static md:[&::-webkit-calendar-picker-indicator]:w-auto md:[&::-webkit-calendar-picker-indicator]:h-auto md:[&::-webkit-calendar-picker-indicator]:opacity-100 md:[&::-webkit-calendar-picker-indicator]:ml-2"
               />
-              <span className="text-[14px] text-white ml-1">Uhr</span>
+              <span className="text-[14px] text-white">Uhr</span>
             </label>
           </div>
 
