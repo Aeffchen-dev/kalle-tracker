@@ -140,8 +140,40 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 500,
     textStyle: { fontFamily: FONT_FAMILY },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0,0,0,0.9)',
+      borderColor: 'rgba(255,255,255,0.2)',
+      borderWidth: 1,
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        const idx = params.dataIndex;
+        const d = data[idx];
+        const status = d.isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+        return `<div style="padding:4px 0">
+          <div style="font-weight:600;margin-bottom:4px">${d.date}</div>
+          <div>Gewicht: <b>${d.value} kg</b></div>
+          <div>Ideal: ${d.expectedWeight} kg</div>
+          <div style="margin-top:4px">${status}</div>
+        </div>`;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     grid: {
       left: 0,
       right: 10,
@@ -192,6 +224,13 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
             return data[params.dataIndex]?.isOutOfBounds ? '#FF4444' : '#5AD940';
           },
           opacity: 1,
+        },
+        emphasis: {
+          scale: true,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(90, 217, 64, 0.5)',
+          },
         },
         z: 10,
       },
@@ -266,8 +305,42 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 500,
     textStyle: { fontFamily: FONT_FAMILY },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0,0,0,0.9)',
+      borderColor: 'rgba(255,255,255,0.2)',
+      borderWidth: 1,
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        const idx = params.dataIndex;
+        const d = data[idx];
+        const ph = d.value;
+        const isOutOfRange = ph < 6.5 || ph > 7.2;
+        const status = isOutOfRange ? '<span style="color:#FF4444">⚠️ Außerhalb (6.5-7.2)</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+        return `<div style="padding:4px 0">
+          <div style="font-weight:600;margin-bottom:4px">${d.dateLine1}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.dateLine2}</div>
+          <div style="margin-top:4px">pH-Wert: <b>${ph.toFixed(1)}</b></div>
+          <div style="margin-top:4px">${status}</div>
+        </div>`;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     grid: {
       left: 0,
       right: 10,
@@ -321,6 +394,13 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
             return ph < 6.5 || ph > 7.2 ? '#FF4444' : '#5AD940';
           },
           opacity: 1,
+        },
+        emphasis: {
+          scale: true,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(90, 217, 64, 0.5)',
+          },
         },
         z: 10,
         markLine: {
@@ -414,8 +494,45 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: true,
+    animationDuration: 500,
     textStyle: { fontFamily: FONT_FAMILY },
+    tooltip: {
+      trigger: 'item',
+      backgroundColor: 'rgba(0,0,0,0.9)',
+      borderColor: 'rgba(255,255,255,0.2)',
+      borderWidth: 1,
+      textStyle: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: FONT_FAMILY,
+      },
+      formatter: (params: any) => {
+        if (params.seriesName === 'Normal' || params.seriesName === 'Abweichung') {
+          const month = params.data[0];
+          const weight = params.data[1];
+          const expected = getExpectedWeight(month);
+          const isOutOfBounds = params.seriesName === 'Abweichung';
+          const status = isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+          return `<div style="padding:4px 0">
+            <div style="font-weight:600;margin-bottom:4px">Alter: ${month.toFixed(1)} Monate</div>
+            <div>Gewicht: <b>${weight} kg</b></div>
+            <div>Ideal: ${expected.toFixed(1)} kg</div>
+            <div style="margin-top:4px">${status}</div>
+          </div>`;
+        }
+        return null;
+      },
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        zoomOnMouseWheel: true,
+        moveOnMouseMove: true,
+        moveOnMouseWheel: false,
+      },
+    ],
     grid: {
       left: 40,
       right: 10,
@@ -502,16 +619,32 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           color: '#5AD940',
           opacity: 1,
         },
+        emphasis: {
+          scale: 1.5,
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(90, 217, 64, 0.5)',
+          },
+        },
         z: 10,
       },
       {
         name: 'Abweichung',
         type: 'scatter',
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
-        symbolSize: 8,
+        symbolSize: 10,
         itemStyle: {
           color: '#FF4444',
           opacity: 1,
+          shadowBlur: 8,
+          shadowColor: 'rgba(255, 68, 68, 0.6)',
+        },
+        emphasis: {
+          scale: 1.5,
+          itemStyle: {
+            shadowBlur: 15,
+            shadowColor: 'rgba(255, 68, 68, 0.8)',
+          },
         },
         z: 10,
       },
