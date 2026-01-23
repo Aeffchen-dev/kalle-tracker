@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 
 const Index = () => {
-  const [timeDisplay, setTimeDisplay] = useState('00 min');
+  const [timeDisplay, setTimeDisplay] = useState('00min');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
@@ -36,7 +36,7 @@ const Index = () => {
     const relevantEvents = eventList.filter(e => e.type === 'pipi' || e.type === 'stuhlgang');
     
     if (relevantEvents.length === 0) {
-      setTimeDisplay('00 min');
+      setTimeDisplay('00min');
       return;
     }
 
@@ -50,7 +50,7 @@ const Index = () => {
     const elapsed = now.getTime() - lastEventTime.getTime();
     
     if (elapsed <= 0) {
-      setTimeDisplay('00 min');
+      setTimeDisplay('00min');
       return;
     }
     
@@ -58,9 +58,9 @@ const Index = () => {
     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
     
     if (hours === 0) {
-      setTimeDisplay(`${minutes.toString().padStart(2, '0')} min`);
+      setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
     } else {
-      setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')} min`);
+      setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
     }
   };
 
