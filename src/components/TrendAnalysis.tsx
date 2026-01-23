@@ -191,8 +191,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         const status = d.isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
           <div style="font-weight:600;margin-bottom:4px">${d.date}</div>
-          <div>Gewicht: <b>${d.value} kg</b></div>
-          <div>Ideal: ${d.expectedWeight} kg</div>
+          <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
+          <div>Ideal: ${String(d.expectedWeight).replace('.', ',')} kg</div>
           <div style="margin-top:4px">${status}</div>
         </div>`;
       },
@@ -602,7 +602,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           const status = isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
           return `<div style="padding:4px 0">
             <div style="font-weight:600;margin-bottom:4px">Alter: ${formatDecimal(month)} Monate</div>
-            <div>Gewicht: <b>${weight} kg</b></div>
+            <div>Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
             <div>Ideal: ${formatDecimal(expected)} kg</div>
             <div style="margin-top:4px">${status}</div>
           </div>`;
