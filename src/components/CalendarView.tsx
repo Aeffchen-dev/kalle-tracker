@@ -384,9 +384,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                   {filteredEvents.map((event) => {
                     const isActive = activeEventId === event.id;
                     return (
-                      <div key={event.id} className="flex w-full gap-2 items-stretch">
+                      <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg cursor-pointer select-none transition-[flex] duration-150 ease-linear min-w-0 ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
+                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
@@ -420,9 +420,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                         </div>
                         <button
                           onClick={() => handleDelete(event.id)}
-                          className={`shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-all duration-150 ease-linear overflow-hidden ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
+                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                         >
-                          <span className="whitespace-nowrap">Löschen</span>
+                          Löschen
                         </button>
                       </div>
                     );
