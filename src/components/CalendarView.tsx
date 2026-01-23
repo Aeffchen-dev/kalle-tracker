@@ -386,7 +386,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     return (
                       <div key={event.id} className="flex w-full gap-2 items-stretch">
                         <div
-                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none transition-all duration-300 ease-out ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
+                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
@@ -419,7 +419,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                           </span>
                         </div>
                         <div 
-                          className={`overflow-hidden transition-all duration-300 ease-out ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
+                          className={`overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
                         >
                           <button
                             onClick={() => handleDelete(event.id)}
