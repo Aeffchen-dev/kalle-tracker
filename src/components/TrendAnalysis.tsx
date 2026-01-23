@@ -1086,7 +1086,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.text('Wachstumskurve', margin, yPos);
       yPos += 10;
       
-      // Capture Growth Curve chart
+      // Capture Growth Curve chart - it's not scrollable so capture directly
       const growthChartElement = chartsRef.current.querySelector('.mb-8');
       if (growthChartElement) {
         const canvas = await html2canvas(growthChartElement as HTMLElement, {
@@ -1110,19 +1110,38 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
-      // Capture Weight chart
-      const weightChartElement = chartsRef.current.querySelector('.mb-6');
-      if (weightChartElement) {
-        const canvas = await html2canvas(weightChartElement as HTMLElement, {
-          backgroundColor: '#000000',
-          scale: 2,
-          logging: false,
-          useCORS: true,
-        });
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = pageWidth - margin * 2;
-        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+      // Capture Weight chart - get the inner scrollable content with full width
+      const weightChartWrapper = chartsRef.current.querySelector('.mb-6');
+      if (weightChartWrapper) {
+        const scrollContainer = weightChartWrapper.querySelector('.overflow-x-auto');
+        const innerChart = scrollContainer?.firstElementChild as HTMLElement;
+        
+        if (innerChart && scrollContainer) {
+          // Save original scroll position and styles
+          const originalScroll = (scrollContainer as HTMLElement).scrollLeft;
+          const originalOverflow = (scrollContainer as HTMLElement).style.overflow;
+          
+          // Temporarily show full width
+          (scrollContainer as HTMLElement).style.overflow = 'visible';
+          (scrollContainer as HTMLElement).scrollLeft = 0;
+          
+          const canvas = await html2canvas(innerChart, {
+            backgroundColor: '#000000',
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            width: innerChart.scrollWidth,
+          });
+          
+          // Restore original state
+          (scrollContainer as HTMLElement).style.overflow = originalOverflow;
+          (scrollContainer as HTMLElement).scrollLeft = originalScroll;
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = pageWidth - margin * 2;
+          const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        }
       }
       
       // ===== PAGE 4: pH Chart =====
@@ -1134,19 +1153,38 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
-      // Capture pH chart
-      const phChartElement = chartsRef.current.querySelector('.pt-16');
-      if (phChartElement) {
-        const canvas = await html2canvas(phChartElement as HTMLElement, {
-          backgroundColor: '#000000',
-          scale: 2,
-          logging: false,
-          useCORS: true,
-        });
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = pageWidth - margin * 2;
-        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+      // Capture pH chart - get the inner scrollable content with full width
+      const phChartWrapper = chartsRef.current.querySelector('.pt-16');
+      if (phChartWrapper) {
+        const scrollContainer = phChartWrapper.querySelector('.overflow-x-auto');
+        const innerChart = scrollContainer?.firstElementChild as HTMLElement;
+        
+        if (innerChart && scrollContainer) {
+          // Save original scroll position and styles
+          const originalScroll = (scrollContainer as HTMLElement).scrollLeft;
+          const originalOverflow = (scrollContainer as HTMLElement).style.overflow;
+          
+          // Temporarily show full width
+          (scrollContainer as HTMLElement).style.overflow = 'visible';
+          (scrollContainer as HTMLElement).scrollLeft = 0;
+          
+          const canvas = await html2canvas(innerChart, {
+            backgroundColor: '#000000',
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            width: innerChart.scrollWidth,
+          });
+          
+          // Restore original state
+          (scrollContainer as HTMLElement).style.overflow = originalOverflow;
+          (scrollContainer as HTMLElement).scrollLeft = originalScroll;
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = pageWidth - margin * 2;
+          const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        }
       }
       
       // ===== PAGE 5+: Data Table =====
