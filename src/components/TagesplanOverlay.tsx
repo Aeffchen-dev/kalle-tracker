@@ -633,7 +633,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <span>Anrufen</span>
                 </a>
                 <a 
-                  href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
+                  href="http://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
                   onClick={(e) => {
                     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                     if (!isIOS) {
@@ -648,7 +648,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 </a>
                 <div className="flex items-start justify-between mt-2 ml-6">
                   <a 
-                    href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
+                    href="http://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
                     onClick={(e) => {
                       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
                       if (!isIOS) {
