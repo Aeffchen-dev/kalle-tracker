@@ -386,7 +386,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     return (
                       <div key={event.id} className="flex w-full gap-2 items-stretch">
                         <div
-                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg cursor-pointer select-none transition-[flex] duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] min-w-0 ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
+                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg cursor-pointer select-none transition-[flex] duration-150 ease-linear min-w-0 ${isActive ? 'flex-[0_0_calc(100%-90px)]' : 'flex-1'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
@@ -420,7 +420,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                         </div>
                         <button
                           onClick={() => handleDelete(event.id)}
-                          className={`shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)] overflow-hidden ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
+                          className={`shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-all duration-150 ease-linear overflow-hidden ${isActive ? 'w-[82px] opacity-100' : 'w-0 opacity-0'}`}
                         >
                           <span className="whitespace-nowrap">Löschen</span>
                         </button>
