@@ -26,6 +26,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState(format(new Date(), 'HH:mm'));
   const [selectedPh, setSelectedPh] = useState<string | null>(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [weightValue, setWeightValue] = useState<string>('');
   const wasOpen = useRef(false);
   const { toast } = useToast();
@@ -253,7 +254,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           {/* Date Selection */}
           <div>
-            <Popover>
+            <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
               <PopoverTrigger asChild>
                 <button
                   className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] w-full"
@@ -265,7 +266,12 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                 <Calendar
                   mode="single"
                   selected={selectedDate}
-                  onSelect={(date) => date && setSelectedDate(date)}
+                  onSelect={(date) => {
+                    if (date) {
+                      setSelectedDate(date);
+                      setDatePickerOpen(false);
+                    }
+                  }}
                   initialFocus
                   className={cn("p-3 pointer-events-auto bg-black text-white")}
                 />
