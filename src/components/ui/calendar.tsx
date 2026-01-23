@@ -22,6 +22,12 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
   };
 
   const handleTouchEnd = () => {
+    // Only trigger month change if touchEndX was actually set (touchMove happened)
+    if (touchEndX.current === 0) {
+      touchStartX.current = 0;
+      return;
+    }
+    
     const diff = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50;
 
