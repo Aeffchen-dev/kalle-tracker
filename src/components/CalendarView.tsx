@@ -197,23 +197,8 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       return;
     }
     
-    // Check for double tap
-    const now = Date.now();
-    if (lastTapId.current === eventId && now - lastTapTime.current < 300) {
-      // Double tap detected - toggle delete
-      setActiveEventId(activeEventId === eventId ? null : eventId);
-      lastTapTime.current = 0;
-      lastTapId.current = null;
-      return;
-    }
-    
-    lastTapTime.current = now;
-    lastTapId.current = eventId;
-    
-    // Hide delete if showing (single tap when delete is visible)
-    if (activeEventId === eventId) {
-      setActiveEventId(null);
-    }
+    // Toggle delete on single click
+    setActiveEventId(activeEventId === eventId ? null : eventId);
   };
 
   const handleContextMenu = (e: React.MouseEvent, eventId: string) => {
