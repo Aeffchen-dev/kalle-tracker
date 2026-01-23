@@ -9,6 +9,11 @@ interface TrendAnalysisProps {
   events: Event[];
 }
 
+// Helper to format numbers with German comma separator
+const formatDecimal = (value: number, decimals: number = 1): string => {
+  return value.toFixed(decimals).replace('.', ',');
+};
+
 const useContainerWidth = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -49,7 +54,9 @@ const StatCard = memo(({
     </div>
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
-        <span className="text-2xl font-semibold text-white">{value ?? '-'}</span>
+        <span className="text-2xl font-semibold text-white">
+          {value !== null && value !== undefined ? String(value).replace('.', ',') : '-'}
+        </span>
         <span className="text-[12px] text-white/40">{unit}</span>
       </div>
       {trend === 'up' && <TrendingUp size={18} className="text-[#5AD940]" />}
@@ -379,7 +386,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         return `<div style="padding:4px 0">
           <div style="font-weight:600;margin-bottom:4px">${d.dateLine1}</div>
           <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.dateLine2}</div>
-          <div style="margin-top:4px">pH-Wert: <b>${ph.toFixed(1)}</b></div>
+          <div style="margin-top:4px">pH-Wert: <b>${formatDecimal(ph)}</b></div>
           <div style="margin-top:4px">${status}</div>
         </div>`;
       },
@@ -482,7 +489,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       {/* Static Y-Axis */}
       <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 35, height: CHART_HEIGHT - 45, marginTop: 10 }}>
         {[...yTicks].reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{tick.toFixed(1)}</span>
+          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{formatDecimal(tick)}</span>
         ))}
       </div>
       {/* Scrollable Chart */}
@@ -594,9 +601,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           const isOutOfBounds = params.seriesName === 'Abweichung';
           const status = isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
           return `<div style="padding:4px 0">
-            <div style="font-weight:600;margin-bottom:4px">Alter: ${month.toFixed(1)} Monate</div>
+            <div style="font-weight:600;margin-bottom:4px">Alter: ${formatDecimal(month)} Monate</div>
             <div>Gewicht: <b>${weight} kg</b></div>
-            <div>Ideal: ${expected.toFixed(1)} kg</div>
+            <div>Ideal: ${formatDecimal(expected)} kg</div>
             <div style="margin-top:4px">${status}</div>
           </div>`;
         }
@@ -967,7 +974,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Aktuelles Gewicht" 
           value={weightStats.latest} 
           unit="kg"
-          subtext={weightStats.idealWeight ? `Ideal: ${weightStats.idealWeight} kg` : undefined}
+          subtext={weightStats.idealWeight ? `Ideal: ${String(weightStats.idealWeight).replace('.', ',')} kg` : undefined}
         />
         <StatCard 
           emoji="🧪" 
@@ -981,14 +988,14 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Ø Pipi-Intervall" 
           value={pipiStats.avg} 
           unit="h"
-          subtext={pipiStats.avgPerDay ? `Ø ${pipiStats.avgPerDay}x pro Tag` : undefined}
+          subtext={pipiStats.avgPerDay ? `Ø ${String(pipiStats.avgPerDay).replace('.', ',')}x pro Tag` : undefined}
         />
         <StatCard 
           emoji="💩" 
           label="Ø Stuhlgang" 
           value={stuhlgangStats.avg} 
           unit="h"
-          subtext={stuhlgangStats.avgPerDay ? `Ø ${stuhlgangStats.avgPerDay}x pro Tag` : undefined}
+          subtext={stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : undefined}
         />
       </div>
 
