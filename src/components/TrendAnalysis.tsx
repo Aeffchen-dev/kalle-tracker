@@ -177,6 +177,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
+      appendToBody: true,
+      confine: false,
       backgroundColor: 'rgba(0,0,0,0.9)',
       borderColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,
@@ -369,6 +371,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
+      appendToBody: true,
+      confine: false,
       backgroundColor: 'rgba(0,0,0,0.9)',
       borderColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,
@@ -585,6 +589,8 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
+      appendToBody: true,
+      confine: false,
       backgroundColor: 'rgba(0,0,0,0.9)',
       borderColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,
