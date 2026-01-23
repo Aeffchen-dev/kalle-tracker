@@ -998,7 +998,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 15;
       
-      // ===== PAGE 1: KPIs in 2x2 grid =====
+      // ===== PAGE 1: Title + KPIs =====
       let yPos = margin;
       
       // Title
@@ -1011,76 +1011,22 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
       pdf.text(`Exportiert am ${format(new Date(), 'd. MMMM yyyy, HH:mm', { locale: de })} Uhr`, margin, yPos);
-      yPos += 20;
+      yPos += 15;
       
-      // KPI Cards - 2x2 Grid
-      const cardWidth = (pageWidth - margin * 3) / 2;
-      const cardHeight = 45;
-      const cardPadding = 8;
-      
-      const kpiData = [
-        {
-          icon: 'KG',
-          label: 'Aktuelles Gewicht',
-          value: weightStats.latest ? `${String(weightStats.latest).replace('.', ',')} kg` : '-',
-          subtext: weightStats.idealWeight ? `Ideal: ${String(weightStats.idealWeight).replace('.', ',')} kg` : '',
-        },
-        {
-          icon: 'pH',
-          label: 'Letzter pH-Wert',
-          value: phStats.latest ? String(phStats.latest).replace('.', ',') : '-',
-          subtext: phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Normbereich (3M)` : '',
-        },
-        {
-          icon: 'PI',
-          label: 'Ø Pipi-Intervall',
-          value: pipiStats.avg ? `${String(pipiStats.avg).replace('.', ',')} h` : '-',
-          subtext: pipiStats.avgPerDay ? `Ø ${String(pipiStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
-        },
-        {
-          icon: 'ST',
-          label: 'Ø Stuhlgang',
-          value: stuhlgangStats.avg ? `${String(stuhlgangStats.avg).replace('.', ',')} h` : '-',
-          subtext: stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
-        },
-      ];
-      
-      kpiData.forEach((kpi, index) => {
-        const col = index % 2;
-        const row = Math.floor(index / 2);
-        const x = margin + col * (cardWidth + margin);
-        const y = yPos + row * (cardHeight + 10);
-        
-        // Card background
-        pdf.setFillColor(245, 245, 245);
-        pdf.roundedRect(x, y, cardWidth, cardHeight, 4, 4, 'F');
-        
-        // Icon circle
-        pdf.setFillColor(220, 220, 220);
-        pdf.circle(x + cardPadding + 10, y + 22, 10, 'F');
-        
-        // Icon text
-        pdf.setFontSize(10);
-        pdf.setTextColor(80, 80, 80);
-        pdf.text(kpi.icon, x + cardPadding + 5, y + 25);
-        
-        // Label
-        pdf.setFontSize(10);
-        pdf.setTextColor(100, 100, 100);
-        pdf.text(kpi.label, x + cardPadding + 28, y + 15);
-        
-        // Value
-        pdf.setFontSize(18);
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(kpi.value, x + cardPadding + 28, y + 30);
-        
-        // Subtext
-        if (kpi.subtext) {
-          pdf.setFontSize(9);
-          pdf.setTextColor(120, 120, 120);
-          pdf.text(kpi.subtext, x + cardPadding + 28, y + 40);
-        }
-      });
+      // Capture KPI cards from DOM to preserve emojis
+      const kpiContainer = document.querySelector('.grid.grid-cols-2.gap-2');
+      if (kpiContainer) {
+        const canvas = await html2canvas(kpiContainer as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, Math.min(imgHeight, 80));
+      }
       
       // ===== PAGE 2: Growth Curve Chart =====
       pdf.addPage('l');
