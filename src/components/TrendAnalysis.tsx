@@ -371,6 +371,18 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
     tooltip: {
       trigger: 'item',
       confine: false,
+      position: function (point: number[], params: any, dom: HTMLElement, rect: any, size: { contentSize: number[], viewSize: number[] }) {
+        // Position tooltip below the point if it would be cut off at the top
+        const tooltipHeight = size.contentSize[1];
+        const pointY = point[1];
+        
+        // If tooltip would extend above the chart, position it below the point
+        if (pointY - tooltipHeight < 0) {
+          return [point[0] - size.contentSize[0] / 2, pointY + 20];
+        }
+        // Otherwise position above the point
+        return [point[0] - size.contentSize[0] / 2, pointY - tooltipHeight - 10];
+      },
       backgroundColor: 'rgba(0,0,0,0.9)',
       borderColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,
