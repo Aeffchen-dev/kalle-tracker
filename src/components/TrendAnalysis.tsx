@@ -1,9 +1,12 @@
-import { useMemo, memo, useRef, useState, useEffect } from 'react';
+import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
 import { de } from 'date-fns/locale';
 import ReactECharts from 'echarts-for-react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface TrendAnalysisProps {
   events: Event[];
@@ -794,6 +797,8 @@ GrowthCurveChart.displayName = 'GrowthCurveChart';
 
 const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
+  const chartsRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
   
   const weightData = useMemo((): WeightChartData[] => {
     return events
@@ -981,6 +986,169 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     return { avg, avgPerDay };
   }, [events, sevenDaysAgo, thirtyDaysAgo]);
 
+  const handleExportPDF = useCallback(async () => {
+    if (!chartsRef.current || isExporting) return;
+    
+    setIsExporting(true);
+    
+    try {
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      let yPos = margin;
+      
+      // Title
+      pdf.setFontSize(20);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Kalle - Trend-Analyse', margin, yPos);
+      yPos += 10;
+      
+      // Date
+      pdf.setFontSize(10);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`Exportiert am ${format(new Date(), 'd. MMMM yyyy, HH:mm', { locale: de })} Uhr`, margin, yPos);
+      yPos += 15;
+      
+      // Stats summary
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Übersicht', margin, yPos);
+      yPos += 8;
+      
+      pdf.setFontSize(10);
+      const statsLines = [
+        `Aktuelles Gewicht: ${weightStats.latest ? String(weightStats.latest).replace('.', ',') + ' kg' : '-'}`,
+        `Ideal-Gewicht: ${weightStats.idealWeight ? String(weightStats.idealWeight).replace('.', ',') + ' kg' : '-'}`,
+        `Letzter pH-Wert: ${phStats.latest ? String(phStats.latest).replace('.', ',') : '-'}`,
+        `pH im Normbereich: ${phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} (letzte 3 Monate)` : '-'}`,
+        `Ø Pipi-Intervall: ${pipiStats.avg ? String(pipiStats.avg).replace('.', ',') + ' h' : '-'}`,
+        `Ø Stuhlgang-Intervall: ${stuhlgangStats.avg ? String(stuhlgangStats.avg).replace('.', ',') + ' h' : '-'}`,
+      ];
+      
+      statsLines.forEach(line => {
+        pdf.text(line, margin, yPos);
+        yPos += 6;
+      });
+      yPos += 10;
+      
+      // Capture charts as image
+      const chartsElement = chartsRef.current;
+      const canvas = await html2canvas(chartsElement, {
+        backgroundColor: '#000000',
+        scale: 2,
+        logging: false,
+        useCORS: true,
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = pageWidth - margin * 2;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Check if we need a new page for the charts
+      if (yPos + imgHeight > pageHeight - margin) {
+        pdf.addPage();
+        yPos = margin;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.text('Charts', margin, yPos);
+      yPos += 8;
+      
+      pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+      yPos += imgHeight + 15;
+      
+      // Data table
+      if (yPos > pageHeight - 50) {
+        pdf.addPage();
+        yPos = margin;
+      }
+      
+      pdf.setFontSize(14);
+      pdf.text('Alle Einträge', margin, yPos);
+      yPos += 8;
+      
+      pdf.setFontSize(8);
+      const sortedEvents = [...events].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+      
+      // Table header
+      pdf.setTextColor(100, 100, 100);
+      pdf.text('Datum', margin, yPos);
+      pdf.text('Zeit', margin + 35, yPos);
+      pdf.text('Typ', margin + 55, yPos);
+      pdf.text('Wert', margin + 90, yPos);
+      yPos += 5;
+      
+      // Draw line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, yPos, pageWidth - margin, yPos);
+      yPos += 4;
+      
+      pdf.setTextColor(0, 0, 0);
+      
+      sortedEvents.forEach((event) => {
+        if (yPos > pageHeight - 15) {
+          pdf.addPage();
+          yPos = margin;
+          
+          // Repeat header on new page
+          pdf.setTextColor(100, 100, 100);
+          pdf.text('Datum', margin, yPos);
+          pdf.text('Zeit', margin + 35, yPos);
+          pdf.text('Typ', margin + 55, yPos);
+          pdf.text('Wert', margin + 90, yPos);
+          yPos += 5;
+          pdf.line(margin, yPos, pageWidth - margin, yPos);
+          yPos += 4;
+          pdf.setTextColor(0, 0, 0);
+        }
+        
+        const eventDate = new Date(event.time);
+        const dateStr = format(eventDate, 'd. MMM yy', { locale: de });
+        const timeStr = format(eventDate, 'HH:mm', { locale: de });
+        
+        let typeStr = '';
+        let valueStr = '';
+        
+        switch (event.type) {
+          case 'gewicht':
+            typeStr = 'Gewicht';
+            valueStr = event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-';
+            break;
+          case 'phwert':
+            typeStr = 'pH-Wert';
+            valueStr = event.ph_value ? String(event.ph_value).replace('.', ',') : '-';
+            break;
+          case 'pipi':
+            typeStr = 'Pipi';
+            valueStr = '-';
+            break;
+          case 'stuhlgang':
+            typeStr = 'Stuhlgang';
+            valueStr = '-';
+            break;
+          default:
+            typeStr = event.type;
+            valueStr = '-';
+        }
+        
+        pdf.text(dateStr, margin, yPos);
+        pdf.text(timeStr, margin + 35, yPos);
+        pdf.text(typeStr, margin + 55, yPos);
+        pdf.text(valueStr, margin + 90, yPos);
+        yPos += 5;
+      });
+      
+      // Save the PDF
+      pdf.save(`kalle-trend-analyse-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      
+    } catch (error) {
+      console.error('PDF export failed:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  }, [events, weightStats, phStats, pipiStats, stuhlgangStats, isExporting]);
+
   return (
     <div className="pb-11 space-y-6" data-vaul-no-drag>
       {/* Stats Overview */}
@@ -1016,21 +1184,35 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={containerRef} className="mt-2 overflow-visible">
-        {/* Growth Curve Chart */}
-        <div className="mb-8 relative">
-          <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
-          <GrowthCurveChart events={events} />
+      <div ref={chartsRef} className="mt-2 overflow-visible">
+        <div ref={containerRef}>
+          {/* Growth Curve Chart */}
+          <div className="mb-8 relative">
+            <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
+            <GrowthCurveChart events={events} />
+          </div>
+          
+          <div className="mb-6">
+            <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
+            <WeightChart data={weightData} width={width} />
+          </div>
+          <div className="pt-16 -mt-16 overflow-visible">
+            <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
+            <PhChart data={phData} width={width} />
+          </div>
         </div>
-        
-        <div className="mb-6">
-          <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
-          <WeightChart data={weightData} width={width} />
-        </div>
-        <div className="pt-16 -mt-16 overflow-visible">
-          <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
-          <PhChart data={phData} width={width} />
-        </div>
+      </div>
+      
+      {/* Export Button */}
+      <div className="mt-8 pb-4">
+        <Button
+          onClick={handleExportPDF}
+          disabled={isExporting}
+          className="w-full bg-white text-black hover:bg-white/90 font-medium py-3 rounded-xl"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          {isExporting ? 'Exportiere...' : 'Daten exportieren'}
+        </Button>
       </div>
     </div>
   );
