@@ -494,19 +494,20 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
           <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{formatDecimal(tick)}</span>
         ))}
       </div>
-      {/* Scrollable Chart */}
-      <div 
-        ref={scrollRef}
-        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch' }}
-      >
-        <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
-          <ReactECharts
-            ref={chartRef}
-            option={option}
-            style={{ height: CHART_HEIGHT, width: chartWidth }}
-            opts={{ renderer: 'svg' }}
-          />
+      <div className="flex-1 overflow-visible">
+        <div 
+          ref={scrollRef}
+          className="overflow-x-auto scrollbar-hide"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
+          <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
+            <ReactECharts
+              ref={chartRef}
+              option={option}
+              style={{ height: CHART_HEIGHT, width: chartWidth }}
+              opts={{ renderer: 'svg' }}
+            />
+          </div>
         </div>
       </div>
     </div>
