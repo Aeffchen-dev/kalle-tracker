@@ -992,114 +992,205 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     setIsExporting(true);
     
     try {
-      const pdf = new jsPDF('p', 'mm', 'a4');
+      // Landscape A4
+      const pdf = new jsPDF('l', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 15;
+      
+      // ===== PAGE 1: KPIs in 2x2 grid =====
       let yPos = margin;
       
       // Title
-      pdf.setFontSize(20);
+      pdf.setFontSize(24);
       pdf.setTextColor(0, 0, 0);
       pdf.text('Kalle - Trend-Analyse', margin, yPos);
-      yPos += 10;
+      yPos += 8;
       
       // Date
       pdf.setFontSize(10);
       pdf.setTextColor(100, 100, 100);
       pdf.text(`Exportiert am ${format(new Date(), 'd. MMMM yyyy, HH:mm', { locale: de })} Uhr`, margin, yPos);
-      yPos += 15;
+      yPos += 20;
       
-      // Stats summary
-      pdf.setFontSize(14);
-      pdf.setTextColor(0, 0, 0);
-      pdf.text('Übersicht', margin, yPos);
-      yPos += 8;
+      // KPI Cards - 2x2 Grid
+      const cardWidth = (pageWidth - margin * 3) / 2;
+      const cardHeight = 45;
+      const cardPadding = 8;
       
-      pdf.setFontSize(10);
-      const statsLines = [
-        `Aktuelles Gewicht: ${weightStats.latest ? String(weightStats.latest).replace('.', ',') + ' kg' : '-'}`,
-        `Ideal-Gewicht: ${weightStats.idealWeight ? String(weightStats.idealWeight).replace('.', ',') + ' kg' : '-'}`,
-        `Letzter pH-Wert: ${phStats.latest ? String(phStats.latest).replace('.', ',') : '-'}`,
-        `pH im Normbereich: ${phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} (letzte 3 Monate)` : '-'}`,
-        `Ø Pipi-Intervall: ${pipiStats.avg ? String(pipiStats.avg).replace('.', ',') + ' h' : '-'}`,
-        `Ø Stuhlgang-Intervall: ${stuhlgangStats.avg ? String(stuhlgangStats.avg).replace('.', ',') + ' h' : '-'}`,
+      const kpiData = [
+        {
+          emoji: '🏋️',
+          label: 'Aktuelles Gewicht',
+          value: weightStats.latest ? `${String(weightStats.latest).replace('.', ',')} kg` : '-',
+          subtext: weightStats.idealWeight ? `Ideal: ${String(weightStats.idealWeight).replace('.', ',')} kg` : '',
+        },
+        {
+          emoji: '🧪',
+          label: 'Letzter pH-Wert',
+          value: phStats.latest ? String(phStats.latest).replace('.', ',') : '-',
+          subtext: phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Normbereich (3M)` : '',
+        },
+        {
+          emoji: '💦',
+          label: 'Ø Pipi-Intervall',
+          value: pipiStats.avg ? `${String(pipiStats.avg).replace('.', ',')} h` : '-',
+          subtext: pipiStats.avgPerDay ? `Ø ${String(pipiStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
+        },
+        {
+          emoji: '💩',
+          label: 'Ø Stuhlgang',
+          value: stuhlgangStats.avg ? `${String(stuhlgangStats.avg).replace('.', ',')} h` : '-',
+          subtext: stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : '',
+        },
       ];
       
-      statsLines.forEach(line => {
-        pdf.text(line, margin, yPos);
-        yPos += 6;
+      kpiData.forEach((kpi, index) => {
+        const col = index % 2;
+        const row = Math.floor(index / 2);
+        const x = margin + col * (cardWidth + margin);
+        const y = yPos + row * (cardHeight + 10);
+        
+        // Card background
+        pdf.setFillColor(245, 245, 245);
+        pdf.roundedRect(x, y, cardWidth, cardHeight, 4, 4, 'F');
+        
+        // Emoji
+        pdf.setFontSize(20);
+        pdf.text(kpi.emoji, x + cardPadding, y + 18);
+        
+        // Label
+        pdf.setFontSize(10);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(kpi.label, x + cardPadding + 25, y + 15);
+        
+        // Value
+        pdf.setFontSize(18);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text(kpi.value, x + cardPadding + 25, y + 30);
+        
+        // Subtext
+        if (kpi.subtext) {
+          pdf.setFontSize(9);
+          pdf.setTextColor(120, 120, 120);
+          pdf.text(kpi.subtext, x + cardPadding + 25, y + 40);
+        }
       });
+      
+      // ===== PAGE 2: Growth Curve Chart =====
+      pdf.addPage('l');
+      yPos = margin;
+      
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Wachstumskurve', margin, yPos);
       yPos += 10;
       
-      // Capture charts as image
-      const chartsElement = chartsRef.current;
-      const canvas = await html2canvas(chartsElement, {
-        backgroundColor: '#000000',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = pageWidth - margin * 2;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Check if we need a new page for the charts
-      if (yPos + imgHeight > pageHeight - margin) {
-        pdf.addPage();
-        yPos = margin;
+      // Capture Growth Curve chart
+      const growthChartElement = chartsRef.current.querySelector('.mb-8');
+      if (growthChartElement) {
+        const canvas = await html2canvas(growthChartElement as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
       }
       
-      pdf.setFontSize(14);
-      pdf.text('Charts', margin, yPos);
-      yPos += 8;
+      // ===== PAGE 3: Weight Chart =====
+      pdf.addPage('l');
+      yPos = margin;
       
-      pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
-      yPos += imgHeight + 15;
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('Gewichtsverlauf', margin, yPos);
+      yPos += 10;
       
-      // Data table
-      if (yPos > pageHeight - 50) {
-        pdf.addPage();
-        yPos = margin;
+      // Capture Weight chart
+      const weightChartElement = chartsRef.current.querySelector('.mb-6');
+      if (weightChartElement) {
+        const canvas = await html2canvas(weightChartElement as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
       }
       
-      pdf.setFontSize(14);
+      // ===== PAGE 4: pH Chart =====
+      pdf.addPage('l');
+      yPos = margin;
+      
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
+      pdf.text('pH-Wert Verlauf', margin, yPos);
+      yPos += 10;
+      
+      // Capture pH chart
+      const phChartElement = chartsRef.current.querySelector('.pt-16');
+      if (phChartElement) {
+        const canvas = await html2canvas(phChartElement as HTMLElement, {
+          backgroundColor: '#000000',
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
+        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+      }
+      
+      // ===== PAGE 5+: Data Table =====
+      pdf.addPage('l');
+      yPos = margin;
+      
+      pdf.setFontSize(16);
+      pdf.setTextColor(0, 0, 0);
       pdf.text('Alle Einträge', margin, yPos);
-      yPos += 8;
+      yPos += 10;
       
-      pdf.setFontSize(8);
+      pdf.setFontSize(9);
       const sortedEvents = [...events].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
       
       // Table header
       pdf.setTextColor(100, 100, 100);
       pdf.text('Datum', margin, yPos);
-      pdf.text('Zeit', margin + 35, yPos);
-      pdf.text('Typ', margin + 55, yPos);
-      pdf.text('Wert', margin + 90, yPos);
+      pdf.text('Zeit', margin + 40, yPos);
+      pdf.text('Typ', margin + 70, yPos);
+      pdf.text('Wert', margin + 120, yPos);
       yPos += 5;
       
       // Draw line
       pdf.setDrawColor(200, 200, 200);
       pdf.line(margin, yPos, pageWidth - margin, yPos);
-      yPos += 4;
+      yPos += 5;
       
       pdf.setTextColor(0, 0, 0);
       
       sortedEvents.forEach((event) => {
         if (yPos > pageHeight - 15) {
-          pdf.addPage();
+          pdf.addPage('l');
           yPos = margin;
           
           // Repeat header on new page
+          pdf.setFontSize(9);
           pdf.setTextColor(100, 100, 100);
           pdf.text('Datum', margin, yPos);
-          pdf.text('Zeit', margin + 35, yPos);
-          pdf.text('Typ', margin + 55, yPos);
-          pdf.text('Wert', margin + 90, yPos);
+          pdf.text('Zeit', margin + 40, yPos);
+          pdf.text('Typ', margin + 70, yPos);
+          pdf.text('Wert', margin + 120, yPos);
           yPos += 5;
           pdf.line(margin, yPos, pageWidth - margin, yPos);
-          yPos += 4;
+          yPos += 5;
           pdf.setTextColor(0, 0, 0);
         }
         
@@ -1133,10 +1224,10 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         }
         
         pdf.text(dateStr, margin, yPos);
-        pdf.text(timeStr, margin + 35, yPos);
-        pdf.text(typeStr, margin + 55, yPos);
-        pdf.text(valueStr, margin + 90, yPos);
-        yPos += 5;
+        pdf.text(timeStr, margin + 40, yPos);
+        pdf.text(typeStr, margin + 70, yPos);
+        pdf.text(valueStr, margin + 120, yPos);
+        yPos += 6;
       });
       
       // Save the PDF
