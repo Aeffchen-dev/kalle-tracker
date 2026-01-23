@@ -382,7 +382,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         const d = data[idx];
         const ph = d.value;
         const isOutOfRange = ph < 6.5 || ph > 7.2;
-        const status = isOutOfRange ? '<span style="color:#FF4444">⚠️ Außerhalb (6.5-7.2)</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+        const status = isOutOfRange ? '<span style="color:#FF4444">⚠️ Außerhalb (6,5-7,2)</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
           <div style="font-weight:600;margin-bottom:4px">${d.dateLine1}</div>
           <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.dateLine2}</div>
