@@ -998,23 +998,25 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = 15;
       
-      // Body background color
-      const bgColor = '#e8e2db';
+      // Dark background color (matching chart background)
+      const setDarkBackground = () => {
+        pdf.setFillColor(0, 0, 0);
+        pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      };
       
       // ===== PAGE 1: Title + KPIs =====
-      pdf.setFillColor(232, 226, 219); // #e8e2db
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      setDarkBackground();
       let yPos = margin;
       
       // Title
       pdf.setFontSize(24);
-      pdf.setTextColor(0, 0, 0);
+      pdf.setTextColor(255, 255, 255);
       pdf.text('Kalle - Trend-Analyse', margin, yPos);
       yPos += 8;
       
       // Date
       pdf.setFontSize(10);
-      pdf.setTextColor(100, 100, 100);
+      pdf.setTextColor(150, 150, 150);
       pdf.text(`Exportiert am ${format(new Date(), 'd. MMMM yyyy, HH:mm', { locale: de })} Uhr`, margin, yPos);
       yPos += 15;
       
@@ -1036,12 +1038,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 2: Growth Curve Chart =====
       pdf.addPage('l');
-      pdf.setFillColor(232, 226, 219);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      setDarkBackground();
       yPos = margin;
       
       pdf.setFontSize(16);
-      pdf.setTextColor(0, 0, 0);
+      pdf.setTextColor(255, 255, 255);
       pdf.text('Wachstumskurve', margin, yPos);
       yPos += 10;
       
@@ -1062,12 +1063,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 3: Weight Chart =====
       pdf.addPage('l');
-      pdf.setFillColor(232, 226, 219);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      setDarkBackground();
       yPos = margin;
       
       pdf.setFontSize(16);
-      pdf.setTextColor(0, 0, 0);
+      pdf.setTextColor(255, 255, 255);
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
@@ -1113,12 +1113,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       
       // ===== PAGE 4: pH Chart =====
       pdf.addPage('l');
-      pdf.setFillColor(232, 226, 219);
-      pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+      setDarkBackground();
       yPos = margin;
       
       pdf.setFontSize(16);
-      pdf.setTextColor(0, 0, 0);
+      pdf.setTextColor(255, 255, 255);
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
