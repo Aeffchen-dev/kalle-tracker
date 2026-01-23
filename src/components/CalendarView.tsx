@@ -45,6 +45,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   // Long press refs
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const longPressTriggered = useRef<boolean>(false);
+  
+  // Double tap refs
+  const lastTapTime = useRef<number>(0);
+  const lastTapId = useRef<string | null>(null);
 
   const loadEvents = async () => {
     const result = await getEvents();
@@ -192,10 +196,30 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       longPressTriggered.current = false;
       return;
     }
-    // Hide delete if showing
+    
+    // Check for double tap
+    const now = Date.now();
+    if (lastTapId.current === eventId && now - lastTapTime.current < 300) {
+      // Double tap detected - toggle delete
+      setActiveEventId(activeEventId === eventId ? null : eventId);
+      lastTapTime.current = 0;
+      lastTapId.current = null;
+      return;
+    }
+    
+    lastTapTime.current = now;
+    lastTapId.current = eventId;
+    
+    // Hide delete if showing (single tap when delete is visible)
     if (activeEventId === eventId) {
       setActiveEventId(null);
     }
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, eventId: string) => {
+    e.preventDefault();
+    // Toggle delete on right-click
+    setActiveEventId(activeEventId === eventId ? null : eventId);
   };
   
   const filteredEvents = events.filter(event => {
@@ -379,6 +403,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                         <div
                           className="flex-1 flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg overflow-hidden cursor-pointer select-none"
                           onClick={() => handleItemClick(event.id)}
+                          onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
                           onTouchMove={handleLongPressMove}
                           onTouchEnd={handleLongPressEnd}
