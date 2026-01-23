@@ -646,7 +646,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
                 </a>
-                <div className="flex items-start gap-2 mt-2 ml-6">
+                <div className="flex items-start justify-between mt-2 ml-6">
                   <a 
                     href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
                     onClick={(e) => {
