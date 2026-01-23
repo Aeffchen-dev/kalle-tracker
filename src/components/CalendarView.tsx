@@ -404,7 +404,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               {event.type === 'stuhlgang' && 'Stuhlgang'}
                               {event.type === 'gewicht' && (
                                 <>
-                                  Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-red-500' : ''}>{event.weight_value ? `${event.weight_value} kg` : '-'}</span>
+                                  Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF4444]' : 'text-[#5AD940]'}>{event.weight_value ? `${event.weight_value} kg` : '-'}</span>
                                 </>
                               )}
                               {event.type === 'phwert' && (
