@@ -108,6 +108,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     setActiveEventId(null);
   };
 
+  // Haptic feedback helper
+  const triggerHaptic = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10); // Short 10ms vibration
+    }
+  };
+
   // Long press handlers
   const handleLongPressStart = (eventId: string) => {
     longPressTriggered.current = false;
@@ -118,6 +125,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         setActiveEventId(null);
       } else {
         setActiveEventId(eventId);
+        triggerHaptic();
       }
     }, 500); // 500ms for long press
   };
