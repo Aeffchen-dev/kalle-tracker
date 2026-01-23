@@ -621,18 +621,34 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <span>Anrufen</span>
                 </a>
                 <a 
-                  href="https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
+                  onClick={(e) => {
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    if (!isIOS) {
+                      e.preventDefault();
+                      window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
+                    }
+                  }}
                   className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
                 >
                   <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
                 </a>
-                <p className="text-[14px] text-white/60 mt-2 ml-6">
+                <a 
+                  href="maps://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
+                  onClick={(e) => {
+                    // Check if iOS - if not, use Google Maps instead
+                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                    if (!isIOS) {
+                      e.preventDefault();
+                      window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
+                    }
+                  }}
+                  className="block text-[14px] text-white/60 mt-2 ml-6 hover:text-white transition-colors"
+                >
                   Uhlandstraße 151<br />
                   10719 Berlin
-                </p>
+                </a>
               </div>
             </div>
 
