@@ -1268,19 +1268,34 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         yPos += 6;
       });
       
-      // Open PDF in new tab using link click (avoids popup blockers)
+      // Generate PDF blob
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = pdfUrl;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      
+      // Check if iOS Safari (needs download approach)
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      if (isIOS) {
+        // iOS Safari: Use download approach
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = `kalle-trend-analyse-${format(new Date(), 'yyyy-MM-dd')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Other browsers: Open in new tab
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
       
       // Clean up blob URL after a delay
-      setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 5000);
       
     } catch (error) {
       console.error('PDF export failed:', error);
