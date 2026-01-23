@@ -245,7 +245,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
                   placeholder="32"
-                  className="bg-transparent text-white text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-8 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="bg-transparent text-white text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-16 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="text-[14px] text-white ml-4">kg</span>
               </div>
