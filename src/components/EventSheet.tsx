@@ -289,7 +289,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                 )}
               </div>
               {/* Centered time */}
-              <div className="flex-1 flex items-center justify-center gap-1">
+              <div className="flex-1 flex items-center justify-center">
                 <input
                   type="time"
                   value={selectedTime}
