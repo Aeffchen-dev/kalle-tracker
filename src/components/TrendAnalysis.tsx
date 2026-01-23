@@ -1230,8 +1230,10 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         yPos += 6;
       });
       
-      // Save the PDF
-      pdf.save(`kalle-trend-analyse-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      // Open PDF in new tab
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
       
     } catch (error) {
       console.error('PDF export failed:', error);
