@@ -974,7 +974,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           label="Letzter pH-Wert" 
           value={phStats.latest} 
           unit=""
-          subtext={phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Bereich (3M)` : undefined}
+          subtext={phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Normbereich (3M)` : undefined}
         />
         <StatCard 
           emoji="💦" 
