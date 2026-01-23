@@ -138,6 +138,22 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const isReceivingRealtimeUpdate = useRef(false);
 
+  // Change body background color when overlay opens/closes
+  useEffect(() => {
+    const originalBgColor = '#e8e2db';
+    const brownBgColor = '#d4c4b0';
+    
+    if (isOpen) {
+      document.body.style.backgroundColor = brownBgColor;
+    } else {
+      document.body.style.backgroundColor = originalBgColor;
+    }
+    
+    return () => {
+      document.body.style.backgroundColor = originalBgColor;
+    };
+  }, [isOpen]);
+
   // Load data from database
   useEffect(() => {
     const loadData = async () => {
