@@ -45,7 +45,7 @@ const StatCard = memo(({
   <div className="bg-white/5 rounded-xl p-3 border border-white/10">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-lg">{emoji}</span>
-      <span className="text-[11px] text-white/50 uppercase tracking-wide">{label}</span>
+      <span className="text-[11px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
     </div>
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
@@ -971,7 +971,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         />
         <StatCard 
           emoji="🧪" 
-          label="Letzter pH-Wert" 
+          label={"Letzter\npH-Wert"}
           value={phStats.latest} 
           unit=""
           subtext={phStats.totalCount > 0 ? `${phStats.inRangeCount}/${phStats.totalCount} im Normbereich (3M)` : undefined}
