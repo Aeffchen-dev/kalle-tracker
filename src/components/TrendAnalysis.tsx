@@ -1268,10 +1268,19 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         yPos += 6;
       });
       
-      // Open PDF in new tab
+      // Open PDF in new tab using link click (avoids popup blockers)
       const pdfBlob = pdf.output('blob');
       const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl, '_blank');
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up blob URL after a delay
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
       
     } catch (error) {
       console.error('PDF export failed:', error);
