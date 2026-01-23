@@ -226,10 +226,12 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
           opacity: 1,
         },
         emphasis: {
-          scale: true,
+          scale: 1.8,
           itemStyle: {
-            shadowBlur: 10,
-            shadowColor: 'rgba(90, 217, 64, 0.5)',
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            shadowBlur: 12,
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -396,10 +398,12 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
           opacity: 1,
         },
         emphasis: {
-          scale: true,
+          scale: 1.8,
           itemStyle: {
-            shadowBlur: 10,
-            shadowColor: 'rgba(90, 217, 64, 0.5)',
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            shadowBlur: 12,
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -620,10 +624,12 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           opacity: 1,
         },
         emphasis: {
-          scale: 1.5,
+          scale: 1.8,
           itemStyle: {
-            shadowBlur: 10,
-            shadowColor: 'rgba(90, 217, 64, 0.5)',
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            shadowBlur: 12,
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -640,10 +646,12 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           shadowColor: 'rgba(255, 68, 68, 0.6)',
         },
         emphasis: {
-          scale: 1.5,
+          scale: 1.8,
           itemStyle: {
+            borderColor: '#ffffff',
+            borderWidth: 3,
             shadowBlur: 15,
-            shadowColor: 'rgba(255, 68, 68, 0.8)',
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
