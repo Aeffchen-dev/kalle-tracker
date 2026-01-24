@@ -8,6 +8,7 @@ import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
+import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
 
@@ -99,7 +100,30 @@ const Index = () => {
     calculateTimeDisplay();
     // Detect anomalies
     const detected = detectAnomalies(result.events);
-    setAnomalies(detected.filter(a => !dismissedAnomalies.has(a.id)));
+    const filteredAnomalies = detected.filter(a => !dismissedAnomalies.has(a.id));
+    setAnomalies(filteredAnomalies);
+    
+    // Schedule native notifications for walk reminders
+    const walkReminder = filteredAnomalies.find(a => a.type === 'upcoming_break');
+    if (walkReminder) {
+      // Parse time from description (e.g., "Nächster Spaziergang um ca. 14:30 Uhr")
+      const timeMatch = walkReminder.description.match(/(\d{2}):(\d{2})/);
+      if (timeMatch) {
+        const now = new Date();
+        const reminderTime = new Date();
+        reminderTime.setHours(parseInt(timeMatch[1]), parseInt(timeMatch[2]), 0, 0);
+        
+        // If time is in the past, schedule for tomorrow
+        if (reminderTime <= now) {
+          reminderTime.setDate(reminderTime.getDate() + 1);
+        }
+        
+        await scheduleWalkReminder(reminderTime, walkReminder.title, walkReminder.description);
+      }
+    } else {
+      // No walk reminder needed, cancel any scheduled
+      await cancelWalkReminders();
+    }
   };
 
   const handleDismissAnomaly = (id: string) => {
@@ -128,6 +152,9 @@ const Index = () => {
 
   // Initial load and realtime subscription
   useEffect(() => {
+    // Initialize notifications
+    initializeNotifications();
+    
     // Load settings first, then events
     getSettings().then(() => loadEvents());
     
