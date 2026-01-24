@@ -28,12 +28,18 @@ const DrawerContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
+    {/* Background extension for iOS safe area - uses black to match CalendarView */}
+    <div 
+      className="fixed inset-x-0 bottom-0 z-40 bg-black" 
+      style={{ height: 'calc(env(safe-area-inset-bottom) + 50px)' }}
+    />
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
+        "fixed inset-x-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
         className,
       )}
+      style={{ bottom: 'env(safe-area-inset-bottom)' }}
       {...props}
     >
       {children}

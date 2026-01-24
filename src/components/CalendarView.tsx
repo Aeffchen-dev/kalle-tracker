@@ -29,7 +29,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [birthday, setBirthday] = useState<Date | null>(null);
-  const [isContentScrollable, setIsContentScrollable] = useState(false);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -84,24 +83,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     });
   }, []);
 
-  // Scroll to top when switching views and check if content is scrollable
+  // Scroll to top when switching views
   useEffect(() => {
     scrollContainerRef.current?.scrollTo({ top: 0 });
   }, [showTrends]);
-
-  // Check if content is scrollable whenever snap point, events, date, or view changes
-  useEffect(() => {
-    const checkScrollable = () => {
-      const container = scrollContainerRef.current;
-      if (container) {
-        setIsContentScrollable(container.scrollHeight > container.clientHeight);
-      }
-    };
-    
-    // Check after a small delay to ensure DOM has updated
-    const timeout = setTimeout(checkScrollable, 100);
-    return () => clearTimeout(timeout);
-  }, [snap, events, selectedDate, showTrends]);
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -393,9 +378,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] overflow-y-auto overflow-x-hidden flex-1"
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
-          data-vaul-no-drag={snap === 0.9 && isContentScrollable ? true : undefined}
+          data-vaul-no-drag
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
           onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
           onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
@@ -438,7 +423,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     return (
                       <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center justify-between p-3 bg-white/[0.06] backdrop-blur-sm rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
