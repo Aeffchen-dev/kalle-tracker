@@ -255,7 +255,7 @@ const Index = () => {
             WebkitUserSelect: 'none', 
             WebkitTouchCallout: 'none',
             userSelect: 'none',
-            touchAction: 'manipulation'
+            touchAction: 'none'
           }}
           onContextMenu={(e) => e.preventDefault()}
           onPointerDown={(e) => {

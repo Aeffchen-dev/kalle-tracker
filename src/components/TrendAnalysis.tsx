@@ -1305,7 +1305,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   }, [events]);
 
   return (
-    <div className="pb-11 space-y-6" style={{ touchAction: 'pan-y' }}>
+    <div className="pb-11 space-y-6">
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
