@@ -122,36 +122,36 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         
         <div className="overflow-y-auto flex-1" style={{ minHeight: 0 }} data-vaul-no-drag>
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
-                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
+              <div key={i} className="bg-white/5 rounded-[12px] p-4 animate-pulse">
+                <div className="h-4 w-24 bg-white/10 rounded mb-3" />
+                <div className="h-10 w-full bg-white/10 rounded-[4px]" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="space-y-4 mb-4">
-            {/* Countdown Mode Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Countdown</span>
-              <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3 mb-4">
+            {/* Countdown Mode Card */}
+            <div className="bg-white/5 rounded-[12px] p-4">
+              <span className="text-[12px] text-white/60 uppercase tracking-wide">Countdown</span>
+              <div className="grid grid-cols-2 gap-2 mt-3">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
-                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                  className={`h-11 rounded-[8px] text-[14px] transition-all ${
                     countdownMode === 'count_up'
                       ? 'bg-white text-black'
-                      : 'bg-transparent border border-white/30 text-white'
+                      : 'bg-white/10 text-white'
                   }`}
                 >
                   Hochzählen
                 </button>
                 <button
                   onClick={() => handleCountdownModeChange('count_down')}
-                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                  className={`h-11 rounded-[8px] text-[14px] transition-all ${
                     countdownMode === 'count_down'
                       ? 'bg-white text-black'
-                      : 'bg-transparent border border-white/30 text-white'
+                      : 'bg-white/10 text-white'
                   }`}
                 >
                   Runterzählen
@@ -159,10 +159,10 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               </div>
             </div>
 
-            {/* Walk Interval Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Erinnerung nach</span>
-              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
+            {/* Walk Interval Card */}
+            <div className="bg-white/5 rounded-[12px] p-4">
+              <span className="text-[12px] text-white/60 uppercase tracking-wide">Erinnerung nach</span>
+              <label className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] cursor-pointer relative mt-3">
                 <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
                 <span className="text-[14px] text-white ml-1">Stunden</span>
                 <select
@@ -177,10 +177,10 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               </label>
             </div>
 
-            {/* Morning Walk Time Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Morgen-Spaziergang</span>
-              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
+            {/* Morning Walk Time Card */}
+            <div className="bg-white/5 rounded-[12px] p-4">
+              <span className="text-[12px] text-white/60 uppercase tracking-wide">Morgen-Spaziergang</span>
+              <label className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] cursor-pointer relative mt-3">
                 <input
                   type="time"
                   value={morningTime}
@@ -192,10 +192,10 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               </label>
             </div>
 
-            {/* Sleep Time Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Schlafenszeit</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+            {/* Sleep Time Card */}
+            <div className="bg-white/5 rounded-[12px] p-4">
+              <span className="text-[12px] text-white/60 uppercase tracking-wide">Schlafenszeit</span>
+              <div className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] mt-3">
                 <select
                   value={sleepStart}
                   onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
@@ -212,7 +212,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     );
                   })}
                 </select>
-                <span className="text-[14px] text-white ml-1 mr-1">bis</span>
+                <span className="text-[14px] text-white mx-2">bis</span>
                 <select
                   value={sleepEnd}
                   onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
@@ -233,10 +233,10 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               </div>
             </div>
 
-            {/* Birthday Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Geburtstag</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
+            {/* Birthday Card */}
+            <div className="bg-white/5 rounded-[12px] p-4">
+              <span className="text-[12px] text-white/60 uppercase tracking-wide">Geburtstag</span>
+              <div className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] gap-2 mt-3">
                 <select
                   value={birthdayDay || ''}
                   onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
