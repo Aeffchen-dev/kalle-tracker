@@ -54,7 +54,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="bg-black rounded-t-[20px] border-none px-4 pb-8">
+      <SheetContent side="bottom" className="bg-black rounded-t-[20px] border-none px-4 pb-8" hideOverlay onOpenAutoFocus={(e) => e.preventDefault()}>
         <SheetHeader className="pb-6">
           <SheetTitle className="text-[18px] font-semibold text-center text-white">Einstellungen</SheetTitle>
         </SheetHeader>
