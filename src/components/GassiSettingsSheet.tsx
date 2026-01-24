@@ -56,7 +56,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-none px-4 pb-8">
         <DrawerHeader className="pb-6">
-          <DrawerTitle className="text-[18px] font-semibold text-center text-white">Einstellungen</DrawerTitle>
+          <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
         {isLoading ? (
