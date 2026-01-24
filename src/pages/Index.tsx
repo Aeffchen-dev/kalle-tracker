@@ -72,9 +72,9 @@ const Index = () => {
       const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
       
       if (hours === 0) {
-        setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${minutes}min`);
       } else {
-        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${hours}h ${minutes}min`);
       }
     } else {
       // Count up from last entry (default)
@@ -89,9 +89,9 @@ const Index = () => {
       const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
       
       if (hours === 0) {
-        setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${minutes}min`);
       } else {
-        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${hours}h ${minutes}min`);
       }
     }
   };
