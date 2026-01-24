@@ -123,38 +123,37 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         
         <div className="overflow-y-auto flex-1" style={{ minHeight: 0 }}>
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
-                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
-              </div>
+              <div key={i} className="h-16 w-full bg-white/5 rounded-xl animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="divide-y divide-white/20 mb-4">
+          <div className="space-y-3 mb-4">
             {/* Walk Interval Setting */}
-            <div className="flex items-center justify-between min-h-12 w-full">
-              <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
-                  className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center"
-                >
-                  <Minus size={14} strokeWidth={3} />
-                </button>
-                <span className="text-[14px] text-white/90 w-[2ch] text-center">{intervalHours}h</span>
-                <button
-                  onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
-                  className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center"
-                >
-                  <Plus size={14} strokeWidth={3} />
-                </button>
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
+                    className="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center"
+                  >
+                    <Minus size={14} strokeWidth={3} />
+                  </button>
+                  <span className="text-[14px] text-white/90 w-[2ch] text-center">{intervalHours}h</span>
+                  <button
+                    onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
+                    className="w-7 h-7 rounded-full bg-white/10 text-white flex items-center justify-center"
+                  >
+                    <Plus size={14} strokeWidth={3} />
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Morning Walk Time Setting */}
-            <label className="flex items-center justify-between min-h-12 w-full cursor-pointer relative">
+            <label className="bg-white/5 rounded-xl p-4 flex items-center justify-between cursor-pointer relative block">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white/90">{morningTime}</span>
@@ -169,55 +168,57 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </label>
 
             {/* Sleep Time Setting */}
-            <div className="flex items-center justify-between min-h-12 w-full">
-              <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
-              <div className="flex items-center gap-2">
-                <select
-                  value={sleepStart}
-                  onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
-                >
-                  {Array.from({ length: 48 }, (_, i) => {
-                    const hour = Math.floor(i / 2);
-                    const minute = i % 2 === 0 ? '00' : '30';
-                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                    return (
-                      <option key={i} value={value} className="bg-black text-white">
-                        {hour.toString().padStart(2, '0')}:{minute}
-                      </option>
-                    );
-                  })}
-                </select>
-                <span className="text-[14px] text-white/90">bis</span>
-                <select
-                  value={sleepEnd}
-                  onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
-                >
-                  {Array.from({ length: 48 }, (_, i) => {
-                    const hour = Math.floor(i / 2);
-                    const minute = i % 2 === 0 ? '00' : '30';
-                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                    return (
-                      <option key={i} value={value} className="bg-black text-white">
-                        {hour.toString().padStart(2, '0')}:{minute}
-                      </option>
-                    );
-                  })}
-                </select>
-                <span className="text-[14px] text-white/90">Uhr</span>
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={sleepStart}
+                    onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
+                    className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
+                  >
+                    {Array.from({ length: 48 }, (_, i) => {
+                      const hour = Math.floor(i / 2);
+                      const minute = i % 2 === 0 ? '00' : '30';
+                      const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                      return (
+                        <option key={i} value={value} className="bg-black text-white">
+                          {hour.toString().padStart(2, '0')}:{minute}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <span className="text-[14px] text-white/90">bis</span>
+                  <select
+                    value={sleepEnd}
+                    onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
+                    className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
+                  >
+                    {Array.from({ length: 48 }, (_, i) => {
+                      const hour = Math.floor(i / 2);
+                      const minute = i % 2 === 0 ? '00' : '30';
+                      const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                      return (
+                        <option key={i} value={value} className="bg-black text-white">
+                          {hour.toString().padStart(2, '0')}:{minute}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <span className="text-[14px] text-white/90">Uhr</span>
+                </div>
               </div>
             </div>
 
             {/* Countdown Mode Setting */}
-            <div className="py-3">
-              <div className="flex items-center justify-between mb-2">
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-[14px] text-white">Countdown</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
-                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
+                  className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                     countdownMode === 'count_up'
                       ? 'bg-white text-black'
                       : 'bg-white/10 text-white hover:bg-white/15'
@@ -227,7 +228,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 </button>
                 <button
                   onClick={() => handleCountdownModeChange('count_down')}
-                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
+                  className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                     countdownMode === 'count_down'
                       ? 'bg-white text-black'
                       : 'bg-white/10 text-white hover:bg-white/15'
@@ -239,65 +240,67 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Birthday Setting */}
-            <div className="flex items-center justify-between min-h-12 w-full">
-              <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
-              <div className="flex items-center gap-2">
-                <select
-                  value={birthdayDay || ''}
-                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
-                  className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
-                >
-                  <option value="" className="bg-black text-white">TT</option>
-                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
-                    <option key={d} value={d} className="bg-black text-white">
-                      {d.toString().padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={birthdayMonth || ''}
-                  onChange={(e) => {
-                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
-                    let newDay = birthdayDay;
-                    if (newMonth && birthdayYear && birthdayDay) {
-                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
-                      if (birthdayDay > maxDays) {
-                        newDay = maxDays;
+            <div className="bg-white/5 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={birthdayDay || ''}
+                    onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
+                    className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
+                  >
+                    <option value="" className="bg-black text-white">TT</option>
+                    {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
+                      <option key={d} value={d} className="bg-black text-white">
+                        {d.toString().padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={birthdayMonth || ''}
+                    onChange={(e) => {
+                      const newMonth = e.target.value ? parseInt(e.target.value) : null;
+                      let newDay = birthdayDay;
+                      if (newMonth && birthdayYear && birthdayDay) {
+                        const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
+                        if (birthdayDay > maxDays) {
+                          newDay = maxDays;
+                        }
                       }
-                    }
-                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
-                  }}
-                  className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
-                >
-                  <option value="" className="bg-black text-white">MM</option>
-                  {months.map((m) => (
-                    <option key={m.value} value={m.value} className="bg-black text-white">
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={birthdayYear || ''}
-                  onChange={(e) => {
-                    const newYear = e.target.value ? parseInt(e.target.value) : null;
-                    let newDay = birthdayDay;
-                    if (newYear && birthdayMonth && birthdayDay) {
-                      const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
-                      if (birthdayDay > maxDays) {
-                        newDay = maxDays;
+                      handleBirthdayPartChange(newDay, newMonth, birthdayYear);
+                    }}
+                    className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
+                  >
+                    <option value="" className="bg-black text-white">MM</option>
+                    {months.map((m) => (
+                      <option key={m.value} value={m.value} className="bg-black text-white">
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={birthdayYear || ''}
+                    onChange={(e) => {
+                      const newYear = e.target.value ? parseInt(e.target.value) : null;
+                      let newDay = birthdayDay;
+                      if (newYear && birthdayMonth && birthdayDay) {
+                        const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
+                        if (birthdayDay > maxDays) {
+                          newDay = maxDays;
+                        }
                       }
-                    }
-                    handleBirthdayPartChange(newDay, birthdayMonth, newYear);
-                  }}
-                  className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
-                >
-                  <option value="" className="bg-black text-white">JJJJ</option>
-                  {years.map((y) => (
-                    <option key={y} value={y} className="bg-black text-white">
-                      {y}
-                    </option>
-                  ))}
-                </select>
+                      handleBirthdayPartChange(newDay, birthdayMonth, newYear);
+                    }}
+                    className="bg-transparent text-white/90 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
+                  >
+                    <option value="" className="bg-black text-white">JJJJ</option>
+                    {years.map((y) => (
+                      <option key={y} value={y} className="bg-black text-white">
+                        {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
