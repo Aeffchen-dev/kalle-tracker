@@ -155,16 +155,17 @@ export default {
             transform: "translateY(-4px) rotate(-2deg)",
           },
         },
-        "speech-slide-in": {
+        "speech-pop": {
           "0%": {
             opacity: "0",
-            transform: "scale(0.7) translateX(20px) rotate(8deg)",
-            transformOrigin: "bottom left",
+            transform: "scale(0.5) translateX(-10px)",
+          },
+          "50%": {
+            transform: "scale(1.1) translateX(0)",
           },
           "100%": {
             opacity: "1",
-            transform: "scale(1) translateX(0) rotate(0deg)",
-            transformOrigin: "bottom left",
+            transform: "scale(1) translateX(0)",
           },
         },
       },
@@ -177,7 +178,7 @@ export default {
         "fade-in": "fade-in 0.2s ease-out forwards",
         "tail-wag": "tail-wag 0.6s ease-in-out",
         "dog-bounce": "dog-bounce 0.4s ease-out",
-        "speech-slide-in": "speech-slide-in 0.15s ease-out forwards",
+        "speech-pop": "speech-pop 0.3s ease-out forwards",
       },
     },
   },
