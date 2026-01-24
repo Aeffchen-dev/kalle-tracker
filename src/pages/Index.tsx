@@ -344,7 +344,7 @@ const Index = () => {
       />
 
       {/* Nickname prompt drawer */}
-      <Drawer open={showNicknamePrompt} onOpenChange={() => {}}>
+      <Drawer open={showNicknamePrompt} onOpenChange={(open) => { if (!open && nicknameInput.trim()) setShowNicknamePrompt(false); }}>
         <DrawerContent className="bg-black border-black px-4 pb-8 z-[100]">
           <DrawerHeader className="pb-4">
             <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
