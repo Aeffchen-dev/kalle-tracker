@@ -131,7 +131,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         ) : (
           <div className="space-y-3 pb-4">
             {/* Walk Interval Setting */}
-            <div className="bg-white/5 rounded-xl p-4">
+            <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
                 <div className="flex items-center gap-3">
@@ -153,7 +153,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Morning Walk Time Setting */}
-            <label className="bg-white/5 rounded-xl p-4 flex items-center justify-between cursor-pointer relative block">
+            <label className="bg-white/5 rounded-lg p-4 flex items-center justify-between cursor-pointer relative block">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white/70">{morningTime}</span>
@@ -168,7 +168,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </label>
 
             {/* Sleep Time Setting */}
-            <div className="bg-white/5 rounded-xl p-4">
+            <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
                 <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Countdown Mode Setting */}
-            <div className="bg-white/5 rounded-xl p-4">
+            <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[14px] text-white">Countdown</span>
               </div>
@@ -240,7 +240,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Birthday Setting */}
-            <div className="bg-white/5 rounded-xl p-4">
+            <div className="bg-white/5 rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
                 <div className="flex items-center gap-2">
