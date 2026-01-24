@@ -4,13 +4,11 @@ import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
 import { format, subDays, addDays, isSameDay, startOfDay } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff, Bell } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff } from 'lucide-react';
 import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
-import AnomalyAlerts from './AnomalyAlerts';
 
 type SnapPoint = number | string;
 
@@ -29,8 +27,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
-  const [showAnomalies, setShowAnomalies] = useState(false);
-  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -53,16 +49,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   // Double tap refs
   const lastTapTime = useRef<number>(0);
   const lastTapId = useRef<string | null>(null);
-
-  // Anomaly detection
-  const anomalies = useMemo(() => {
-    const detected = detectAnomalies(events);
-    return detected.filter(a => !dismissedAnomalies.has(a.id));
-  }, [events, dismissedAnomalies]);
-
-  const handleDismissAnomaly = useCallback((id: string) => {
-    setDismissedAnomalies(prev => new Set([...prev, id]));
-  }, []);
 
   const loadEvents = async () => {
     const result = await getEvents();
@@ -292,22 +278,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
-            {showAnomalies ? (
-              <>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowAnomalies(false); }} 
-                  className="w-6 h-6 flex items-center justify-center"
-                >
-                  <ArrowLeft size={24} className="text-white" />
-                </button>
-                <DrawerTitle className="text-center text-[14px] text-white leading-6">
-                  Hinweise
-                </DrawerTitle>
-                <div className="w-6 h-6 flex items-center justify-center relative">
-                  <Bell size={20} className={anomalies.length > 0 ? 'text-amber-400' : 'text-white/60'} />
-                </div>
-              </>
-            ) : showTrends ? (
+            {showTrends ? (
               <>
                 <button 
                   onClick={(e) => { e.stopPropagation(); setShowTrends(false); }} 
@@ -327,7 +298,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 w-[72px]">
+                <div className="flex items-center gap-2 w-[56px]">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoPrev ? (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
@@ -362,18 +333,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       </Popover>
                     )}
                   </div>
-                  {/* Alert bell button */}
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setShowAnomalies(true); setSnap(0.9); }}
-                    className="w-6 h-6 flex items-center justify-center relative"
-                  >
-                    <Bell size={18} className={anomalies.length > 0 ? 'text-amber-400' : 'text-white/60'} />
-                    {anomalies.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-medium">
-                        {anomalies.length > 9 ? '9+' : anomalies.length}
-                      </span>
-                    )}
-                  </button>
                 </div>
                 <DrawerTitle className="text-center text-[14px] text-white leading-6 flex-1">
                   {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
@@ -402,26 +361,11 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
           data-vaul-no-drag
-          onTouchStart={(e) => !showTrends && !showAnomalies && handleDaySwipeStart(e)}
-          onTouchMove={(e) => !showTrends && !showAnomalies && handleDaySwipeMove(e)}
-          onTouchEnd={() => !showTrends && !showAnomalies && handleDaySwipeEnd()}
+          onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
+          onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
+          onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
         >
-          {showAnomalies ? (
-            <div data-vaul-no-drag>
-              {anomalies.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <Bell size={48} className="text-white/20 mb-4" />
-                  <p className="text-white/60 text-[14px]">Keine Hinweise</p>
-                  <p className="text-white/40 text-[12px] mt-1">Alles sieht gut aus! 🐾</p>
-                </div>
-              ) : (
-                <AnomalyAlerts 
-                  anomalies={anomalies} 
-                  onDismiss={handleDismissAnomaly}
-                />
-              )}
-            </div>
-          ) : showTrends ? (
+          {showTrends ? (
             <div data-vaul-no-drag>
               <TrendAnalysis events={events} />
             </div>
