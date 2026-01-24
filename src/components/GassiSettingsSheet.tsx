@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -129,12 +128,12 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-none px-4 pb-8">
+      <DrawerContent className="bg-black border-none px-4 pb-8 max-h-[85vh]">
         <DrawerHeader className="pb-6">
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        <ScrollArea className="max-h-[70vh]">
+        <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(85vh - 100px)' }}>
           {isLoading ? (
             <div className="space-y-4 pr-2">
               {[1, 2, 3, 4, 5].map((i) => (
@@ -327,7 +326,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
             </div>
           )}
-        </ScrollArea>
+        </div>
       </DrawerContent>
     </Drawer>
   );
