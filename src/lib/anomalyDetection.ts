@@ -1,5 +1,5 @@
 import { Event } from './events';
-import { differenceInHours, differenceInMinutes, subDays, format } from 'date-fns';
+import { differenceInHours, differenceInMinutes, differenceInMonths, subDays, format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 export interface Anomaly {
@@ -12,33 +12,39 @@ export interface Anomaly {
   relatedEventId?: string;
 }
 
-// Kalle's growth curve: linear interpolation from 2 months (7kg) to 18 months (34kg)
-const KALLE_BIRTHDAY = new Date('2025-03-01');
-const TARGET_WEIGHTS: { month: number; weight: number }[] = [
-  { month: 2, weight: 7 },
-  { month: 18, weight: 34 }
-];
+// Kalle's growth curve - must match TrendAnalysis.tsx
+const KALLE_BIRTHDAY = new Date('2025-01-20');
+const TARGET_WEIGHT = 34;
+
+// Expected weight data points based on Dalmatian growth chart
+const EXPECTED_WEIGHTS: { [month: number]: number } = {
+  2: 7, 3: 11, 4: 15, 5: 19, 6: 22, 7: 24, 8: 26, 9: 27, 10: 28, 11: 29, 12: 30, 13: 31, 14: 32, 15: 33, 18: 34,
+};
 
 function getExpectedWeight(ageInMonths: number): number {
-  if (ageInMonths <= TARGET_WEIGHTS[0].month) return TARGET_WEIGHTS[0].weight;
-  if (ageInMonths >= TARGET_WEIGHTS[TARGET_WEIGHTS.length - 1].month) {
-    return TARGET_WEIGHTS[TARGET_WEIGHTS.length - 1].weight;
+  if (ageInMonths < 2) return 7;
+  if (ageInMonths >= 18) return TARGET_WEIGHT;
+  
+  const months = Object.keys(EXPECTED_WEIGHTS).map(Number).sort((a, b) => a - b);
+  let lowerMonth = months[0];
+  let upperMonth = months[months.length - 1];
+  
+  for (const month of months) {
+    if (month <= ageInMonths) lowerMonth = month;
+    if (month >= ageInMonths && upperMonth === months[months.length - 1]) upperMonth = month;
   }
   
-  for (let i = 0; i < TARGET_WEIGHTS.length - 1; i++) {
-    const start = TARGET_WEIGHTS[i];
-    const end = TARGET_WEIGHTS[i + 1];
-    if (ageInMonths >= start.month && ageInMonths <= end.month) {
-      const progress = (ageInMonths - start.month) / (end.month - start.month);
-      return start.weight + progress * (end.weight - start.weight);
-    }
-  }
-  return TARGET_WEIGHTS[TARGET_WEIGHTS.length - 1].weight;
+  if (lowerMonth === upperMonth) return EXPECTED_WEIGHTS[lowerMonth];
+  
+  const lowerWeight = EXPECTED_WEIGHTS[lowerMonth];
+  const upperWeight = EXPECTED_WEIGHTS[upperMonth];
+  const progress = (ageInMonths - lowerMonth) / (upperMonth - lowerMonth);
+  
+  return lowerWeight + progress * (upperWeight - lowerWeight);
 }
 
 function getAgeInMonths(date: Date): number {
-  const diffMs = date.getTime() - KALLE_BIRTHDAY.getTime();
-  return diffMs / (1000 * 60 * 60 * 24 * 30.44);
+  return differenceInMonths(date, KALLE_BIRTHDAY) + (date.getDate() / 30);
 }
 
 // Calculate average interval between events of a type
