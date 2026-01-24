@@ -73,34 +73,34 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Walk Interval Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Erinnerung nach</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
                 <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
+                <span className="text-[14px] text-white ml-1">Stunden</span>
                 <select
                   value={intervalHours}
                   onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
-                  className="bg-transparent text-white text-[14px] border-none outline-none cursor-pointer opacity-0 absolute"
-                  style={{ width: '2ch' }}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
                 >
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
                     <option key={h} value={h} className="bg-black text-white">{h}</option>
                   ))}
                 </select>
-                <span className="text-[14px] text-white ml-1">Stunden</span>
-              </div>
+              </label>
             </div>
 
             {/* Morning Walk Time Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Morgen-Spaziergang</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
                 <input
                   type="time"
                   value={morningTime}
                   onChange={(e) => handleMorningTimeChange(e.target.value)}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark] w-[5ch]"
+                  className="absolute inset-0 opacity-0 cursor-pointer"
                 />
+                <span className="text-[14px] text-white">{morningTime}</span>
                 <span className="text-[14px] text-white ml-1">Uhr</span>
-              </div>
+              </label>
             </div>
 
             {/* Sleep Time Setting */}
@@ -110,7 +110,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <select
                   value={sleepStart}
                   onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-[5ch]"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
@@ -127,7 +127,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <select
                   value={sleepEnd}
                   onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-[5ch]"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
