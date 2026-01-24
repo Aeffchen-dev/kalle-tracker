@@ -158,13 +158,13 @@ export default {
         "speech-slide-in": {
           "0%": {
             opacity: "0",
-            transform: "scale(0.7) translateX(20px) rotate(8deg)",
-            transformOrigin: "bottom left",
+            transform: "scale(0.7) translateX(-20px) rotate(-8deg)",
+            transformOrigin: "bottom right",
           },
           "100%": {
             opacity: "1",
             transform: "scale(1) translateX(0) rotate(0deg)",
-            transformOrigin: "bottom left",
+            transformOrigin: "bottom right",
           },
         },
       },
