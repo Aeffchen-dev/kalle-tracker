@@ -152,7 +152,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black'
-                  : 'bg-white/20 text-white hover:bg-white/25'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>💦</span>
@@ -163,7 +163,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black'
-                  : 'bg-white/20 text-white hover:bg-white/25'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>💩</span>
@@ -174,7 +174,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
                   ? 'bg-white text-black'
-                  : 'bg-white/20 text-white hover:bg-white/25'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>🧪</span>
@@ -185,7 +185,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
                   ? 'bg-white text-black'
-                  : 'bg-white/20 text-white hover:bg-white/25'
+                  : 'bg-white/10 text-white hover:bg-white/15'
               }`}
             >
               <span>🏋️</span>
@@ -206,7 +206,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                       className={`flex-1 h-10 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                         selectedPh === ph
                           ? 'bg-white text-black'
-                          : `bg-white/20 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/25`
+                          : `bg-white/10 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/15`
                       }`}
                     >
                       {ph}
@@ -224,7 +224,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                       className={`flex-1 h-10 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                         selectedPh === ph
                           ? 'bg-white text-black'
-                          : `bg-white/20 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/25`
+                          : `bg-white/10 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/15`
                       }`}
                     >
                       {ph}
@@ -238,7 +238,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           {/* Weight Input - only show when gewicht is selected */}
           {selectedTypes.has('gewicht') && (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-center h-12 bg-white/20 rounded-lg" style={{ width: 'calc(100vw - 32px)' }}>
+              <div className="flex items-center justify-center h-12 bg-white/10 rounded-lg" style={{ width: 'calc(100vw - 32px)' }}>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -254,7 +254,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           {/* Time and Date Selection - Combined */}
           <div>
-            <label className="flex items-center h-12 bg-white/20 rounded-lg cursor-pointer relative" style={{ width: 'calc(100vw - 32px)' }}>
+            <label className="flex items-center h-12 bg-white/10 rounded-lg cursor-pointer relative" style={{ width: 'calc(100vw - 32px)' }}>
               {/* Left-aligned calendar icon and date */}
               <div className="absolute left-3 flex items-center gap-2">
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
