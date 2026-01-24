@@ -201,7 +201,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <select
                   value={sleepStart}
                   onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
@@ -218,7 +218,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <select
                   value={sleepEnd}
                   onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
