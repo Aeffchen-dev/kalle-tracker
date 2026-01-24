@@ -29,6 +29,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [birthday, setBirthday] = useState<Date | null>(null);
+  const [isContentScrollable, setIsContentScrollable] = useState(false);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -83,10 +84,24 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     });
   }, []);
 
-  // Scroll to top when switching views
+  // Scroll to top when switching views and check if content is scrollable
   useEffect(() => {
     scrollContainerRef.current?.scrollTo({ top: 0 });
   }, [showTrends]);
+
+  // Check if content is scrollable whenever snap point, events, date, or view changes
+  useEffect(() => {
+    const checkScrollable = () => {
+      const container = scrollContainerRef.current;
+      if (container) {
+        setIsContentScrollable(container.scrollHeight > container.clientHeight);
+      }
+    };
+    
+    // Check after a small delay to ensure DOM has updated
+    const timeout = setTimeout(checkScrollable, 100);
+    return () => clearTimeout(timeout);
+  }, [snap, events, selectedDate, showTrends]);
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -380,6 +395,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           ref={scrollContainerRef} 
           className="px-4 pb-[calc(env(safe-area-inset-bottom)+16px)] overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
+          data-vaul-no-drag={isContentScrollable ? true : undefined}
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
           onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
           onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
