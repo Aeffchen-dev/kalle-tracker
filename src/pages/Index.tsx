@@ -8,7 +8,11 @@ import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
+import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification, setWeightNotificationClickHandler } from '@/lib/notifications';
+import { getNickname, setNickname, hasNickname } from '@/lib/nickname';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
 
@@ -25,6 +29,8 @@ const Index = () => {
   const [showTagesplan, setShowTagesplan] = useState(false);
   const [showGassiSettings, setShowGassiSettings] = useState(false);
   const [preselectedEventType, setPreselectedEventType] = useState<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht' | undefined>(undefined);
+  const [showNicknamePrompt, setShowNicknamePrompt] = useState(false);
+  const [nicknameInput, setNicknameInput] = useState('');
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
@@ -153,8 +159,19 @@ const Index = () => {
 
   // Initial load and realtime subscription
   useEffect(() => {
+    // Check if nickname is set
+    if (!hasNickname()) {
+      setShowNicknamePrompt(true);
+    }
+
     // Initialize notifications
     initializeNotifications();
+    
+    // Set up weight notification click handler
+    setWeightNotificationClickHandler(() => {
+      setPreselectedEventType('gewicht');
+      setEventSheetOpen(true);
+    });
     
     // Load settings first, then events
     getSettings().then(() => loadEvents());
@@ -324,11 +341,40 @@ const Index = () => {
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
-        onTestWeightReminder={() => {
-          setPreselectedEventType('gewicht');
-          setEventSheetOpen(true);
-        }}
       />
+
+      {/* Nickname prompt dialog */}
+      <Dialog open={showNicknamePrompt} onOpenChange={() => {}}>
+        <DialogContent className="bg-black border-white/20 [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="text-white text-center">Wie heißt du?</DialogTitle>
+            <DialogDescription className="text-white/60 text-center">
+              Dein Name wird bei deinen Einträgen angezeigt
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              value={nicknameInput}
+              onChange={(e) => setNicknameInput(e.target.value)}
+              placeholder="Dein Name"
+              className="bg-transparent border-white/30 text-white text-center"
+              autoFocus
+            />
+            <Button
+              onClick={() => {
+                if (nicknameInput.trim()) {
+                  setNickname(nicknameInput.trim());
+                  setShowNicknamePrompt(false);
+                }
+              }}
+              disabled={!nicknameInput.trim()}
+              className="w-full bg-[#5AD940] text-black hover:bg-[#5AD940]/90"
+            >
+              Los geht's
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

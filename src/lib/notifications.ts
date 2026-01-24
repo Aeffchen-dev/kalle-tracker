@@ -115,6 +115,13 @@ export const cancelWalkReminders = async (): Promise<void> => {
   }
 };
 
+// Callback for when weight notification is clicked
+let onWeightNotificationClick: (() => void) | null = null;
+
+export const setWeightNotificationClickHandler = (handler: () => void) => {
+  onWeightNotificationClick = handler;
+};
+
 // Schedule monthly weight reminder notification
 export const scheduleMonthlyWeightReminder = async (): Promise<void> => {
   const WEIGHT_REMINDER_KEY = 'weightReminderLastScheduled';
@@ -141,11 +148,15 @@ export const scheduleMonthlyWeightReminder = async (): Promise<void> => {
       
       if (!lastShownDate || lastShownDate.getMonth() !== now.getMonth() || lastShownDate.getFullYear() !== now.getFullYear()) {
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('⚖️ Wiegen', { 
+          const notification = new Notification('⚖️ Wiegen', { 
             body: 'Trage Kalles aktuelles Gewicht ein',
             icon: '/favicon.png',
             tag: 'weight-reminder'
           });
+          notification.onclick = () => {
+            window.focus();
+            onWeightNotificationClick?.();
+          };
           localStorage.setItem('weightReminderLastShown', now.toISOString());
         }
       }
@@ -169,6 +180,7 @@ export const scheduleMonthlyWeightReminder = async (): Promise<void> => {
             every: 'month'
           },
           sound: 'default',
+          actionTypeId: 'WEIGHT_REMINDER',
           extra: { type: 'weight_reminder' }
         }
       ]
@@ -235,6 +247,15 @@ export const registerNotificationActions = async (): Promise<void> => {
               title: 'Später erinnern'
             }
           ]
+        },
+        {
+          id: 'WEIGHT_REMINDER',
+          actions: [
+            {
+              id: 'add_weight',
+              title: 'Gewicht eintragen'
+            }
+          ]
         }
       ]
     });
@@ -265,6 +286,17 @@ export const initializeNotifications = async (): Promise<void> => {
         // Reschedule for 30 minutes later
         const snoozeTime = new Date(Date.now() + 30 * 60 * 1000);
         scheduleWalkReminder(snoozeTime, 'Bald Gassi-Zeit', 'Zeit für einen Spaziergang!');
+      } else if (notification.actionId === 'add_weight' || notification.notification?.extra?.type === 'weight_reminder') {
+        // Open weight entry
+        onWeightNotificationClick?.();
+      }
+    });
+
+    // Listen for notification clicks (tap on notification itself)
+    LocalNotifications.addListener('localNotificationReceived', (notification) => {
+      console.log('Notification received:', notification.id);
+      if (notification.extra?.type === 'weight_reminder') {
+        onWeightNotificationClick?.();
       }
     });
   }

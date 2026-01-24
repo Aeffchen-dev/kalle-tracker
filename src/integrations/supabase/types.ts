@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          logged_by: string | null
           meal_timing: string | null
           ph_value: string | null
           time: string
@@ -27,6 +28,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          logged_by?: string | null
           meal_timing?: string | null
           ph_value?: string | null
           time?: string
@@ -36,6 +38,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          logged_by?: string | null
           meal_timing?: string | null
           ph_value?: string | null
           time?: string

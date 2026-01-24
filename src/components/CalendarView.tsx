@@ -451,9 +451,14 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               )}
                             </span>
                           </span>
-                          <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2">
-                            {format(new Date(event.time), 'HH:mm')} Uhr
-                          </span>
+                          <div className="flex items-center gap-2 shrink-0 ml-2">
+                            {event.logged_by && (
+                              <span className="text-[12px] text-white/50">{event.logged_by}</span>
+                            )}
+                            <span className="text-[14px] text-white whitespace-nowrap">
+                              {format(new Date(event.time), 'HH:mm')} Uhr
+                            </span>
+                          </div>
                         </div>
                         <button
                           onClick={() => handleDelete(event.id)}
