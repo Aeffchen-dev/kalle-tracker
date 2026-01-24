@@ -144,14 +144,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact 
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-[14px] text-black">
+                  <span className="text-[14px] text-black truncate">
                     {anomaly.title}
                   </span>
                   <span className="text-[11px] text-black/50 flex-shrink-0">
                     {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                   </span>
                 </div>
-                <p className="text-[14px] text-black/70">
+                <p className="text-[14px] text-black/70 truncate">
                   {anomaly.highlightText ? (
                     <>
                       {anomaly.description.split(anomaly.highlightText)[0]}
