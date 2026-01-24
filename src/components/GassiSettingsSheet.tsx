@@ -134,8 +134,8 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <div className="space-y-4 mb-4">
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
-              <span className="text-[14px] text-white">Countdown:</span>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <span className="text-[14px] text-white">Countdown</span>
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
                   className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
@@ -160,19 +160,19 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Walk Interval Setting */}
-            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4 mt-2">
+            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
               <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
-                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-bold flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-medium flex items-center justify-center"
                 >
                   −
                 </button>
                 <span className="text-[14px] text-white w-[2ch] text-center">{intervalHours}h</span>
                 <button
                   onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
-                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-bold flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-medium flex items-center justify-center"
                 >
                   +
                 </button>
