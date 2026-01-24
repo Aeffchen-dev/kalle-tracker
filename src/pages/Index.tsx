@@ -361,7 +361,8 @@ const Index = () => {
               autoCorrect="off"
               autoCapitalize="words"
             />
-            <Button
+            <button
+              type="button"
               onClick={() => {
                 if (nicknameInput.trim()) {
                   setNickname(nicknameInput.trim());
@@ -372,7 +373,7 @@ const Index = () => {
               className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
             >
               Los geht's
-            </Button>
+            </button>
           </div>
         </DrawerContent>
       </Drawer>
