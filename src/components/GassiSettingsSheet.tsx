@@ -120,6 +120,8 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     className="pointer-events-auto bg-black text-white [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
                     locale={de}
                     defaultMonth={birthday || new Date(2024, 0)}
+                    showYearPicker
+                    yearRange={{ from: 2020, to: new Date().getFullYear() }}
                   />
                 </PopoverContent>
               </Popover>
