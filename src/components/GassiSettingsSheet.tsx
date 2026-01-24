@@ -117,9 +117,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     selected={birthday || undefined}
                     onSelect={handleBirthdayChange}
                     disabled={(date) => date > new Date()}
-                    className="pointer-events-auto bg-black text-white [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
+                    className="pointer-events-auto bg-black text-white [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black [&_.rdp-dropdown]:bg-black [&_.rdp-dropdown]:text-white [&_select]:bg-black [&_select]:text-white [&_select]:border-white/30 [&_select]:rounded [&_select]:px-2 [&_select]:py-1 [&_select]:cursor-pointer [&_.rdp-caption_dropdowns]:gap-2"
                     locale={de}
-                    defaultMonth={birthday || new Date()}
+                    defaultMonth={birthday || new Date(2024, 0)}
                     captionLayout="dropdown-buttons"
                     fromYear={2020}
                     toYear={new Date().getFullYear()}
