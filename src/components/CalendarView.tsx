@@ -4,7 +4,7 @@ import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
 import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff, Watch, LayoutGrid } from 'lucide-react';
 import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -451,7 +451,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               )}
                             </span>
                           </span>
-                          <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2">
+                          <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                            {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                            {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
                             {format(new Date(event.time), 'HH:mm')} Uhr
                           </span>
                         </div>

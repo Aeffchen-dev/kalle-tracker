@@ -8,6 +8,7 @@ export interface Event {
   time: Date;
   ph_value?: string | null;
   weight_value?: number | null;
+  logged_by?: string | null;
   synced?: boolean;
 }
 
@@ -155,6 +156,7 @@ export const getEvents = async (): Promise<LoadResult> => {
       time: new Date(e.time),
       ph_value: e.ph_value,
       weight_value: e.weight_value,
+      logged_by: e.logged_by,
       synced: true
     }));
 
