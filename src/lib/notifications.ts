@@ -115,6 +115,72 @@ export const cancelWalkReminders = async (): Promise<void> => {
   }
 };
 
+// Schedule monthly weight reminder notification
+export const scheduleMonthlyWeightReminder = async (): Promise<void> => {
+  const WEIGHT_REMINDER_KEY = 'weightReminderLastScheduled';
+  const lastScheduled = localStorage.getItem(WEIGHT_REMINDER_KEY);
+  const now = new Date();
+  
+  // Check if we already scheduled this month
+  if (lastScheduled) {
+    const lastDate = new Date(lastScheduled);
+    if (lastDate.getMonth() === now.getMonth() && lastDate.getFullYear() === now.getFullYear()) {
+      return; // Already scheduled this month
+    }
+  }
+
+  // Schedule for the 1st of next month at 10:00
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1, 10, 0, 0);
+  
+  if (!isNativeApp()) {
+    // For web, we can't schedule far in advance, but we can check on each app load
+    // if it's the 1st of the month and show the notification
+    if (now.getDate() === 1) {
+      const lastShown = localStorage.getItem('weightReminderLastShown');
+      const lastShownDate = lastShown ? new Date(lastShown) : null;
+      
+      if (!lastShownDate || lastShownDate.getMonth() !== now.getMonth() || lastShownDate.getFullYear() !== now.getFullYear()) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification('⚖️ Wiegen', { 
+            body: 'Trage Kalles aktuelles Gewicht ein',
+            icon: '/favicon.png',
+            tag: 'weight-reminder'
+          });
+          localStorage.setItem('weightReminderLastShown', now.toISOString());
+        }
+      }
+    }
+    return;
+  }
+
+  try {
+    // Cancel any existing weight reminders
+    await LocalNotifications.cancel({ notifications: [{ id: 1002 }] });
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: 1002,
+          title: '⚖️ Wiegen',
+          body: 'Trage Kalles aktuelles Gewicht ein',
+          schedule: { 
+            at: nextMonth,
+            repeats: true,
+            every: 'month'
+          },
+          sound: 'default',
+          extra: { type: 'weight_reminder' }
+        }
+      ]
+    });
+    
+    localStorage.setItem(WEIGHT_REMINDER_KEY, now.toISOString());
+    console.log('Monthly weight reminder scheduled for:', nextMonth);
+  } catch (error) {
+    console.error('Error scheduling weight reminder:', error);
+  }
+};
+
 // Show an immediate notification (for alerts)
 export const showNotification = async (
   id: number,
@@ -184,6 +250,9 @@ export const initializeNotifications = async (): Promise<void> => {
   if (!hasPermission) {
     await requestNotificationPermissions();
   }
+
+  // Schedule monthly weight reminder
+  await scheduleMonthlyWeightReminder();
 
   if (isNativeApp()) {
     await registerNotificationActions();
