@@ -386,9 +386,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
         >
           {showTrends ? (
-            <div data-vaul-no-drag>
-              <TrendAnalysis events={events} />
-            </div>
+            <TrendAnalysis events={events} />
           ) : (
             <div 
               className={`min-h-full ${
