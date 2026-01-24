@@ -292,7 +292,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >
-      <DrawerContent className="bg-black border-transparent flex flex-col h-full">
+      <DrawerContent className="bg-black border-black flex flex-col h-full">
         <DrawerHeader 
           className="sticky top-0 z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
@@ -378,7 +378,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 scrollbar-hide"
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
           data-vaul-no-drag
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
