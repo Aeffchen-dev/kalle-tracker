@@ -153,7 +153,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 value={nickname}
                 onChange={(e) => handleNicknameChange(e.target.value)}
                 placeholder="Name eingeben"
-                className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] text-center outline-none"
+                className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] text-center outline-none placeholder:text-white/40"
               />
             </div>
 
