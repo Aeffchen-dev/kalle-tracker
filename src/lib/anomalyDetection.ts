@@ -72,7 +72,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         id: `upcoming_break_${now.getTime()}`,
         type: 'upcoming_break',
         severity: isOverdue ? 'alert' : 'info',
-        title: 'Bald Gassi-Zeit',
+        title: 'Kalle muss bald raus',
         description: `Nächster Spaziergang um ca. ${timeStr}`,
         highlightText: isOverdue ? timeStr : undefined,
         timestamp: now
