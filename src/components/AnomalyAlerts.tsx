@@ -42,12 +42,12 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
     const currentX = e.touches[0].clientX;
     const diff = startXRef.current - currentX;
     if (diff > 0) {
-      setSwipeOffset(Math.min(diff, 120));
+      setSwipeOffset(Math.min(diff, 80));
     }
   };
 
   const handleTouchEnd = () => {
-    if (swipeOffset > 80 && swipingId && onDismiss) {
+    if (swipeOffset >= 80 && swipingId && onDismiss) {
       onDismiss(swipingId);
     }
     setSwipingId(null);
@@ -84,14 +84,17 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Delete background - only visible when swiping */}
-            {isActive && swipeOffset > 0 && (
-              <div 
-                className="absolute inset-0 bg-red-500 flex items-center justify-center rounded-[16px]"
-              >
-                <span className="text-white text-sm font-medium">Löschen</span>
-              </div>
-            )}
+            {/* Delete background - slides in from right, 80px wide */}
+            <div 
+              className="absolute inset-y-0 right-0 bg-red-500 flex items-center justify-center rounded-r-[16px]"
+              style={{ 
+                width: '80px',
+                opacity: isActive && swipeOffset > 0 ? 1 : 0,
+                transition: isActive ? 'none' : 'opacity 150ms ease-out'
+              }}
+            >
+              <span className="text-white text-sm font-medium">Löschen</span>
+            </div>
             
             {/* Card content */}
             <div
