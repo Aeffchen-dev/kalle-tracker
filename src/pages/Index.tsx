@@ -259,10 +259,10 @@ const Index = () => {
         >
           <button
             onClick={() => setShowGassiSettings(true)}
-            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Einstellungen"
           >
-            <Settings className="w-4 h-4 text-black/40" />
+            <Settings className="w-4 h-4 text-black/25" />
           </button>
           <p className="text-[14px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
