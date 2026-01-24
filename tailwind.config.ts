@@ -100,6 +100,16 @@ export default {
             transform: "scale(1.08)",
           },
         },
+        "fade-in": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.95)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
         "fade-in-up": {
           "0%": {
             opacity: "0",
@@ -138,6 +148,7 @@ export default {
         "dog-ride": "dog-ride 2.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards",
         "gentle-pulse": "gentle-pulse 1.5s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
+        "fade-in": "fade-in 0.2s ease-out forwards",
         "tail-wag": "tail-wag 0.6s ease-in-out",
       },
     },

@@ -18,6 +18,7 @@ const Index = () => {
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
+  const [speechBubble, setSpeechBubble] = useState<string | null>(null);
   const [calendarKey, setCalendarKey] = useState(0);
   
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
@@ -213,7 +214,21 @@ const Index = () => {
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
           onClick={() => {
-            setShowDogAnimation(true);
+            const phrases = [
+              'Wuff! 🐾',
+              'Gassi? 👀',
+              'Leckerli! 🦴',
+              'Bauch kraulen? 🐕',
+              'Spielen! 🎾',
+              'Müde... 😴',
+              'Hunger! 🍖',
+              'Wasser? 💧',
+              'Kuscheln! 🤗',
+              'Raus! 🌳',
+            ];
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+            setSpeechBubble(randomPhrase);
+            setTimeout(() => setSpeechBubble(null), 2000);
           }}
           className="cursor-pointer -mt-2 -ml-[18px] relative"
         >
@@ -222,6 +237,13 @@ const Index = () => {
             alt="Kalle" 
             className="h-[100px] w-auto relative z-10"
           />
+          {/* Speech bubble */}
+          {speechBubble && (
+            <div className="absolute left-[85px] top-[20px] bg-black text-white text-[14px] px-3 py-2 rounded-lg whitespace-nowrap animate-fade-in z-20">
+              {speechBubble}
+              <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-r-[6px] border-r-black" />
+            </div>
+          )}
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
