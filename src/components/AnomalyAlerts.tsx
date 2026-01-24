@@ -26,6 +26,7 @@ const getEmoji = (type: Anomaly['type']): string => {
 };
 
 const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAlertsProps) => {
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const startXRef = useRef(0);
@@ -63,11 +64,24 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
   };
 
   const handleTouchEnd = () => {
-    if (swipeOffset >= 82 && swipingId && onDismiss) {
-      onDismiss(swipingId);
+    // If swiped enough, lock the delete button open
+    if (swipeOffset >= 50 && swipingId) {
+      setActiveId(swipingId);
+    } else if (swipeOffset < 20 && swipingId === activeId) {
+      // Small swipe on already active item - close it
+    } else if (swipeOffset < 50) {
+      // Not enough swipe - close
+      setActiveId(null);
     }
     setSwipingId(null);
     setSwipeOffset(0);
+  };
+
+  const handleCardClick = (id: string) => {
+    // If delete is shown, clicking card closes it
+    if (activeId === id) {
+      setActiveId(null);
+    }
   };
 
   if (compact) {
@@ -90,8 +104,9 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
   return (
     <div className="space-y-2">
       {anomalies.map((anomaly) => {
-        const isActive = swipingId === anomaly.id;
-        const currentOffset = isActive ? swipeOffset : 0;
+        const isSwiping = swipingId === anomaly.id;
+        const isOpen = activeId === anomaly.id;
+        const showDelete = isSwiping ? swipeOffset : (isOpen ? 82 : 0);
         
         return (
           <div 
@@ -102,9 +117,10 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             onTouchEnd={handleTouchEnd}
           >
             <div
-              className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1"
+              className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
+              onClick={() => handleCardClick(anomaly.id)}
               style={{ 
-                transition: isActive ? 'none' : 'flex 150ms ease-linear'
+                transition: isSwiping ? 'none' : 'all 150ms ease-linear'
               }}
             >
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
@@ -126,9 +142,9 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
               onClick={() => onDismiss?.(anomaly.id)}
               className="flex-shrink-0 h-full bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-[16px] overflow-hidden"
               style={{
-                width: currentOffset > 0 ? `${currentOffset}px` : 0,
-                minWidth: currentOffset > 0 ? `${currentOffset}px` : 0,
-                transition: isActive ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear'
+                width: showDelete > 0 ? `${showDelete}px` : 0,
+                minWidth: showDelete > 0 ? `${showDelete}px` : 0,
+                transition: isSwiping ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear'
               }}
             >
               <span className="whitespace-nowrap">Löschen</span>
