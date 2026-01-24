@@ -126,36 +126,12 @@ interface WeightChartData {
 const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const lastTapRef = useRef<number>(0);
-  const isZoomedRef = useRef<boolean>(false);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
-
-  const handleChartClick = () => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) {
-      // Double tap detected
-      const chart = chartRef.current?.getEchartsInstance();
-      if (chart) {
-        if (isZoomedRef.current) {
-          // Reset zoom
-          chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
-          isZoomedRef.current = false;
-        } else {
-          // Zoom in 50%
-          chart.dispatchAction({ type: 'dataZoom', start: 25, end: 75 });
-          isZoomedRef.current = true;
-        }
-      }
-      lastTapRef.current = 0;
-    } else {
-      lastTapRef.current = now;
-    }
-  };
 
   if (data.length < 2) {
     return (
@@ -201,17 +177,6 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         </div>`;
       },
     },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: 0,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
-        moveOnMouseWheel: false,
-        minSpan: 33, // Max 3x zoom (100/3 = 33%)
-        maxSpan: 100,
-      },
-    ],
     grid: {
       left: 0,
       right: 10,
@@ -292,7 +257,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x', overscrollBehavior: 'contain' }}
         data-vaul-no-drag
       >
-        <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
+        <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
           <ReactECharts
             ref={chartRef}
             option={option}
@@ -316,33 +281,12 @@ interface PhChartData {
 const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const lastTapRef = useRef<number>(0);
-  const isZoomedRef = useRef<boolean>(false);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
-
-  const handleChartClick = () => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) {
-      const chart = chartRef.current?.getEchartsInstance();
-      if (chart) {
-        if (isZoomedRef.current) {
-          chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
-          isZoomedRef.current = false;
-        } else {
-          chart.dispatchAction({ type: 'dataZoom', start: 25, end: 75 });
-          isZoomedRef.current = true;
-        }
-      }
-      lastTapRef.current = 0;
-    } else {
-      lastTapRef.current = now;
-    }
-  };
 
   if (data.length < 2) {
     return (
@@ -409,17 +353,6 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         </div>`;
       },
     },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: 0,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
-        moveOnMouseWheel: false,
-        minSpan: 33,
-        maxSpan: 100,
-      },
-    ],
     grid: {
       left: 0,
       right: 10,
@@ -525,7 +458,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x', overscrollBehavior: 'contain' }}
         data-vaul-no-drag
       >
-        <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
+        <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
           <ReactECharts
             ref={chartRef}
             option={option}
