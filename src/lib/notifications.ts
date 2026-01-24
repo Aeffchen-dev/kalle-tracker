@@ -50,9 +50,25 @@ export const scheduleWalkReminder = async (
   title: string,
   body: string
 ): Promise<void> => {
+  // For web, use setTimeout to show notification at the scheduled time
   if (!isNativeApp()) {
-    // For web, we can't schedule future notifications without a service worker
-    console.log('Web notifications not supported for scheduling');
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const delay = walkTime.getTime() - Date.now();
+      if (delay > 0) {
+        // Store timeout ID to allow cancellation
+        const timeoutId = setTimeout(() => {
+          new Notification(title, { 
+            body, 
+            icon: '/favicon.png',
+            tag: 'walk-reminder',
+            requireInteraction: true
+          });
+        }, delay);
+        // Store for later cancellation
+        (window as any).__walkReminderTimeout = timeoutId;
+        console.log('Web walk reminder scheduled for:', walkTime);
+      }
+    }
     return;
   }
 
@@ -83,7 +99,14 @@ export const scheduleWalkReminder = async (
 
 // Cancel walk reminder notifications
 export const cancelWalkReminders = async (): Promise<void> => {
-  if (!isNativeApp()) return;
+  if (!isNativeApp()) {
+    // Cancel web timeout
+    if ((window as any).__walkReminderTimeout) {
+      clearTimeout((window as any).__walkReminderTimeout);
+      (window as any).__walkReminderTimeout = null;
+    }
+    return;
+  }
 
   try {
     await LocalNotifications.cancel({ notifications: [{ id: 1001 }] });
@@ -101,7 +124,11 @@ export const showNotification = async (
   if (!isNativeApp()) {
     // Use web Notification API for immediate notifications
     if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification(title, { body, icon: '/favicon.png' });
+      new Notification(title, { 
+        body, 
+        icon: '/favicon.png',
+        tag: `notification-${id}`
+      });
     }
     return;
   }
