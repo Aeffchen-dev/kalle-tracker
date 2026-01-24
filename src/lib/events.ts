@@ -1,4 +1,5 @@
 import { supabaseClient as supabase } from "@/lib/supabaseClient";
+import { getNickname } from "@/lib/nickname";
 
 export type EventType = 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht';
 
@@ -8,6 +9,7 @@ export interface Event {
   time: Date;
   ph_value?: string | null;
   weight_value?: number | null;
+  logged_by?: string | null;
   synced?: boolean;
 }
 
@@ -94,7 +96,8 @@ export const syncPendingEvents = async (): Promise<number> => {
           type: event.type,
           time: event.time.toISOString(),
           ph_value: event.ph_value || null,
-          weight_value: event.weight_value || null
+          weight_value: event.weight_value || null,
+          logged_by: event.logged_by || null
         });
 
       if (error) {
@@ -155,6 +158,7 @@ export const getEvents = async (): Promise<LoadResult> => {
       time: new Date(e.time),
       ph_value: e.ph_value,
       weight_value: e.weight_value,
+      logged_by: e.logged_by,
       synced: true
     }));
 
@@ -182,6 +186,7 @@ export const getEvents = async (): Promise<LoadResult> => {
 export const saveEvent = async (type: EventType, time?: Date, ph_value?: string, weight_value?: number): Promise<SaveResult> => {
   const eventId = crypto.randomUUID();
   const eventTime = time || new Date();
+  const loggedBy = getNickname();
   
   const newEvent: Event = {
     id: eventId,
@@ -189,6 +194,7 @@ export const saveEvent = async (type: EventType, time?: Date, ph_value?: string,
     time: eventTime,
     ph_value: ph_value || null,
     weight_value: weight_value || null,
+    logged_by: loggedBy,
     synced: false
   };
 
@@ -205,7 +211,8 @@ export const saveEvent = async (type: EventType, time?: Date, ph_value?: string,
         type, 
         time: eventTime.toISOString(), 
         ph_value: ph_value || null,
-        weight_value: weight_value || null
+        weight_value: weight_value || null,
+        logged_by: loggedBy
       });
     
     if (error) {
