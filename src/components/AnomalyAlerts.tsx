@@ -101,18 +101,18 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
                 transition: isActive ? 'none' : 'transform 150ms ease-out'
               }}
             >
-              <div className="flex items-start gap-2">
-                <span className="text-[14px]">{getEmoji(anomaly.type)}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <span className="text-[14px] text-black">
                       {anomaly.title}
                     </span>
-                    <span className="text-[14px] text-black/50 flex-shrink-0">
+                    <span className="text-[11px] text-black/50 flex-shrink-0">
                       {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                     </span>
                   </div>
-                  <p className="text-[12px] text-black/70">
+                  <p className="text-[14px] text-black/70">
                     {anomaly.description}
                   </p>
                 </div>
