@@ -161,7 +161,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Walk Interval Setting */}
             <label className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative px-4">
-              <span className="text-[14px] text-white">Erinnerung nach</span>
+              <span className="text-[14px] text-white/50">⏰ Erinnerung nach</span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
                 <span className="text-[14px] text-white ml-1">Stunden</span>
@@ -179,7 +179,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Morning Walk Time Setting */}
             <label className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative px-4">
-              <span className="text-[14px] text-white">Morgen-Spaziergang</span>
+              <span className="text-[14px] text-white/50">🌄 Morgen-Spaziergang</span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white">{morningTime}</span>
                 <span className="text-[14px] text-white ml-1">Uhr</span>
@@ -194,7 +194,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Sleep Time Setting */}
             <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
-              <span className="text-[14px] text-white">Schlafenszeit</span>
+              <span className="text-[14px] text-white/50">😴 Schlafenszeit</span>
               <div className="flex items-center">
                 <select
                   value={sleepStart}
@@ -235,7 +235,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Birthday Setting */}
             <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
-              <span className="text-[14px] text-white">Geburtstag</span>
+              <span className="text-[14px] text-white/50">🎉 Geburtstag</span>
               <div className="flex items-center gap-2">
                 <select
                   value={birthdayDay || ''}
