@@ -131,7 +131,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = 0;
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
 
@@ -289,7 +289,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch' }}
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
           <ReactECharts
@@ -320,7 +320,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = 0;
+      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
 
@@ -518,20 +518,18 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
           <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{formatDecimal(tick)}</span>
         ))}
       </div>
-      <div className="flex-1 overflow-visible">
-        <div 
-          ref={scrollRef}
-          className="overflow-x-auto scrollbar-hide"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
-            <ReactECharts
-              ref={chartRef}
-              option={option}
-              style={{ height: CHART_HEIGHT, width: chartWidth }}
-              opts={{ renderer: 'svg' }}
-            />
-          </div>
+      <div 
+        ref={scrollRef}
+        className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
+      >
+        <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
+          <ReactECharts
+            ref={chartRef}
+            option={option}
+            style={{ height: CHART_HEIGHT, width: chartWidth }}
+            opts={{ renderer: 'svg' }}
+          />
         </div>
       </div>
     </div>
