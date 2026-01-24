@@ -376,14 +376,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
             )}
           </div>
         </DrawerHeader>
-        {/* Draggable area below content for collapsed state */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 bg-transparent"
-          style={{ top: 'auto', height: 'calc(100% - 80px)' }}
-        />
         <div 
           ref={scrollContainerRef} 
-          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1 relative z-10"
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
           data-vaul-no-drag
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
