@@ -3,6 +3,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { getNickname, setNickname } from '@/lib/nickname';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -19,11 +20,16 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [birthdayDay, setBirthdayDay] = useState<number | null>(null);
   const [birthdayMonth, setBirthdayMonth] = useState<number | null>(null);
   const [birthdayYear, setBirthdayYear] = useState<number | null>(null);
+  const [nickname, setNicknameState] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (open) {
       setIsLoading(true);
+      // Load nickname from localStorage
+      const storedNickname = getNickname();
+      setNicknameState(storedNickname || '');
+      
       getSettings().then((settings) => {
         setMorningTime(settings.morning_walk_time);
         setIntervalHours(settings.walk_interval_hours);
@@ -83,6 +89,13 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     onSettingsChanged?.();
   };
 
+  const handleNicknameChange = (newNickname: string) => {
+    setNicknameState(newNickname);
+    if (newNickname.trim()) {
+      setNickname(newNickname.trim());
+    }
+  };
+
   const handleBirthdayPartChange = async (day: number | null, month: number | null, year: number | null) => {
     setBirthdayDay(day);
     setBirthdayMonth(month);
@@ -131,6 +144,18 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           </div>
         ) : (
           <div className="space-y-4">
+            {/* Nickname Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Dein Name</span>
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => handleNicknameChange(e.target.value)}
+                placeholder="Name eingeben"
+                className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] text-center outline-none"
+              />
+            </div>
+
             {/* Birthday Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Geburtstag</span>
