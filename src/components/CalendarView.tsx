@@ -399,7 +399,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         <div 
           ref={scrollContainerRef} 
           className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
-          style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
+          style={{ 
+            minHeight: 0, 
+            flexGrow: 1, 
+            flexShrink: 1, 
+            flexBasis: '100%',
+            touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
+          }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
           onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
