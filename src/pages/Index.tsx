@@ -24,6 +24,7 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTagesplan, setShowTagesplan] = useState(false);
   const [showGassiSettings, setShowGassiSettings] = useState(false);
+  const [preselectedEventType, setPreselectedEventType] = useState<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht' | undefined>(undefined);
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
@@ -298,13 +299,18 @@ const Index = () => {
       {/* Event sheet opens on top */}
       <EventSheet
         open={eventSheetOpen}
-        onOpenChange={setEventSheetOpen}
+        onOpenChange={(open) => {
+          setEventSheetOpen(open);
+          if (!open) setPreselectedEventType(undefined);
+        }}
         onEventAdded={() => {
           loadEvents();
           setShowDogAnimation(true);
+          setPreselectedEventType(undefined);
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
+        preselectedType={preselectedEventType}
       />
 
       {/* Tagesplan overlay */}
@@ -318,6 +324,10 @@ const Index = () => {
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
+        onTestWeightReminder={() => {
+          setPreselectedEventType('gewicht');
+          setEventSheetOpen(true);
+        }}
       />
     </div>
   );
