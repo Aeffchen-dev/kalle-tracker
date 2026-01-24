@@ -104,8 +104,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             <div
               className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1"
               style={{ 
-                marginRight: currentOffset > 0 ? `${currentOffset}px` : 0,
-                transition: isActive ? 'none' : 'margin 150ms ease-linear'
+                transition: isActive ? 'none' : 'flex 150ms ease-linear'
               }}
             >
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
@@ -125,13 +124,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             </div>
             <button
               onClick={() => onDismiss?.(anomaly.id)}
-              className="absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px]"
+              className="flex-shrink-0 h-full bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-[16px] overflow-hidden"
               style={{
-                transform: currentOffset > 0 ? 'translateX(0)' : 'translateX(100%)',
-                transition: isActive ? 'none' : 'transform 150ms ease-linear'
+                width: currentOffset > 0 ? `${currentOffset}px` : 0,
+                minWidth: currentOffset > 0 ? `${currentOffset}px` : 0,
+                transition: isActive ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear'
               }}
             >
-              Löschen
+              <span className="whitespace-nowrap">Löschen</span>
             </button>
           </div>
         );
