@@ -207,6 +207,11 @@ const Index = () => {
 
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
+      {/* Fixed black background for iOS safe area - always visible since CalendarView is always open */}
+      <div 
+        className="fixed inset-x-0 bottom-0 z-30 bg-black" 
+        style={{ height: 'env(safe-area-inset-bottom)' }}
+      />
       
 
       {/* Header */}
