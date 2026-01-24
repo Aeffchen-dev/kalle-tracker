@@ -6,6 +6,7 @@ import AnomalyAlerts from '@/components/AnomalyAlerts';
 import GassiSettingsSheet from '@/components/GassiSettingsSheet';
 import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
+import { getSettings } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
@@ -103,9 +104,10 @@ const Index = () => {
 
   // Initial load and realtime subscription
   useEffect(() => {
-    loadEvents();
+    // Load settings first, then events
+    getSettings().then(() => loadEvents());
     
-    const channel = supabase
+    const eventsChannel = supabase
       .channel('events-changes')
       .on(
         'postgres_changes',
@@ -120,8 +122,24 @@ const Index = () => {
       )
       .subscribe();
 
+    const settingsChannel = supabase
+      .channel('settings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'settings'
+        },
+        () => {
+          getSettings().then(() => loadEvents());
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(eventsChannel);
+      supabase.removeChannel(settingsChannel);
     };
   }, []);
 

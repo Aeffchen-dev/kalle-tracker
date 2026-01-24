@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { 
-  getMorningWalkTime, setMorningWalkTime, 
-  getWalkIntervalHours, setWalkIntervalHours,
-  getSleepStartHour, setSleepStartHour,
-  getSleepEndHour, setSleepEndHour
-} from '@/lib/cookies';
+import { getSettings, updateSettings } from '@/lib/settings';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -18,37 +13,42 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [intervalHours, setIntervalHours] = useState(4);
   const [sleepStart, setSleepStart] = useState(22);
   const [sleepEnd, setSleepEnd] = useState(7);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (open) {
-      setMorningTime(getMorningWalkTime());
-      setIntervalHours(getWalkIntervalHours());
-      setSleepStart(getSleepStartHour());
-      setSleepEnd(getSleepEndHour());
+      setIsLoading(true);
+      getSettings().then((settings) => {
+        setMorningTime(settings.morning_walk_time);
+        setIntervalHours(settings.walk_interval_hours);
+        setSleepStart(settings.sleep_start_hour);
+        setSleepEnd(settings.sleep_end_hour);
+        setIsLoading(false);
+      });
     }
   }, [open]);
 
-  const handleIntervalChange = (newInterval: number) => {
+  const handleIntervalChange = async (newInterval: number) => {
     setIntervalHours(newInterval);
-    setWalkIntervalHours(newInterval);
+    await updateSettings({ walk_interval_hours: newInterval });
     onSettingsChanged?.();
   };
 
-  const handleMorningTimeChange = (newTime: string) => {
+  const handleMorningTimeChange = async (newTime: string) => {
     setMorningTime(newTime);
-    setMorningWalkTime(newTime);
+    await updateSettings({ morning_walk_time: newTime });
     onSettingsChanged?.();
   };
 
-  const handleSleepStartChange = (hour: number) => {
+  const handleSleepStartChange = async (hour: number) => {
     setSleepStart(hour);
-    setSleepStartHour(hour);
+    await updateSettings({ sleep_start_hour: hour });
     onSettingsChanged?.();
   };
 
-  const handleSleepEndChange = (hour: number) => {
+  const handleSleepEndChange = async (hour: number) => {
     setSleepEnd(hour);
-    setSleepEndHour(hour);
+    await updateSettings({ sleep_end_hour: hour });
     onSettingsChanged?.();
   };
 
@@ -59,78 +59,89 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <DrawerTitle className="text-[18px] font-semibold text-center text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        <div className="space-y-4">
-          {/* Walk Interval Setting */}
-          <div className="space-y-2">
-            <span className="text-[14px] text-white">Erinnerung nach</span>
-            <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
-              <select
-                value={intervalHours}
-                onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-              >
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                  <option key={h} value={h} className="bg-black text-white">{h}</option>
-                ))}
-              </select>
-              <span className="text-[14px] text-white ml-2">Stunden</span>
-            </div>
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
+              </div>
+            ))}
           </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Walk Interval Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Erinnerung nach</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+                <select
+                  value={intervalHours}
+                  onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                    <option key={h} value={h} className="bg-black text-white">{h}</option>
+                  ))}
+                </select>
+                <span className="text-[14px] text-white ml-2">Stunden</span>
+              </div>
+            </div>
 
-          {/* Morning Walk Time Setting */}
-          <div className="space-y-2">
-            <span className="text-[14px] text-white">Morgen-Spaziergang</span>
-            <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
-              <input
-                type="time"
-                value={morningTime}
-                onChange={(e) => handleMorningTimeChange(e.target.value)}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark]"
-              />
-              <span className="text-[14px] text-white ml-2">Uhr</span>
+            {/* Morning Walk Time Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Morgen-Spaziergang</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+                <input
+                  type="time"
+                  value={morningTime}
+                  onChange={(e) => handleMorningTimeChange(e.target.value)}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark]"
+                />
+                <span className="text-[14px] text-white ml-2">Uhr</span>
+              </div>
             </div>
-          </div>
 
-          {/* Sleep Time Setting */}
-          <div className="space-y-2">
-            <span className="text-[14px] text-white">Schlafenszeit</span>
-            <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-3">
-              <select
-                value={sleepStart}
-                onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-              >
-                {Array.from({ length: 48 }, (_, i) => {
-                  const hour = Math.floor(i / 2);
-                  const minute = i % 2 === 0 ? '00' : '30';
-                  const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                  return (
-                    <option key={i} value={value} className="bg-black text-white">
-                      {hour.toString().padStart(2, '0')}:{minute}
-                    </option>
-                  );
-                })}
-              </select>
-              <span className="text-[14px] text-white">bis</span>
-              <select
-                value={sleepEnd}
-                onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-              >
-                {Array.from({ length: 48 }, (_, i) => {
-                  const hour = Math.floor(i / 2);
-                  const minute = i % 2 === 0 ? '00' : '30';
-                  const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                  return (
-                    <option key={i} value={value} className="bg-black text-white">
-                      {hour.toString().padStart(2, '0')}:{minute}
-                    </option>
-                  );
-                })}
-              </select>
+            {/* Sleep Time Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Schlafenszeit</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-3">
+                <select
+                  value={sleepStart}
+                  onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span className="text-[14px] text-white">bis</span>
+                <select
+                  value={sleepEnd}
+                  onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </DrawerContent>
     </Drawer>
   );
