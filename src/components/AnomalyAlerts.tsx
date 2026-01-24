@@ -58,19 +58,31 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
       isHorizontalSwipe.current = Math.abs(diffX) > diffY;
     }
     
-    if (isHorizontalSwipe.current && diffX > 0) {
-      setSwipeOffset(Math.min(diffX, 90));
+    if (isHorizontalSwipe.current) {
+      // Calculate offset based on current state
+      const isCurrentlyOpen = activeId === swipingId;
+      let newOffset;
+      
+      if (isCurrentlyOpen) {
+        // If open, start from 82 and allow closing (swipe right = negative diff)
+        newOffset = Math.max(0, Math.min(82 - (-diffX), 90));
+      } else {
+        // If closed, start from 0 and allow opening (swipe left = positive diff)
+        newOffset = Math.max(0, Math.min(diffX, 90));
+      }
+      
+      setSwipeOffset(newOffset);
     }
   };
 
   const handleTouchEnd = () => {
-    // If swiped enough, lock the delete button open
-    if (swipeOffset >= 50 && swipingId) {
+    if (!swipingId) return;
+    
+    // If swiped enough to open, lock it open
+    if (swipeOffset >= 50) {
       setActiveId(swipingId);
-    } else if (swipeOffset < 20 && swipingId === activeId) {
-      // Small swipe on already active item - close it
-    } else if (swipeOffset < 50) {
-      // Not enough swipe - close
+    } else {
+      // Close it
       setActiveId(null);
     }
     setSwipingId(null);
