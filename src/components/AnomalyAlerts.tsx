@@ -129,7 +129,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact 
         return (
           <div 
             key={anomaly.id} 
-            className="relative flex w-full items-stretch overflow-hidden rounded-[16px] gap-2"
+            className="relative flex w-full items-stretch overflow-hidden rounded-[16px] gap-1"
             onTouchStart={(e) => handleTouchStart(e, anomaly.id)}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
