@@ -29,6 +29,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [birthday, setBirthday] = useState<Date | null>(null);
+  const [isContentScrollable, setIsContentScrollable] = useState(false);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -228,7 +229,26 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     return isSameDay(eventDate, selectedDate);
   }).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
-  // Check if selected date is the dog's birthday
+  // Check if content is scrollable
+  useEffect(() => {
+    const checkScrollable = () => {
+      if (scrollContainerRef.current) {
+        const { scrollHeight, clientHeight } = scrollContainerRef.current;
+        setIsContentScrollable(scrollHeight > clientHeight);
+      }
+    };
+    
+    checkScrollable();
+    
+    // Re-check when snap changes or events change
+    const resizeObserver = new ResizeObserver(checkScrollable);
+    if (scrollContainerRef.current) {
+      resizeObserver.observe(scrollContainerRef.current);
+    }
+    
+    return () => resizeObserver.disconnect();
+  }, [snap, filteredEvents.length, showTrends]);
+
   const isBirthdayToday = useMemo(() => {
     if (!birthday) return false;
     return selectedDate.getDate() === birthday.getDate() && 
@@ -380,7 +400,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
           ref={scrollContainerRef} 
           className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
-          {...(snap === 0.9 ? { 'data-vaul-no-drag': true } : {})}
+          {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
           onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
           onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
           onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
