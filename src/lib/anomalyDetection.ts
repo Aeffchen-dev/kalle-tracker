@@ -65,7 +65,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
       const nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
       const hours = nextBreakTime.getHours().toString().padStart(2, '0');
       const minutes = nextBreakTime.getMinutes().toString().padStart(2, '0');
-      const timeStr = `${hours}:${minutes} Uhr`;
+      const timeStr = `${hours}:${minutes}`;
       const isOverdue = now >= nextBreakTime;
       
       anomalies.push({
@@ -73,7 +73,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         type: 'upcoming_break',
         severity: isOverdue ? 'alert' : 'info',
         title: 'Kalle muss bald raus',
-        description: `Nächster Spaziergang um ca. ${timeStr}`,
+        description: `Nächster Spaziergang um ca. ${timeStr} Uhr`,
         highlightText: isOverdue ? timeStr : undefined,
         timestamp: now
       });
