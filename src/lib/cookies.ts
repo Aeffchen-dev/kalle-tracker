@@ -65,3 +65,17 @@ export const getMorningWalkTime = (): string => {
 export const setMorningWalkTime = (time: string): void => {
   localStorage.setItem('kalle_morning_walk_time', time);
 };
+
+// Walk interval setting in hours (default 4)
+export const getWalkIntervalHours = (): number => {
+  try {
+    const data = localStorage.getItem('kalle_walk_interval_hours');
+    return data ? parseInt(data, 10) : 4;
+  } catch {
+    return 4;
+  }
+};
+
+export const setWalkIntervalHours = (hours: number): void => {
+  localStorage.setItem('kalle_walk_interval_hours', hours.toString());
+};

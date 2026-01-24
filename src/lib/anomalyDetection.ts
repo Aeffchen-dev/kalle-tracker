@@ -1,6 +1,6 @@
 import { Event } from './events';
 import { differenceInHours, differenceInMinutes, differenceInMonths } from 'date-fns';
-import { getMorningWalkTime } from './cookies';
+import { getMorningWalkTime, getWalkIntervalHours } from './cookies';
 
 export interface Anomaly {
   id: string;
@@ -61,9 +61,12 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     const lastBreak = new Date(pipiEvents[0].time);
     const minutesSinceBreak = differenceInMinutes(now, lastBreak);
     
-    // Upcoming break reminder after 4 hours (suggested next break is 5h after last)
-    if (minutesSinceBreak >= 240) {
-      let nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
+    // Upcoming break reminder after configured hours (default 4h)
+    const walkIntervalHours = getWalkIntervalHours();
+    const walkIntervalMinutes = walkIntervalHours * 60;
+    if (minutesSinceBreak >= walkIntervalMinutes) {
+      // Suggested next break is 1 hour after the notification threshold
+      let nextBreakTime = new Date(lastBreak.getTime() + (walkIntervalHours + 1) * 60 * 60 * 1000);
       
       // If next break would be between 23:00 and 07:00, set it to configured morning time
       const nextHour = nextBreakTime.getHours();
