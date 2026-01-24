@@ -1,7 +1,7 @@
 import { useState, useRef, TouchEvent, useEffect, useMemo, useCallback } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
-import { format, subDays, addDays, isSameDay, startOfDay } from 'date-fns';
+import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff } from 'lucide-react';
@@ -9,6 +9,7 @@ import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
+import { getSettings } from '@/lib/settings';
 
 type SnapPoint = number | string;
 
@@ -27,6 +28,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [birthday, setBirthday] = useState<Date | null>(null);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -73,6 +75,12 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   useEffect(() => {
     loadEvents();
     setSelectedDate(new Date());
+    // Load birthday from settings
+    getSettings().then((settings) => {
+      if (settings.birthday) {
+        setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
+      }
+    });
   }, []);
 
   // Scroll to top when switching views
@@ -219,6 +227,18 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     const eventDate = new Date(event.time);
     return isSameDay(eventDate, selectedDate);
   }).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+
+  // Check if selected date is the dog's birthday
+  const isBirthdayToday = useMemo(() => {
+    if (!birthday) return false;
+    return selectedDate.getDate() === birthday.getDate() && 
+           selectedDate.getMonth() === birthday.getMonth();
+  }, [selectedDate, birthday]);
+
+  const birthdayAge = useMemo(() => {
+    if (!birthday || !isBirthdayToday) return 0;
+    return differenceInYears(selectedDate, birthday);
+  }, [selectedDate, birthday, isBirthdayToday]);
 
   const today = new Date();
   const sevenDaysAgo = subDays(today, 6);
@@ -381,7 +401,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
             >
-              {filteredEvents.length === 0 ? (
+              {filteredEvents.length === 0 && !isBirthdayToday ? (
                 <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
@@ -389,6 +409,15 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 </div>
               ) : (
                 <div className="space-y-2 pb-20">
+                  {/* Birthday entry */}
+                  {isBirthdayToday && birthdayAge > 0 && (
+                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#5AD940]/20 to-yellow-500/20 border border-[#5AD940]/50 rounded-lg">
+                      <span className="text-[14px] text-white flex items-center gap-2">
+                        <span>🎉</span>
+                        <span>{birthdayAge}. Geburtstag</span>
+                      </span>
+                    </div>
+                  )}
                   {filteredEvents.map((event) => {
                     const isActive = activeEventId === event.id;
                     return (

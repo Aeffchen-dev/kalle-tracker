@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
+import { format, parse } from 'date-fns';
+import { de } from 'date-fns/locale';
+import { CalendarIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -14,6 +19,8 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [sleepStart, setSleepStart] = useState(22);
   const [sleepEnd, setSleepEnd] = useState(7);
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
+  const [birthday, setBirthday] = useState<Date | null>(null);
+  const [birthdayCalendarOpen, setBirthdayCalendarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +32,11 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         setSleepStart(settings.sleep_start_hour);
         setSleepEnd(settings.sleep_end_hour);
         setCountdownMode(settings.countdown_mode);
+        if (settings.birthday) {
+          setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
+        } else {
+          setBirthday(null);
+        }
         setIsLoading(false);
       });
     }
@@ -60,6 +72,15 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     onSettingsChanged?.();
   };
 
+  const handleBirthdayChange = async (date: Date | undefined) => {
+    if (date) {
+      setBirthday(date);
+      await updateSettings({ birthday: format(date, 'yyyy-MM-dd') });
+      setBirthdayCalendarOpen(false);
+      onSettingsChanged?.();
+    }
+  };
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-none px-4 pb-8">
@@ -69,7 +90,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         
         {isLoading ? (
           <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="space-y-2">
                 <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
                 <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
@@ -78,6 +99,35 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           </div>
         ) : (
           <div className="space-y-4">
+            {/* Birthday Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Geburtstag</span>
+              <Popover open={birthdayCalendarOpen} onOpenChange={setBirthdayCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <button className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer gap-2">
+                    <CalendarIcon size={16} className="text-white" />
+                    <span className="text-[14px] text-white">
+                      {birthday ? format(birthday, 'd. MMMM yyyy', { locale: de }) : 'Datum auswählen'}
+                    </span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-black border-white/30" align="center">
+                  <Calendar
+                    mode="single"
+                    selected={birthday || undefined}
+                    onSelect={handleBirthdayChange}
+                    disabled={(date) => date > new Date()}
+                    className="pointer-events-auto bg-black text-white [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
+                    locale={de}
+                    defaultMonth={birthday || new Date()}
+                    captionLayout="dropdown-buttons"
+                    fromYear={2020}
+                    toYear={new Date().getFullYear()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Countdown</span>
