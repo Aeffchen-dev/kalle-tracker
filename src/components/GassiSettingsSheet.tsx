@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -133,17 +134,18 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        {isLoading ? (
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
-                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-4">
+        <ScrollArea className="max-h-[70vh]">
+          {isLoading ? (
+            <div className="space-y-4 pr-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                  <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4 pr-2">
             {/* Nickname Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Dein Name</span>
@@ -323,8 +325,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <span className="text-[14px] text-white ml-1">Uhr</span>
               </div>
             </div>
-          </div>
-        )}
+            </div>
+          )}
+        </ScrollArea>
       </DrawerContent>
     </Drawer>
   );
