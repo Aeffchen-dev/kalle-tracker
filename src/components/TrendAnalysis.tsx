@@ -289,7 +289,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x', overscrollBehavior: 'contain' }}
+        data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
           <ReactECharts
@@ -521,7 +522,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x', overscrollBehavior: 'contain' }}
+        data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }} onClick={handleChartClick}>
           <ReactECharts
@@ -1354,7 +1356,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={chartsRef} className="!mt-6 overflow-visible">
+      <div ref={chartsRef} className="!mt-6">
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
           <div className="mb-8 relative">
@@ -1362,11 +1364,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
             <GrowthCurveChart events={events} />
           </div>
           
-          <div className="mb-6">
+          <div className="mb-6" data-vaul-no-drag>
             <h3 className="text-[13px] text-white font-medium mb-3">Gewichtsverlauf</h3>
             <WeightChart data={weightData} width={width} />
           </div>
-          <div className="pt-16 -mt-16 overflow-visible">
+          <div className="pt-16 -mt-16" data-vaul-no-drag>
             <h3 className="text-[13px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
             <PhChart data={phData} width={width} />
           </div>
