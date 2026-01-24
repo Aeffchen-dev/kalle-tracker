@@ -1,1 +1,4 @@
 project_id = "sywgjwxtuijrdmekxquj"
+
+[functions.add-entry]
+verify_jwt = false
