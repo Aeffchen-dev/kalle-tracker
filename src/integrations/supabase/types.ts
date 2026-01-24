@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      settings: {
+        Row: {
+          id: string
+          morning_walk_time: string
+          sleep_end_hour: number
+          sleep_start_hour: number
+          updated_at: string
+          walk_interval_hours: number
+        }
+        Insert: {
+          id?: string
+          morning_walk_time?: string
+          sleep_end_hour?: number
+          sleep_start_hour?: number
+          updated_at?: string
+          walk_interval_hours?: number
+        }
+        Update: {
+          id?: string
+          morning_walk_time?: string
+          sleep_end_hour?: number
+          sleep_start_hour?: number
+          updated_at?: string
+          walk_interval_hours?: number
+        }
+        Relationships: []
+      }
       tagesplan: {
         Row: {
           id: string

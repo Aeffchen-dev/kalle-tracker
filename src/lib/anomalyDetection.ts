@@ -1,6 +1,6 @@
 import { Event } from './events';
 import { differenceInHours, differenceInMinutes, differenceInMonths } from 'date-fns';
-import { getMorningWalkTime, getWalkIntervalHours, getSleepStartHour, getSleepEndHour } from './cookies';
+import { getCachedSettings } from './settings';
 
 export interface Anomaly {
   id: string;
@@ -62,22 +62,22 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     const minutesSinceBreak = differenceInMinutes(now, lastBreak);
     
     // Upcoming break reminder after configured hours (default 4h)
-    const walkIntervalHours = getWalkIntervalHours();
-    const walkIntervalMinutes = walkIntervalHours * 60;
+    const settings = getCachedSettings();
+    const walkIntervalMinutes = settings.walk_interval_hours * 60;
     if (minutesSinceBreak >= walkIntervalMinutes) {
       // Suggested next break is 1 hour after the notification threshold
-      let nextBreakTime = new Date(lastBreak.getTime() + (walkIntervalHours + 1) * 60 * 60 * 1000);
+      let nextBreakTime = new Date(lastBreak.getTime() + (settings.walk_interval_hours + 1) * 60 * 60 * 1000);
       
       // If next break would be during sleep hours, set it to morning walk time
-      const sleepStart = getSleepStartHour();
-      const sleepEnd = getSleepEndHour();
+      const sleepStart = settings.sleep_start_hour;
+      const sleepEnd = settings.sleep_end_hour;
       const nextHour = nextBreakTime.getHours();
       const isDuringSleep = sleepStart > sleepEnd 
         ? (nextHour >= sleepStart || nextHour < sleepEnd)
         : (nextHour >= sleepStart && nextHour < sleepEnd);
       
       if (isDuringSleep) {
-        const morningTime = getMorningWalkTime();
+        const morningTime = settings.morning_walk_time;
         const [morningHour, morningMinute] = morningTime.split(':').map(Number);
         nextBreakTime = new Date(nextBreakTime);
         // Set to morning time - if after midnight, same day; if before, next day
