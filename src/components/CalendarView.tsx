@@ -411,7 +411,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 <div className="space-y-2 pb-20">
                   {/* Birthday entry */}
                   {isBirthdayToday && birthdayAge > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                       <span className="text-[14px] text-white flex items-center gap-2">
                         <span>🎉</span>
                         <span>{birthdayAge}. Geburtstag</span>
@@ -423,7 +423,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     return (
                       <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center justify-between p-3 bg-white/5 rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
