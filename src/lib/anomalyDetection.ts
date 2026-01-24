@@ -71,7 +71,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         type: 'upcoming_break',
         severity: isOverdue ? 'alert' : 'info',
         title: 'Bald Gassi-Zeit',
-        description: `Nächster Gassi-Gang um ca. ${hours}:${minutes} Uhr`,
+        description: `Nächster Spaziergang um ca. ${hours}:${minutes} Uhr`,
         timestamp: now
       });
     }
