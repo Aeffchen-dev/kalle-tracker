@@ -257,9 +257,11 @@ const Index = () => {
             }
           }}
         >
+          {/* Pulsing dot indicator */}
+          <div className="absolute top-3 left-3 w-2 h-2 bg-black rounded-full animate-gentle-pulse" />
           <button
             onClick={() => setShowGassiSettings(true)}
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
+            className="absolute top-2 right-3 p-1 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Einstellungen"
           >
             <MoreHorizontal className="w-6 h-6 text-black" />
