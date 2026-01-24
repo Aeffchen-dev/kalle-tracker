@@ -207,7 +207,11 @@ const Index = () => {
 
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
-      
+      {/* Permanent safe area background - always visible */}
+      <div 
+        className="fixed inset-x-0 bottom-0 z-40 bg-black" 
+        style={{ height: 'calc(env(safe-area-inset-bottom) + 50px)' }}
+      />
 
       {/* Header */}
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
