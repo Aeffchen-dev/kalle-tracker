@@ -1338,7 +1338,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       </div>
 
       {/* Charts */}
-      <div ref={chartsRef} className="mt-2 overflow-visible">
+      <div ref={chartsRef} className="mt-6 overflow-visible">
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
           <div className="mb-8 relative">
