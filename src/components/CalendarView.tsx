@@ -411,7 +411,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 <div className="space-y-2 pb-20">
                   {/* Birthday entry */}
                   {isBirthdayToday && birthdayAge > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-[#5AD940]/20 to-yellow-500/20 border border-[#5AD940]/50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-black border border-white/30 rounded-lg">
                       <span className="text-[14px] text-white flex items-center gap-2">
                         <span>🎉</span>
                         <span>{birthdayAge}. Geburtstag</span>
