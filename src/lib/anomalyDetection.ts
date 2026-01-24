@@ -62,7 +62,19 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     
     // Upcoming break reminder after 4 hours (suggested next break is 5h after last)
     if (minutesSinceBreak >= 240) {
-      const nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
+      let nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
+      
+      // If next break would be between 23:00 and 07:00, set it to 08:00
+      const nextHour = nextBreakTime.getHours();
+      if (nextHour >= 23 || nextHour < 7) {
+        nextBreakTime = new Date(nextBreakTime);
+        // Set to 08:00 on the same day if before midnight, otherwise next day
+        if (nextHour >= 23) {
+          nextBreakTime.setDate(nextBreakTime.getDate() + 1);
+        }
+        nextBreakTime.setHours(8, 0, 0, 0);
+      }
+      
       const hours = nextBreakTime.getHours().toString().padStart(2, '0');
       const minutes = nextBreakTime.getMinutes().toString().padStart(2, '0');
       const timeStr = `${hours}:${minutes}`;
