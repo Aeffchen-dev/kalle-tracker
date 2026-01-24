@@ -131,7 +131,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+      scrollRef.current.scrollLeft = 0;
     }
   }, [data.length]);
 
@@ -320,7 +320,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
+      scrollRef.current.scrollLeft = 0;
     }
   }, [data.length]);
 
