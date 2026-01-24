@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -123,218 +122,180 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         
         <div className="overflow-y-auto flex-1" style={{ minHeight: 0 }} data-vaul-no-drag>
         {isLoading ? (
-          <div className="space-y-2">
+          <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-14 bg-white/5 rounded-[12px] animate-pulse" />
+              <div key={i} className="space-y-2">
+                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
+              </div>
             ))}
           </div>
         ) : (
-          <Accordion type="single" collapsible className="space-y-2 mb-4">
-            {/* Countdown Mode */}
-            <AccordionItem value="countdown" className="border-none bg-white/5 rounded-[12px] overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 text-[14px] text-white hover:no-underline [&>svg]:text-white/60">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span>Countdown</span>
-                  <span className="text-white/60 text-[14px]">{countdownMode === 'count_up' ? 'Hochzählen' : 'Runterzählen'}</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => handleCountdownModeChange('count_up')}
-                    className={`h-11 rounded-[8px] text-[14px] transition-all ${
-                      countdownMode === 'count_up'
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 text-white'
-                    }`}
-                  >
-                    Hochzählen
-                  </button>
-                  <button
-                    onClick={() => handleCountdownModeChange('count_down')}
-                    className={`h-11 rounded-[8px] text-[14px] transition-all ${
-                      countdownMode === 'count_down'
-                        ? 'bg-white text-black'
-                        : 'bg-white/10 text-white'
-                    }`}
-                  >
-                    Runterzählen
-                  </button>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+          <div className="space-y-4 mb-4">
+            {/* Countdown Mode Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Countdown</span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleCountdownModeChange('count_up')}
+                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                    countdownMode === 'count_up'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent border border-white/30 text-white'
+                  }`}
+                >
+                  Hochzählen
+                </button>
+                <button
+                  onClick={() => handleCountdownModeChange('count_down')}
+                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                    countdownMode === 'count_down'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent border border-white/30 text-white'
+                  }`}
+                >
+                  Runterzählen
+                </button>
+              </div>
+            </div>
 
-            {/* Walk Interval */}
-            <AccordionItem value="interval" className="border-none bg-white/5 rounded-[12px] overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 text-[14px] text-white hover:no-underline [&>svg]:text-white/60">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span>Erinnerung nach</span>
-                  <span className="text-white/60 text-[14px]">{intervalHours} Stunden</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <label className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] cursor-pointer relative">
-                  <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
-                  <span className="text-[14px] text-white ml-1">Stunden</span>
-                  <select
-                    value={intervalHours}
-                    onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  >
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                      <option key={h} value={h} className="bg-black text-white">{h}</option>
-                    ))}
-                  </select>
-                </label>
-              </AccordionContent>
-            </AccordionItem>
+            {/* Walk Interval Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Erinnerung nach</span>
+              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
+                <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
+                <span className="text-[14px] text-white ml-1">Stunden</span>
+                <select
+                  value={intervalHours}
+                  onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                >
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                    <option key={h} value={h} className="bg-black text-white">{h}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
 
-            {/* Morning Walk Time */}
-            <AccordionItem value="morning" className="border-none bg-white/5 rounded-[12px] overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 text-[14px] text-white hover:no-underline [&>svg]:text-white/60">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span>Morgen-Spaziergang</span>
-                  <span className="text-white/60 text-[14px]">{morningTime} Uhr</span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <label className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] cursor-pointer relative">
-                  <input
-                    type="time"
-                    value={morningTime}
-                    onChange={(e) => handleMorningTimeChange(e.target.value)}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                  />
-                  <span className="text-[14px] text-white">{morningTime}</span>
-                  <span className="text-[14px] text-white ml-1">Uhr</span>
-                </label>
-              </AccordionContent>
-            </AccordionItem>
+            {/* Morning Walk Time Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Morgen-Spaziergang</span>
+              <label className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative">
+                <input
+                  type="time"
+                  value={morningTime}
+                  onChange={(e) => handleMorningTimeChange(e.target.value)}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                <span className="text-[14px] text-white">{morningTime}</span>
+                <span className="text-[14px] text-white ml-1">Uhr</span>
+              </label>
+            </div>
 
-            {/* Sleep Time */}
-            <AccordionItem value="sleep" className="border-none bg-white/5 rounded-[12px] overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 text-[14px] text-white hover:no-underline [&>svg]:text-white/60">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span>Schlafenszeit</span>
-                  <span className="text-white/60 text-[14px]">
-                    {Math.floor(sleepStart).toString().padStart(2, '0')}:{sleepStart % 1 === 0.5 ? '30' : '00'} – {Math.floor(sleepEnd).toString().padStart(2, '0')}:{sleepEnd % 1 === 0.5 ? '30' : '00'}
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px]">
-                  <select
-                    value={sleepStart}
-                    onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                  >
-                    {Array.from({ length: 48 }, (_, i) => {
-                      const hour = Math.floor(i / 2);
-                      const minute = i % 2 === 0 ? '00' : '30';
-                      const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                      return (
-                        <option key={i} value={value} className="bg-black text-white">
-                          {hour.toString().padStart(2, '0')}:{minute}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <span className="text-[14px] text-white mx-2">bis</span>
-                  <select
-                    value={sleepEnd}
-                    onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                  >
-                    {Array.from({ length: 48 }, (_, i) => {
-                      const hour = Math.floor(i / 2);
-                      const minute = i % 2 === 0 ? '00' : '30';
-                      const value = hour + (i % 2 === 0 ? 0 : 0.5);
-                      return (
-                        <option key={i} value={value} className="bg-black text-white">
-                          {hour.toString().padStart(2, '0')}:{minute}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  <span className="text-[14px] text-white ml-1">Uhr</span>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-
-            {/* Birthday */}
-            <AccordionItem value="birthday" className="border-none bg-white/5 rounded-[12px] overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 text-[14px] text-white hover:no-underline [&>svg]:text-white/60">
-                <div className="flex items-center justify-between w-full pr-2">
-                  <span>Geburtstag</span>
-                  <span className="text-white/60 text-[14px]">
-                    {birthdayDay && birthdayMonth && birthdayYear 
-                      ? `${birthdayDay.toString().padStart(2, '0')}.${birthdayMonth.toString().padStart(2, '0')}.${birthdayYear}`
-                      : 'Nicht gesetzt'}
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <div className="flex items-center justify-center h-11 w-full bg-white/10 rounded-[8px] gap-2">
-                  <select
-                    value={birthdayDay || ''}
-                    onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
-                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                  >
-                    <option value="" className="bg-black text-white">TT</option>
-                    {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
-                      <option key={d} value={d} className="bg-black text-white">
-                        {d.toString().padStart(2, '0')}
+            {/* Sleep Time Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Schlafenszeit</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
+                <select
+                  value={sleepStart}
+                  onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
                       </option>
-                    ))}
-                  </select>
-                  <select
-                    value={birthdayMonth || ''}
-                    onChange={(e) => {
-                      const newMonth = e.target.value ? parseInt(e.target.value) : null;
-                      let newDay = birthdayDay;
-                      if (newMonth && birthdayYear && birthdayDay) {
-                        const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
-                        if (birthdayDay > maxDays) {
-                          newDay = maxDays;
-                        }
+                    );
+                  })}
+                </select>
+                <span className="text-[14px] text-white ml-1 mr-1">bis</span>
+                <select
+                  value={sleepEnd}
+                  onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
+                      </option>
+                    );
+                  })}
+                </select>
+                <span className="text-[14px] text-white ml-1">Uhr</span>
+              </div>
+            </div>
+
+            {/* Birthday Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Geburtstag</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
+                <select
+                  value={birthdayDay || ''}
+                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">TT</option>
+                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
+                    <option key={d} value={d} className="bg-black text-white">
+                      {d.toString().padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={birthdayMonth || ''}
+                  onChange={(e) => {
+                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
+                    let newDay = birthdayDay;
+                    if (newMonth && birthdayYear && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
                       }
-                      handleBirthdayPartChange(newDay, newMonth, birthdayYear);
-                    }}
-                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                  >
-                    <option value="" className="bg-black text-white">MM</option>
-                    {months.map((m) => (
-                      <option key={m.value} value={m.value} className="bg-black text-white">
-                        {m.label}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={birthdayYear || ''}
-                    onChange={(e) => {
-                      const newYear = e.target.value ? parseInt(e.target.value) : null;
-                      let newDay = birthdayDay;
-                      if (newYear && birthdayMonth && birthdayDay) {
-                        const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
-                        if (birthdayDay > maxDays) {
-                          newDay = maxDays;
-                        }
+                    }
+                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">MM</option>
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value} className="bg-black text-white">
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={birthdayYear || ''}
+                  onChange={(e) => {
+                    const newYear = e.target.value ? parseInt(e.target.value) : null;
+                    let newDay = birthdayDay;
+                    if (newYear && birthdayMonth && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
                       }
-                      handleBirthdayPartChange(newDay, birthdayMonth, newYear);
-                    }}
-                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                  >
-                    <option value="" className="bg-black text-white">JJJJ</option>
-                    {years.map((y) => (
-                      <option key={y} value={y} className="bg-black text-white">
-                        {y}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+                    }
+                    handleBirthdayPartChange(newDay, birthdayMonth, newYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">JJJJ</option>
+                  {years.map((y) => (
+                    <option key={y} value={y} className="bg-black text-white">
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
         )}
         </div>
       </DrawerContent>
