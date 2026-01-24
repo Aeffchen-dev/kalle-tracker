@@ -368,7 +368,7 @@ const Index = () => {
                 }
               }}
               disabled={!nicknameInput.trim()}
-              className="w-full h-12 bg-[#5AD940] text-black hover:bg-[#5AD940]/90 rounded-full text-[14px]"
+              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
             >
               Los geht's
             </Button>
