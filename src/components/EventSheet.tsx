@@ -149,10 +149,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => toggleType('pipi')}
-              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded-xl text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/15'
+                  : 'bg-white/5 text-white hover:bg-white/10'
               }`}
             >
               <span>💦</span>
@@ -160,10 +160,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('stuhlgang')}
-              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded-xl text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/15'
+                  : 'bg-white/5 text-white hover:bg-white/10'
               }`}
             >
               <span>💩</span>
@@ -171,10 +171,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('phwert')}
-              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded-xl text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/15'
+                  : 'bg-white/5 text-white hover:bg-white/10'
               }`}
             >
               <span>🧪</span>
@@ -182,10 +182,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </button>
             <button
               onClick={() => toggleType('gewicht')}
-              className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+              className={`h-10 px-5 rounded-xl text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/15'
+                  : 'bg-white/5 text-white hover:bg-white/10'
               }`}
             >
               <span>🏋️</span>
