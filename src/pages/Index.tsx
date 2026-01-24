@@ -10,7 +10,7 @@ import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification, setWeightNotificationClickHandler } from '@/lib/notifications';
 import { getNickname, setNickname, hasNickname } from '@/lib/nickname';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import dogInCar from '@/assets/dog-in-car.png';
@@ -343,21 +343,21 @@ const Index = () => {
         onSettingsChanged={() => loadEvents()}
       />
 
-      {/* Nickname prompt dialog */}
-      <Dialog open={showNicknamePrompt} onOpenChange={() => {}}>
-        <DialogContent className="bg-black border-white/20 [&>button]:hidden" onPointerDownOutside={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle className="text-white text-center">Wie heißt du?</DialogTitle>
-            <DialogDescription className="text-white/60 text-center">
+      {/* Nickname prompt drawer */}
+      <Drawer open={showNicknamePrompt} onOpenChange={() => {}}>
+        <DrawerContent className="bg-black border-black px-4 pb-8">
+          <DrawerHeader className="pb-4">
+            <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
+            <DrawerDescription className="text-white/60 text-center text-[14px]">
               Dein Name wird bei deinen Einträgen angezeigt
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="space-y-4">
             <Input
               value={nicknameInput}
               onChange={(e) => setNicknameInput(e.target.value)}
               placeholder="Dein Name"
-              className="bg-transparent border-white/30 text-white text-center"
+              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px]"
               autoFocus
             />
             <Button
@@ -368,13 +368,13 @@ const Index = () => {
                 }
               }}
               disabled={!nicknameInput.trim()}
-              className="w-full bg-[#5AD940] text-black hover:bg-[#5AD940]/90"
+              className="w-full h-12 bg-[#5AD940] text-black hover:bg-[#5AD940]/90 rounded-full text-[14px]"
             >
               Los geht's
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
