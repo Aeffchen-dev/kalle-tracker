@@ -135,43 +135,47 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             <div className="space-y-2">
               <span className="text-[14px] text-white">Geburtstag</span>
               <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-0">
-                <select
-                  value={birthdayDay || ''}
-                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                >
-                  <option value="" className="bg-black text-white">TT</option>
-                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
-                    <option key={d} value={d} className="bg-black text-white">
-                      {d.toString().padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-white flex items-center">.</span>
-                <select
-                  value={birthdayMonth || ''}
-                  onChange={(e) => {
-                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
-                    // Adjust day if it exceeds the new month's days
-                    let newDay = birthdayDay;
-                    if (newMonth && birthdayYear && birthdayDay) {
-                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
-                      if (birthdayDay > maxDays) {
-                        newDay = maxDays;
+                <div className="flex items-center">
+                  <select
+                    value={birthdayDay || ''}
+                    onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
+                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  >
+                    <option value="" className="bg-black text-white">TT</option>
+                    {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
+                      <option key={d} value={d} className="bg-black text-white">
+                        {d.toString().padStart(2, '0')}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-white">.</span>
+                </div>
+                <div className="flex items-center">
+                  <select
+                    value={birthdayMonth || ''}
+                    onChange={(e) => {
+                      const newMonth = e.target.value ? parseInt(e.target.value) : null;
+                      // Adjust day if it exceeds the new month's days
+                      let newDay = birthdayDay;
+                      if (newMonth && birthdayYear && birthdayDay) {
+                        const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
+                        if (birthdayDay > maxDays) {
+                          newDay = maxDays;
+                        }
                       }
-                    }
-                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
-                  }}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                >
-                  <option value="" className="bg-black text-white">MM</option>
-                  {months.map((m) => (
-                    <option key={m.value} value={m.value} className="bg-black text-white">
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-white flex items-center">.</span>
+                      handleBirthdayPartChange(newDay, newMonth, birthdayYear);
+                    }}
+                    className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  >
+                    <option value="" className="bg-black text-white">MM</option>
+                    {months.map((m) => (
+                      <option key={m.value} value={m.value} className="bg-black text-white">
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-white">.</span>
+                </div>
                 <select
                   value={birthdayYear || ''}
                   onChange={(e) => {
