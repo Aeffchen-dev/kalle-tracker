@@ -26,52 +26,48 @@ const getEmoji = (type: Anomaly['type']): string => {
 };
 
 const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAlertsProps) => {
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const longPressTriggered = useRef<boolean>(false);
+  const [swipingId, setSwipingId] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const isHorizontalSwipe = useRef(false);
+  const swipeDecided = useRef(false);
 
   if (anomalies.length === 0) return null;
 
-  // Haptic feedback helper
-  const triggerHaptic = () => {
-    if ('vibrate' in navigator) {
-      navigator.vibrate(10);
+  const handleTouchStart = (e: React.TouchEvent, id: string) => {
+    startXRef.current = e.touches[0].clientX;
+    startYRef.current = e.touches[0].clientY;
+    setSwipingId(id);
+    isHorizontalSwipe.current = false;
+    swipeDecided.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!swipingId) return;
+    
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = startXRef.current - currentX;
+    const diffY = Math.abs(currentY - startYRef.current);
+    
+    // Decide direction once
+    if (!swipeDecided.current && (Math.abs(diffX) > 10 || diffY > 10)) {
+      swipeDecided.current = true;
+      isHorizontalSwipe.current = Math.abs(diffX) > diffY;
+    }
+    
+    if (isHorizontalSwipe.current && diffX > 0) {
+      setSwipeOffset(Math.min(diffX, 90));
     }
   };
 
-  // Long press handlers
-  const handleLongPressStart = (id: string) => {
-    longPressTriggered.current = false;
-    longPressTimer.current = setTimeout(() => {
-      longPressTriggered.current = true;
-      if (activeId === id) {
-        setActiveId(null);
-      } else {
-        setActiveId(id);
-        triggerHaptic();
-      }
-    }, 500);
-  };
-
-  const handleLongPressEnd = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
+  const handleTouchEnd = () => {
+    if (swipeOffset >= 82 && swipingId && onDismiss) {
+      onDismiss(swipingId);
     }
-  };
-
-  const handleLongPressMove = () => {
-    if (longPressTimer.current) {
-      clearTimeout(longPressTimer.current);
-      longPressTimer.current = null;
-    }
-  };
-
-  const handleItemClick = (id: string) => {
-    if (longPressTriggered.current) return;
-    if (activeId === id) {
-      setActiveId(null);
-    }
+    setSwipingId(null);
+    setSwipeOffset(0);
   };
 
   if (compact) {
@@ -94,20 +90,23 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
   return (
     <div className="space-y-2">
       {anomalies.map((anomaly) => {
-        const isActive = activeId === anomaly.id;
+        const isActive = swipingId === anomaly.id;
+        const currentOffset = isActive ? swipeOffset : 0;
         
         return (
-          <div key={anomaly.id} className="relative flex w-full items-stretch overflow-hidden rounded-[16px]">
+          <div 
+            key={anomaly.id} 
+            className="relative flex w-full items-stretch overflow-hidden rounded-[16px]"
+            onTouchStart={(e) => handleTouchStart(e, anomaly.id)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <div
-              className={`flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-              onClick={() => handleItemClick(anomaly.id)}
-              onTouchStart={() => handleLongPressStart(anomaly.id)}
-              onTouchMove={handleLongPressMove}
-              onTouchEnd={handleLongPressEnd}
-              onMouseDown={() => handleLongPressStart(anomaly.id)}
-              onMouseMove={handleLongPressMove}
-              onMouseUp={handleLongPressEnd}
-              onMouseLeave={handleLongPressEnd}
+              className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1"
+              style={{ 
+                marginRight: currentOffset > 0 ? `${currentOffset}px` : 0,
+                transition: isActive ? 'none' : 'margin 150ms ease-linear'
+              }}
             >
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
               <div className="flex-1 min-w-0">
@@ -126,7 +125,11 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             </div>
             <button
               onClick={() => onDismiss?.(anomaly.id)}
-              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px] transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+              className="absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px]"
+              style={{
+                transform: currentOffset > 0 ? 'translateX(0)' : 'translateX(100%)',
+                transition: isActive ? 'none' : 'transform 150ms ease-linear'
+              }}
             >
               Löschen
             </button>
