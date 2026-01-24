@@ -203,10 +203,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                     <button
                       key={ph}
                       onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
-                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                      className={`flex-1 h-10 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                         selectedPh === ph
-                          ? 'bg-white text-black border border-white'
-                          : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
+                          ? 'bg-white text-black'
+                          : `bg-white/5 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/10`
                       }`}
                     >
                       {ph}
@@ -221,10 +221,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                     <button
                       key={ph}
                       onClick={() => setSelectedPh(selectedPh === ph ? null : ph)}
-                      className={`flex-1 h-10 rounded text-[14px] font-medium transition-all duration-200 ${
+                      className={`flex-1 h-10 rounded-lg text-[14px] font-medium transition-all duration-200 ${
                         selectedPh === ph
-                          ? 'bg-white text-black border border-white'
-                          : `bg-transparent ${isRed ? 'text-red-500' : 'text-white'} border border-white/30`
+                          ? 'bg-white text-black'
+                          : `bg-white/5 ${isRed ? 'text-red-500' : 'text-white'} hover:bg-white/10`
                       }`}
                     >
                       {ph}
@@ -238,7 +238,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           {/* Weight Input - only show when gewicht is selected */}
           {selectedTypes.has('gewicht') && (
             <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]" style={{ width: 'calc(100vw - 32px)' }}>
+              <div className="flex items-center justify-center h-12 bg-white/5 rounded-lg" style={{ width: 'calc(100vw - 32px)' }}>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -296,7 +296,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   onChange={(e) => setSelectedTime(e.target.value)}
                   className="bg-transparent text-white/70 text-[14px] text-center border-none outline-none w-[70px] md:[&::-webkit-calendar-picker-indicator]:filter md:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 md:[&::-webkit-calendar-picker-indicator]:static md:[&::-webkit-calendar-picker-indicator]:w-auto md:[&::-webkit-calendar-picker-indicator]:h-auto md:[&::-webkit-calendar-picker-indicator]:opacity-100 md:[&::-webkit-calendar-picker-indicator]:ml-2"
                 />
-                <span className="text-[14px] text-white/70">Uhr</span>
+                <span className="text-[14px] text-white">Uhr</span>
               </div>
             </label>
           </div>
