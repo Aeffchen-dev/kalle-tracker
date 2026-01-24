@@ -1,6 +1,6 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes, subDays, isAfter, differenceInMonths } from 'date-fns';
+import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
 import { de } from 'date-fns/locale';
 import ReactECharts from 'echarts-for-react';
 import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
@@ -1282,8 +1282,29 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     }
   }, [events, weightStats, phStats, pipiStats, stuhlgangStats, isExporting]);
 
+  // Calculate Kalle's age
+  const kalleAge = useMemo(() => {
+    const now = new Date();
+    const years = differenceInYears(now, KALLE_BIRTHDAY);
+    const totalMonths = differenceInMonths(now, KALLE_BIRTHDAY);
+    const months = totalMonths % 12;
+    
+    if (years === 0) {
+      return `${months} ${months === 1 ? 'Monat' : 'Monate'}`;
+    } else if (months === 0) {
+      return `${years} ${years === 1 ? 'Jahr' : 'Jahre'}`;
+    } else {
+      return `${years} ${years === 1 ? 'Jahr' : 'Jahre'} und ${months} ${months === 1 ? 'Monat' : 'Monate'}`;
+    }
+  }, []);
+
   return (
     <div className="pb-11 space-y-6" data-vaul-no-drag>
+      {/* Age Display */}
+      <div className="w-full bg-white/5 rounded-xl p-4 border border-white/10 text-center">
+        <span className="text-[14px] text-white">Kalle ist heute {kalleAge} alt</span>
+      </div>
+
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
