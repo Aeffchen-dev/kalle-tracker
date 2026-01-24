@@ -354,7 +354,7 @@ const Index = () => {
               value={nicknameInput}
               onChange={(e) => setNicknameInput(e.target.value)}
               placeholder="Dein Name"
-              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px]"
+              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50"
               autoFocus
             />
             <Button
