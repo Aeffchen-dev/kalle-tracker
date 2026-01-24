@@ -59,60 +59,80 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <SheetTitle className="text-[18px] font-semibold text-center text-white">Einstellungen</SheetTitle>
         </SheetHeader>
         
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Walk Interval Setting */}
-          <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]">
-            <span className="text-[14px] text-white mr-4">Erinnerung nach</span>
-            <select
-              value={intervalHours}
-              onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
-              className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-            >
-              {[2, 3, 4, 5, 6].map((h) => (
-                <option key={h} value={h} className="bg-black text-white">{h}</option>
-              ))}
-            </select>
-            <span className="text-[14px] text-white ml-1">Stunden</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] text-white">Erinnerung nach</span>
+            <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+              <select
+                value={intervalHours}
+                onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
+                className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                  <option key={h} value={h} className="bg-black text-white">{h}</option>
+                ))}
+              </select>
+              <span className="text-[14px] text-white ml-1">Stunden</span>
+            </div>
           </div>
 
           {/* Morning Walk Time Setting */}
-          <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]">
-            <span className="text-[14px] text-white mr-4">Morgen-Spaziergang</span>
-            <input
-              type="time"
-              value={morningTime}
-              onChange={(e) => handleMorningTimeChange(e.target.value)}
-              className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark]"
-            />
-            <span className="text-[14px] text-white ml-1">Uhr</span>
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] text-white">Morgen-Spaziergang</span>
+            <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+              <input
+                type="time"
+                value={morningTime}
+                onChange={(e) => handleMorningTimeChange(e.target.value)}
+                className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark]"
+              />
+              <span className="text-[14px] text-white ml-1">Uhr</span>
+            </div>
           </div>
 
           {/* Sleep Time Setting */}
-          <div className="flex items-center justify-center h-12 bg-transparent border border-white/30 rounded-[4px]">
-            <span className="text-[14px] text-white mr-4">Schlafenszeit</span>
-            <select
-              value={sleepStart}
-              onChange={(e) => handleSleepStartChange(parseInt(e.target.value, 10))}
-              className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-            >
-              {Array.from({ length: 24 }, (_, i) => (
-                <option key={i} value={i} className="bg-black text-white">
-                  {i.toString().padStart(2, '0')}:00
-                </option>
-              ))}
-            </select>
-            <span className="text-[14px] text-white mx-2">bis</span>
-            <select
-              value={sleepEnd}
-              onChange={(e) => handleSleepEndChange(parseInt(e.target.value, 10))}
-              className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-            >
-              {Array.from({ length: 24 }, (_, i) => (
-                <option key={i} value={i} className="bg-black text-white">
-                  {i.toString().padStart(2, '0')}:00
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center justify-between">
+            <span className="text-[14px] text-white">Schlafenszeit</span>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+                <select
+                  value={sleepStart}
+                  onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+              <span className="text-[14px] text-white">bis</span>
+              <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+                <select
+                  value={sleepEnd}
+                  onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  {Array.from({ length: 48 }, (_, i) => {
+                    const hour = Math.floor(i / 2);
+                    const minute = i % 2 === 0 ? '00' : '30';
+                    const value = hour + (i % 2 === 0 ? 0 : 0.5);
+                    return (
+                      <option key={i} value={value} className="bg-black text-white">
+                        {hour.toString().padStart(2, '0')}:{minute}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </SheetContent>
