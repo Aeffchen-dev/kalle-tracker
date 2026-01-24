@@ -111,7 +111,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   ];
 
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 2019 }, (_, i) => currentYear - i);
+  const years = Array.from({ length: 15 }, (_, i) => currentYear - i);
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} snapPoints={[0.95]}>
