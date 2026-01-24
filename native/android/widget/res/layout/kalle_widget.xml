@@ -4,111 +4,161 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:padding="12dp"
     android:background="@drawable/widget_background">
 
+    <!-- Timer Section -->
     <LinearLayout
-        android:id="@+id/btn_walk"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
         android:gravity="center"
-        android:background="@drawable/button_background"
-        android:layout_margin="4dp"
-        android:clickable="true"
-        android:focusable="true">
+        android:paddingEnd="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🚶"
-            android:textSize="24sp" />
+            android:text="🐕"
+            android:textSize="28sp" />
 
         <TextView
+            android:id="@+id/timer_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gassi"
-            android:textSize="12sp"
+            android:text="00min"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/timer_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="seit Gassi"
+            android:textSize="10sp"
+            android:textColor="#99ffffff" />
     </LinearLayout>
 
+    <!-- Divider -->
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#33ffffff"
+        android:layout_marginVertical="8dp" />
+
+    <!-- Action Buttons -->
     <LinearLayout
-        android:id="@+id/btn_pee"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/button_background"
-        android:layout_margin="4dp"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_weight="2"
+        android:orientation="horizontal"
+        android:paddingStart="8dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="💧"
-            android:textSize="24sp" />
+        <LinearLayout
+            android:id="@+id/btn_walk"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/button_background"
+            android:layout_margin="3dp"
+            android:clickable="true"
+            android:focusable="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pipi"
-            android:textSize="12sp"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚶"
+                android:textSize="20sp" />
 
-    <LinearLayout
-        android:id="@+id/btn_poop"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/button_background"
-        android:layout_margin="4dp"
-        android:clickable="true"
-        android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gassi"
+                android:textSize="9sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="💩"
-            android:textSize="24sp" />
+        <LinearLayout
+            android:id="@+id/btn_pee"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/button_background"
+            android:layout_margin="3dp"
+            android:clickable="true"
+            android:focusable="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kacka"
-            android:textSize="12sp"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💧"
+                android:textSize="20sp" />
 
-    <LinearLayout
-        android:id="@+id/btn_food"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/button_background"
-        android:layout_margin="4dp"
-        android:clickable="true"
-        android:focusable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pipi"
+                android:textSize="9sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🍖"
-            android:textSize="24sp" />
+        <LinearLayout
+            android:id="@+id/btn_poop"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/button_background"
+            android:layout_margin="3dp"
+            android:clickable="true"
+            android:focusable="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Futter"
-            android:textSize="12sp"
-            android:textColor="@android:color/white" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💩"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kacka"
+                android:textSize="9sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_food"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/button_background"
+            android:layout_margin="3dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🍖"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Futter"
+                android:textSize="9sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>
