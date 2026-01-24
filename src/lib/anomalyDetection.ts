@@ -1,6 +1,5 @@
 import { Event } from './events';
-import { differenceInHours, differenceInMinutes, differenceInMonths, subDays, format } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { differenceInHours, differenceInMinutes, differenceInMonths } from 'date-fns';
 
 export interface Anomaly {
   id: string;
@@ -47,65 +46,24 @@ function getAgeInMonths(date: Date): number {
   return differenceInMonths(date, KALLE_BIRTHDAY) + (date.getDate() / 30);
 }
 
-// Calculate average interval between events of a type
-function calculateAverageInterval(events: Event[], type: 'pipi' | 'stuhlgang'): number | null {
-  const typeEvents = events
-    .filter(e => e.type === type)
-    .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-  
-  if (typeEvents.length < 3) return null;
-  
-  const intervals: number[] = [];
-  for (let i = 1; i < typeEvents.length; i++) {
-    const interval = differenceInMinutes(
-      new Date(typeEvents[i].time),
-      new Date(typeEvents[i - 1].time)
-    );
-    // Only count reasonable intervals (not overnight gaps > 12 hours)
-    if (interval > 0 && interval < 720) {
-      intervals.push(interval);
-    }
-  }
-  
-  if (intervals.length === 0) return null;
-  return intervals.reduce((a, b) => a + b, 0) / intervals.length;
-}
-
 export function detectAnomalies(events: Event[]): Anomaly[] {
   const anomalies: Anomaly[] = [];
   const now = new Date();
   
-  // Get events from last 7 days for pattern analysis
-  const recentEvents = events.filter(e => 
-    new Date(e.time) > subDays(now, 7)
-  );
-  
-  // 1. Check for missed bathroom breaks
+  // 1. Check for upcoming bathroom breaks
   const pipiEvents = events
     .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
     .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
   
   if (pipiEvents.length > 0) {
     const lastBreak = new Date(pipiEvents[0].time);
-    const hoursSinceBreak = differenceInHours(now, lastBreak);
     const minutesSinceBreak = differenceInMinutes(now, lastBreak);
-    const avgInterval = calculateAverageInterval(events, 'pipi');
     
-    // Alert if no break in 6+ hours during waking hours (8am-10pm)
+    // Upcoming break reminder after 4 hours during waking hours (8am-10pm)
     const currentHour = now.getHours();
     const isWakingHours = currentHour >= 8 && currentHour <= 22;
     
-    if (isWakingHours && hoursSinceBreak >= 6) {
-      anomalies.push({
-        id: `missed_break_${now.getTime()}`,
-        type: 'missed_break',
-        severity: hoursSinceBreak >= 8 ? 'alert' : 'warning',
-        title: 'Lange Pause',
-        description: `Kalle war seit ${hoursSinceBreak} Stunden nicht mehr draußen`,
-        timestamp: now
-      });
-    } else if (isWakingHours && minutesSinceBreak >= 240 && minutesSinceBreak < 360) {
-      // Upcoming break reminder after 4 hours (but before the 6h warning)
+    if (isWakingHours && minutesSinceBreak >= 240 && minutesSinceBreak < 360) {
       const remainingMinutes = 360 - minutesSinceBreak;
       const remainingHours = Math.floor(remainingMinutes / 60);
       const remainingMins = remainingMinutes % 60;
@@ -118,18 +76,6 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         severity: 'info',
         title: 'Bald Gassi-Zeit',
         description: `In ca. ${timeStr} sollte Kalle wieder raus`,
-        timestamp: now
-      });
-    }
-    
-    // Check if current interval is significantly longer than average
-    if (avgInterval && hoursSinceBreak * 60 > avgInterval * 2 && hoursSinceBreak >= 4) {
-      anomalies.push({
-        id: `pattern_break_${now.getTime()}`,
-        type: 'pattern_change',
-        severity: 'info',
-        title: 'Ungewöhnliches Muster',
-        description: `Die Zeit seit dem letzten Gassi ist länger als üblich (Durchschnitt: ${Math.round(avgInterval / 60)}h)`,
         timestamp: now
       });
     }
@@ -220,60 +166,6 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
           relatedEventId: latestPh.id
         });
       }
-      
-      // Check for consecutive abnormal pH readings
-      const recentPhEvents = phEvents.slice(0, 3);
-      const abnormalCount = recentPhEvents.filter(e => {
-        const ph = parseFloat(e.ph_value!.replace(',', '.'));
-        return !isNaN(ph) && (ph < 6.5 || ph > 7.2);
-      }).length;
-      
-      if (abnormalCount >= 3) {
-        anomalies.push({
-          id: `ph_pattern_${now.getTime()}`,
-          type: 'ph_deviation',
-          severity: 'alert',
-          title: 'Anhaltende pH-Abweichung',
-          description: 'Die letzten 3 pH-Messungen waren außerhalb des Normbereichs',
-          timestamp: now
-        });
-      }
-    }
-  }
-  
-  // 4. Check for changes in frequency patterns
-  const last7Days = events.filter(e => new Date(e.time) > subDays(now, 7));
-  const prev7Days = events.filter(e => {
-    const time = new Date(e.time);
-    return time > subDays(now, 14) && time <= subDays(now, 7);
-  });
-  
-  const countByType = (evts: Event[], type: string) => evts.filter(e => e.type === type).length;
-  
-  const recentPipi = countByType(last7Days, 'pipi');
-  const prevPipi = countByType(prev7Days, 'pipi');
-  
-  if (prevPipi > 0 && recentPipi > 0) {
-    const pipiChange = (recentPipi - prevPipi) / prevPipi;
-    
-    if (pipiChange > 0.5) {
-      anomalies.push({
-        id: `frequency_increase_pipi_${now.getTime()}`,
-        type: 'pattern_change',
-        severity: 'info',
-        title: 'Mehr Gassi-Gänge',
-        description: `${Math.round(pipiChange * 100)}% mehr Pipi-Einträge als letzte Woche`,
-        timestamp: now
-      });
-    } else if (pipiChange < -0.5) {
-      anomalies.push({
-        id: `frequency_decrease_pipi_${now.getTime()}`,
-        type: 'pattern_change',
-        severity: 'warning',
-        title: 'Weniger Gassi-Gänge',
-        description: `${Math.abs(Math.round(pipiChange * 100))}% weniger Pipi-Einträge als letzte Woche`,
-        timestamp: now
-      });
     }
   }
   
