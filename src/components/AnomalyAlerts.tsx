@@ -1,5 +1,4 @@
 import { memo, useState, useRef } from 'react';
-import { Info } from 'lucide-react';
 import { Anomaly } from '@/lib/anomalyDetection';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -9,6 +8,22 @@ interface AnomalyAlertsProps {
   onDismiss?: (id: string) => void;
   compact?: boolean;
 }
+
+const getEmoji = (type: Anomaly['type']): string => {
+  switch (type) {
+    case 'weight_deviation':
+      return '🏋️';
+    case 'ph_deviation':
+      return '🧪';
+    case 'missed_break':
+    case 'upcoming_break':
+      return '🐕';
+    case 'pattern_change':
+      return '📊';
+    default:
+      return '💡';
+  }
+};
 
 const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAlertsProps) => {
   const [swipingId, setSwipingId] = useState<string | null>(null);
@@ -43,7 +58,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
     const mostSevere = anomalies[0];
     return (
       <div className="bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-xl px-3 py-2 flex items-center gap-2">
-        <Info className="w-4 h-4 text-black flex-shrink-0" />
+        <span className="text-sm">{getEmoji(mostSevere.type)}</span>
         <span className="text-sm text-black truncate">
           {mostSevere.title}
         </span>
@@ -69,13 +84,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
-            {/* Delete background */}
-            <div 
-              className="absolute inset-y-0 right-0 bg-red-500/80 flex items-center justify-end pr-4 rounded-[16px]"
-              style={{ width: isActive ? `${swipeOffset}px` : 0 }}
-            >
-              <span className="text-white text-sm font-medium">Löschen</span>
-            </div>
+            {/* Delete background - only visible when swiping */}
+            {isActive && swipeOffset > 0 && (
+              <div 
+                className="absolute inset-0 bg-red-500 flex items-center justify-center rounded-[16px]"
+              >
+                <span className="text-white text-sm font-medium">Löschen</span>
+              </div>
+            )}
             
             {/* Card content */}
             <div
@@ -85,18 +101,18 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
                 transition: isActive ? 'none' : 'transform 150ms ease-out'
               }}
             >
-              <div className="flex items-start gap-3">
-                <Info className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2">
+                <span className="text-[14px]">{getEmoji(anomaly.type)}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-medium text-black">
+                    <span className="text-[14px] text-black">
                       {anomaly.title}
-                    </h4>
-                    <span className="text-xs text-black/50 flex-shrink-0">
+                    </span>
+                    <span className="text-[14px] text-black/50 flex-shrink-0">
                       {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                     </span>
                   </div>
-                  <p className="text-sm text-black/70 mt-0.5">
+                  <p className="text-[12px] text-black/70">
                     {anomaly.description}
                   </p>
                 </div>
