@@ -349,13 +349,14 @@ const Index = () => {
           <DrawerHeader className="pb-4">
             <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
           </DrawerHeader>
-          <div className="space-y-4">
+          <div className="space-y-4" data-vaul-no-drag>
             <Input
               value={nicknameInput}
               onChange={(e) => setNicknameInput(e.target.value)}
               placeholder="Dein Name"
-              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50"
+              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50 focus:ring-0 focus:ring-offset-0"
               autoFocus
+              onClick={(e) => e.currentTarget.focus()}
             />
             <Button
               onClick={() => {
