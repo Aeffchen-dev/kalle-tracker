@@ -132,69 +132,6 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Birthday Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Geburtstag</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
-                <select
-                  value={birthdayDay || ''}
-                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                >
-                  <option value="" className="bg-black text-white">TT</option>
-                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
-                    <option key={d} value={d} className="bg-black text-white">
-                      {d.toString().padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={birthdayMonth || ''}
-                  onChange={(e) => {
-                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
-                    let newDay = birthdayDay;
-                    if (newMonth && birthdayYear && birthdayDay) {
-                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
-                      if (birthdayDay > maxDays) {
-                        newDay = maxDays;
-                      }
-                    }
-                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
-                  }}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                >
-                  <option value="" className="bg-black text-white">MM</option>
-                  {months.map((m) => (
-                    <option key={m.value} value={m.value} className="bg-black text-white">
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={birthdayYear || ''}
-                  onChange={(e) => {
-                    const newYear = e.target.value ? parseInt(e.target.value) : null;
-                    let newDay = birthdayDay;
-                    if (newYear && birthdayMonth && birthdayDay) {
-                      const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
-                      if (birthdayDay > maxDays) {
-                        newDay = maxDays;
-                      }
-                    }
-                    handleBirthdayPartChange(newDay, birthdayMonth, newYear);
-                  }}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
-                >
-                  <option value="" className="bg-black text-white">JJJJ</option>
-                  {years.map((y) => (
-                    <option key={y} value={y} className="bg-black text-white">
-                      {y}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Countdown</span>
@@ -293,6 +230,69 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                   })}
                 </select>
                 <span className="text-[14px] text-white ml-1">Uhr</span>
+              </div>
+            </div>
+
+            {/* Birthday Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Geburtstag</span>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
+                <select
+                  value={birthdayDay || ''}
+                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">TT</option>
+                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
+                    <option key={d} value={d} className="bg-black text-white">
+                      {d.toString().padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={birthdayMonth || ''}
+                  onChange={(e) => {
+                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
+                    let newDay = birthdayDay;
+                    if (newMonth && birthdayYear && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
+                      }
+                    }
+                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">MM</option>
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value} className="bg-black text-white">
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={birthdayYear || ''}
+                  onChange={(e) => {
+                    const newYear = e.target.value ? parseInt(e.target.value) : null;
+                    let newDay = birthdayDay;
+                    if (newYear && birthdayMonth && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
+                      }
+                    }
+                    handleBirthdayPartChange(newDay, birthdayMonth, newYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">JJJJ</option>
+                  {years.map((y) => (
+                    <option key={y} value={y} className="bg-black text-white">
+                      {y}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
