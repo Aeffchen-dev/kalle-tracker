@@ -268,7 +268,7 @@ const Index = () => {
             
             const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
             setSpeechBubble(randomPhrase);
-            setShowDogAnimation(true);
+            setTimeout(() => setSpeechBubble(null), 2000);
           }}
           className="cursor-pointer -mt-2 -ml-[18px] relative"
         >
@@ -277,6 +277,13 @@ const Index = () => {
             alt="Kalle" 
             className="h-[100px] w-auto relative z-10"
           />
+          {/* Speech bubble */}
+          {speechBubble && (
+            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-fade-in z-20">
+              {speechBubble}
+              <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
+            </div>
+          )}
         </button>
         <button 
           onClick={() => setShowTagesplan(true)}
@@ -351,29 +358,15 @@ const Index = () => {
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
       {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} />}
 
-      {/* Dog animation with speech bubble */}
+      {/* Dog animation */}
       {showDogAnimation && (
-        <div 
-          className="fixed z-50 pointer-events-none animate-dog-ride"
+        <img
+          src={dogInCar}
+          alt="Dog in car"
+          className="fixed z-50 h-[133px] w-auto pointer-events-none animate-dog-ride"
           style={{ bottom: 'calc(20vh - 30px)' }}
-          onAnimationEnd={() => {
-            setShowDogAnimation(false);
-            setSpeechBubble(null);
-          }}
-        >
-          <img
-            src={dogInCar}
-            alt="Dog in car"
-            className="h-[133px] w-auto"
-          />
-          {/* Speech bubble following the dog */}
-          {speechBubble && (
-            <div className="absolute left-[120px] top-[15px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap">
-              {speechBubble}
-              <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
-            </div>
-          )}
-        </div>
+          onAnimationEnd={() => setShowDogAnimation(false)}
+        />
       )}
 
       {/* Event sheet opens on top */}
