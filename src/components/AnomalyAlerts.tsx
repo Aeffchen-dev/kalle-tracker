@@ -151,7 +151,8 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
               </div>
             </div>
             <button
-              onClick={() => onDismiss?.(anomaly.id)}
+              onClick={(e) => { e.stopPropagation(); onDismiss?.(anomaly.id); }}
+              onTouchStart={(e) => e.stopPropagation()}
               className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px] overflow-hidden self-stretch"
               style={{
                 width: showDelete > 0 ? `${showDelete}px` : 0,
