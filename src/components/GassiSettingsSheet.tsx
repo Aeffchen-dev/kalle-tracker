@@ -116,12 +116,12 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} snapPoints={[0.95]}>
-      <DrawerContent className="bg-black border-none px-4 pb-4 max-h-[95dvh] flex flex-col">
-        <DrawerHeader className="pb-6 flex-shrink-0 cursor-pointer" onClick={() => onOpenChange(false)}>
+      <DrawerContent className="bg-black border-black flex flex-col max-h-[95dvh]">
+        <DrawerHeader className="pb-4 flex-shrink-0 cursor-pointer" onClick={() => onOpenChange(false)}>
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        <div className="overflow-y-auto flex-1" style={{ minHeight: 0 }}>
+        <div className="px-4 pb-4 overflow-y-auto flex-1" style={{ minHeight: 0 }}>
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
