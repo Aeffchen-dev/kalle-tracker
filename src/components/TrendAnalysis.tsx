@@ -1342,16 +1342,16 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
           <div className="mb-8 relative">
-            <h3 className="text-[13px] text-white/60 font-medium mb-3">Wachstumskurve</h3>
+            <h3 className="text-[13px] text-white font-medium mb-3">Wachstumskurve</h3>
             <GrowthCurveChart events={events} />
           </div>
           
           <div className="mb-6">
-            <h3 className="text-[13px] text-white/60 font-medium mb-3">Gewichtsverlauf</h3>
+            <h3 className="text-[13px] text-white font-medium mb-3">Gewichtsverlauf</h3>
             <WeightChart data={weightData} width={width} />
           </div>
           <div className="pt-16 -mt-16 overflow-visible">
-            <h3 className="text-[13px] text-white/60 font-medium mb-3">pH-Wert Verlauf</h3>
+            <h3 className="text-[13px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
             <PhChart data={phData} width={width} />
           </div>
         </div>
