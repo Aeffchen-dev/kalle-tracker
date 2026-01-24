@@ -210,7 +210,7 @@ const Index = () => {
       {/* Fixed black background to prevent light background showing through during drawer drag */}
       <div 
         className="fixed inset-x-0 bottom-0 z-30 bg-black" 
-        style={{ height: 'calc(env(safe-area-inset-bottom) + 25vh)' }}
+        style={{ height: 'calc(env(safe-area-inset-bottom) + 300px)' }}
       />
       
 
