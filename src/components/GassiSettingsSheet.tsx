@@ -141,11 +141,11 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Sleep Time Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Schlafenszeit</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-1">
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
                 <select
                   value={sleepStart}
                   onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-[5ch]"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
@@ -158,11 +158,11 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     );
                   })}
                 </select>
-                <span className="text-[14px] text-white">bis</span>
+                <span className="text-[14px] text-white ml-1 mr-1">bis</span>
                 <select
                   value={sleepEnd}
                   onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-[5ch]"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
                 >
                   {Array.from({ length: 48 }, (_, i) => {
                     const hour = Math.floor(i / 2);
@@ -175,7 +175,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     );
                   })}
                 </select>
-                <span className="text-[14px] text-white">Uhr</span>
+                <span className="text-[14px] text-white ml-1">Uhr</span>
               </div>
             </div>
           </div>
