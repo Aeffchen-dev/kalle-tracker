@@ -160,7 +160,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Walk Interval Setting */}
-            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
+            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4 mt-2">
               <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
               <div className="flex items-center gap-3">
                 <button
