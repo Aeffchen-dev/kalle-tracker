@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Settings } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
@@ -262,7 +262,7 @@ const Index = () => {
             className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Einstellungen"
           >
-            <Settings className="w-4 h-4 text-black/25" />
+            <MoreHorizontal className="w-4 h-4 text-black/25" />
           </button>
           <p className="text-[14px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
