@@ -59,17 +59,19 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     const lastBreak = new Date(pipiEvents[0].time);
     const minutesSinceBreak = differenceInMinutes(now, lastBreak);
     
-    // Upcoming break reminder after 4 hours (no upper limit)
+    // Upcoming break reminder after 4 hours (suggested next break is 5h after last)
     if (minutesSinceBreak >= 240) {
-      const hoursSince = Math.floor(minutesSinceBreak / 60);
-      const minsSince = minutesSinceBreak % 60;
-      const timeStr = `${hoursSince}h ${minsSince}min`;
+      const nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
+      const hours = nextBreakTime.getHours().toString().padStart(2, '0');
+      const minutes = nextBreakTime.getMinutes().toString().padStart(2, '0');
+      const isOverdue = now >= nextBreakTime;
+      
       anomalies.push({
         id: `upcoming_break_${now.getTime()}`,
         type: 'upcoming_break',
-        severity: minutesSinceBreak >= 360 ? 'warning' : 'info',
+        severity: isOverdue ? 'alert' : 'info',
         title: 'Bald Gassi-Zeit',
-        description: `Letzter Gassi-Gang vor ${timeStr}`,
+        description: `Nächster Gassi-Gang um ca. ${hours}:${minutes} Uhr`,
         timestamp: now
       });
     }
