@@ -7,6 +7,7 @@ export interface Anomaly {
   severity: 'info' | 'warning' | 'alert';
   title: string;
   description: string;
+  highlightText?: string;
   timestamp: Date;
   relatedEventId?: string;
 }
@@ -64,6 +65,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
       const nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
       const hours = nextBreakTime.getHours().toString().padStart(2, '0');
       const minutes = nextBreakTime.getMinutes().toString().padStart(2, '0');
+      const timeStr = `${hours}:${minutes} Uhr`;
       const isOverdue = now >= nextBreakTime;
       
       anomalies.push({
@@ -71,7 +73,8 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         type: 'upcoming_break',
         severity: isOverdue ? 'alert' : 'info',
         title: 'Bald Gassi-Zeit',
-        description: `Nächster Spaziergang um ca. ${hours}:${minutes} Uhr`,
+        description: `Nächster Spaziergang um ca. ${timeStr}`,
+        highlightText: isOverdue ? timeStr : undefined,
         timestamp: now
       });
     }
