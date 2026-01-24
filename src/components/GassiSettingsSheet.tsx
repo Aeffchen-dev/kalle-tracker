@@ -138,14 +138,14 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
-                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-medium flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-bold flex items-center justify-center"
                 >
                   −
                 </button>
                 <span className="text-[14px] text-white w-[2ch] text-center">{intervalHours}h</span>
                 <button
                   onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
-                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-medium flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white text-black text-[14px] font-bold flex items-center justify-center"
                 >
                   +
                 </button>
