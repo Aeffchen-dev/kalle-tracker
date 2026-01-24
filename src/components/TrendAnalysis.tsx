@@ -1018,7 +1018,12 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       pdf.setFontSize(10);
       pdf.setTextColor(150, 150, 150);
       pdf.text(`Exportiert am ${format(new Date(), 'd. MMMM yyyy, HH:mm', { locale: de })} Uhr`, margin, yPos);
-      yPos += 15;
+      yPos += 8;
+      
+      // Age
+      pdf.setTextColor(255, 255, 255);
+      pdf.text(`Kalle ist heute ${kalleAge} alt`, margin, yPos);
+      yPos += 12;
       
       // Capture KPI cards from DOM to preserve emojis
       const kpiContainer = document.querySelector('.grid.grid-cols-2.gap-2');
