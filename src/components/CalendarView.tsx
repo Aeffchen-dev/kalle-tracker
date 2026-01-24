@@ -294,7 +294,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       >
       <DrawerContent className="bg-black border-black flex flex-col h-full">
         <DrawerHeader 
-          className="sticky top-0 bg-black z-10 pb-4 cursor-pointer" 
+          className="sticky top-0 z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
