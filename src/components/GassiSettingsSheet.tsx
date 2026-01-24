@@ -131,7 +131,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 mb-4">
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Countdown</span>
