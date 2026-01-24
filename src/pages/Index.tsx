@@ -249,22 +249,37 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
         <div 
-          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
-          style={{ animationFillMode: 'backwards', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
-          onContextMenu={(e) => e.preventDefault()}
-          onTouchStart={() => {
-            longPressTimer.current = setTimeout(() => {
-              if (navigator.vibrate) navigator.vibrate(10);
-              setShowGassiSettings(true);
-            }, 500);
+          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
+          style={{ 
+            animationFillMode: 'backwards', 
+            WebkitUserSelect: 'none', 
+            WebkitTouchCallout: 'none',
+            userSelect: 'none',
+            touchAction: 'manipulation'
           }}
-          onTouchEnd={() => {
+          onContextMenu={(e) => e.preventDefault()}
+          onPointerDown={(e) => {
+            // Prevent default to stop text selection on long press
+            if (e.pointerType === 'touch') {
+              longPressTimer.current = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate(10);
+                setShowGassiSettings(true);
+              }, 500);
+            }
+          }}
+          onPointerUp={() => {
             if (longPressTimer.current) {
               clearTimeout(longPressTimer.current);
               longPressTimer.current = null;
             }
           }}
-          onTouchMove={() => {
+          onPointerCancel={() => {
+            if (longPressTimer.current) {
+              clearTimeout(longPressTimer.current);
+              longPressTimer.current = null;
+            }
+          }}
+          onPointerMove={() => {
             if (longPressTimer.current) {
               clearTimeout(longPressTimer.current);
               longPressTimer.current = null;

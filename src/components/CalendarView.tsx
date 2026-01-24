@@ -378,17 +378,22 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
-          style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%', WebkitOverflowScrolling: 'touch' }}
+          className={`px-4 pb-4 overflow-x-hidden flex-1 ${showTrends ? 'overflow-y-scroll' : 'overflow-y-auto'}`}
+          style={{ 
+            minHeight: 0, 
+            flexGrow: 1, 
+            flexShrink: 1, 
+            flexBasis: '100%', 
+            WebkitOverflowScrolling: 'touch',
+            overscrollBehavior: 'contain'
+          }}
           data-vaul-no-drag
           onTouchStart={showTrends ? undefined : (e) => handleDaySwipeStart(e)}
           onTouchMove={showTrends ? undefined : (e) => handleDaySwipeMove(e)}
           onTouchEnd={showTrends ? undefined : () => handleDaySwipeEnd()}
         >
           {showTrends ? (
-            <div style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}>
-              <TrendAnalysis events={events} />
-            </div>
+            <TrendAnalysis events={events} />
           ) : (
             <div 
               className={`min-h-full ${
