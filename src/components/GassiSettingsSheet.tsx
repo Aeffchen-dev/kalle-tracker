@@ -132,33 +132,6 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           </div>
         ) : (
           <div className="space-y-4 mb-4">
-            {/* Countdown Mode Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Countdown</span>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => handleCountdownModeChange('count_up')}
-                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
-                    countdownMode === 'count_up'
-                      ? 'bg-white text-black'
-                      : 'bg-white/10 text-white hover:bg-white/15'
-                  }`}
-                >
-                  Hochzählen
-                </button>
-                <button
-                  onClick={() => handleCountdownModeChange('count_down')}
-                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
-                    countdownMode === 'count_down'
-                      ? 'bg-white text-black'
-                      : 'bg-white/10 text-white hover:bg-white/15'
-                  }`}
-                >
-                  Runterzählen
-                </button>
-              </div>
-            </div>
-
             {/* Walk Interval Setting */}
             <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
               <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
@@ -232,6 +205,33 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                   })}
                 </select>
                 <span className="text-[14px] text-white">Uhr</span>
+              </div>
+            </div>
+
+            {/* Countdown Mode Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Countdown:</span>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => handleCountdownModeChange('count_up')}
+                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
+                    countdownMode === 'count_up'
+                      ? 'bg-white text-black'
+                      : 'bg-white/10 text-white hover:bg-white/15'
+                  }`}
+                >
+                  Hochzählen
+                </button>
+                <button
+                  onClick={() => handleCountdownModeChange('count_down')}
+                  className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
+                    countdownMode === 'count_down'
+                      ? 'bg-white text-black'
+                      : 'bg-white/10 text-white hover:bg-white/15'
+                  }`}
+                >
+                  Runterzählen
+                </button>
               </div>
             </div>
 
