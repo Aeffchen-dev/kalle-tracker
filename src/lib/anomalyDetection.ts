@@ -59,11 +59,8 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     const lastBreak = new Date(pipiEvents[0].time);
     const minutesSinceBreak = differenceInMinutes(now, lastBreak);
     
-    // Upcoming break reminder after 4 hours during waking hours (8am-10pm)
-    const currentHour = now.getHours();
-    const isWakingHours = currentHour >= 8 && currentHour <= 22;
-    
-    if (isWakingHours && minutesSinceBreak >= 240 && minutesSinceBreak < 360) {
+    // Upcoming break reminder after 4 hours
+    if (minutesSinceBreak >= 240 && minutesSinceBreak < 360) {
       const remainingMinutes = 360 - minutesSinceBreak;
       const remainingHours = Math.floor(remainingMinutes / 60);
       const remainingMins = remainingMinutes % 60;
