@@ -46,6 +46,7 @@ export type Database = {
       }
       settings: {
         Row: {
+          countdown_mode: string
           id: string
           morning_walk_time: string
           sleep_end_hour: number
@@ -54,6 +55,7 @@ export type Database = {
           walk_interval_hours: number
         }
         Insert: {
+          countdown_mode?: string
           id?: string
           morning_walk_time?: string
           sleep_end_hour?: number
@@ -62,6 +64,7 @@ export type Database = {
           walk_interval_hours?: number
         }
         Update: {
+          countdown_mode?: string
           id?: string
           morning_walk_time?: string
           sleep_end_hour?: number

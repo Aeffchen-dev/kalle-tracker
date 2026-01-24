@@ -1,10 +1,13 @@
 import { supabase } from '@/integrations/supabase/client';
 
+export type CountdownMode = 'count_up' | 'count_down';
+
 export interface Settings {
   morning_walk_time: string;
   walk_interval_hours: number;
   sleep_start_hour: number;
   sleep_end_hour: number;
+  countdown_mode: CountdownMode;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -12,6 +15,7 @@ const DEFAULT_SETTINGS: Settings = {
   walk_interval_hours: 4,
   sleep_start_hour: 22,
   sleep_end_hour: 7,
+  countdown_mode: 'count_up',
 };
 
 // Cache for settings to avoid repeated fetches
@@ -36,6 +40,7 @@ export const getSettings = async (): Promise<Settings> => {
         walk_interval_hours: data.walk_interval_hours,
         sleep_start_hour: Number(data.sleep_start_hour),
         sleep_end_hour: Number(data.sleep_end_hour),
+        countdown_mode: (data.countdown_mode as CountdownMode) || 'count_up',
       };
       return settingsCache;
     }

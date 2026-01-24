@@ -6,7 +6,7 @@ import AnomalyAlerts from '@/components/AnomalyAlerts';
 import GassiSettingsSheet from '@/components/GassiSettingsSheet';
 import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
-import { getSettings } from '@/lib/settings';
+import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
@@ -51,22 +51,45 @@ const Index = () => {
     );
     const lastEvent = sortedEvents[0];
     const lastEventTime = new Date(lastEvent.time);
-
     const now = new Date();
-    const elapsed = now.getTime() - lastEventTime.getTime();
     
-    if (elapsed <= 0) {
-      setTimeDisplay('00min');
-      return;
-    }
+    const settings = getCachedSettings();
     
-    const hours = Math.floor(elapsed / (1000 * 60 * 60));
-    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (hours === 0) {
-      setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
+    if (settings.countdown_mode === 'count_down') {
+      // Count down from walk interval
+      const targetTime = new Date(lastEventTime.getTime() + settings.walk_interval_hours * 60 * 60 * 1000);
+      const remaining = targetTime.getTime() - now.getTime();
+      
+      if (remaining <= 0) {
+        setTimeDisplay('00min');
+        return;
+      }
+      
+      const hours = Math.floor(remaining / (1000 * 60 * 60));
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (hours === 0) {
+        setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
+      } else {
+        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
+      }
     } else {
-      setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
+      // Count up from last entry (default)
+      const elapsed = now.getTime() - lastEventTime.getTime();
+      
+      if (elapsed <= 0) {
+        setTimeDisplay('00min');
+        return;
+      }
+      
+      const hours = Math.floor(elapsed / (1000 * 60 * 60));
+      const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+      
+      if (hours === 0) {
+        setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
+      } else {
+        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
+      }
     }
   };
 
@@ -181,7 +204,7 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
         <div 
-          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
+          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
           style={{ animationFillMode: 'backwards' }}
           onTouchStart={() => {
             longPressTimer.current = setTimeout(() => {
