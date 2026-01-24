@@ -3,6 +3,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { Minus, Plus } from 'lucide-react';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -138,16 +139,16 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
-                  className="w-6 h-6 rounded-full bg-white/10 text-white text-[16px] font-black flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center"
                 >
-                  −
+                  <Minus size={14} strokeWidth={2} />
                 </button>
                 <span className="text-[14px] text-white/90 w-[2ch] text-center">{intervalHours}h</span>
                 <button
                   onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
-                  className="w-6 h-6 rounded-full bg-white/10 text-white text-[16px] font-black flex items-center justify-center"
+                  className="w-6 h-6 rounded-full bg-white/10 text-white flex items-center justify-center"
                 >
-                  +
+                  <Plus size={14} strokeWidth={2} />
                 </button>
               </div>
             </div>
