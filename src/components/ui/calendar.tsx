@@ -1,15 +1,27 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
-import { addMonths, subMonths } from "date-fns";
+import { addMonths, subMonths, setYear, format } from "date-fns";
+import { de } from "date-fns/locale";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  showYearPicker?: boolean;
+  yearRange?: { from: number; to: number };
+};
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({ 
+  className, 
+  classNames, 
+  showOutsideDays = true, 
+  showYearPicker = false,
+  yearRange = { from: 2020, to: new Date().getFullYear() },
+  ...props 
+}: CalendarProps) {
   const [month, setMonth] = React.useState(props.defaultMonth || new Date());
+  const [isYearPickerOpen, setIsYearPickerOpen] = React.useState(false);
   const touchStartX = React.useRef<number>(0);
   const touchEndX = React.useRef<number>(0);
 
@@ -44,12 +56,62 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
     touchEndX.current = 0;
   };
 
+  const handleYearSelect = (year: number) => {
+    setMonth(prev => setYear(prev, year));
+    setIsYearPickerOpen(false);
+  };
+
+  const years = React.useMemo(() => {
+    const result = [];
+    for (let y = yearRange.to; y >= yearRange.from; y--) {
+      result.push(y);
+    }
+    return result;
+  }, [yearRange]);
+
+  const CaptionLabel = React.useCallback(({ displayMonth }: { displayMonth: Date }) => {
+    if (!showYearPicker) {
+      return <span className="text-sm font-medium">{format(displayMonth, 'LLLL yyyy', { locale: de })}</span>;
+    }
+    
+    return (
+      <button 
+        onClick={() => setIsYearPickerOpen(!isYearPickerOpen)}
+        className="text-sm font-medium hover:underline cursor-pointer"
+      >
+        {format(displayMonth, 'LLLL yyyy', { locale: de })}
+      </button>
+    );
+  }, [showYearPicker, isYearPickerOpen]);
+
   return (
     <div
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      className="relative"
     >
+      {isYearPickerOpen && showYearPicker && (
+        <div className="absolute inset-0 bg-black z-10 p-3 overflow-y-auto">
+          <div className="text-center text-sm font-medium mb-3 text-white">Jahr auswählen</div>
+          <div className="grid grid-cols-3 gap-2">
+            {years.map((year) => (
+              <button
+                key={year}
+                onClick={() => handleYearSelect(year)}
+                className={cn(
+                  "py-2 px-3 rounded text-sm",
+                  year === month.getFullYear()
+                    ? "bg-[#5AD940] text-black"
+                    : "bg-white/10 text-white hover:bg-white/20"
+                )}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <DayPicker
         showOutsideDays={showOutsideDays}
         month={month}
@@ -87,6 +149,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         components={{
           IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
           IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+          CaptionLabel: showYearPicker ? CaptionLabel : undefined,
         }}
         {...props}
       />
