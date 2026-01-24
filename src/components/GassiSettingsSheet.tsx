@@ -242,7 +242,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <select
                   value={birthdayDay || ''}
                   onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                 >
                   <option value="" className="bg-black text-white">TT</option>
                   {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
@@ -264,7 +264,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     }
                     handleBirthdayPartChange(newDay, newMonth, birthdayYear);
                   }}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                 >
                   <option value="" className="bg-black text-white">MM</option>
                   {months.map((m) => (
@@ -286,7 +286,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     }
                     handleBirthdayPartChange(newDay, birthdayMonth, newYear);
                   }}
-                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                 >
                   <option value="" className="bg-black text-white">JJJJ</option>
                   {years.map((y) => (
