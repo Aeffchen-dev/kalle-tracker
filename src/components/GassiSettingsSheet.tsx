@@ -133,7 +133,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         ) : (
           <div className="divide-y divide-white/20 mb-4">
             {/* Walk Interval Setting */}
-            <div className="flex items-center justify-between h-12 w-full">
+            <div className="flex items-center justify-between min-h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
               <div className="flex items-center gap-3">
                 <button
@@ -153,7 +153,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Morning Walk Time Setting */}
-            <label className="flex items-center justify-between h-12 w-full cursor-pointer relative">
+            <label className="flex items-center justify-between min-h-12 w-full cursor-pointer relative">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white">{morningTime}</span>
@@ -168,7 +168,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </label>
 
             {/* Sleep Time Setting */}
-            <div className="flex items-center justify-between h-12 w-full">
+            <div className="flex items-center justify-between min-h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
               <div className="flex items-center gap-2">
                 <select
@@ -238,7 +238,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Birthday Setting */}
-            <div className="flex items-center justify-between h-12 w-full">
+            <div className="flex items-center justify-between min-h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
               <div className="flex items-center gap-2">
                 <select
