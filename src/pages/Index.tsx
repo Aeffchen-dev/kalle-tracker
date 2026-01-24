@@ -18,7 +18,7 @@ const Index = () => {
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState<string | null>(null);
+  const [speechBubble, setSpeechBubble] = useState<{ text: string; rotation: number } | null>(null);
   const [dogBounce, setDogBounce] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   
@@ -40,6 +40,14 @@ const Index = () => {
       staticLoader.remove();
     }
   }, []);
+
+  // Auto-hide speech bubble after 600ms
+  useEffect(() => {
+    if (speechBubble) {
+      const timer = setTimeout(() => setSpeechBubble(null), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [speechBubble]);
 
   const calculateTimeDisplay = () => {
     const eventList = eventsRef.current;
@@ -268,10 +276,10 @@ const Index = () => {
             }
             
             const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            setSpeechBubble(randomPhrase);
+            const randomRotation = Math.random() * 10 - 5; // -5 to +5 degrees
+            setSpeechBubble({ text: randomPhrase, rotation: randomRotation });
             setDogBounce(true);
             setTimeout(() => setDogBounce(false), 400);
-            setTimeout(() => setSpeechBubble(null), 2000);
           }}
           className="cursor-pointer -mt-2 -ml-[18px] relative"
         >
@@ -280,11 +288,15 @@ const Index = () => {
             alt="Kalle" 
             className={`h-[100px] w-auto relative z-10 transition-transform ${dogBounce ? 'animate-dog-bounce' : ''}`}
           />
-          {/* Speech bubble */}
+          {/* Speech bubble - positioned to the left of the dog with pointer on right */}
           {speechBubble && (
-            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-speech-pop z-20">
-              {speechBubble}
-              <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
+            <div 
+              className="absolute right-[85px] top-[18px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-speech-slide-in z-20"
+              style={{ transform: `rotate(${speechBubble.rotation}deg)` }}
+            >
+              {speechBubble.text}
+              {/* Triangle pointer on right side pointing toward Kalle */}
+              <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[5px] border-l-black" />
             </div>
           )}
         </button>
