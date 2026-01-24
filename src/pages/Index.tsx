@@ -344,19 +344,22 @@ const Index = () => {
       />
 
       {/* Nickname prompt drawer */}
-      <Drawer open={showNicknamePrompt} onOpenChange={(open) => { if (!open && nicknameInput.trim()) setShowNicknamePrompt(false); }}>
+      <Drawer open={showNicknamePrompt} onOpenChange={setShowNicknamePrompt}>
         <DrawerContent className="bg-black border-black px-4 pb-8 z-[100]">
           <DrawerHeader className="pb-4">
             <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
           </DrawerHeader>
           <div className="space-y-4" data-vaul-no-drag>
-            <Input
+            <input
+              type="text"
               value={nicknameInput}
               onChange={(e) => setNicknameInput(e.target.value)}
               placeholder="Dein Name"
-              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50 focus:ring-0 focus:ring-offset-0"
+              className="w-full h-12 bg-transparent border border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50 outline-none focus:border-white/50"
               autoFocus
-              onClick={(e) => e.currentTarget.focus()}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="words"
             />
             <Button
               onClick={() => {
