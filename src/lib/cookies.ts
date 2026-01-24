@@ -79,3 +79,30 @@ export const getWalkIntervalHours = (): number => {
 export const setWalkIntervalHours = (hours: number): void => {
   localStorage.setItem('kalle_walk_interval_hours', hours.toString());
 };
+
+// Sleep time settings (default 22:00 - 07:00)
+export const getSleepStartHour = (): number => {
+  try {
+    const data = localStorage.getItem('kalle_sleep_start_hour');
+    return data ? parseInt(data, 10) : 22;
+  } catch {
+    return 22;
+  }
+};
+
+export const setSleepStartHour = (hour: number): void => {
+  localStorage.setItem('kalle_sleep_start_hour', hour.toString());
+};
+
+export const getSleepEndHour = (): number => {
+  try {
+    const data = localStorage.getItem('kalle_sleep_end_hour');
+    return data ? parseInt(data, 10) : 7;
+  } catch {
+    return 7;
+  }
+};
+
+export const setSleepEndHour = (hour: number): void => {
+  localStorage.setItem('kalle_sleep_end_hour', hour.toString());
+};
