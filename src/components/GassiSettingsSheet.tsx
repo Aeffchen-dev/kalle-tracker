@@ -1,11 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
-import { format, parse } from 'date-fns';
+import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -19,8 +16,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [sleepStart, setSleepStart] = useState(22);
   const [sleepEnd, setSleepEnd] = useState(7);
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
-  const [birthday, setBirthday] = useState<Date | null>(null);
-  const [birthdayCalendarOpen, setBirthdayCalendarOpen] = useState(false);
+  const [birthdayDay, setBirthdayDay] = useState<number | null>(null);
+  const [birthdayMonth, setBirthdayMonth] = useState<number | null>(null);
+  const [birthdayYear, setBirthdayYear] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,14 +31,27 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         setSleepEnd(settings.sleep_end_hour);
         setCountdownMode(settings.countdown_mode);
         if (settings.birthday) {
-          setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
+          const date = parse(settings.birthday, 'yyyy-MM-dd', new Date());
+          setBirthdayDay(date.getDate());
+          setBirthdayMonth(date.getMonth() + 1);
+          setBirthdayYear(date.getFullYear());
         } else {
-          setBirthday(null);
+          setBirthdayDay(null);
+          setBirthdayMonth(null);
+          setBirthdayYear(null);
         }
         setIsLoading(false);
       });
     }
   }, [open]);
+
+  // Calculate available days based on selected month/year
+  const daysInSelectedMonth = useMemo(() => {
+    if (birthdayMonth && birthdayYear) {
+      return getDaysInMonth(new Date(birthdayYear, birthdayMonth - 1));
+    }
+    return 31;
+  }, [birthdayMonth, birthdayYear]);
 
   const handleIntervalChange = async (newInterval: number) => {
     setIntervalHours(newInterval);
@@ -72,14 +83,35 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     onSettingsChanged?.();
   };
 
-  const handleBirthdayChange = async (date: Date | undefined) => {
-    if (date) {
-      setBirthday(date);
-      await updateSettings({ birthday: format(date, 'yyyy-MM-dd') });
-      setBirthdayCalendarOpen(false);
+  const handleBirthdayPartChange = async (day: number | null, month: number | null, year: number | null) => {
+    setBirthdayDay(day);
+    setBirthdayMonth(month);
+    setBirthdayYear(year);
+    
+    if (day && month && year) {
+      const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+      await updateSettings({ birthday: dateStr });
       onSettingsChanged?.();
     }
   };
+
+  const months = [
+    { value: 1, label: 'Jan' },
+    { value: 2, label: 'Feb' },
+    { value: 3, label: 'Mär' },
+    { value: 4, label: 'Apr' },
+    { value: 5, label: 'Mai' },
+    { value: 6, label: 'Jun' },
+    { value: 7, label: 'Jul' },
+    { value: 8, label: 'Aug' },
+    { value: 9, label: 'Sep' },
+    { value: 10, label: 'Okt' },
+    { value: 11, label: 'Nov' },
+    { value: 12, label: 'Dez' },
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 2019 }, (_, i) => currentYear - i);
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -102,29 +134,68 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Birthday Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Geburtstag</span>
-              <Popover open={birthdayCalendarOpen} onOpenChange={setBirthdayCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <button className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer gap-2">
-                    <CalendarIcon size={16} className="text-white" />
-                    <span className="text-[14px] text-white">
-                      {birthday ? format(birthday, 'd. MMMM yyyy', { locale: de }) : 'Datum auswählen'}
-                    </span>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-black border-white/30" align="center">
-                  <Calendar
-                    mode="single"
-                    selected={birthday || undefined}
-                    onSelect={handleBirthdayChange}
-                    disabled={(date) => date > new Date()}
-                    className="pointer-events-auto bg-black text-white [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
-                    locale={de}
-                    defaultMonth={birthday || new Date()}
-                    showYearPicker
-                    yearRange={{ from: 2020, to: new Date().getFullYear() }}
-                  />
-                </PopoverContent>
-              </Popover>
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
+                <select
+                  value={birthdayDay || ''}
+                  onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">TT</option>
+                  {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
+                    <option key={d} value={d} className="bg-black text-white">
+                      {d.toString().padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-white/50">.</span>
+                <select
+                  value={birthdayMonth || ''}
+                  onChange={(e) => {
+                    const newMonth = e.target.value ? parseInt(e.target.value) : null;
+                    // Adjust day if it exceeds the new month's days
+                    let newDay = birthdayDay;
+                    if (newMonth && birthdayYear && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(birthdayYear, newMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
+                      }
+                    }
+                    handleBirthdayPartChange(newDay, newMonth, birthdayYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">MM</option>
+                  {months.map((m) => (
+                    <option key={m.value} value={m.value} className="bg-black text-white">
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-white/50">.</span>
+                <select
+                  value={birthdayYear || ''}
+                  onChange={(e) => {
+                    const newYear = e.target.value ? parseInt(e.target.value) : null;
+                    // Adjust day if it exceeds the new month's days
+                    let newDay = birthdayDay;
+                    if (newYear && birthdayMonth && birthdayDay) {
+                      const maxDays = getDaysInMonth(new Date(newYear, birthdayMonth - 1));
+                      if (birthdayDay > maxDays) {
+                        newDay = maxDays;
+                      }
+                    }
+                    handleBirthdayPartChange(newDay, birthdayMonth, newYear);
+                  }}
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none cursor-pointer"
+                >
+                  <option value="" className="bg-black text-white">JJJJ</option>
+                  {years.map((y) => (
+                    <option key={y} value={y} className="bg-black text-white">
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             {/* Countdown Mode Setting */}
