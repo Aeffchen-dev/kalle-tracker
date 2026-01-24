@@ -138,14 +138,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-[14px] text-black">
+                  <span className={`text-[14px] ${anomaly.severity === 'alert' ? 'text-[#FF4444]' : 'text-black'}`}>
                     {anomaly.title}
                   </span>
                   <span className="text-[11px] text-black/50 flex-shrink-0">
                     {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                   </span>
                 </div>
-                <p className="text-[14px] text-black/70">
+                <p className={`text-[14px] ${anomaly.severity === 'alert' ? 'text-[#FF4444]' : 'text-black/70'}`}>
                   {anomaly.description}
                 </p>
               </div>
