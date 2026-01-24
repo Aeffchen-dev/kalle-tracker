@@ -378,20 +378,15 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className={`px-4 pb-4 overflow-x-hidden flex-1 ${showTrends ? 'overflow-y-auto' : 'overflow-y-auto'}`}
-          style={{ 
-            minHeight: 0, 
-            maxHeight: showTrends ? 'calc(90vh - 80px)' : undefined,
-            WebkitOverflowScrolling: 'touch',
-            overscrollBehavior: 'contain'
-          }}
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
+          style={{ minHeight: 0, flexGrow: 1, flexShrink: 1, flexBasis: '100%' }}
           data-vaul-no-drag
-          onTouchStart={showTrends ? undefined : (e) => handleDaySwipeStart(e)}
-          onTouchMove={showTrends ? undefined : (e) => handleDaySwipeMove(e)}
-          onTouchEnd={showTrends ? undefined : () => handleDaySwipeEnd()}
+          onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
+          onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
+          onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
         >
           {showTrends ? (
-            <div className="min-h-0">
+            <div data-vaul-no-drag>
               <TrendAnalysis events={events} />
             </div>
           ) : (
@@ -456,14 +451,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                               )}
                             </span>
                           </span>
-                          <div className="flex items-center gap-2 shrink-0 ml-2">
-                            {event.logged_by && (
-                              <span className="text-[12px] text-white/50">{event.logged_by}</span>
-                            )}
-                            <span className="text-[14px] text-white whitespace-nowrap">
-                              {format(new Date(event.time), 'HH:mm')} Uhr
-                            </span>
-                          </div>
+                          <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2">
+                            {format(new Date(event.time), 'HH:mm')} Uhr
+                          </span>
                         </div>
                         <button
                           onClick={() => handleDelete(event.id)}

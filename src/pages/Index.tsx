@@ -8,11 +8,7 @@ import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification, setWeightNotificationClickHandler } from '@/lib/notifications';
-import { getNickname, setNickname, hasNickname } from '@/lib/nickname';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
 
@@ -28,9 +24,6 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTagesplan, setShowTagesplan] = useState(false);
   const [showGassiSettings, setShowGassiSettings] = useState(false);
-  const [preselectedEventType, setPreselectedEventType] = useState<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht' | undefined>(undefined);
-  const [showNicknamePrompt, setShowNicknamePrompt] = useState(false);
-  const [nicknameInput, setNicknameInput] = useState('');
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
@@ -159,19 +152,8 @@ const Index = () => {
 
   // Initial load and realtime subscription
   useEffect(() => {
-    // Check if nickname is set
-    if (!hasNickname()) {
-      setShowNicknamePrompt(true);
-    }
-
     // Initialize notifications
     initializeNotifications();
-    
-    // Set up weight notification click handler
-    setWeightNotificationClickHandler(() => {
-      setPreselectedEventType('gewicht');
-      setEventSheetOpen(true);
-    });
     
     // Load settings first, then events
     getSettings().then(() => loadEvents());
@@ -249,37 +231,23 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
         <div 
-          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
-          style={{ 
-            animationFillMode: 'backwards', 
-            WebkitUserSelect: 'none', 
-            WebkitTouchCallout: 'none',
-            userSelect: 'none',
-            touchAction: 'none'
-          }}
+          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
+          style={{ animationFillMode: 'backwards', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
           onContextMenu={(e) => e.preventDefault()}
-          onPointerDown={(e) => {
-            // Prevent default to stop text selection on long press
-            if (e.pointerType === 'touch') {
-              longPressTimer.current = setTimeout(() => {
-                if (navigator.vibrate) navigator.vibrate(10);
-                setShowGassiSettings(true);
-              }, 500);
-            }
+          onTouchStart={(e) => {
+            e.preventDefault();
+            longPressTimer.current = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate(10);
+              setShowGassiSettings(true);
+            }, 500);
           }}
-          onPointerUp={() => {
+          onTouchEnd={() => {
             if (longPressTimer.current) {
               clearTimeout(longPressTimer.current);
               longPressTimer.current = null;
             }
           }}
-          onPointerCancel={() => {
-            if (longPressTimer.current) {
-              clearTimeout(longPressTimer.current);
-              longPressTimer.current = null;
-            }
-          }}
-          onPointerMove={() => {
+          onTouchMove={() => {
             if (longPressTimer.current) {
               clearTimeout(longPressTimer.current);
               longPressTimer.current = null;
@@ -330,18 +298,13 @@ const Index = () => {
       {/* Event sheet opens on top */}
       <EventSheet
         open={eventSheetOpen}
-        onOpenChange={(open) => {
-          setEventSheetOpen(open);
-          if (!open) setPreselectedEventType(undefined);
-        }}
+        onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
           loadEvents();
           setShowDogAnimation(true);
-          setPreselectedEventType(undefined);
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
-        preselectedType={preselectedEventType}
       />
 
       {/* Tagesplan overlay */}
@@ -356,45 +319,6 @@ const Index = () => {
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
       />
-
-      {/* Nickname prompt drawer - must be highest z-index */}
-      <Drawer open={showNicknamePrompt} onOpenChange={setShowNicknamePrompt} modal={true}>
-        <DrawerContent className="bg-black border-black px-4 pb-8" style={{ zIndex: 9999 }}>
-          <DrawerHeader className="pb-4">
-            <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
-          </DrawerHeader>
-          <div className="space-y-4" data-vaul-no-drag>
-            <input
-              type="text"
-              value={nicknameInput}
-              onChange={(e) => setNicknameInput(e.target.value)}
-              placeholder="Dein Name"
-              className="w-full h-12 bg-transparent border border-white/30 text-white text-center rounded-[4px] text-[14px] placeholder:text-white/50 outline-none focus:border-white/50"
-              autoFocus
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="words"
-            />
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const name = nicknameInput.trim();
-                if (name) {
-                  setNickname(name);
-                  setNicknameInput('');
-                  setShowNicknamePrompt(false);
-                }
-              }}
-              disabled={!nicknameInput.trim()}
-              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full cursor-pointer"
-            >
-              Los geht's
-            </button>
-          </div>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 };

@@ -3,7 +3,6 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { getNickname, setNickname } from '@/lib/nickname';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -20,16 +19,11 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [birthdayDay, setBirthdayDay] = useState<number | null>(null);
   const [birthdayMonth, setBirthdayMonth] = useState<number | null>(null);
   const [birthdayYear, setBirthdayYear] = useState<number | null>(null);
-  const [nickname, setNicknameState] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (open) {
       setIsLoading(true);
-      // Load nickname from localStorage
-      const storedNickname = getNickname();
-      setNicknameState(storedNickname || '');
-      
       getSettings().then((settings) => {
         setMorningTime(settings.morning_walk_time);
         setIntervalHours(settings.walk_interval_hours);
@@ -89,13 +83,6 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     onSettingsChanged?.();
   };
 
-  const handleNicknameChange = (newNickname: string) => {
-    setNicknameState(newNickname);
-    if (newNickname.trim()) {
-      setNickname(newNickname.trim());
-    }
-  };
-
   const handleBirthdayPartChange = async (day: number | null, month: number | null, year: number | null) => {
     setBirthdayDay(day);
     setBirthdayMonth(month);
@@ -128,35 +115,22 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-black border-none px-4 pb-8 max-h-[85vh]">
+      <DrawerContent className="bg-black border-none px-4 pb-8">
         <DrawerHeader className="pb-6">
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(85vh - 100px)' }}>
-          {isLoading ? (
-            <div className="space-y-4 pr-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="space-y-2">
-                  <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
-                  <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4 pr-2">
-            {/* Nickname Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Dein Name</span>
-              <input
-                type="text"
-                value={nickname}
-                onChange={(e) => handleNicknameChange(e.target.value)}
-                placeholder="Name eingeben"
-                className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] text-white text-[14px] text-center outline-none placeholder:text-white/40"
-              />
-            </div>
-
+        {isLoading ? (
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
+                <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
             {/* Birthday Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Geburtstag</span>
@@ -324,9 +298,8 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 <span className="text-[14px] text-white ml-1">Uhr</span>
               </div>
             </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </DrawerContent>
     </Drawer>
   );

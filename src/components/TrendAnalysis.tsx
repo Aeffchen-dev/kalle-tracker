@@ -1282,30 +1282,8 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     }
   }, [events, weightStats, phStats, pipiStats, stuhlgangStats, isExporting]);
 
-  // Calculate activity per person
-  const activityByPerson = useMemo(() => {
-    const personStats: { [name: string]: { total: number; pipi: number; stuhlgang: number; phwert: number; gewicht: number } } = {};
-    
-    events.forEach(event => {
-      // Skip events without a logged_by name (don't show "Unbekannt")
-      if (!event.logged_by) return;
-      const name = event.logged_by;
-      if (!personStats[name]) {
-        personStats[name] = { total: 0, pipi: 0, stuhlgang: 0, phwert: 0, gewicht: 0 };
-      }
-      personStats[name].total++;
-      if (event.type === 'pipi') personStats[name].pipi++;
-      if (event.type === 'stuhlgang') personStats[name].stuhlgang++;
-      if (event.type === 'phwert') personStats[name].phwert++;
-      if (event.type === 'gewicht') personStats[name].gewicht++;
-    });
-    
-    return Object.entries(personStats)
-      .sort((a, b) => b[1].total - a[1].total);
-  }, [events]);
-
   return (
-    <div className="pb-11 space-y-6">
+    <div className="pb-11 space-y-6" data-vaul-no-drag>
       {/* Stats Overview */}
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
@@ -1338,7 +1316,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         />
       </div>
 
-
       {/* Charts */}
       <div ref={chartsRef} className="mt-2 overflow-visible">
         <div ref={containerRef}>
@@ -1359,27 +1336,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         </div>
       </div>
       
-      {/* Activity per Person - moved before export button */}
-      {activityByPerson.length > 0 && (
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10 mt-6">
-          <h3 className="text-[13px] text-white/60 font-medium mb-3">Aktivität pro Person</h3>
-          <div className="space-y-3">
-            {activityByPerson.map(([name, stats]) => (
-              <div key={name} className="flex items-center justify-between">
-                <span className="text-[14px] text-white">{name}</span>
-                <div className="flex items-center gap-3 text-[12px] text-white/60">
-                  <span>💦 {stats.pipi}</span>
-                  <span>💩 {stats.stuhlgang}</span>
-                  <span>🧪 {stats.phwert}</span>
-                  <span>🏋️ {stats.gewicht}</span>
-                  <span className="text-white/40 ml-1">({stats.total})</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Export Button */}
       <div className="mt-8 pb-4">
         <Button
