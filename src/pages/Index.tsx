@@ -348,16 +348,13 @@ const Index = () => {
         <DrawerContent className="bg-black border-black px-4 pb-8">
           <DrawerHeader className="pb-4">
             <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
-            <DrawerDescription className="text-white/60 text-center text-[14px]">
-              Dein Name wird bei deinen Einträgen angezeigt
-            </DrawerDescription>
           </DrawerHeader>
           <div className="space-y-4">
             <Input
               value={nicknameInput}
               onChange={(e) => setNicknameInput(e.target.value)}
               placeholder="Dein Name"
-              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px]"
+              className="h-12 bg-transparent border-white/30 text-white text-center rounded-[4px] text-[14px]"
               autoFocus
             />
             <Button
