@@ -83,7 +83,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     <option key={h} value={h} className="bg-black text-white">{h}</option>
                   ))}
                 </select>
-                <span className="text-[14px] text-white ml-2">Stunden</span>
+                <span className="text-[14px] text-white ml-1">Stunden</span>
               </div>
             </div>
 
@@ -104,7 +104,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Sleep Time Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Schlafenszeit</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-3">
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px]">
                 <select
                   value={sleepStart}
                   onChange={(e) => handleSleepStartChange(parseFloat(e.target.value))}
@@ -121,7 +121,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     );
                   })}
                 </select>
-                <span className="text-[14px] text-white">bis</span>
+                <span className="text-[14px] text-white mx-2">Uhr bis</span>
                 <select
                   value={sleepEnd}
                   onChange={(e) => handleSleepEndChange(parseFloat(e.target.value))}
@@ -138,6 +138,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     );
                   })}
                 </select>
+                <span className="text-[14px] text-white ml-1">Uhr</span>
               </div>
             </div>
           </div>
