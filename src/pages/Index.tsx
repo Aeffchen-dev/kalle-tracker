@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Settings } from 'lucide-react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
@@ -233,7 +234,7 @@ const Index = () => {
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
         <div 
-          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
+          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none relative ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
           style={{ animationFillMode: 'backwards', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
           onContextMenu={(e) => e.preventDefault()}
           onTouchStart={(e) => {
@@ -256,6 +257,13 @@ const Index = () => {
             }
           }}
         >
+          <button
+            onClick={() => setShowGassiSettings(true)}
+            className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-white/10 transition-colors"
+            aria-label="Einstellungen"
+          >
+            <Settings className="w-4 h-4 text-black/40" />
+          </button>
           <p className="text-[14px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
           </p>
