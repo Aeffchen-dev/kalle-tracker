@@ -50,7 +50,7 @@ const StatCard = memo(({
   subtext?: string;
   trend?: 'up' | 'down' | 'neutral';
 }) => (
-  <div className="bg-white/5 rounded-xl p-4">
+  <div className="bg-white/5 rounded-lg p-4">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-lg">{emoji}</span>
       <span className="text-[11px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
@@ -1306,7 +1306,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   return (
     <div className="pb-11 space-y-2" data-vaul-no-drag>
       {/* Age Display */}
-      <div className="w-full bg-white/5 rounded-xl py-3 px-4 border border-white/10 flex items-center justify-center">
+      <div className="w-full bg-white/5 rounded-lg p-4 flex items-center justify-center">
         <span className="text-[13px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
           <span className="text-white">{kalleAge}</span>
