@@ -15,12 +15,13 @@ interface EventSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEventAdded: () => void;
+  preselectedType?: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht';
 }
 
 const PH_VALUES_ROW1 = ['5,6', '5,9', '6,2', '6,5', '6,8'];
 const PH_VALUES_ROW2 = ['7,0', '7,2', '7,4', '7,7', '8,0'];
 
-const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
+const EventSheet = ({ open, onOpenChange, onEventAdded, preselectedType }: EventSheetProps) => {
   const [selectedTypes, setSelectedTypes] = useState<Set<'pipi' | 'stuhlgang' | 'phwert' | 'gewicht'>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -50,6 +51,11 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       setSelectedDate(new Date());
       setSelectedPh(null);
       setWeightValue('');
+      
+      // Apply preselected type if provided
+      if (preselectedType) {
+        setSelectedTypes(new Set([preselectedType]));
+      }
     }
     
     if (justClosed) {
@@ -60,7 +66,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
       setWeightValue('');
       setSelectedTime(format(new Date(), 'HH:mm'));
     }
-  }, [open]);
+  }, [open, preselectedType]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
     setSelectedTypes(prev => {

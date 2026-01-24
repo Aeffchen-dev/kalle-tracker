@@ -3,14 +3,16 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 import { format, parse, isValid, getDaysInMonth } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { showNotification } from '@/lib/notifications';
 
 interface GassiSettingsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSettingsChanged?: () => void;
+  onTestWeightReminder?: () => void;
 }
 
-const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSettingsSheetProps) => {
+const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged, onTestWeightReminder }: GassiSettingsSheetProps) => {
   const [morningTime, setMorningTime] = useState('08:00');
   const [intervalHours, setIntervalHours] = useState(4);
   const [sleepStart, setSleepStart] = useState(22);
@@ -297,6 +299,20 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                 </select>
                 <span className="text-[14px] text-white ml-1">Uhr</span>
               </div>
+            </div>
+
+            {/* Test Weight Reminder Button */}
+            <div className="pt-4 border-t border-white/10">
+              <button
+                onClick={async () => {
+                  await showNotification(9999, '⚖️ Wiegen', 'Trage Kalles aktuelles Gewicht ein');
+                  onOpenChange(false);
+                  onTestWeightReminder?.();
+                }}
+                className="w-full h-12 rounded-[4px] text-[14px] bg-transparent border border-white/30 text-white hover:bg-white/10 transition-all"
+              >
+                ⚖️ Gewicht-Erinnerung testen
+              </button>
             </div>
           </div>
         )}
