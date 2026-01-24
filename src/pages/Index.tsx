@@ -257,9 +257,11 @@ const Index = () => {
             }
           }}
         >
-          {/* Live indicator dot */}
+          {/* Live indicator dot with ripple effect */}
           <div className="absolute top-6 left-6 flex items-center justify-center">
             <div className="absolute bg-black/30 rounded-full live-pulse" />
+            <div className="absolute bg-black/30 rounded-full live-pulse" style={{ animationDelay: '0.5s' }} />
+            <div className="absolute bg-black/30 rounded-full live-pulse" style={{ animationDelay: '1s' }} />
             <div className="w-2 h-2 bg-black rounded-full" />
           </div>
           <button
