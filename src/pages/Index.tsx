@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
+import AnomalyAlerts from '@/components/AnomalyAlerts';
 import { getEvents, Event } from '@/lib/events';
+import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
-import { useToast } from '@/hooks/use-toast';
-
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00min');
@@ -21,6 +21,8 @@ const Index = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTagesplan, setShowTagesplan] = useState(false);
   const eventsRef = useRef<Event[]>([]);
+  const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
+  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -68,6 +70,14 @@ const Index = () => {
     const result = await getEvents();
     eventsRef.current = result.events;
     calculateTimeDisplay();
+    // Detect anomalies
+    const detected = detectAnomalies(result.events);
+    setAnomalies(detected.filter(a => !dismissedAnomalies.has(a.id)));
+  };
+
+  const handleDismissAnomaly = (id: string) => {
+    setDismissedAnomalies(prev => new Set([...prev, id]));
+    setAnomalies(prev => prev.filter(a => a.id !== id));
   };
 
   // Loading animation sequence (min 1s loading after image loads)
@@ -148,7 +158,7 @@ const Index = () => {
       </header>
 
       {/* Main countdown area */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4">
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
         <div className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} style={{ animationFillMode: 'backwards' }}>
           <p className="text-[14px] mb-2">Ich war zuletzt draußen vor</p>
           <button 
@@ -164,6 +174,16 @@ const Index = () => {
             Eintrag hinzufügen
           </button>
         </div>
+        
+        {/* Anomaly alerts - only show if there are alerts */}
+        {anomalies.length > 0 && showCard && (
+          <div className={`w-full animate-fade-in-up`} style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
+            <AnomalyAlerts 
+              anomalies={anomalies} 
+              onDismiss={handleDismissAnomaly}
+            />
+          </div>
+        )}
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}

@@ -4,7 +4,7 @@ import { de } from 'date-fns/locale';
 
 export interface Anomaly {
   id: string;
-  type: 'missed_break' | 'weight_deviation' | 'ph_deviation' | 'pattern_change';
+  type: 'missed_break' | 'upcoming_break' | 'weight_deviation' | 'ph_deviation' | 'pattern_change';
   severity: 'info' | 'warning' | 'alert';
   title: string;
   description: string;
@@ -82,6 +82,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
   if (pipiEvents.length > 0) {
     const lastBreak = new Date(pipiEvents[0].time);
     const hoursSinceBreak = differenceInHours(now, lastBreak);
+    const minutesSinceBreak = differenceInMinutes(now, lastBreak);
     const avgInterval = calculateAverageInterval(events, 'pipi');
     
     // Alert if no break in 6+ hours during waking hours (8am-10pm)
@@ -95,6 +96,22 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         severity: hoursSinceBreak >= 8 ? 'alert' : 'warning',
         title: 'Lange Pause',
         description: `Kalle war seit ${hoursSinceBreak} Stunden nicht mehr draußen`,
+        timestamp: now
+      });
+    } else if (isWakingHours && minutesSinceBreak >= 240 && minutesSinceBreak < 360) {
+      // Upcoming break reminder after 4 hours (but before the 6h warning)
+      const remainingMinutes = 360 - minutesSinceBreak;
+      const remainingHours = Math.floor(remainingMinutes / 60);
+      const remainingMins = remainingMinutes % 60;
+      const timeStr = remainingHours > 0 
+        ? `${remainingHours}h ${remainingMins}min`
+        : `${remainingMins}min`;
+      anomalies.push({
+        id: `upcoming_break_${now.getTime()}`,
+        type: 'upcoming_break',
+        severity: 'info',
+        title: 'Bald Gassi-Zeit',
+        description: `In ca. ${timeStr} sollte Kalle wieder raus`,
         timestamp: now
       });
     }
