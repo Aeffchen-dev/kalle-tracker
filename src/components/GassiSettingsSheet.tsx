@@ -160,26 +160,28 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Walk Interval Setting */}
-            <label className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative px-4">
-              <span className="text-[14px] text-white/50 flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
-              <div className="flex items-center">
-                <span className="text-[14px] text-white w-[2ch] text-right">{intervalHours}</span>
-                <span className="text-[14px] text-white ml-1">Stunden</span>
+            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
+              <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
+                  className="w-10 h-10 rounded-full bg-white text-black text-[20px] font-medium flex items-center justify-center"
+                >
+                  −
+                </button>
+                <span className="text-[14px] text-white w-[2ch] text-center">{intervalHours}h</span>
+                <button
+                  onClick={() => intervalHours < 12 && handleIntervalChange(intervalHours + 1)}
+                  className="w-10 h-10 rounded-full bg-white text-black text-[20px] font-medium flex items-center justify-center"
+                >
+                  +
+                </button>
               </div>
-              <select
-                value={intervalHours}
-                onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              >
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                  <option key={h} value={h} className="bg-black text-white">{h}</option>
-                ))}
-              </select>
-            </label>
+            </div>
 
             {/* Morning Walk Time Setting */}
             <label className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative px-4">
-              <span className="text-[14px] text-white/50 flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
+              <span className="text-[14px] text-white flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white">{morningTime}</span>
                 <span className="text-[14px] text-white ml-1">Uhr</span>
@@ -194,7 +196,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Sleep Time Setting */}
             <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
-              <span className="text-[14px] text-white/50 flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
+              <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
               <div className="flex items-center">
                 <select
                   value={sleepStart}
@@ -235,7 +237,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
             {/* Birthday Setting */}
             <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
-              <span className="text-[14px] text-white/50 flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
+              <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
               <div className="flex items-center gap-2">
                 <select
                   value={birthdayDay || ''}
