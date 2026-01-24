@@ -63,7 +63,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           {/* Walk Interval Setting */}
           <div className="flex items-center justify-between">
             <span className="text-[14px] text-white">Erinnerung nach</span>
-            <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+            <div className="flex items-center justify-center h-12 w-[140px] bg-transparent border border-white/30 rounded-[4px] px-3">
               <select
                 value={intervalHours}
                 onChange={(e) => handleIntervalChange(parseInt(e.target.value, 10))}
@@ -73,21 +73,21 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                   <option key={h} value={h} className="bg-black text-white">{h}</option>
                 ))}
               </select>
-              <span className="text-[14px] text-white ml-1">Stunden</span>
+              <span className="text-[14px] text-white ml-2">Stunden</span>
             </div>
           </div>
 
           {/* Morning Walk Time Setting */}
           <div className="flex items-center justify-between">
             <span className="text-[14px] text-white">Morgen-Spaziergang</span>
-            <div className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] px-3">
+            <div className="flex items-center justify-center h-12 w-[140px] bg-transparent border border-white/30 rounded-[4px] px-3">
               <input
                 type="time"
                 value={morningTime}
                 onChange={(e) => handleMorningTimeChange(e.target.value)}
                 className="bg-transparent text-white text-[14px] text-center border-none outline-none [color-scheme:dark]"
               />
-              <span className="text-[14px] text-white ml-1">Uhr</span>
+              <span className="text-[14px] text-white ml-2">Uhr</span>
             </div>
           </div>
 
