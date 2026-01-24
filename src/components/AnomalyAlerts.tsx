@@ -6,6 +6,7 @@ import { de } from 'date-fns/locale';
 interface AnomalyAlertsProps {
   anomalies: Anomaly[];
   onDismiss?: (id: string) => void;
+  onGassiSettingsTap?: () => void;
   compact?: boolean;
 }
 
@@ -25,7 +26,7 @@ const getEmoji = (type: Anomaly['type']): string => {
   }
 };
 
-const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAlertsProps) => {
+const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact = false }: AnomalyAlertsProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -89,7 +90,12 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
     setSwipeOffset(0);
   };
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = (id: string, type: Anomaly['type']) => {
+    // If it's a gassi alert, open settings
+    if (type === 'upcoming_break' && onGassiSettingsTap) {
+      onGassiSettingsTap();
+      return;
+    }
     // If delete is shown, clicking card closes it
     if (activeId === id) {
       setActiveId(null);
@@ -130,7 +136,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
           >
             <div
               className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
-              onClick={() => handleCardClick(anomaly.id)}
+              onClick={() => handleCardClick(anomaly.id, anomaly.type)}
               style={{ 
                 transition: isSwiping ? 'none' : 'all 150ms ease-linear'
               }}
