@@ -74,7 +74,7 @@ const Index = () => {
       if (hours === 0) {
         setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
       } else {
-        setTimeDisplay(`${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
       }
     } else {
       // Count up from last entry (default)
@@ -91,7 +91,7 @@ const Index = () => {
       if (hours === 0) {
         setTimeDisplay(`${minutes.toString().padStart(2, '0')}min`);
       } else {
-        setTimeDisplay(`${hours.toString().padStart(2, '0')}h:${minutes.toString().padStart(2, '0')}min`);
+        setTimeDisplay(`${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}min`);
       }
     }
   };
