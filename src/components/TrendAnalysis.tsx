@@ -50,7 +50,7 @@ const StatCard = memo(({
   subtext?: string;
   trend?: 'up' | 'down' | 'neutral';
 }) => (
-  <div className="bg-white/5 rounded-xl p-3 border border-white/10">
+  <div className="bg-white/5 rounded-xl p-4">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-lg">{emoji}</span>
       <span className="text-[11px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
