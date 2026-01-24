@@ -1302,7 +1302,11 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     <div className="pb-11 space-y-2" data-vaul-no-drag>
       {/* Age Display */}
       <div className="w-full bg-white/5 rounded-xl py-3 px-4 border border-white/10 flex items-center justify-center">
-        <span className="text-[13px] text-white leading-none">Kalle ist heute {kalleAge} alt</span>
+        <span className="text-[13px] leading-none">
+          <span className="text-white/60">Kalle ist heute </span>
+          <span className="text-white">{kalleAge}</span>
+          <span className="text-white/60"> alt</span>
+        </span>
       </div>
 
       {/* Stats Overview */}
