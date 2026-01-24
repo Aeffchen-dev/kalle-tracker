@@ -26,6 +26,7 @@ const Index = () => {
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -179,7 +180,28 @@ const Index = () => {
 
       {/* Main countdown area */}
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
-        <div className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} style={{ animationFillMode: 'backwards' }}>
+        <div 
+          className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
+          style={{ animationFillMode: 'backwards' }}
+          onTouchStart={() => {
+            longPressTimer.current = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate(10);
+              setShowGassiSettings(true);
+            }, 500);
+          }}
+          onTouchEnd={() => {
+            if (longPressTimer.current) {
+              clearTimeout(longPressTimer.current);
+              longPressTimer.current = null;
+            }
+          }}
+          onTouchMove={() => {
+            if (longPressTimer.current) {
+              clearTimeout(longPressTimer.current);
+              longPressTimer.current = null;
+            }
+          }}
+        >
           <p className="text-[14px] mb-2">Ich war zuletzt draußen vor</p>
           <button 
             onClick={() => setEventSheetOpen(true)}
