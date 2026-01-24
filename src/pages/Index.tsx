@@ -258,8 +258,8 @@ const Index = () => {
           }}
         >
           {/* Live indicator dot */}
-          <div className="absolute top-3 left-3 flex items-center justify-center">
-            <div className="absolute w-4 h-4 bg-black/20 rounded-full animate-gentle-pulse" />
+          <div className="absolute top-6 left-6 flex items-center justify-center">
+            <div className="absolute bg-black/30 rounded-full live-pulse" />
             <div className="w-2 h-2 bg-black rounded-full" />
           </div>
           <button
