@@ -257,11 +257,14 @@ const Index = () => {
             }
           }}
         >
-          {/* Pulsing dot indicator */}
-          <div className="absolute top-3 left-3 w-2 h-2 bg-black rounded-full animate-gentle-pulse" />
+          {/* Live indicator dot */}
+          <div className="absolute top-3 left-3 flex items-center justify-center">
+            <div className="absolute w-4 h-4 bg-black/20 rounded-full animate-gentle-pulse" />
+            <div className="w-2 h-2 bg-black rounded-full" />
+          </div>
           <button
             onClick={() => setShowGassiSettings(true)}
-            className="absolute top-2 right-3 p-1 rounded-full hover:bg-white/10 transition-colors"
+            className="absolute top-1 right-2 p-1 rounded-full hover:bg-white/10 transition-colors"
             aria-label="Einstellungen"
           >
             <MoreHorizontal className="w-6 h-6 text-black" />
