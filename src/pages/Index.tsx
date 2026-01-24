@@ -343,9 +343,9 @@ const Index = () => {
         onSettingsChanged={() => loadEvents()}
       />
 
-      {/* Nickname prompt drawer */}
-      <Drawer open={showNicknamePrompt} onOpenChange={setShowNicknamePrompt}>
-        <DrawerContent className="bg-black border-black px-4 pb-8 z-[100]">
+      {/* Nickname prompt drawer - must be highest z-index */}
+      <Drawer open={showNicknamePrompt} onOpenChange={setShowNicknamePrompt} modal={true}>
+        <DrawerContent className="bg-black border-black px-4 pb-8" style={{ zIndex: 9999 }}>
           <DrawerHeader className="pb-4">
             <DrawerTitle className="text-white text-center text-[14px]">Wie heißt du?</DrawerTitle>
           </DrawerHeader>
@@ -363,14 +363,18 @@ const Index = () => {
             />
             <button
               type="button"
-              onClick={() => {
-                if (nicknameInput.trim()) {
-                  setNickname(nicknameInput.trim());
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const name = nicknameInput.trim();
+                if (name) {
+                  setNickname(name);
+                  setNicknameInput('');
                   setShowNicknamePrompt(false);
                 }
               }}
               disabled={!nicknameInput.trim()}
-              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
+              className="w-full h-12 text-[14px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full cursor-pointer"
             >
               Los geht's
             </button>
