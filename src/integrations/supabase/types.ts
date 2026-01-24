@@ -46,6 +46,7 @@ export type Database = {
       }
       settings: {
         Row: {
+          birthday: string | null
           countdown_mode: string
           id: string
           morning_walk_time: string
@@ -55,6 +56,7 @@ export type Database = {
           walk_interval_hours: number
         }
         Insert: {
+          birthday?: string | null
           countdown_mode?: string
           id?: string
           morning_walk_time?: string
@@ -64,6 +66,7 @@ export type Database = {
           walk_interval_hours?: number
         }
         Update: {
+          birthday?: string | null
           countdown_mode?: string
           id?: string
           morning_walk_time?: string

@@ -8,6 +8,7 @@ export interface Settings {
   sleep_start_hour: number;
   sleep_end_hour: number;
   countdown_mode: CountdownMode;
+  birthday: string | null;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -16,6 +17,7 @@ const DEFAULT_SETTINGS: Settings = {
   sleep_start_hour: 22,
   sleep_end_hour: 7,
   countdown_mode: 'count_up',
+  birthday: null,
 };
 
 // Cache for settings to avoid repeated fetches
@@ -41,6 +43,7 @@ export const getSettings = async (): Promise<Settings> => {
         sleep_start_hour: Number(data.sleep_start_hour),
         sleep_end_hour: Number(data.sleep_end_hour),
         countdown_mode: (data.countdown_mode as CountdownMode) || 'count_up',
+        birthday: data.birthday || null,
       };
       return settingsCache;
     }
