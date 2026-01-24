@@ -497,6 +497,15 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
           ],
           label: { show: false },
         },
+        markArea: {
+          silent: true,
+          itemStyle: {
+            color: 'rgba(90, 217, 64, 0.1)',
+          },
+          data: [
+            [{ yAxis: 6.5 }, { yAxis: 7.2 }],
+          ],
+        },
       },
     ],
   };
