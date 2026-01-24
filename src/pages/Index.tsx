@@ -214,18 +214,58 @@ const Index = () => {
       <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
           onClick={() => {
-            const phrases = [
-              'Wuff! 🐾',
-              'Gassi? 👀',
-              'Leckerli! 🦴',
-              'Bauch kraulen? 🐕',
-              'Spielen! 🎾',
-              'Müde... 😴',
-              'Hunger! 🍖',
-              'Wasser? 💧',
-              'Kuscheln! 🤗',
-              'Raus! 🌳',
+            const hour = new Date().getHours();
+            
+            // Time-based greetings
+            const morningPhrases = [
+              'Guten Morgen!',
+              'Aufstehen!',
+              'Frühstück?',
+              'Erst mal raus...',
             ];
+            
+            const afternoonPhrases = [
+              'Mittagsschlaf?',
+              'Noch ein Spaziergang?',
+              'Langeweile...',
+              'Spielen!',
+            ];
+            
+            const eveningPhrases = [
+              'Gute Nacht!',
+              'Müde...',
+              'Kuscheln?',
+              'Letzte Runde?',
+            ];
+            
+            // General phrases (any time)
+            const generalPhrases = [
+              'Wuff!',
+              'Gassi?',
+              'Leckerli!',
+              'Bauch kraulen?',
+              'Spielen!',
+              'Hunger!',
+              'Wasser?',
+              'Kuscheln!',
+              'Raus!',
+              'Hallo!',
+              'Was gibts?',
+              'Langeweile...',
+              'Stöckchen?',
+              'Ball!',
+              'Schnüffeln!',
+            ];
+            
+            let phrases: string[];
+            if (hour >= 5 && hour < 10) {
+              phrases = [...morningPhrases, ...generalPhrases];
+            } else if (hour >= 10 && hour < 18) {
+              phrases = [...afternoonPhrases, ...generalPhrases];
+            } else {
+              phrases = [...eveningPhrases, ...generalPhrases];
+            }
+            
             const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
             setSpeechBubble(randomPhrase);
             setTimeout(() => setSpeechBubble(null), 2000);
@@ -239,9 +279,9 @@ const Index = () => {
           />
           {/* Speech bubble */}
           {speechBubble && (
-            <div className="absolute left-[85px] top-[20px] bg-black text-white text-[14px] px-3 py-2 rounded-lg whitespace-nowrap animate-fade-in z-20">
+            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-fade-in z-20">
               {speechBubble}
-              <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-r-[6px] border-r-black" />
+              <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
             </div>
           )}
         </button>
