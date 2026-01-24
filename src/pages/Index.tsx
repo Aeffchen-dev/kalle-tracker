@@ -19,6 +19,7 @@ const Index = () => {
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [speechBubble, setSpeechBubble] = useState<string | null>(null);
+  const [dogBounce, setDogBounce] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   
   const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
@@ -268,6 +269,8 @@ const Index = () => {
             
             const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
             setSpeechBubble(randomPhrase);
+            setDogBounce(true);
+            setTimeout(() => setDogBounce(false), 400);
             setTimeout(() => setSpeechBubble(null), 2000);
           }}
           className="cursor-pointer -mt-2 -ml-[18px] relative"
@@ -275,11 +278,11 @@ const Index = () => {
           <img 
             src={dalmatianHeader} 
             alt="Kalle" 
-            className="h-[100px] w-auto relative z-10"
+            className={`h-[100px] w-auto relative z-10 transition-transform ${dogBounce ? 'animate-dog-bounce' : ''}`}
           />
           {/* Speech bubble */}
           {speechBubble && (
-            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-fade-in z-20">
+            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-speech-pop z-20">
               {speechBubble}
               <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
             </div>

@@ -141,6 +141,33 @@ export default {
             transform: "rotate(-3deg)",
           },
         },
+        "dog-bounce": {
+          "0%, 100%": {
+            transform: "translateY(0) rotate(0deg)",
+          },
+          "25%": {
+            transform: "translateY(-8px) rotate(-5deg)",
+          },
+          "50%": {
+            transform: "translateY(0) rotate(3deg)",
+          },
+          "75%": {
+            transform: "translateY(-4px) rotate(-2deg)",
+          },
+        },
+        "speech-pop": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.5) translateX(-10px)",
+          },
+          "50%": {
+            transform: "scale(1.1) translateX(0)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1) translateX(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -150,6 +177,8 @@ export default {
         "fade-in-up": "fade-in-up 0.6s ease-out forwards",
         "fade-in": "fade-in 0.2s ease-out forwards",
         "tail-wag": "tail-wag 0.6s ease-in-out",
+        "dog-bounce": "dog-bounce 0.4s ease-out",
+        "speech-pop": "speech-pop 0.3s ease-out forwards",
       },
     },
   },
