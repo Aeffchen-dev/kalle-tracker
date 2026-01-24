@@ -207,6 +207,14 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Auto-hide speech bubble after 600ms
+  useEffect(() => {
+    if (speechBubble) {
+      const timer = setTimeout(() => setSpeechBubble(null), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [speechBubble]);
+
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
       
@@ -271,7 +279,6 @@ const Index = () => {
             setSpeechBubble(randomPhrase);
             setDogBounce(true);
             setTimeout(() => setDogBounce(false), 400);
-            setTimeout(() => setSpeechBubble(null), 2000);
           }}
           className="cursor-pointer -mt-2 -ml-[18px] relative"
         >
