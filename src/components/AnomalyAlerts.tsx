@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
+import { memo, useState, useRef } from 'react';
+import { Info } from 'lucide-react';
 import { Anomaly } from '@/lib/anomalyDetection';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -10,47 +10,45 @@ interface AnomalyAlertsProps {
   compact?: boolean;
 }
 
-const severityConfig = {
-  alert: {
-    icon: AlertTriangle,
-    bgColor: 'bg-red-500/20',
-    borderColor: 'border-red-500/40',
-    iconColor: 'text-red-400',
-    textColor: 'text-red-100'
-  },
-  warning: {
-    icon: AlertCircle,
-    bgColor: 'bg-amber-500/20',
-    borderColor: 'border-amber-500/40',
-    iconColor: 'text-amber-400',
-    textColor: 'text-amber-100'
-  },
-  info: {
-    icon: Info,
-    bgColor: 'bg-blue-500/20',
-    borderColor: 'border-blue-500/40',
-    iconColor: 'text-blue-400',
-    textColor: 'text-blue-100'
-  }
-};
-
 const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAlertsProps) => {
+  const [swipingId, setSwipingId] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const startXRef = useRef(0);
+
   if (anomalies.length === 0) return null;
 
-  if (compact) {
-    // Show only the most severe alert in compact mode
-    const mostSevere = anomalies[0];
-    const config = severityConfig[mostSevere.severity];
-    const Icon = config.icon;
+  const handleTouchStart = (e: React.TouchEvent, id: string) => {
+    startXRef.current = e.touches[0].clientX;
+    setSwipingId(id);
+  };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!swipingId) return;
+    const currentX = e.touches[0].clientX;
+    const diff = startXRef.current - currentX;
+    if (diff > 0) {
+      setSwipeOffset(Math.min(diff, 120));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (swipeOffset > 80 && swipingId && onDismiss) {
+      onDismiss(swipingId);
+    }
+    setSwipingId(null);
+    setSwipeOffset(0);
+  };
+
+  if (compact) {
+    const mostSevere = anomalies[0];
     return (
-      <div className={`${config.bgColor} ${config.borderColor} border rounded-xl px-3 py-2 flex items-center gap-2`}>
-        <Icon className={`w-4 h-4 ${config.iconColor} flex-shrink-0`} />
-        <span className={`text-sm ${config.textColor} truncate`}>
+      <div className="bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-xl px-3 py-2 flex items-center gap-2">
+        <Info className="w-4 h-4 text-black flex-shrink-0" />
+        <span className="text-sm text-black truncate">
           {mostSevere.title}
         </span>
         {anomalies.length > 1 && (
-          <span className="text-xs text-white/60 flex-shrink-0">
+          <span className="text-xs text-black/60 flex-shrink-0">
             +{anomalies.length - 1}
           </span>
         )}
@@ -61,36 +59,47 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
   return (
     <div className="space-y-2">
       {anomalies.map((anomaly) => {
-        const config = severityConfig[anomaly.severity];
-        const Icon = config.icon;
-
+        const isActive = swipingId === anomaly.id;
+        
         return (
           <div
             key={anomaly.id}
-            className={`${config.bgColor} ${config.borderColor} border rounded-xl p-3 backdrop-blur-sm`}
+            className="relative overflow-hidden rounded-[16px]"
+            onTouchStart={(e) => handleTouchStart(e, anomaly.id)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <div className="flex items-start gap-3">
-              <Icon className={`w-5 h-5 ${config.iconColor} flex-shrink-0 mt-0.5`} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className={`font-medium ${config.textColor}`}>
-                    {anomaly.title}
-                  </h4>
-                  {onDismiss && (
-                    <button
-                      onClick={() => onDismiss(anomaly.id)}
-                      className="text-white/40 hover:text-white/60 p-1 -m-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
+            {/* Delete background */}
+            <div 
+              className="absolute inset-y-0 right-0 bg-red-500/80 flex items-center justify-end pr-4 rounded-[16px]"
+              style={{ width: isActive ? `${swipeOffset}px` : 0 }}
+            >
+              <span className="text-white text-sm font-medium">Löschen</span>
+            </div>
+            
+            {/* Card content */}
+            <div
+              className="bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] p-3 relative"
+              style={{ 
+                transform: isActive ? `translateX(-${swipeOffset}px)` : 'translateX(0)',
+                transition: isActive ? 'none' : 'transform 150ms ease-out'
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-black flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="font-medium text-black">
+                      {anomaly.title}
+                    </h4>
+                    <span className="text-xs text-black/50 flex-shrink-0">
+                      {format(anomaly.timestamp, 'd. MMM', { locale: de })}
+                    </span>
+                  </div>
+                  <p className="text-sm text-black/70 mt-0.5">
+                    {anomaly.description}
+                  </p>
                 </div>
-                <p className="text-sm text-white/70 mt-0.5">
-                  {anomaly.description}
-                </p>
-                <p className="text-xs text-white/40 mt-1">
-                  {format(anomaly.timestamp, 'd. MMM, HH:mm', { locale: de })} Uhr
-                </p>
               </div>
             </div>
           </div>
