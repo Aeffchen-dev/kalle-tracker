@@ -131,9 +131,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             ))}
           </div>
         ) : (
-          <div className="space-y-4 mb-4">
+          <div className="divide-y divide-white/20 mb-4">
             {/* Walk Interval Setting */}
-            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
+            <div className="flex items-center justify-between h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
               <div className="flex items-center gap-3">
                 <button
@@ -153,7 +153,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Morning Walk Time Setting */}
-            <label className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative px-4">
+            <label className="flex items-center justify-between h-12 w-full cursor-pointer relative">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🌄</span><span>Morgen-Spaziergang</span></span>
               <div className="flex items-center">
                 <span className="text-[14px] text-white">{morningTime}</span>
@@ -168,7 +168,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </label>
 
             {/* Sleep Time Setting */}
-            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
+            <div className="flex items-center justify-between h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>😴</span><span>Schlafenszeit</span></span>
               <div className="flex items-center gap-2">
                 <select
@@ -209,8 +209,10 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Countdown Mode Setting */}
-            <div className="space-y-2">
-              <span className="text-[14px] text-white">Countdown:</span>
+            <div className="py-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[14px] text-white">Countdown:</span>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
@@ -236,7 +238,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             </div>
 
             {/* Birthday Setting */}
-            <div className="flex items-center justify-between h-12 w-full bg-transparent border border-white/30 rounded-[4px] px-4">
+            <div className="flex items-center justify-between h-12 w-full">
               <span className="text-[14px] text-white flex items-center gap-2"><span>🎉</span><span>Geburtstag</span></span>
               <div className="flex items-center gap-2">
                 <select
