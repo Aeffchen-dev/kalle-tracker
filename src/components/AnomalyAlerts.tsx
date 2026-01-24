@@ -140,7 +140,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, compact = false }: AnomalyAl
             </div>
             <button
               onClick={() => onDismiss?.(anomaly.id)}
-              className="flex-shrink-0 h-full bg-red-500 flex items-center justify-center text-[14px] text-white rounded-r-[16px] overflow-hidden"
+              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px] overflow-hidden self-stretch"
               style={{
                 width: showDelete > 0 ? `${showDelete}px` : 0,
                 minWidth: showDelete > 0 ? `${showDelete}px` : 0,
