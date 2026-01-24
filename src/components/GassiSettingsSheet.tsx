@@ -211,7 +211,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Countdown Mode Setting */}
             <div className="py-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[14px] text-white">Countdown:</span>
+                <span className="text-[14px] text-white">Countdown</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
