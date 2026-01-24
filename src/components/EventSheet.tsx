@@ -254,7 +254,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           {/* Time and Date Selection - Combined */}
           <div>
-            <label className="flex items-center h-12 bg-transparent border border-white/30 rounded-[4px] cursor-pointer relative" style={{ width: 'calc(100vw - 32px)' }}>
+            <label className="flex items-center h-12 bg-white/5 rounded-lg cursor-pointer relative" style={{ width: 'calc(100vw - 32px)' }}>
               {/* Left-aligned calendar icon and date */}
               <div className="absolute left-3 flex items-center gap-2">
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
