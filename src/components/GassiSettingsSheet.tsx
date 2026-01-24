@@ -134,7 +134,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <div className="space-y-4 mb-4">
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
-              <span className="text-[14px] text-white">Countdown</span>
+              <span className="text-[14px] text-white flex items-center gap-2">⏱️ Countdown</span>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
