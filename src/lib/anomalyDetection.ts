@@ -95,7 +95,7 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
         type: 'weight_deviation',
         severity: deviation > 0.1 ? 'alert' : 'warning',
         title: isUnder ? 'Untergewicht' : 'Übergewicht',
-        description: `Aktuell ${weight.toFixed(1).replace('.', ',')}kg (Ideal: ${expectedWeight.toFixed(1).replace('.', ',')}kg, ${(deviation * 100).toFixed(0)}% zu ${isUnder ? 'wenig' : 'viel'})`,
+        description: `Aktuell ${weight.toFixed(1).replace('.', ',')}kg (Ideal: ${expectedWeight.toFixed(1).replace('.', ',')}kg, ${isUnder ? '-' : '+'}${(deviation * 100).toFixed(0)}%)`,
         timestamp: eventDate,
         relatedEventId: latestWeight.id
       });
