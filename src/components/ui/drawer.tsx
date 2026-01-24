@@ -31,7 +31,7 @@ const DrawerContent = React.forwardRef<
     {/* Background extension for iOS safe area - uses black to match CalendarView */}
     <div 
       className="fixed inset-x-0 bottom-0 z-40 bg-black" 
-      style={{ height: 'calc(env(safe-area-inset-bottom) + 50px)' }}
+      style={{ height: 'env(safe-area-inset-bottom)' }}
     />
     <DrawerPrimitive.Content
       ref={ref}
