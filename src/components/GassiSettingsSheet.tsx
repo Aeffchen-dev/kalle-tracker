@@ -134,7 +134,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Birthday Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Geburtstag</span>
-              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-2">
+              <div className="flex items-center justify-center h-12 w-full bg-transparent border border-white/30 rounded-[4px] gap-1">
                 <select
                   value={birthdayDay || ''}
                   onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
@@ -147,7 +147,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     </option>
                   ))}
                 </select>
-                <span className="text-white/50">.</span>
+                <span className="text-white flex items-center">.</span>
                 <select
                   value={birthdayMonth || ''}
                   onChange={(e) => {
@@ -171,7 +171,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     </option>
                   ))}
                 </select>
-                <span className="text-white/50">.</span>
+                <span className="text-white flex items-center">.</span>
                 <select
                   value={birthdayYear || ''}
                   onChange={(e) => {
