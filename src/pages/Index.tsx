@@ -207,10 +207,10 @@ const Index = () => {
 
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
-      {/* Fixed black background for iOS safe area - always visible since CalendarView is always open */}
+      {/* Fixed black background to prevent light background showing through during drawer drag */}
       <div 
         className="fixed inset-x-0 bottom-0 z-30 bg-black" 
-        style={{ height: 'env(safe-area-inset-bottom)' }}
+        style={{ height: 'calc(env(safe-area-inset-bottom) + 25vh)' }}
       />
       
 
