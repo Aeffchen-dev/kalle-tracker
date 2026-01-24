@@ -423,7 +423,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     return (
                       <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center justify-between p-3 bg-white/[0.06] backdrop-blur-sm rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleItemClick(event.id)}
                           onContextMenu={(e) => handleContextMenu(e, event.id)}
                           onTouchStart={() => handleLongPressStart(event.id)}
