@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getSettings, updateSettings } from '@/lib/settings';
+import { getSettings, updateSettings, CountdownMode } from '@/lib/settings';
 
 interface GassiSettingsSheetProps {
   open: boolean;
@@ -13,6 +13,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const [intervalHours, setIntervalHours] = useState(4);
   const [sleepStart, setSleepStart] = useState(22);
   const [sleepEnd, setSleepEnd] = useState(7);
+  const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         setIntervalHours(settings.walk_interval_hours);
         setSleepStart(settings.sleep_start_hour);
         setSleepEnd(settings.sleep_end_hour);
+        setCountdownMode(settings.countdown_mode);
         setIsLoading(false);
       });
     }
@@ -52,6 +54,12 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
     onSettingsChanged?.();
   };
 
+  const handleCountdownModeChange = async (mode: CountdownMode) => {
+    setCountdownMode(mode);
+    await updateSettings({ countdown_mode: mode });
+    onSettingsChanged?.();
+  };
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="bg-black border-none px-4 pb-8">
@@ -61,7 +69,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
         
         {isLoading ? (
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="space-y-2">
                 <div className="h-4 w-32 bg-white/10 rounded animate-pulse" />
                 <div className="h-12 w-full bg-white/10 rounded-[4px] animate-pulse" />
@@ -70,6 +78,33 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           </div>
         ) : (
           <div className="space-y-4">
+            {/* Countdown Mode Setting */}
+            <div className="space-y-2">
+              <span className="text-[14px] text-white">Countdown</span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => handleCountdownModeChange('count_up')}
+                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                    countdownMode === 'count_up'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent border border-white/30 text-white'
+                  }`}
+                >
+                  Hochzählen
+                </button>
+                <button
+                  onClick={() => handleCountdownModeChange('count_down')}
+                  className={`h-12 rounded-[4px] text-[14px] transition-all ${
+                    countdownMode === 'count_down'
+                      ? 'bg-white text-black'
+                      : 'bg-transparent border border-white/30 text-white'
+                  }`}
+                >
+                  Runterzählen
+                </button>
+              </div>
+            </div>
+
             {/* Walk Interval Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Erinnerung nach</span>
