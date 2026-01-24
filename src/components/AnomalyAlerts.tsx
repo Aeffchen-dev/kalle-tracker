@@ -174,7 +174,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact 
                 transition: isSwiping ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear'
               }}
             >
-              <span className="whitespace-nowrap">Löschen</span>
+              <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
             </button>
           </div>
         );
