@@ -135,7 +135,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Countdown Mode Setting */}
             <div className="space-y-2">
               <span className="text-[14px] text-white">Countdown:</span>
-              <div className="grid grid-cols-2 gap-3 mb-2">
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 <button
                   onClick={() => handleCountdownModeChange('count_up')}
                   className={`h-10 px-5 rounded text-[14px] font-medium transition-all duration-200 ${
