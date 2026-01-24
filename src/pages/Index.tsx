@@ -14,6 +14,7 @@ import dalmatianHeader from '@/assets/dalmatian-header.png';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00min');
+  const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
@@ -55,6 +56,7 @@ const Index = () => {
     const now = new Date();
     
     const settings = getCachedSettings();
+    setCountdownMode(settings.countdown_mode);
     
     if (settings.countdown_mode === 'count_down') {
       // Count down from walk interval
@@ -254,7 +256,9 @@ const Index = () => {
             }
           }}
         >
-          <p className="text-[14px] mb-2">Ich war zuletzt draußen vor</p>
+          <p className="text-[14px] mb-2">
+            {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
+          </p>
           <button 
             onClick={() => setEventSheetOpen(true)}
             className="text-[48px] md:text-[64px] leading-none cursor-pointer tabular-nums"
