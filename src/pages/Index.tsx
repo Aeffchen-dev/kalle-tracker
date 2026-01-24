@@ -3,11 +3,13 @@ import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
 import AnomalyAlerts from '@/components/AnomalyAlerts';
+import SettingsSheet from '@/components/SettingsSheet';
 import { getEvents, Event } from '@/lib/events';
 import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import dogInCar from '@/assets/dog-in-car.png';
 import dalmatianHeader from '@/assets/dalmatian-header.png';
+import { Settings } from 'lucide-react';
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00min');
@@ -20,6 +22,7 @@ const Index = () => {
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTagesplan, setShowTagesplan] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
@@ -149,12 +152,20 @@ const Index = () => {
             className="h-[100px] w-auto relative z-10"
           />
         </button>
-        <button 
-          onClick={() => setShowTagesplan(true)}
-          className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
-        >
-          Tagesplan
-        </button>
+        <div className="flex items-center gap-2 mt-2">
+          <button 
+            onClick={() => setShowSettings(true)}
+            className="text-black/60 p-1"
+          >
+            <Settings size={20} />
+          </button>
+          <button 
+            onClick={() => setShowTagesplan(true)}
+            className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer"
+          >
+            Tagesplan
+          </button>
+        </div>
       </header>
 
       {/* Main countdown area */}
@@ -216,6 +227,13 @@ const Index = () => {
       <TagesplanOverlay 
         isOpen={showTagesplan} 
         onClose={() => setShowTagesplan(false)} 
+      />
+
+      {/* Settings sheet */}
+      <SettingsSheet 
+        open={showSettings} 
+        onOpenChange={setShowSettings}
+        onSettingsChanged={() => loadEvents()}
       />
     </div>
   );

@@ -51,3 +51,17 @@ export const getCountdownTarget = (): Date | null => {
 export const setCountdownTarget = (target: Date): void => {
   localStorage.setItem('kalle_countdown_target', target.toISOString());
 };
+
+// Morning walk time setting (default 08:00)
+export const getMorningWalkTime = (): string => {
+  try {
+    const data = localStorage.getItem('kalle_morning_walk_time');
+    return data || '08:00';
+  } catch {
+    return '08:00';
+  }
+};
+
+export const setMorningWalkTime = (time: string): void => {
+  localStorage.setItem('kalle_morning_walk_time', time);
+};

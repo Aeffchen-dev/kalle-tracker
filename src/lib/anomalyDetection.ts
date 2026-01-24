@@ -1,5 +1,6 @@
 import { Event } from './events';
 import { differenceInHours, differenceInMinutes, differenceInMonths } from 'date-fns';
+import { getMorningWalkTime } from './cookies';
 
 export interface Anomaly {
   id: string;
@@ -64,15 +65,17 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     if (minutesSinceBreak >= 240) {
       let nextBreakTime = new Date(lastBreak.getTime() + 5 * 60 * 60 * 1000);
       
-      // If next break would be between 23:00 and 07:00, set it to 08:00
+      // If next break would be between 23:00 and 07:00, set it to configured morning time
       const nextHour = nextBreakTime.getHours();
       if (nextHour >= 23 || nextHour < 7) {
+        const morningTime = getMorningWalkTime();
+        const [morningHour, morningMinute] = morningTime.split(':').map(Number);
         nextBreakTime = new Date(nextBreakTime);
-        // Set to 08:00 on the same day if before midnight, otherwise next day
+        // Set to morning time on the same day if before midnight, otherwise next day
         if (nextHour >= 23) {
           nextBreakTime.setDate(nextBreakTime.getDate() + 1);
         }
-        nextBreakTime.setHours(8, 0, 0, 0);
+        nextBreakTime.setHours(morningHour, morningMinute, 0, 0);
       }
       
       const hours = nextBreakTime.getHours().toString().padStart(2, '0');
