@@ -12,7 +12,7 @@ const ICAL_URL = 'webcal://p136-caldav.icloud.com/published/2/NDExNjYzNzQxNDExNj
 
 let cachedEvents: ICalEvent[] | null = null;
 let cacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 2 * 60 * 1000; // 2 minutes
 
 export const fetchICalEvents = async (): Promise<ICalEvent[]> => {
   const now = Date.now();
