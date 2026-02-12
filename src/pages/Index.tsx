@@ -253,13 +253,13 @@ const Index = () => {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
         >
-          🐶 Kalle Tracker
+          <span className="flex items-center gap-2">🐶 <span>Kalle Tracker</span></span>
         </button>
         {weatherTemp !== null && (
           <button 
             className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
           >
-            {weatherEmoji} {weatherTemp}°
+            <span className="flex items-center gap-2">{weatherEmoji} <span>{weatherTemp}°</span></span>
           </button>
         )}
         <button 
