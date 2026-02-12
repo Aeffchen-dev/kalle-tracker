@@ -931,7 +931,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               return (
                 <div className="mb-8">
                   <h2 className="text-[14px] text-white mb-4 flex items-center gap-2"><span>🧑‍🏫</span><span>Training</span></h2>
-                  <div className="bg-white/[0.06] backdrop-blur-md border border-white/10 rounded-lg p-4">
+                  <div className="border border-white/30 rounded-lg overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
