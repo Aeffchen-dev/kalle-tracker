@@ -938,21 +938,54 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     </tr>
                     {/* Row 2: Who has Kalle */}
                     <tr>
-                      {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                        const dayDate = new Date(rangeStart);
-                        dayDate.setDate(dayDate.getDate() + dayIndex);
-                        const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                      {(() => {
+                        const cells: React.ReactNode[] = [];
+                        let skipUntil = -1;
                         
-                        return (
-                          <td key={dayIndex} className="border-r border-white/30 last:border-r-0">
-                            {owner ? (
-                              <div className="px-2 py-2">
-                                <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person}</span>
-                              </div>
-                            ) : null}
-                          </td>
-                        );
-                      })}
+                        for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
+                          if (dayIndex < skipUntil) continue;
+                          
+                          const dayDate = new Date(rangeStart);
+                          dayDate.setDate(dayDate.getDate() + dayIndex);
+                          const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                          
+                          if (owner) {
+                            // Span consecutive days with same owner
+                            let span = 1;
+                            for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
+                              const nextDate = new Date(rangeStart);
+                              nextDate.setDate(nextDate.getDate() + j);
+                              const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
+                              if (nextOwner && nextOwner.person === owner.person) {
+                                span++;
+                              } else {
+                                break;
+                              }
+                            }
+                            skipUntil = dayIndex + span;
+                            
+                            const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
+                            
+                            cells.push(
+                              <td
+                                key={dayIndex}
+                                colSpan={span}
+                                className="border-r border-white/30 last:border-r-0"
+                              >
+                                <div className="flex items-center justify-between px-3 py-2">
+                                  <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
+                                  <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
+                                </div>
+                              </td>
+                            );
+                          } else {
+                            cells.push(
+                              <td key={dayIndex} className="border-r border-white/30 last:border-r-0" />
+                            );
+                          }
+                        }
+                        return cells;
+                      })()}
                     </tr>
                     <tr><td colSpan={TOTAL_DAYS} className="h-0 border-b border-white/30"></td></tr>
                   </thead>
