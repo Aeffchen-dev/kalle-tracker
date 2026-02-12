@@ -284,7 +284,7 @@ const Index = () => {
       
 
       {/* Header */}
-      <header className={`pt-[16px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex items-start gap-2">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
