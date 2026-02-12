@@ -564,7 +564,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
-                <h2 className="text-[14px] text-white mb-4">{mealIndex === 0 ? '🍖 ' : ''}{meal.title}</h2>
+                <h2 className="flex items-center gap-4 text-[14px] text-white mb-4">{mealIndex === 0 && <span>🍖</span>}<span>{meal.title}</span></h2>
                 <div className="border border-white/30 rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
@@ -653,7 +653,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Emergency Section */}
             <div className="mb-8">
-              <h2 className="text-[14px] text-white mb-4">🚑 im Notfall</h2>
+              <h2 className="flex items-center gap-4 text-[14px] text-white mb-4"><span>🚑</span> <span>im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
               <div className="border border-white/30 rounded-lg p-4 mb-4">
@@ -756,7 +756,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               return (
                 <div className="mb-8">
-                  <h2 className="text-[14px] text-white mb-4">👹 Pubertät</h2>
+                  <h2 className="flex items-center gap-4 text-[14px] text-white mb-4"><span>👹</span> <span>Pubertät</span></h2>
                   <div 
                     className="border border-white/30 rounded-lg overflow-hidden"
                   >
@@ -930,7 +930,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               return (
                 <div className="mb-8">
-                  <h2 className="text-[14px] text-white mb-4">🧑‍🏫 Training</h2>
+                  <h2 className="flex items-center gap-4 text-[14px] text-white mb-4"><span>🧑‍🏫</span> <span>Training</span></h2>
                   <div className="border border-white/30 rounded-lg overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
@@ -950,7 +950,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
             <div className="mb-0">
               <div className="mb-3">
-                <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
+                <h2 className="flex items-center gap-4 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
               </div>
               
               {!dataLoaded ? (
