@@ -78,3 +78,36 @@ export const getICalEventsForWeek = (events: ICalEvent[], referenceDate: Date): 
   
   return result;
 };
+
+// Find who has Kalle on a given date based on "x hat Kalle" calendar events
+export interface KalleOwnership {
+  person: string; // e.g. "Jana" or "Niklas"
+  summary: string; // full event summary
+  startDate: Date;
+  endDate: Date;
+}
+
+export const getKalleOwnerForDate = (events: ICalEvent[], date: Date): KalleOwnership | null => {
+  const checkDate = new Date(date);
+  checkDate.setHours(12, 0, 0, 0); // noon to avoid timezone edge cases
+  
+  for (const evt of events) {
+    const summary = evt.summary || '';
+    // Match patterns like "🐶 Jana hat Kalle", "Niklas hat Kalle", "Jana hat Kalle"
+    const match = summary.match(/(?:🐶\s*)?(\w+)\s+hat\s+Kalle/i);
+    if (!match) continue;
+    
+    const start = new Date(evt.dtstart);
+    const end = evt.dtend ? new Date(evt.dtend) : new Date(start.getTime() + 86400000);
+    
+    if (checkDate >= start && checkDate < end) {
+      return {
+        person: match[1],
+        summary,
+        startDate: start,
+        endDate: end,
+      };
+    }
+  }
+  return null;
+};

@@ -6,7 +6,7 @@ import { differenceInMonths, format, getDay, getHours } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { getCachedSettings } from '@/lib/settings';
 import { getEvents, Event as AppEvent } from '@/lib/events';
-import { fetchICalEvents, getICalEventsForWeek, ICalEvent } from '@/lib/ical';
+import { fetchICalEvents, getICalEventsForWeek, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 
 interface Ingredient {
   quantity: string;
@@ -773,23 +773,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             <div className="mb-8">
               <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
               
-              {/* Legend */}
-              <div className="flex gap-4 mb-4 flex-wrap">
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#5AD940]" />
-                  <span className="text-[12px] text-white/60">Ø Pipi</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#D97706]" />
-                  <span className="text-[12px] text-white/60">Ø Stuhlgang</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-[#60A5FA]" />
-                  <span className="text-[12px] text-white/60">Kalender</span>
-                </div>
-              </div>
-
-              {/* Schedule Table */}
               {!dataLoaded ? (
                 <div className="border border-white/30 rounded-[16px] overflow-hidden p-4">
                   <div className="grid grid-cols-7 gap-2 mb-4">
@@ -797,13 +780,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <Skeleton key={i} className="h-10 bg-white/10" />
                     ))}
                   </div>
-                  {[1, 2, 3, 4, 5].map((row) => (
-                    <div key={row} className="grid grid-cols-7 gap-2 mb-2">
-                      {[1, 2, 3, 4, 5, 6, 7].map((col) => (
-                        <Skeleton key={col} className="h-12 bg-white/10" />
-                      ))}
-                    </div>
-                  ))}
                 </div>
               ) : (
               <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
@@ -811,152 +787,172 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
                 <table className="w-full text-[12px]">
                   <thead>
+                    {/* Row 1: Date and Day */}
                     <tr className="border-b border-white/30">
-                      {schedule && schedule.map((day, index) => {
-                        const isToday = index === currentDayIndex;
+                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                        const isToday = dayIndex === currentDayIndex;
+                        const startOfWeek = new Date();
+                        const currentDay = startOfWeek.getDay();
+                        const diff = currentDay === 0 ? -6 : 1 - currentDay;
+                        const weekStart = new Date(startOfWeek);
+                        weekStart.setDate(weekStart.getDate() + diff);
+                        const dayDate = new Date(weekStart);
+                        dayDate.setDate(dayDate.getDate() + dayIndex);
+                        const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+                        
                         return (
-                          <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
-                            <div className={`${isToday ? 'text-[#5AD940]' : 'text-white'}`}>{day.day}</div>
-                            <div className="text-white/60 font-normal">{day.type}</div>
+                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
+                            <div className={`${isToday ? 'text-[#5AD940]' : 'text-white'}`}>{dayNames[dayIndex]}</div>
+                            <div className="text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
                           </th>
                         );
                       })}
                     </tr>
+                    {/* Row 2: Who has Kalle */}
+                    <tr className="border-b border-white/30">
+                      {(() => {
+                        // Build spans of who has Kalle across the week
+                        const startOfWeek = new Date();
+                        const currentDay = startOfWeek.getDay();
+                        const diff2 = currentDay === 0 ? -6 : 1 - currentDay;
+                        const weekStart = new Date(startOfWeek);
+                        weekStart.setDate(weekStart.getDate() + diff2);
+                        
+                        const cells: React.ReactNode[] = [];
+                        let skipUntil = -1;
+                        
+                        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                          if (dayIndex < skipUntil) continue;
+                          
+                          const dayDate = new Date(weekStart);
+                          dayDate.setDate(dayDate.getDate() + dayIndex);
+                          const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                          const isToday = dayIndex === currentDayIndex;
+                          
+                          if (owner) {
+                            // Count consecutive days with same owner
+                            let span = 1;
+                            for (let j = dayIndex + 1; j < 7; j++) {
+                              const nextDate = new Date(weekStart);
+                              nextDate.setDate(nextDate.getDate() + j);
+                              const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
+                              if (nextOwner && nextOwner.person === owner.person) {
+                                span++;
+                              } else {
+                                break;
+                              }
+                            }
+                            skipUntil = dayIndex + span;
+                            
+                            const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
+                            
+                            cells.push(
+                              <td
+                                key={dayIndex}
+                                colSpan={span}
+                                className={`p-2 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
+                              >
+                                <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
+                                  <span className="text-black text-[12px] font-medium">{owner.person} hat Kalle</span>
+                                  <span className="text-black/50 text-[10px]">bis {endDateStr}</span>
+                                </div>
+                              </td>
+                            );
+                          } else {
+                            cells.push(
+                              <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
+                                <span className="text-white/20 text-[12px]">–</span>
+                              </td>
+                            );
+                          }
+                        }
+                        return cells;
+                      })()}
+                    </tr>
                   </thead>
                   <tbody>
-                    {schedule && [0, 1, 2, 3, 4].map((slotIndex) => (
-                      <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
-                        {schedule.map((day, dayIndex) => {
-                          const slot = day.slots[slotIndex];
-                          const isToday = dayIndex === currentDayIndex;
-                          const isEditingTime = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'time';
-                          const isEditingActivity = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'activity';
-                          
-                          // Parse slot time to check if current time marker should show
-                          const slotHour = slot ? parseInt(slot.time) : 0;
-                          const isCurrentSlot = isToday && slotIndex < (schedule?.[dayIndex]?.slots?.length || 0) - 1 
-                            && currentHour >= slotHour 
-                            && currentHour < (day.slots[slotIndex + 1] ? parseInt(day.slots[slotIndex + 1].time) : 24);
-
-                          return (
-                            <td
-                              key={dayIndex}
-                              className={`p-2 border-r border-white/30 last:border-r-0 align-top relative ${
-                                isToday ? 'bg-white/[0.04]' : ''
-                              } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
-                            >
-                              {slot && (
-                                <div className="flex-1 min-w-0">
-                                  {isEditingTime ? (
-                                    <input
-                                      ref={inputRef}
-                                      type="text"
-                                      value={slot.time}
-                                      onChange={(e) => handleCellChange(e.target.value)}
-                                      onBlur={handleCellBlur}
-                                      onKeyDown={handleKeyDown}
-                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
-                                    />
-                                  ) : (
-                                    <div
-                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
-                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
-                                    >
-                                      {slot.time}
-                                    </div>
-                                  )}
-                                  {isEditingActivity ? (
-                                    <input
-                                      ref={inputRef}
-                                      type="text"
-                                      value={slot.activity}
-                                      onChange={(e) => handleCellChange(e.target.value)}
-                                      onBlur={handleCellBlur}
-                                      onKeyDown={handleKeyDown}
-                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
-                                    />
-                                  ) : (
-                                    <div
-                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
-                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
-                                    >
-                                      {slot.activity}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
+                    {/* Walk times with 💩 indication from event data */}
+                    {(() => {
+                      // Collect unique walk time slots across all days
+                      const allSlotHours = new Set<number>();
+                      for (let d = 0; d < 7; d++) {
+                        const data = avgGassiByDay.get(d);
+                        if (data) {
+                          // Cluster pipi and stuhlgang hours into time slots
+                          [...data.pipiHours, ...data.stuhlgangHours].forEach(h => {
+                            allSlotHours.add(Math.round(h));
+                          });
+                        }
+                      }
+                      
+                      // Create sorted unique hour slots
+                      const sortedHours = Array.from(allSlotHours).sort((a, b) => a - b);
+                      
+                      // Cluster nearby hours (within 2h) into ranges
+                      const clusters: number[][] = [];
+                      for (const h of sortedHours) {
+                        const lastCluster = clusters[clusters.length - 1];
+                        if (lastCluster && h - lastCluster[lastCluster.length - 1] <= 2) {
+                          lastCluster.push(h);
+                        } else {
+                          clusters.push([h]);
+                        }
+                      }
+                      
+                      if (clusters.length === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={7} className="p-4 text-center text-white/30 text-[12px]">
+                              Noch keine Gassi-Daten
                             </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                    {/* Average gassi times row */}
-                    <tr className="border-t border-white/30">
-                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                        const data = avgGassiByDay.get(dayIndex);
-                        const pipiCount = data?.pipiHours.length || 0;
-                        const stuhlgangCount = data?.stuhlgangHours.length || 0;
-                        const avgPipiHour = pipiCount > 0 ? data!.pipiHours.reduce((a, b) => a + b, 0) / pipiCount : null;
-                        const avgStuhlgangHour = stuhlgangCount > 0 ? data!.stuhlgangHours.reduce((a, b) => a + b, 0) / stuhlgangCount : null;
-                        const isToday = dayIndex === currentDayIndex;
-                        
-                        const formatHour = (h: number) => {
-                          const hours = Math.floor(h);
-                          const mins = Math.round((h - hours) * 60);
-                          return `${hours}:${mins.toString().padStart(2, '0')}`;
-                        };
-                        
-                        return (
-                          <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top text-[10px] ${isToday ? 'bg-white/[0.04]' : ''}`}>
-                            {avgPipiHour !== null && (
-                              <div className="flex items-center gap-1 mb-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#5AD940] flex-shrink-0" />
-                                <span className="text-white/40">Ø {formatHour(avgPipiHour)}</span>
-                              </div>
-                            )}
-                            {avgStuhlgangHour !== null && (
-                              <div className="flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] flex-shrink-0" />
-                                <span className="text-white/40">Ø {formatHour(avgStuhlgangHour)} 💩</span>
-                              </div>
-                            )}
-                            {pipiCount === 0 && stuhlgangCount === 0 && (
-                              <span className="text-white/20">–</span>
-                            )}
-                          </td>
+                          </tr>
                         );
-                      })}
-                    </tr>
-                    {/* iCal events row */}
-                    <tr className="border-t border-white/30">
-                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                        const dayIcalEvents = weekIcalEvents.get(dayIndex) || [];
-                        const isToday = dayIndex === currentDayIndex;
+                      }
+                      
+                      return clusters.map((cluster, clusterIdx) => {
+                        const clusterMin = Math.min(...cluster);
+                        const clusterMax = Math.max(...cluster);
+                        const timeLabel = clusterMin === clusterMax 
+                          ? `${clusterMin}:00` 
+                          : `${clusterMin}–${clusterMax} Uhr`;
+                        
                         return (
-                          <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top text-[10px] ${isToday ? 'bg-white/[0.04]' : ''}`}>
-                            {dayIcalEvents.length > 0 ? (
-                              <div className="space-y-1">
-                                {dayIcalEvents.map((evt, i) => {
-                                  const time = new Date(evt.dtstart);
-                                  const timeStr = `${time.getHours()}:${time.getMinutes().toString().padStart(2, '0')}`;
-                                  return (
-                                    <div key={i} className="flex items-start gap-1">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-[#60A5FA] flex-shrink-0 mt-0.5" />
-                                      <div>
-                                        <div className="text-white/50">{timeStr}</div>
-                                        <div className="text-white/70 leading-tight">{evt.summary}</div>
+                          <tr key={clusterIdx} className="border-b border-white/30 last:border-b-0">
+                            {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                              const data = avgGassiByDay.get(dayIndex);
+                              const isToday = dayIndex === currentDayIndex;
+                              const isCurrentSlot = isToday && currentHour >= clusterMin && currentHour <= clusterMax + 1;
+                              
+                              // Count events in this cluster for this day
+                              const pipiInCluster = data?.pipiHours.filter(h => h >= clusterMin - 1 && h <= clusterMax + 1).length || 0;
+                              const poopInCluster = data?.stuhlgangHours.filter(h => h >= clusterMin - 1 && h <= clusterMax + 1).length || 0;
+                              const hasPoop = poopInCluster > 0;
+                              const hasActivity = pipiInCluster > 0 || poopInCluster > 0;
+                              
+                              return (
+                                <td
+                                  key={dayIndex}
+                                  className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
+                                    isToday ? 'bg-white/[0.04]' : ''
+                                  } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
+                                >
+                                  {hasActivity ? (
+                                    <div>
+                                      <div className="text-white/40 text-[10px]">{timeLabel}</div>
+                                      <div className="text-white/60 text-[11px] mt-0.5">
+                                        {hasPoop ? '💩' : '💦'}
                                       </div>
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            ) : (
-                              <span className="text-white/20">–</span>
-                            )}
-                          </td>
+                                  ) : (
+                                    <div className="text-white/15">–</div>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
                         );
-                      })}
-                    </tr>
+                      });
+                    })()}
                   </tbody>
                 </table>
                 </div>
