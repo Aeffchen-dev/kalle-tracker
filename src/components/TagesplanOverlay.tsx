@@ -765,66 +765,104 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <div className="mb-8">
                   <h2 className="text-[14px] text-white mb-4">👹 Pubertät</h2>
                   <div 
-                    className="border border-white/30 rounded-lg p-4"
-                    onTouchStart={(e) => {
-                      (e.currentTarget as any)._swipeX = e.touches[0].clientX;
-                    }}
-                    onTouchEnd={(e) => {
-                      const startX = (e.currentTarget as any)._swipeX;
-                      if (startX === undefined) return;
-                      const endX = e.changedTouches[0].clientX;
-                      const diff = startX - endX;
-                      if (Math.abs(diff) > 50) {
-                        const nextIdx = diff > 0 
-                          ? Math.min(displayIndex + 1, phases.length - 1) 
-                          : Math.max(displayIndex - 1, 0);
-                        if (nextIdx !== displayIndex) {
-                          setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
-                        }
-                      }
-                    }}
+                    className="border border-white/30 rounded-lg overflow-hidden"
                   >
                     {/* Header with phase name and progress */}
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-[14px] text-white">{phase.name}</span>
-                      <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
-                    </div>
-                    
-                    {/* Clickable progress bar */}
-                    <div className="flex gap-1 mb-4">
-                      {phases.map((p, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                          className={`flex-1 h-2 rounded-full transition-all ${
-                            displayIndex === i 
-                              ? 'bg-white' 
-                              : ageInMonths >= p.min 
-                                ? 'bg-white/30' 
-                                : 'bg-white/10'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    
-                    {!isCurrentPhase && (
-                      <p className="text-[12px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
-                    )}
-                    
-                    {/* Characteristics */}
-                    <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
-                    
-                    {/* Needs as bullet points */}
-                    <div className="text-[14px] text-white/60">
-                      <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
-                      <ul className="mt-2 space-y-1">
-                        {phase.needs.map((need, i) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-white/30">•</span>
-                            <span>{need}</span>
-                          </li>
+                    <div className="p-4 pb-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[14px] text-white">{phase.name}</span>
+                        <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
+                      </div>
+                      
+                      {/* Clickable progress bar */}
+                      <div className="flex gap-1 mb-4">
+                        {phases.map((p, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                            className={`flex-1 h-2 rounded-full transition-all ${
+                              displayIndex === i 
+                                ? 'bg-white' 
+                                : ageInMonths >= p.min 
+                                  ? 'bg-white/30' 
+                                  : 'bg-white/10'
+                            }`}
+                          />
                         ))}
-                      </ul>
+                      </div>
+                    </div>
+                    
+                    {/* Swipeable content area */}
+                    <div
+                      className="relative"
+                      onTouchStart={(e) => {
+                        const el = e.currentTarget as any;
+                        el._swipeStartX = e.touches[0].clientX;
+                        el._swipeStartTime = Date.now();
+                        el._swipeDeltaX = 0;
+                        el._contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
+                      }}
+                      onTouchMove={(e) => {
+                        const el = e.currentTarget as any;
+                        if (el._swipeStartX === undefined) return;
+                        const deltaX = e.touches[0].clientX - el._swipeStartX;
+                        el._swipeDeltaX = deltaX;
+                        if (el._contentEl) {
+                          el._contentEl.style.transform = `translateX(${deltaX * 0.4}px)`;
+                          el._contentEl.style.opacity = `${Math.max(0.3, 1 - Math.abs(deltaX) / 300)}`;
+                        }
+                      }}
+                      onTouchEnd={(e) => {
+                        const el = e.currentTarget as any;
+                        const deltaX = el._swipeDeltaX || 0;
+                        const contentEl = el._contentEl as HTMLElement;
+                        
+                        if (contentEl) {
+                          contentEl.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+                          contentEl.style.transform = 'translateX(0)';
+                          contentEl.style.opacity = '1';
+                          setTimeout(() => {
+                            if (contentEl) {
+                              contentEl.style.transition = '';
+                            }
+                          }, 250);
+                        }
+                        
+                        if (Math.abs(deltaX) > 50) {
+                          const nextIdx = deltaX < 0 
+                            ? Math.min(displayIndex + 1, phases.length - 1) 
+                            : Math.max(displayIndex - 1, 0);
+                          if (nextIdx !== displayIndex) {
+                            setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
+                          }
+                        }
+                        
+                        el._swipeStartX = undefined;
+                        el._swipeDeltaX = 0;
+                        el._contentEl = null;
+                      }}
+                    >
+                      <div data-phase-content className="px-4 pb-4" style={{ willChange: 'transform' }}>
+                        {!isCurrentPhase && (
+                          <p className="text-[12px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
+                        )}
+                        
+                        {/* Characteristics */}
+                        <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
+                        
+                        {/* Needs as bullet points */}
+                        <div className="text-[14px] text-white/60">
+                          <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
+                          <ul className="mt-2 space-y-1">
+                            {phase.needs.map((need, i) => (
+                              <li key={i} className="flex gap-2">
+                                <span className="text-white/30">•</span>
+                                <span>{need}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -833,15 +871,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Wochenplan Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <h2 className="text-[14px] text-white">Wochenplan</h2>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setWeekOffset(prev => prev - 4)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">‹‹</button>
-                  <button onClick={() => setWeekOffset(prev => prev - 1)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">‹</button>
-                  <button onClick={() => setWeekOffset(0)} className={`px-2 py-1 text-[12px] ${weekOffset === 0 ? 'text-[#5AD940]' : 'text-white/60 hover:text-white'}`}>Heute</button>
-                  <button onClick={() => setWeekOffset(prev => prev + 1)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">›</button>
-                  <button onClick={() => setWeekOffset(prev => prev + 4)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">››</button>
-                </div>
               </div>
               
               {!dataLoaded ? (
@@ -1064,8 +1095,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 }`}>
                                   {evt ? (
                                     <div>
-                                      <div className="text-white/40 text-[12px]">{evt.time}</div>
-                                      <div className="text-white/70 text-[13px] mt-0.5 truncate max-w-[90px]">{evt.summary}</div>
+                                      <div className="text-white/40 text-[10px]">{evt.time}</div>
+                                      <div className="text-white/70 text-[11px] mt-0.5 truncate max-w-[80px]">{evt.summary}</div>
                                     </div>
                                   ) : null}
                                 </td>
