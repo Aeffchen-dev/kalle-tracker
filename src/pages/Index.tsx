@@ -310,7 +310,7 @@ const Index = () => {
       </header>
 
       {/* Main countdown area */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3">
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3 mx-auto w-full max-w-[500px]">
         <div 
           className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none relative ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
           style={{ animationFillMode: 'backwards', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
@@ -405,7 +405,7 @@ const Index = () => {
 
       {/* Weather forecast drawer */}
       <Drawer open={showWeather} onOpenChange={setShowWeather}>
-        <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60]">
+        <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] max-w-[500px] mx-auto">
           <div className="pt-4 px-4 pb-3">
             <h2 className="text-white text-[14px] font-semibold text-center">
               Wettervorhersage
