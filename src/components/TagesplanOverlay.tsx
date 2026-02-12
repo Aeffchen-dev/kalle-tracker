@@ -551,7 +551,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {!dataLoaded && (
               <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
-                <div className="bg-black rounded-lg overflow-hidden">
+                <div className="bg-white/[0.06] rounded-lg overflow-hidden">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className={`flex p-3 gap-3 ${i !== 6 ? 'border-b border-white/[0.06]' : ''}`}>
                       <Skeleton className="h-4 w-16 bg-white/10" />
@@ -565,7 +565,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
                 <h2 className="flex items-center gap-2 text-[14px] text-white mb-4">{mealIndex === 0 && <span>🍖</span>}<span>{meal.title}</span></h2>
-                <div className="bg-black rounded-lg overflow-hidden">
+                <div className="bg-white/[0.06] rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
                     const isEditingName = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'name';
@@ -656,7 +656,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
-              <div className="bg-black rounded-lg p-4 mb-4">
+              <div className="bg-white/[0.06] rounded-lg p-4 mb-4">
                 <a 
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
@@ -676,7 +676,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               </div>
 
               {/* Tierklinik Bärenwiese */}
-              <div className="bg-black rounded-lg p-4">
+              <div className="bg-white/[0.06] rounded-lg p-4">
                 <a 
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
@@ -758,7 +758,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>👹</span> <span>Pubertät</span></h2>
                   <div 
-                    className="bg-black rounded-lg overflow-hidden"
+                    className="bg-white/[0.06] rounded-lg overflow-hidden"
                   >
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
@@ -931,7 +931,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               return (
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>🧑‍🏫</span> <span>Training</span></h2>
-                  <div className="bg-black rounded-lg overflow-hidden p-4">
+                  <div className="bg-white/[0.06] rounded-lg overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
