@@ -79,6 +79,20 @@ export const getICalEventsForWeek = (events: ICalEvent[], referenceDate: Date): 
   return result;
 };
 
+export const getICalEventsForRange = (events: ICalEvent[], startDate: Date, numDays: number): Map<number, ICalEvent[]> => {
+  const result = new Map<number, ICalEvent[]>();
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+
+  for (let i = 0; i < numDays; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    result.set(i, getICalEventsForDate(events, d));
+  }
+  
+  return result;
+};
+
 // Find who has Kalle on a given date based on "x hat Kalle" calendar events
 export interface KalleOwnership {
   person: string; // e.g. "Jana" or "Niklas"
