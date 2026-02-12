@@ -130,7 +130,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
-  const [actualSchedule, setActualSchedule] = useState<Record<number, string[]> | null>(null);
+  const [actualSchedule, setActualSchedule] = useState<Record<number, { label: string; hasStuhlgang: boolean }[]> | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
   const [editingMeal, setEditingMeal] = useState<{ mealIndex: number; ingredientIndex: number; field: 'quantity' | 'name' | 'description' } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -193,26 +193,42 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         .order('time', { ascending: true });
 
       if (events && events.length > 0) {
-        // Group by day of week (0=Sun, 1=Mon, ..., 6=Sat) -> collect unique times per day
-        const dayTimes: Record<number, Map<string, number>> = {};
-        for (let d = 0; d < 7; d++) dayTimes[d] = new Map();
+        // Group into 3h blocks per day of week, track if stuhlgang occurred
+        const timeBlocks = ['06-09', '09-12', '12-15', '15-18', '18-21', '21-00'];
+        const blockRanges = [[6,9],[9,12],[12,15],[15,18],[18,21],[21,24]];
+        
+        // dayData[dow][blockIndex] = { count, hasStuhlgang, totalDays }
+        const dayData: Record<number, { count: number; hasStuhlgang: boolean; days: Set<string> }[]> = {};
+        for (let d = 0; d < 7; d++) {
+          dayData[d] = blockRanges.map(() => ({ count: 0, hasStuhlgang: false, days: new Set<string>() }));
+        }
 
         for (const event of events) {
           const date = new Date(event.time);
           const dow = date.getDay();
           const hour = date.getHours();
-          const minuteBlock = Math.round(date.getMinutes() / 30) * 30;
-          const timeKey = `${hour.toString().padStart(2, '0')}:${(minuteBlock % 60).toString().padStart(2, '0')}`;
-          dayTimes[dow].set(timeKey, (dayTimes[dow].get(timeKey) || 0) + 1);
+          const dateKey = date.toDateString();
+          const blockIdx = blockRanges.findIndex(([start, end]) => hour >= start && hour < end);
+          if (blockIdx >= 0) {
+            dayData[dow][blockIdx].count++;
+            dayData[dow][blockIdx].days.add(dateKey);
+            if (event.type === 'stuhlgang') {
+              dayData[dow][blockIdx].hasStuhlgang = true;
+            }
+          }
         }
 
-        // For each day, get sorted unique times
-        const result: Record<number, string[]> = {};
+        // Build result: only include blocks that have activity
+        const result: Record<number, { label: string; hasStuhlgang: boolean }[]> = {};
         for (let d = 0; d < 7; d++) {
-          const sorted = Array.from(dayTimes[d].entries())
-            .sort((a, b) => a[0].localeCompare(b[0]))
-            .map(([time]) => time);
-          result[d] = sorted;
+          result[d] = dayData[d]
+            .map((block, i) => ({
+              label: timeBlocks[i],
+              hasStuhlgang: block.hasStuhlgang,
+              hasActivity: block.count > 0
+            }))
+            .filter(b => b.hasActivity)
+            .map(({ label, hasStuhlgang }) => ({ label, hasStuhlgang }));
         }
         setActualSchedule(result);
       }
@@ -742,14 +758,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             <tr>
                               {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day, i) => {
                                 const dow = i === 6 ? 0 : i + 1;
-                                const times = actualSchedule[dow] || [];
+                                const blocks = actualSchedule[dow] || [];
                                 return (
                                   <td key={day} className="p-2 border-r border-white/30 last:border-r-0 align-top">
                                     <div className="flex flex-col gap-1">
-                                      {times.map((time, ti) => (
-                                        <span key={ti} className="text-white/60 text-[11px]">{time} Uhr</span>
+                                      {blocks.map((block, ti) => (
+                                        <div key={ti} className="flex items-center gap-1">
+                                          <span className="text-white/60 text-[11px]">{block.label}</span>
+                                          {block.hasStuhlgang && <span className="text-[10px]">💩</span>}
+                                        </div>
                                       ))}
-                                      {times.length === 0 && (
+                                      {blocks.length === 0 && (
                                         <span className="text-white/20 text-[11px]">–</span>
                                       )}
                                     </div>
