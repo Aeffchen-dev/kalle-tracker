@@ -1011,7 +1011,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   <span>{span.person} hat Kalle</span>
                                 </span>
                                 <span className="flex-1" />
-                                <span className="text-[11px] text-white/40 shrink-0 text-right mr-4">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                                <span className="text-[11px] text-white/40 shrink-0 text-right mr-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
