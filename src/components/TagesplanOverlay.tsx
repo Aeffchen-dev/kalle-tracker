@@ -576,7 +576,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
-                <h2 className="text-[14px] text-white mb-4">{meal.title}</h2>
+                <h2 className="text-[14px] text-white mb-4">{mealIndex === 0 ? '🍖 ' : ''}{meal.title}</h2>
                 <div className="border border-white/30 rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
