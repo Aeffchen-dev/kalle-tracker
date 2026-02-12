@@ -998,19 +998,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-lg bg-white/[0.06] flex items-center justify-between px-2"
+                            className="absolute top-0 h-full rounded-lg bg-white/[0.03] flex items-center justify-between px-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
                             <span className="text-[12px] text-white flex items-center gap-1.5">
-                              <span className="text-white/40 shrink-0">
-                                {format(span.startDate, 'd.M.', { locale: de })} – {format(span.endDate, 'd.M.', { locale: de })}
-                              </span>
+                              <span className="shrink-0">🐶</span>
                               <span className="text-white/60">{span.person} hat Kalle</span>
                             </span>
-                            <span className="shrink-0">🐶</span>
+                            <span className="text-[11px] text-white/40 shrink-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                           </div>
                         ))}
                       </div>
