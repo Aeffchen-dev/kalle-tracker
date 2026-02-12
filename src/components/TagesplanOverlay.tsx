@@ -545,8 +545,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="absolute inset-0 overflow-y-auto px-4 pb-4 pt-14 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full">
-            
+          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-14">
+            <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
               <div className="mb-8">
@@ -947,9 +947,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               );
             })()}
 
-            {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
-            <div className="mb-0">
-              <div className="mb-3">
+            </div>
+            {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
+            <div className="mb-0 -mx-4">
+              <div className="mb-3 px-4 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
                 <h2 className="flex items-center gap-2 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
               </div>
               
@@ -960,7 +961,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               ) : (
               <div 
                 ref={wochenplanScrollRef}
-                className="overflow-x-auto -mx-4 scrollbar-hide"
+                className="overflow-x-auto scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <div className="px-4" style={{ width: 'max-content' }}>
