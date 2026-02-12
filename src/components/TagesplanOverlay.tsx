@@ -1087,8 +1087,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {/* iCal events - same layout, border-l accent */}
                                   {slot.icalEvents.map((evt, j) => (
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
-                                      <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg border-l-2 border-white/20">
-                                        <span className="text-[12px] text-white/60 truncate mr-2">{evt.summary}</span>
+                                      <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
+                                        <span className="text-[12px] text-white flex items-center gap-1.5 truncate mr-2">
+                                          <span className="shrink-0">📅</span>
+                                          <span className="text-white/60 truncate">{evt.summary}</span>
+                                        </span>
                                         <span className="text-[11px] text-white/40 shrink-0">{evt.timeStr}</span>
                                       </div>
                                     </div>
