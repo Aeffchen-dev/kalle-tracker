@@ -133,7 +133,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             {/* Walk Interval Setting */}
             <div className="bg-white/[0.06] rounded-lg p-4">
               <div className="flex items-center justify-between">
-                <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Erinnerung nach</span></span>
+                <span className="text-[14px] text-white flex items-center gap-2"><span>⏰</span><span>Gassi Erinnerung nach</span></span>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => intervalHours > 1 && handleIntervalChange(intervalHours - 1)}
