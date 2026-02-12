@@ -248,20 +248,22 @@ const Index = () => {
       
 
       {/* Header */}
-      <header className={`p-4 flex justify-end items-start gap-2 relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
-        <button 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
-        >
-          <span className="flex items-center gap-2">🐶 <span>Kalle Tracker</span></span>
-        </button>
-        {weatherTemp !== null && (
+      <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="flex items-start gap-2">
           <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
           >
-            <span className="flex items-center gap-2">{weatherEmoji} <span>{weatherTemp}°</span></span>
+            <span className="flex items-center gap-2">🐶 <span>Kalle Tracker</span></span>
           </button>
-        )}
+          {weatherTemp !== null && (
+            <button 
+              className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+            >
+              <span className="flex items-center gap-2">{weatherEmoji} <span>{weatherTemp}°</span></span>
+            </button>
+          )}
+        </div>
         <button 
           onClick={() => setShowTagesplan(true)}
           className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
