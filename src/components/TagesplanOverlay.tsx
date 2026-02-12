@@ -1120,22 +1120,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 <div key={i}>
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
                                   {slot.isWalk && (
-                                    <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
-                                      <span className="text-[12px] text-white flex items-center gap-1.5">
-                                        <span className="text-white/40 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
-                                      </span>
-                                      <span className="shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                    <div className="p-2 bg-white/[0.06] rounded-lg">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-[12px] text-white/40 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                      </div>
                                     </div>
                                   )}
                                   {/* iCal events */}
                                   {slot.icalEvents.map((evt, j) => (
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
-                                      <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
-                                        <span className="text-[12px] text-white flex items-center gap-1.5 truncate mr-2">
-                                          <span className="text-white/40 shrink-0">{evt.timeStr} Uhr</span>
-                                          <span className="text-white truncate">{evt.summary}</span>
-                                        </span>
-                                        <span className="shrink-0">📅</span>
+                                      <div className="p-2 bg-white/[0.06] rounded-lg">
+                                        <div className="flex items-start gap-1.5">
+                                          <span className="text-[12px] text-white/40 shrink-0">{evt.timeStr} Uhr</span>
+                                          <span className="text-[12px] text-white">{evt.summary}</span>
+                                        </div>
                                       </div>
                                     </div>
                                   ))}
