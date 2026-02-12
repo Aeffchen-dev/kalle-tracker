@@ -100,6 +100,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           savedLocally = true;
         }
       }
+      // Dismiss weight reminder when weight is logged
+      if (type === 'gewicht' && result.success) {
+        localStorage.setItem('weightReminderDismissed', new Date().toISOString());
+      }
     }
 
     // Show toast based on result

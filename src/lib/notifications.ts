@@ -142,19 +142,26 @@ export const scheduleMonthlyWeightReminder = async (): Promise<void> => {
   if (!isNativeApp()) {
     // For web, we can't schedule far in advance, but we can check on each app load
     // if it's the 1st of the month and show the notification
-    if (now.getDate() === 1) {
-      const lastShown = localStorage.getItem('weightReminderLastShown');
-      const lastShownDate = lastShown ? new Date(lastShown) : null;
-      
-      if (!lastShownDate || lastShownDate.getMonth() !== now.getMonth() || lastShownDate.getFullYear() !== now.getFullYear()) {
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('⚖️ Wiegen', { 
-            body: 'Trage Kalles aktuelles Gewicht ein',
-            icon: '/favicon.png',
-            tag: 'weight-reminder'
-          });
-          localStorage.setItem('weightReminderLastShown', now.toISOString());
-        }
+    // Show weight reminder from the 1st until user logs weight or dismisses
+    const weightDismissedKey = 'weightReminderDismissed';
+    const lastDismissed = localStorage.getItem(weightDismissedKey);
+    const isDismissedThisMonth = lastDismissed && (() => {
+      const d = new Date(lastDismissed);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })();
+    
+    if (!isDismissedThisMonth) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notification = new Notification('⚖️ Wiegen', { 
+          body: 'Trage Kalles aktuelles Gewicht ein',
+          icon: '/favicon.png',
+          tag: 'weight-reminder',
+          requireInteraction: true
+        });
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
       }
     }
     return;
