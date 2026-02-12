@@ -65,9 +65,78 @@ function parseICal(raw: string): ICalEvent[] {
     }
   }
 
-  return events;
+  // Expand recurring events
+  const expanded = expandRecurringEvents(events);
+  return expanded;
 }
 
+function expandRecurringEvents(events: ICalEvent[]): ICalEvent[] {
+  const result: ICalEvent[] = [];
+  const horizon = new Date();
+  horizon.setMonth(horizon.getMonth() + 6); // expand 6 months ahead
+
+  for (const event of events) {
+    if (!event.rrule) {
+      result.push(event);
+      continue;
+    }
+
+    // Parse RRULE
+    const rules: Record<string, string> = {};
+    for (const part of event.rrule.split(';')) {
+      const [k, v] = part.split('=');
+      if (k && v) rules[k] = v;
+    }
+
+    const freq = rules['FREQ'];
+    const interval = parseInt(rules['INTERVAL'] || '1');
+    const until = rules['UNTIL'] ? new Date(parseICalDate(rules['UNTIL'])) : horizon;
+    const count = rules['COUNT'] ? parseInt(rules['COUNT']) : undefined;
+
+    const dtstart = new Date(event.dtstart);
+    const dtend = new Date(event.dtend || event.dtstart);
+    const duration = dtend.getTime() - dtstart.getTime();
+
+    // Push the original event
+    result.push(event);
+
+    let current = new Date(dtstart);
+    let occurrences = 1;
+    const maxOccurrences = count || 100;
+
+    while (occurrences < maxOccurrences) {
+      // Advance by interval
+      if (freq === 'DAILY') {
+        current = new Date(current.getTime() + interval * 86400000);
+      } else if (freq === 'WEEKLY') {
+        current = new Date(current.getTime() + interval * 7 * 86400000);
+      } else if (freq === 'MONTHLY') {
+        const next = new Date(current);
+        next.setMonth(next.getMonth() + interval);
+        current = next;
+      } else if (freq === 'YEARLY') {
+        const next = new Date(current);
+        next.setFullYear(next.getFullYear() + interval);
+        current = next;
+      } else {
+        break;
+      }
+
+      if (current > until || current > horizon) break;
+
+      const newEnd = new Date(current.getTime() + duration);
+      result.push({
+        ...event,
+        dtstart: current.toISOString(),
+        dtend: newEnd.toISOString(),
+        rrule: undefined, // don't mark expanded instances as recurring
+      });
+      occurrences++;
+    }
+  }
+
+  return result;
+}
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
