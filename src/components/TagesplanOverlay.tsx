@@ -798,52 +798,63 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     
                     {/* Swipeable content area */}
                     <div
-                      className="relative"
+                      className="relative overflow-hidden"
                       onTouchStart={(e) => {
                         const el = e.currentTarget as any;
                         el._swipeStartX = e.touches[0].clientX;
-                        el._swipeStartTime = Date.now();
                         el._swipeDeltaX = 0;
-                        el._contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
                       }}
                       onTouchMove={(e) => {
                         const el = e.currentTarget as any;
                         if (el._swipeStartX === undefined) return;
                         const deltaX = e.touches[0].clientX - el._swipeStartX;
                         el._swipeDeltaX = deltaX;
-                        if (el._contentEl) {
-                          el._contentEl.style.transform = `translateX(${deltaX * 0.4}px)`;
-                          el._contentEl.style.opacity = `${Math.max(0.3, 1 - Math.abs(deltaX) / 300)}`;
+                        const contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
+                        if (contentEl) {
+                          contentEl.style.transform = `translateX(${deltaX * 0.5}px)`;
                         }
                       }}
                       onTouchEnd={(e) => {
                         const el = e.currentTarget as any;
                         const deltaX = el._swipeDeltaX || 0;
-                        const contentEl = el._contentEl as HTMLElement;
+                        const contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
                         
-                        if (contentEl) {
-                          contentEl.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
-                          contentEl.style.transform = 'translateX(0)';
-                          contentEl.style.opacity = '1';
+                        const threshold = 60;
+                        let nextIdx = displayIndex;
+                        if (deltaX < -threshold) {
+                          nextIdx = Math.min(displayIndex + 1, phases.length - 1);
+                        } else if (deltaX > threshold) {
+                          nextIdx = Math.max(displayIndex - 1, 0);
+                        }
+                        
+                        if (nextIdx !== displayIndex && contentEl) {
+                          // Slide out in swipe direction
+                          const direction = deltaX < 0 ? -1 : 1;
+                          contentEl.style.transition = 'transform 0.2s ease-out';
+                          contentEl.style.transform = `translateX(${direction * 300}px)`;
                           setTimeout(() => {
+                            setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
                             if (contentEl) {
-                              contentEl.style.transition = '';
+                              // Reset instantly off-screen on opposite side, then slide in
+                              contentEl.style.transition = 'none';
+                              contentEl.style.transform = `translateX(${-direction * 300}px)`;
+                              requestAnimationFrame(() => {
+                                contentEl.style.transition = 'transform 0.2s ease-out';
+                                contentEl.style.transform = 'translateX(0)';
+                              });
                             }
-                          }, 250);
+                          }, 200);
+                        } else if (contentEl) {
+                          contentEl.style.transition = 'transform 0.2s ease-out';
+                          contentEl.style.transform = 'translateX(0)';
                         }
                         
-                        if (Math.abs(deltaX) > 50) {
-                          const nextIdx = deltaX < 0 
-                            ? Math.min(displayIndex + 1, phases.length - 1) 
-                            : Math.max(displayIndex - 1, 0);
-                          if (nextIdx !== displayIndex) {
-                            setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
-                          }
-                        }
+                        setTimeout(() => {
+                          if (contentEl) contentEl.style.transition = '';
+                        }, 400);
                         
                         el._swipeStartX = undefined;
                         el._swipeDeltaX = 0;
-                        el._contentEl = null;
                       }}
                     >
                       <div data-phase-content className="px-4 pb-4" style={{ willChange: 'transform' }}>
@@ -916,7 +927,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             key={dayIndex}
                             ref={isToday ? todayColRef : undefined}
                             className={`p-2 text-left border-r border-white/30 last:border-r-0 ${
-                              isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940] border-t-2 border-t-[#5AD940]' : ''
+                              isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940] border-t-2 border-t-[#5AD940]' : ''
                             }`}
                           >
                             <div className={`text-[14px] ${isToday ? 'font-bold' : ''} text-white`}>{dayNames[jsDay]}</div>
@@ -971,7 +982,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           } else {
                             cells.push(
                               <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${
-                                isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940]' : ''
+                                isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940]' : ''
                               }`}>
                               </td>
                             );
@@ -1049,8 +1060,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940]' : ''
-                                } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
+                                  isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940]' : ''
+                                }`}
                               >
                                 {slot ? (
                                   <div>
@@ -1095,12 +1106,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               const isToday = dayIndex === currentDayIndex;
                               return (
                                 <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? `border-l border-l-[#5AD940] border-r-[#5AD940] ${isLastRow ? 'border-b-2 border-b-[#5AD940]' : ''}` : ''
+                                  isToday ? `border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940] ${isLastRow ? 'border-b-2 border-b-[#5AD940]' : ''}` : ''
                                 }`}>
                                   {evt ? (
                                     <div>
-                                      <div className="text-white/40 text-[10px]">{evt.time}</div>
-                                      <div className="text-white/70 text-[11px] mt-0.5 truncate max-w-[80px]">{evt.summary}</div>
+                                      <div className="text-white/40 text-[14px]">{evt.time}</div>
+                                      <div className="text-white/70 text-[14px] mt-0.5 truncate max-w-[80px]">{evt.summary}</div>
                                     </div>
                                   ) : null}
                                 </td>
