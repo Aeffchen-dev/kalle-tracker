@@ -998,17 +998,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-black flex items-center justify-between py-2 overflow-hidden"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
-                            <span className="text-[12px] text-white flex items-center gap-1.5 shrink-0 pl-3">
-                              <span className="shrink-0">🐶</span>
-                              <span className="text-white">{span.person} hat Kalle</span>
-                            </span>
-                            <span className="text-[11px] text-white/40 shrink-0 pr-3">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                            <div className="relative h-full">
+                              <div className="sticky left-0 h-full flex items-center justify-between px-3 pointer-events-none" style={{ width: 'calc(min(100%, (100vw - 32px)))' }}>
+                                <span className="text-[12px] text-white flex items-center gap-1.5 shrink-0">
+                                  <span className="shrink-0">🐶</span>
+                                  <span className="text-white">{span.person} hat Kalle</span>
+                                </span>
+                                <span className="text-[11px] text-white/40 shrink-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
