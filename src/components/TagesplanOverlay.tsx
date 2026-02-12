@@ -145,43 +145,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
-  const todayColRef = useRef<HTMLDivElement>(null);
+  const todayColRef = useRef<HTMLTableCellElement>(null);
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
-  const [weatherData, setWeatherData] = useState<{ date: string; code: number; tempMax: number; tempMin: number; precipProb: number }[]>([]);
-  const [plannedWalks, setPlannedWalks] = useState<{ id: string; date: string; hour: number }[]>([]);
 
-  // Weather code to emoji mapping
-  const getWeatherEmoji = (code: number) => {
-    if (code === 0) return '☀️';
-    if (code <= 3) return '⛅';
-    if (code <= 48) return '🌫️';
-    if (code <= 57) return '🌧️';
-    if (code <= 67) return '🌧️';
-    if (code <= 77) return '❄️';
-    if (code <= 82) return '🌧️';
-    if (code <= 86) return '❄️';
-    if (code >= 95) return '⛈️';
-    return '☁️';
-  };
-
-  // Load iCal events, app events, weather, and planned walks
+  // Load iCal events and app events
   useEffect(() => {
     fetchICalEvents().then(setIcalEvents).catch(console.error);
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
-    
-    // Fetch weather
-    fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch-weather?days=14`, {
-      headers: { 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-    })
-      .then(r => r.json())
-      .then(data => setWeatherData(data.days || []))
-      .catch(console.error);
-    
-    // Fetch planned walks
-    supabase.from('planned_walks').select('*').then(({ data }) => {
-      if (data) setPlannedWalks(data.map(w => ({ id: w.id, date: w.date, hour: Number(w.hour) })));
-    });
   }, []);
 
   // Compute average gassi times, grouped by weekday vs weekend
@@ -1010,17 +981,15 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               >
                 <div className="px-4 min-w-fit">
                 <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block" style={{ minWidth: `${(TOTAL_DAYS * 90) + 44}px` }}>
-                  {/* Header: Day names + dates + weather */}
+                  {/* Header: Day names + dates */}
                   <div className="flex border-b border-white/30">
-                    <div style={{ width: '44px', flexShrink: 0, position: 'sticky', left: 16, zIndex: 5, background: 'black' }} className="border-r border-white/30" />
+                    <div style={{ width: '44px', flexShrink: 0 }} className="border-r border-white/30" />
                     {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
                       const isToday = dayIndex === currentDayIndex;
                       const dayDate = new Date(rangeStart);
                       dayDate.setDate(dayDate.getDate() + dayIndex);
                       const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
                       const jsDay = dayDate.getDay();
-                      const dateStr = format(dayDate, 'yyyy-MM-dd');
-                      const weather = weatherData.find(w => w.date === dateStr);
                       return (
                         <div
                           key={dayIndex}
@@ -1030,15 +999,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         >
                           <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
                           <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
-                          {weather && (
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <span className="text-[14px]">{getWeatherEmoji(weather.code)}</span>
-                              <span className="text-[10px] text-white/40">{weather.tempMax}°</span>
-                              {weather.precipProb > 30 && (
-                                <span className="text-[10px] text-blue-400/60">💧{weather.precipProb}%</span>
-                              )}
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -1046,7 +1006,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
                   {/* Kalle ownership row */}
                   <div className="flex border-b border-white/30">
-                    <div style={{ width: '44px', flexShrink: 0, position: 'sticky', left: 16, zIndex: 5, background: 'black' }} className="border-r border-white/30" />
+                    <div style={{ width: '44px', flexShrink: 0 }} className="border-r border-white/30" />
                     {(() => {
                       const cells: React.ReactNode[] = [];
                       let skipUntil = -1;
@@ -1084,10 +1044,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   {(() => {
                     const START_HOUR = 6;
                     const END_HOUR = 22;
-                    const HOUR_HEIGHT = 40;
+                    const HOUR_HEIGHT = 40; // px per hour
                     const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
-                    type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string; summary?: string };
+                    // Collect all events per day
+                    type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string };
                     const dayBlocks = new Map<number, BlockItem[]>();
 
                     for (let d = 0; d < TOTAL_DAYS; d++) {
@@ -1097,7 +1058,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       const jsDay = dayDate.getDay();
                       const monBasedDay = (jsDay + 6) % 7;
                       const data = avgGassiByDay.get(monBasedDay);
-                      const dateStr = format(dayDate, 'yyyy-MM-dd');
 
                       if (data) {
                         const allEvents: { hour: number; isPoop: boolean }[] = [
@@ -1137,60 +1097,23 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
                         const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
                         const endH = dtEnd.getHours() + dtEnd.getMinutes() / 60;
-                        const duration = Math.max(endH - startH, 0.5);
+                        const duration = Math.max(endH - startH, 0.5); // min 30min block
                         blocks.push({
                           startHour: startH,
                           endHour: startH + duration,
                           label: format(dtStart, 'HH:mm'),
                           emoji: '',
                           color: 'bg-green-900/40',
-                          summary: e.summary || '',
                         });
-                      }
-
-                      // Planned walks
-                      for (const pw of plannedWalks) {
-                        if (pw.date === dateStr) {
-                          blocks.push({
-                            startHour: pw.hour,
-                            endHour: pw.hour + 0.5,
-                            label: `${Math.floor(pw.hour)}:${pw.hour % 1 === 0.5 ? '30' : '00'}`,
-                            emoji: '🎯',
-                            color: 'bg-white/[0.08] border-dashed',
-                          });
-                        }
                       }
 
                       dayBlocks.set(d, blocks);
                     }
 
-                    const handleTapCell = async (dayIndex: number, hour: number) => {
-                      const dayDate = new Date(rangeStart);
-                      dayDate.setDate(dayDate.getDate() + dayIndex);
-                      const dateStr = format(dayDate, 'yyyy-MM-dd');
-                      
-                      // Check if there's already a planned walk at this hour
-                      const existing = plannedWalks.find(pw => pw.date === dateStr && Math.abs(pw.hour - hour) < 0.5);
-                      if (existing) {
-                        // Remove it
-                        await supabase.from('planned_walks').delete().eq('id', existing.id);
-                        setPlannedWalks(prev => prev.filter(pw => pw.id !== existing.id));
-                      } else {
-                        // Add it
-                        const { data } = await supabase.from('planned_walks').insert({ date: dateStr, hour }).select().maybeSingle();
-                        if (data) {
-                          setPlannedWalks(prev => [...prev, { id: data.id, date: data.date, hour: Number(data.hour) }]);
-                        }
-                      }
-                    };
-
                     return (
                       <div className="flex" style={{ height: `${totalHeight}px` }}>
-                        {/* Time axis - sticky */}
-                        <div
-                          className="border-r border-white/30 relative"
-                          style={{ width: '44px', flexShrink: 0, position: 'sticky', left: 16, zIndex: 5, background: 'black' }}
-                        >
+                        {/* Time axis */}
+                        <div className="border-r border-white/30 relative" style={{ width: '44px', flexShrink: 0 }}>
                           {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
                             <div
                               key={i}
@@ -1213,13 +1136,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               className={`relative border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/[0.06]' : ''}`}
                               style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
                             >
-                              {/* Hour gridlines - tappable */}
+                              {/* Hour gridlines */}
                               {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
                                 <div
                                   key={i}
-                                  className="absolute w-full border-t border-white/[0.06] cursor-pointer active:bg-white/[0.04]"
-                                  style={{ top: `${i * HOUR_HEIGHT}px`, height: `${HOUR_HEIGHT}px` }}
-                                  onClick={() => handleTapCell(dayIndex, START_HOUR + i)}
+                                  className="absolute w-full border-t border-white/[0.06]"
+                                  style={{ top: `${i * HOUR_HEIGHT}px` }}
                                 />
                               ))}
 
@@ -1232,15 +1154,23 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 return (
                                   <div
                                     key={i}
-                                    className={`absolute left-0.5 right-0.5 rounded ${block.color} border border-white/10 px-1 overflow-hidden pointer-events-none`}
-                                    style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 2 }}
+                                    className={`absolute left-0.5 right-0.5 rounded ${block.color} border border-white/10 px-1 overflow-hidden`}
+                                    style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
                                   >
                                     <div className="text-[10px] text-white/70 leading-tight mt-0.5">
                                       {block.emoji} {block.label}
                                     </div>
-                                    {block.summary && height >= 28 && (
+                                    {block.emoji === '' && height >= 28 && (
                                       <div className="text-[9px] text-white/50 leading-tight mt-0.5 line-clamp-2">
-                                        {block.summary}
+                                        {(() => {
+                                          const evts = weekIcalEvents.get(dayIndex) || [];
+                                          const match = evts.find(e => {
+                                            if (e.summary?.match(/hat\s+Kalle/i)) return false;
+                                            const dt = new Date(e.dtstart);
+                                            return format(dt, 'HH:mm') === block.label;
+                                          });
+                                          return match?.summary || '';
+                                        })()}
                                       </div>
                                     )}
                                   </div>
@@ -1253,7 +1183,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 if (nowHour < START_HOUR || nowHour > END_HOUR) return null;
                                 const top = (nowHour - START_HOUR) * HOUR_HEIGHT;
                                 return (
-                                  <div className="absolute left-0 right-0 z-10 pointer-events-none" style={{ top: `${top}px` }}>
+                                  <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
                                     <div className="h-[2px] bg-red-500 w-full" />
                                     <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-red-500" />
                                   </div>
