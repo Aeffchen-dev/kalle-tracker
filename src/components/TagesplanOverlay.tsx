@@ -216,19 +216,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
 
-  // Auto-scroll wochenplan to today column every time overlay becomes visible
-  useEffect(() => {
-    if (animationPhase !== 'visible' || !dataLoaded || currentDayIndex < 0) return;
-    const attempts = [100, 300, 600];
-    const timers = attempts.map(delay => setTimeout(() => {
-      if (todayColRef.current && wochenplanScrollRef.current) {
-        const container = wochenplanScrollRef.current;
-        const col = todayColRef.current;
-        container.scrollLeft = Math.max(0, col.offsetLeft);
-      }
-    }, delay));
-    return () => timers.forEach(clearTimeout);
-  }, [animationPhase, dataLoaded, currentDayIndex]);
+
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -1093,22 +1081,24 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           {slots.length === 0 ? (
                             <div className="text-white/15 text-[11px] py-2 text-center">–</div>
                           ) : (
-                            <div className="space-y-1">
+                            <div className="space-y-1.5">
                               {slots.map((slot, i) => (
                                 <div key={i}>
-                                  {/* Walk entry */}
+                                  {/* Walk entry - time inside the box */}
                                   {slot.isWalk && (
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="text-white/30 text-[11px] w-[32px] shrink-0 text-right">{formatTime(slot.avgHour)}</span>
-                                      <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                    <div className="px-2 py-1.5 rounded-lg bg-white/[0.06]">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-white/30 text-[11px]">{formatTime(slot.avgHour)}</span>
+                                        <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                      </div>
                                     </div>
                                   )}
                                   {/* iCal events - distinct styling */}
                                   {slot.icalEvents.map((evt, j) => (
-                                    <div key={j} className="flex items-start gap-1.5 mt-0.5">
-                                      <span className="text-white/30 text-[11px] w-[32px] shrink-0 text-right">{evt.timeStr}</span>
-                                      <div className="flex-1 min-w-0 px-1.5 py-0.5 rounded bg-white/[0.08] border-l-2 border-white/20">
-                                        <span className="text-white/60 text-[11px] leading-tight line-clamp-2">{evt.summary}</span>
+                                    <div key={j} className="mt-1">
+                                      <div className="px-2 py-1.5 rounded-lg bg-white/[0.06] border-l-2 border-white/25">
+                                        <span className="text-white/30 text-[11px]">{evt.timeStr}</span>
+                                        <div className="text-white/60 text-[11px] leading-tight mt-0.5 line-clamp-2">{evt.summary}</div>
                                       </div>
                                     </div>
                                   ))}
