@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths, format, getDay, getHours } from 'date-fns';
@@ -1104,7 +1104,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             </span>
                           </div>
                           {isToday && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#5AD940] animate-pulse" />
                           )}
                         </div>
                         
@@ -1119,32 +1119,38 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               {slots.map((slot, i) => (
                                 <div key={i}>
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
-                                  {slot.isWalk && (
+                                   {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg">
-                                      <div className="flex items-center" style={{ gap: '5vw' }}>
-                                        <span className="text-[12px] text-white/70 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
+                                      <div className="flex items-center">
+                                        <span className="text-[12px] text-white/70 shrink-0 w-[52px]">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="flex items-center gap-2 shrink-0">
                                           <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
                                           <span className="text-[12px] text-white/70 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                         </span>
                                       </div>
                                     </div>
-                                  )}
-                                  {/* iCal events */}
-                                  {slot.icalEvents.map((evt, j) => (
-                                    <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
-                                      <div className="p-2 bg-white/[0.06] rounded-lg">
-                                        <div className="flex items-start" style={{ gap: '5vw' }}>
-                                          <span className="text-[12px] text-white/70 shrink-0">{evt.timeStr} Uhr</span>
-                                          <span className="text-[12px] text-white/70">{evt.summary}</span>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
+                                   )}
+                                   {/* iCal events */}
+                                   {slot.icalEvents.map((evt, j) => (
+                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
+                                       <div className="p-2 bg-white/[0.06] rounded-lg">
+                                         <div className="flex items-start">
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[52px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
+                                         </div>
+                                       </div>
+                                     </div>
+                                   ))}
                                 </div>
                               ))}
                             </div>
                           )}
+                          {/* Add button */}
+                          <div className="flex justify-center pt-1.5 pb-0.5">
+                            <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/10 transition-colors">
+                              <Plus size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
