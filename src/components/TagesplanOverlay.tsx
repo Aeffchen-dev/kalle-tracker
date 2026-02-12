@@ -958,6 +958,46 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <Skeleton className="h-40 bg-white/10" />
                 </div>
               ) : (
+              <>
+              {/* Bis-date overlays fixed to viewport right */}
+              {(() => {
+                const cardWidth = `calc((100vw - 48px) / 2.1)`;
+                const gap = 8;
+                const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
+                let i = 0;
+                while (i < TOTAL_DAYS) {
+                  const d = new Date(rangeStart);
+                  d.setDate(d.getDate() + i);
+                  const owner = getKalleOwnerForDate(icalEvents, d);
+                  if (owner) {
+                    const startIdx = i;
+                    const startDate = new Date(d);
+                    let len = 1;
+                    for (let j = i + 1; j < TOTAL_DAYS; j++) {
+                      const nd = new Date(rangeStart);
+                      nd.setDate(nd.getDate() + j);
+                      const no = getKalleOwnerForDate(icalEvents, nd);
+                      if (no && no.person === owner.person) { len++; } else break;
+                    }
+                    const lastDay = new Date(rangeStart);
+                    lastDay.setDate(lastDay.getDate() + startIdx + len - 1);
+                    spans.push({ person: owner.person, startIdx, length: len, endDate: lastDay, startDate });
+                    i += len;
+                  } else {
+                    i++;
+                  }
+                }
+                if (spans.length === 0) return null;
+                return (
+                  <div className="relative" style={{ height: 0 }}>
+                    <div className="absolute right-0 top-0 pr-4 pointer-events-none" style={{ height: '34px', display: 'flex', flexDirection: 'column', justifyContent: 'center', zIndex: 10 }}>
+                      {spans.length > 0 && (
+                        <span className="text-[11px] text-white/40">bis {format(spans[0].endDate, 'd.M.', { locale: de })}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
               <div 
                 ref={wochenplanScrollRef}
                 className="overflow-x-auto -mx-4 scrollbar-hide"
@@ -998,20 +1038,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-black py-2 overflow-visible"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
                             <div className="relative h-full">
-                              <div className="sticky left-0 h-full flex items-center pl-4 pointer-events-none" style={{ maxWidth: 'calc(100vw - 16px)', width: '100%' }}>
+                              <div className="sticky left-0 h-full flex items-center pl-4 pointer-events-none" style={{ maxWidth: 'calc(100vw - 100px)', width: '100%' }}>
                                 <span className="text-[12px] text-white/70 flex items-center gap-1.5 shrink-0">
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
                                 </span>
-                                <span className="flex-1" />
-                                <span className="text-[11px] text-white/40 shrink-0 mr-4">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
@@ -1027,7 +1065,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     const jsDay = dayDate.getDay();
                     const isToday = idx === currentDayIndex;
                     const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                    
+
                     // Build walk slots
                     const monBasedDay = (jsDay + 6) % 7;
                     const data = avgGassiByDay.get(monBasedDay);
@@ -1161,6 +1199,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   </div>
                 </div>
               </div>
+              </>
               )}
             </div>
             
