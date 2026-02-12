@@ -407,8 +407,8 @@ const Index = () => {
       <Drawer open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60]">
           <div className="pt-4 px-4 pb-3">
-            <h2 className="text-white text-[16px] font-semibold flex items-center gap-2">
-              {weatherEmoji} <span>Wettervorhersage</span>
+            <h2 className="text-white text-[14px] font-semibold">
+              Wettervorhersage
             </h2>
           </div>
           <div className="px-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
