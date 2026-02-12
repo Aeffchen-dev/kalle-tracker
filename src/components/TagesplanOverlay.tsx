@@ -152,22 +152,31 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
   }, []);
 
-  // Compute average gassi times by day of week from app events
+  // Compute average gassi times from most recent 14 days, grouped by weekday vs weekend
   const avgGassiByDay = useMemo(() => {
-    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
-    for (let i = 0; i < 7; i++) {
-      dayMap.set(i, { pipiHours: [], stuhlgangHours: [] });
-    }
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    
+    // Collect hours for weekdays (Mon-Fri) and weekends (Sat-Sun)
+    const groups = { weekday: { pipiHours: [] as number[], stuhlgangHours: [] as number[] }, weekend: { pipiHours: [] as number[], stuhlgangHours: [] as number[] } };
     
     for (const event of appEvents) {
       if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
       const d = new Date(event.time);
-      // getDay: 0=Sun, convert to Mon=0
-      const dayIndex = (d.getDay() + 6) % 7;
+      if (d < cutoff) continue;
+      const jsDay = d.getDay(); // 0=Sun, 6=Sat
+      const isWeekend = jsDay === 0 || jsDay === 6;
+      const group = isWeekend ? groups.weekend : groups.weekday;
       const hour = d.getHours() + d.getMinutes() / 60;
-      const entry = dayMap.get(dayIndex)!;
-      if (event.type === 'pipi') entry.pipiHours.push(hour);
-      else entry.stuhlgangHours.push(hour);
+      if (event.type === 'pipi') group.pipiHours.push(hour);
+      else group.stuhlgangHours.push(hour);
+    }
+    
+    // Map each day index (Mon=0..Sun=6) to the correct group
+    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
+    for (let i = 0; i < 7; i++) {
+      const isWeekend = i >= 5; // 5=Sa, 6=So
+      dayMap.set(i, isWeekend ? groups.weekend : groups.weekday);
     }
     
     return dayMap;
@@ -828,13 +837,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       })}
                     </tr>
                     {/* Row 2: Who has Kalle */}
-                    <tr className="border-b border-white/30">
+                    <tr>
                       {(() => {
-                        // Build spans of who has Kalle across the week
-                        const startOfWeek = new Date();
-                        const currentDay = startOfWeek.getDay();
-                        const diff2 = currentDay === 0 ? -6 : 1 - currentDay;
-                        const weekStart = new Date(startOfWeek);
+                        const startOfWeek2 = new Date();
+                        const currentDay2 = startOfWeek2.getDay();
+                        const diff2 = currentDay2 === 0 ? -6 : 1 - currentDay2;
+                        const weekStart = new Date(startOfWeek2);
                         weekStart.setDate(weekStart.getDate() + diff2);
                         
                         const cells: React.ReactNode[] = [];
@@ -849,7 +857,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           const isToday = dayIndex === currentDayIndex;
                           
                           if (owner) {
-                            // Count consecutive days with same owner
                             let span = 1;
                             for (let j = dayIndex + 1; j < 7; j++) {
                               const nextDate = new Date(weekStart);
@@ -869,18 +876,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 colSpan={span}
-                                className={`p-2 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
+                                className={`px-1 py-1 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
                               >
-                                <div className="bg-white rounded-lg px-3 py-2 flex items-center justify-between">
-                                  <span className="text-black text-[12px] font-medium">{owner.person} hat Kalle</span>
-                                  <span className="text-black/50 text-[10px]">bis {endDateStr}</span>
+                                <div className="bg-white rounded-md px-2 py-1 flex items-center justify-between gap-1">
+                                  <span className="text-black text-[10px] font-medium whitespace-nowrap">🐶 {owner.person}</span>
+                                  <span className="text-black/40 text-[9px] whitespace-nowrap">bis {endDateStr}</span>
                                 </div>
                               </td>
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
-                                <span className="text-white/20 text-[12px]">–</span>
+                              <td key={dayIndex} className={`px-1 py-1 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
                               </td>
                             );
                           }
