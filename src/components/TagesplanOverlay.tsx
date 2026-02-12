@@ -888,10 +888,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 colSpan={span}
                                 className={`border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}
                               >
-                                <div className="bg-white flex items-center justify-between px-3 py-2">
-                                  <span className="text-black text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                  <span className="text-black/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
-                                </div>
+                                 <div className="flex items-center justify-between px-3 py-2">
+                                   <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
+                                   <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
+                                 </div>
                               </td>
                             );
                           } else {
