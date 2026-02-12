@@ -535,7 +535,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 flex flex-col pointer-events-auto md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
+        <div className="absolute inset-0 flex flex-col pointer-events-auto">
           {/* Header */}
           <header className="p-4 flex justify-between items-center">
             <h1 className="text-[14px] uppercase text-white">Info</h1>
@@ -545,7 +545,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
