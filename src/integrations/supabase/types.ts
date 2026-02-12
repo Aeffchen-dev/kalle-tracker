@@ -47,27 +47,6 @@ export type Database = {
         }
         Relationships: []
       }
-      planned_walks: {
-        Row: {
-          created_at: string
-          date: string
-          hour: number
-          id: string
-        }
-        Insert: {
-          created_at?: string
-          date: string
-          hour: number
-          id?: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          hour?: number
-          id?: string
-        }
-        Relationships: []
-      }
       settings: {
         Row: {
           birthday: string | null

@@ -132,9 +132,6 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
-  const [overlayBg, setOverlayBg] = useState('#3d2b1f');
-  const scrollContentRef = useRef<HTMLDivElement>(null);
-  const wochenplanSectionRef = useRef<HTMLDivElement>(null);
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
@@ -219,31 +216,19 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
 
-  // Auto-scroll removed per user request
-
-  // Fade background from brown to black on scroll
+  // Auto-scroll wochenplan to today column every time overlay becomes visible
   useEffect(() => {
-    const el = scrollContentRef.current;
-    if (!el || animationPhase !== 'visible') return;
-    const handleScroll = () => {
-      const section = wochenplanSectionRef.current;
-      if (!section) return;
-      const sectionTop = section.offsetTop;
-      const viewportH = el.clientHeight;
-      // Start fading when calendar enters viewport, fully black at 25% of calendar scrolled in
-      const fadeStart = sectionTop - viewportH;
-      const fadeEnd = sectionTop - viewportH * 0.75;
-      const progress = Math.max(0, Math.min((el.scrollTop - fadeStart) / (fadeEnd - fadeStart), 1));
-      const r = Math.round(61 * (1 - progress));
-      const g = Math.round(43 * (1 - progress));
-      const b = Math.round(31 * (1 - progress));
-      const color = `rgb(${r},${g},${b})`;
-      setOverlayBg(color);
-      document.body.style.backgroundColor = color;
-    };
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, [animationPhase]);
+    if (animationPhase !== 'visible' || !dataLoaded || currentDayIndex < 0) return;
+    const attempts = [100, 300, 600];
+    const timers = attempts.map(delay => setTimeout(() => {
+      if (todayColRef.current && wochenplanScrollRef.current) {
+        const container = wochenplanScrollRef.current;
+        const col = todayColRef.current;
+        container.scrollLeft = Math.max(0, col.offsetLeft);
+      }
+    }, delay));
+    return () => timers.forEach(clearTimeout);
+  }, [animationPhase, dataLoaded, currentDayIndex]);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -354,7 +339,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
-      setOverlayBg('#3d2b1f');
       setAnimationPhase('expanding');
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
@@ -558,7 +542,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 pointer-events-auto transition-colors duration-150" style={{ backgroundColor: overlayBg }} />
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
       )}
 
       {/* Content - only render when visible */}
@@ -573,7 +557,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div ref={scrollContentRef} className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
@@ -976,7 +960,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             })()}
 
             {/* Wochenplan Section */}
-            <div ref={wochenplanSectionRef} className="mb-0">
+            <div className="mb-0">
               <div className="mb-4">
                 <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
               </div>
@@ -990,255 +974,217 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   </div>
                 </div>
               ) : (
-              (() => {
-                const START_HOUR = 8;
-                const END_HOUR = 20;
-                const HOUR_HEIGHT = 40;
-                const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
-
-                type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string; isOwnership?: boolean };
-                const dayBlocks = new Map<number, BlockItem[]>();
-
-                for (let d = 0; d < TOTAL_DAYS; d++) {
-                  const blocks: BlockItem[] = [];
-                  const dayDate = new Date(rangeStart);
-                  dayDate.setDate(dayDate.getDate() + d);
-                  const jsDay = dayDate.getDay();
-                  const monBasedDay = (jsDay + 6) % 7;
-                  const data = avgGassiByDay.get(monBasedDay);
-
-                  if (data) {
-                    const allEvents: { hour: number; isPoop: boolean }[] = [
-                      ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                      ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                    ].sort((a, b) => a.hour - b.hour);
-
-                    const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                    for (const evt of allEvents) {
-                      const last = clusters[clusters.length - 1];
-                      if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                        last.hours.push(evt.hour);
-                        if (evt.isPoop) last.hasPoop = true;
-                      } else {
-                        clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
-                      }
-                    }
-
-                    for (const c of clusters) {
-                      const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                      const rounded = Math.round(avgHour * 2) / 2;
-                      blocks.push({
-                        startHour: rounded,
-                        endHour: rounded + 0.5,
-                        label: `${Math.floor(rounded)}:${rounded % 1 === 0.5 ? '30' : '00'}`,
-                        emoji: c.hasPoop ? '💩' : '💦',
-                        color: c.hasPoop ? 'bg-amber-900/40' : 'bg-blue-900/40',
-                      });
-                    }
-                  }
-
-                  const evts = weekIcalEvents.get(d) || [];
-                  for (const e of evts) {
-                    if (e.summary?.match(/hat\s+Kalle/i)) {
-                      // Add ownership as a full-height background block
-                      const match = e.summary.match(/(?:🐶\s*)?(\w+)\s+hat\s+Kalle/i);
-                      const person = match?.[1] || '';
-                      blocks.push({
-                        startHour: START_HOUR,
-                        endHour: END_HOUR,
-                        label: `🐶 ${person}`,
-                        emoji: '🐶',
-                        color: '',
-                        isOwnership: true,
-                      });
-                      continue;
-                    }
-                    const dtStart = new Date(e.dtstart);
-                    const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
-                    const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
-                    const endH = dtEnd.getHours() + dtEnd.getMinutes() / 60;
-                    blocks.push({
-                      startHour: startH,
-                      endHour: Math.max(endH, startH + 0.5),
-                      label: `${format(dtStart, 'HH:mm')}–${format(dtEnd, 'HH:mm')}`,
-                      emoji: '',
-                      color: '',
-                    });
-                  }
-
-                  dayBlocks.set(d, blocks);
-                }
-
-                return (
-                  <div className="flex -mx-4">
-                    {/* Fixed time axis outside the scrollable area */}
-                    <div className="flex flex-col bg-transparent pl-4" style={{ width: '52px', flexShrink: 0 }}>
-                      {/* Header spacer */}
-                      <div style={{ height: '52px' }} />
-                      {/* Ownership row spacer */}
-                      <div style={{ height: '28px' }} />
-                      {/* Time labels */}
-                      <div className="relative" style={{ height: `${totalHeight}px` }}>
-                        {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
-                          <div
-                            key={i}
-                            className="absolute text-[10px] text-white/30 text-right pr-1 leading-none"
-                            style={{ top: `${i * HOUR_HEIGHT}px`, width: '52px', transform: 'translateY(-5px)' }}
+              <div
+                ref={wochenplanScrollRef}
+                className="overflow-x-auto -mx-4 scrollbar-hide"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <div className="px-4 min-w-fit">
+                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
+                <table className="w-full text-[14px]" style={{ tableLayout: 'fixed' }}>
+                  <colgroup>
+                    {Array.from({ length: TOTAL_DAYS }, (_, i) => (
+                      <col key={i} style={{ width: '90px' }} />
+                    ))}
+                  </colgroup>
+                  <thead>
+                    {/* Row 1: Date and Day */}
+                    <tr className="border-b border-white/30">
+                      {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                        const isToday = dayIndex === currentDayIndex;
+                        const dayDate = new Date(rangeStart);
+                        dayDate.setDate(dayDate.getDate() + dayIndex);
+                        const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+                        const jsDay = dayDate.getDay();
+                        
+                        return (
+                          <th
+                            key={dayIndex}
+                            ref={isToday ? todayColRef : undefined}
+                            className="p-2 text-left border-r border-white/30 last:border-r-0"
                           >
-                            {i > 0 ? `${START_HOUR + i}:00` : ''}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Scrollable table */}
-                    <div
-                      ref={wochenplanScrollRef}
-                      className="overflow-x-auto flex-1 scrollbar-hide"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                      <div className="min-w-fit">
-                        <div className="bg-black rounded-l-[16px] overflow-hidden border border-white/30 border-r-0 inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
-                          {/* Header: Day names + dates */}
-                          <div className="flex border-b border-white/30">
-                            {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                              const isToday = dayIndex === currentDayIndex;
-                              const dayDate = new Date(rangeStart);
-                              dayDate.setDate(dayDate.getDate() + dayIndex);
-                              const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-                              const jsDay = dayDate.getDay();
-                              return (
-                                <div
-                                  key={dayIndex}
-                                  ref={isToday ? todayColRef : undefined}
-                                  className="p-2 border-r border-white/[0.08] last:border-r-0"
-                                  style={{ width: '90px', flexShrink: 0 }}
-                                >
-                                  <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
-                                  <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {/* Kalle ownership row - spanning blocks */}
-                          {(() => {
-                            const ownerCells: React.ReactNode[] = [];
-                            let skipUntil = -1;
-                            for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
-                              if (dayIndex < skipUntil) continue;
-                              const dayDate = new Date(rangeStart);
-                              dayDate.setDate(dayDate.getDate() + dayIndex);
-                              const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                              if (owner) {
-                                let span = 1;
-                                for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
-                                  const nextDate = new Date(rangeStart);
-                                  nextDate.setDate(nextDate.getDate() + j);
-                                  const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
-                                  if (nextOwner && nextOwner.person === owner.person) span++;
-                                  else break;
-                                }
-                                skipUntil = dayIndex + span;
-                                ownerCells.push(
-                                  <div key={dayIndex} className="border-r border-white/[0.08] last:border-r-0 flex items-center px-2 py-1.5 bg-white/[0.04]" style={{ width: `${span * 90}px`, flexShrink: 0 }}>
-                                    <span className="text-[10px] text-white/50 whitespace-nowrap truncate">🐶 {owner.person}</span>
-                                  </div>
-                                );
+                            <div className="text-[14px] text-white">{dayNames[jsDay]}</div>
+                            <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                    {/* Row 2: Who has Kalle */}
+                    <tr>
+                      {(() => {
+                        const cells: React.ReactNode[] = [];
+                        let skipUntil = -1;
+                        
+                        for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
+                          if (dayIndex < skipUntil) continue;
+                          
+                          const dayDate = new Date(rangeStart);
+                          dayDate.setDate(dayDate.getDate() + dayIndex);
+                          const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                          
+                          if (owner) {
+                            // Span consecutive days with same owner
+                            let span = 1;
+                            for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
+                              const nextDate = new Date(rangeStart);
+                              nextDate.setDate(nextDate.getDate() + j);
+                              const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
+                              if (nextOwner && nextOwner.person === owner.person) {
+                                span++;
                               } else {
-                                ownerCells.push(<div key={dayIndex} className="border-r border-white/[0.08] last:border-r-0" style={{ width: '90px', flexShrink: 0 }} />);
+                                break;
                               }
                             }
-                            const hasAnyOwner = ownerCells.some(c => {
-                              const props = (c as React.ReactElement)?.props;
-                              return props?.children;
-                            });
-                            if (!hasAnyOwner) return null;
-                            return (
-                              <div className="flex border-b border-white/30">
-                                {ownerCells}
-                              </div>
-                            );
-                          })()}
-
-                          {/* Timetable grid */}
-                          <div className="flex" style={{ height: `${totalHeight}px` }}>
-                            {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                              const isToday = dayIndex === currentDayIndex;
-                              const blocks = dayBlocks.get(dayIndex) || [];
-
-                              return (
-                                <div
-                                  key={dayIndex}
-                                  className="relative border-r border-white/[0.08] last:border-r-0"
-                                  style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
-                                >
-                                  {/* Hour gridlines */}
-                                  {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => {
-                                    if (i === 0) return null;
-                                    return (
-                                      <div
-                                        key={i}
-                                        className="absolute w-full border-t border-white/[0.08]"
-                                        style={{ top: `${i * HOUR_HEIGHT}px` }}
-                                      />
-                                    );
-                                  })}
-
-                                  {/* Event blocks */}
-                                  {blocks.filter(b => !b.isOwnership).map((block, i) => {
-                                    const top = Math.max((block.startHour - START_HOUR) * HOUR_HEIGHT, 0);
-                                    const height = Math.max((block.endHour - block.startHour) * HOUR_HEIGHT, 20);
-                                    const clampedTop = Math.min(top, totalHeight - 20);
-
-                                    return (
-                                      <div
-                                        key={i}
-                                        className="absolute left-1 right-1 rounded-[2px] bg-white/[0.06] border-t border-white/10 px-2 py-0.5 overflow-hidden"
-                                        style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
-                                      >
-                                        <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
-                                          {block.emoji} {block.label}
-                                        </div>
-                                        {block.emoji === '' && height >= 28 && (
-                                          <div className="text-[9px] text-white/50 leading-tight mt-0.5 line-clamp-2">
-                                            {(() => {
-                                              const evts = weekIcalEvents.get(dayIndex) || [];
-                                              const match = evts.find(e => {
-                                                if (e.summary?.match(/hat\s+Kalle/i)) return false;
-                                                const dt = new Date(e.dtstart);
-                                                return format(dt, 'HH:mm') === block.label;
-                                              });
-                                              return match?.summary || '';
-                                            })()}
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-
-                                  {/* Current time indicator for today */}
-                                  {isToday && (() => {
-                                    const nowHour = new Date().getHours() + new Date().getMinutes() / 60;
-                                    if (nowHour < START_HOUR || nowHour > END_HOUR) return null;
-                                    const top = (nowHour - START_HOUR) * HOUR_HEIGHT;
-                                    return (
-                                      <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
-                                        <div className="h-[2px] bg-[#5AD940] w-full" />
-                                        <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-[#5AD940]" />
-                                      </div>
-                                    );
-                                  })()}
+                            skipUntil = dayIndex + span;
+                            
+                            const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
+                            
+                            cells.push(
+                              <td
+                                key={dayIndex}
+                                colSpan={span}
+                                className="border-r border-white/30 last:border-r-0"
+                              >
+                                <div className="flex items-center gap-4 px-3 py-2">
+                                  <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
+                                  <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()
+                              </td>
+                            );
+                          } else {
+                            cells.push(
+                              <td key={dayIndex} className="border-r border-white/30 last:border-r-0" />
+                            );
+                          }
+                        }
+                        return cells;
+                      })()}
+                    </tr>
+                    <tr><td colSpan={TOTAL_DAYS} className="h-0 border-b border-white/30"></td></tr>
+                  </thead>
+                  <tbody>
+                    {/* Walk times with 💩 indication from event data */}
+                    {(() => {
+                      // Build walk slots per day + attach iCal events to nearest slot
+                      type ICalItem = { summary: string; timeStr: string };
+                      type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
+                      const daySlots = new Map<number, SlotItem[]>();
+                      
+                      for (let d = 0; d < TOTAL_DAYS; d++) {
+                        const dayDate = new Date(rangeStart);
+                        dayDate.setDate(dayDate.getDate() + d);
+                        const jsDay = dayDate.getDay();
+                        const monBasedDay = (jsDay + 6) % 7;
+                        const data = avgGassiByDay.get(monBasedDay);
+                        
+                        const slots: SlotItem[] = [];
+                        if (data) {
+                          const allEvents: { hour: number; isPoop: boolean }[] = [
+                            ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                            ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                          ].sort((a, b) => a.hour - b.hour);
+                          
+                          const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                          for (const evt of allEvents) {
+                            const last = clusters[clusters.length - 1];
+                            if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                              last.hours.push(evt.hour);
+                              if (evt.isPoop) last.hasPoop = true;
+                            } else {
+                              clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                            }
+                          }
+                          
+                          for (const c of clusters) {
+                            const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                            slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
+                          }
+                        }
+                        
+                        // Attach iCal events to nearest walk slot, or create standalone slot
+                        const evts = weekIcalEvents.get(d) || [];
+                        for (const e of evts) {
+                          if (e.summary?.match(/hat\s+Kalle/i)) continue;
+                          const dt = new Date(e.dtstart);
+                          const hour = dt.getHours() + dt.getMinutes() / 60;
+                          const icalItem: ICalItem = { summary: e.summary || '', timeStr: format(dt, 'HH:mm') };
+                          
+                          if (slots.length > 0) {
+                            // Find nearest slot
+                            let nearest = 0;
+                            let minDist = Math.abs(slots[0].avgHour - hour);
+                            for (let s = 1; s < slots.length; s++) {
+                              const dist = Math.abs(slots[s].avgHour - hour);
+                              if (dist < minDist) { nearest = s; minDist = dist; }
+                            }
+                            slots[nearest].icalEvents.push(icalItem);
+                          } else {
+                            // No walk slots - create a standalone entry
+                            slots.push({ avgHour: hour, hasPoop: false, isWalk: false, icalEvents: [icalItem] });
+                          }
+                        }
+                        
+                        daySlots.set(d, slots);
+                      }
+                      
+                      const maxSlots = Math.max(...Array.from(daySlots.values()).map(s => s.length), 0);
+                      
+                      if (maxSlots === 0) {
+                        return (
+                          <tr>
+                            <td colSpan={TOTAL_DAYS} className="p-4 text-center text-white/30 text-[12px]">
+                              Noch keine Gassi-Daten
+                            </td>
+                          </tr>
+                        );
+                      }
+                      
+                      const formatTime = (h: number) => {
+                        const rounded = Math.round(h * 2) / 2;
+                        const hours = Math.floor(rounded);
+                        const mins = rounded % 1 === 0.5 ? 30 : 0;
+                        return `${hours}:${mins.toString().padStart(2, '0')}`;
+                      };
+                      
+                      return Array.from({ length: maxSlots }, (_, rowIdx) => (
+                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ height: '60px' }}>
+                          {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                            const slots = daySlots.get(dayIndex) || [];
+                            const slot = slots[rowIdx];
+                            
+                            return (
+                              <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                {slot ? (
+                                  <div>
+                                    {slot.isWalk && (
+                                      <>
+                                        <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
+                                        <div className="text-white/60 text-[14px] mt-0.5">
+                                          {slot.hasPoop ? '💩' : '💦'}
+                                        </div>
+                                      </>
+                                    )}
+                                    {slot.icalEvents.map((evt, i) => (
+                                      <div key={i} className={slot.isWalk ? 'mt-1 pt-1 border-t border-white/10' : ''}>
+                                        <div className="text-white/40 text-[12px]">{evt.timeStr} Uhr</div>
+                                        <div className="text-white/70 text-[12px] mt-0.5">{evt.summary}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="text-white/15">–</div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
+                </div>
+                </div>
+              </div>
               )}
             </div>
             
