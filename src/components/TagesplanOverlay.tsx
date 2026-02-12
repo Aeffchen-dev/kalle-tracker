@@ -216,19 +216,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
 
-  // Auto-scroll wochenplan to today column every time overlay becomes visible
-  useEffect(() => {
-    if (animationPhase !== 'visible' || !dataLoaded || currentDayIndex < 0) return;
-    const attempts = [100, 300, 600];
-    const timers = attempts.map(delay => setTimeout(() => {
-      if (todayColRef.current && wochenplanScrollRef.current) {
-        const container = wochenplanScrollRef.current;
-        const col = todayColRef.current;
-        container.scrollLeft = Math.max(0, col.offsetLeft);
-      }
-    }, delay));
-    return () => timers.forEach(clearTimeout);
-  }, [animationPhase, dataLoaded, currentDayIndex]);
+  // Auto-scroll removed per user request
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -974,230 +962,235 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   </div>
                 </div>
               ) : (
-              <div
-                ref={wochenplanScrollRef}
-                className="overflow-x-auto -mx-4 scrollbar-hide"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                <div className="px-4 min-w-fit">
-                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block" style={{ minWidth: `${(TOTAL_DAYS * 90) + 44}px` }}>
-                  {/* Header: Day names + dates */}
-                  <div className="flex border-b border-white/30">
-                    <div style={{ width: '44px', flexShrink: 0 }} className="border-r border-white/30" />
-                    {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                      const isToday = dayIndex === currentDayIndex;
-                      const dayDate = new Date(rangeStart);
-                      dayDate.setDate(dayDate.getDate() + dayIndex);
-                      const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
-                      const jsDay = dayDate.getDay();
-                      return (
-                        <div
-                          key={dayIndex}
-                          ref={isToday ? todayColRef : undefined}
-                          className="p-2 border-r border-white/30 last:border-r-0"
-                          style={{ width: '90px', flexShrink: 0 }}
-                        >
-                          <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
-                          <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
+              (() => {
+                const START_HOUR = 8;
+                const END_HOUR = 20;
+                const HOUR_HEIGHT = 40;
+                const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
-                  {/* Kalle ownership row */}
-                  <div className="flex border-b border-white/30">
-                    <div style={{ width: '44px', flexShrink: 0 }} className="border-r border-white/30" />
-                    {(() => {
-                      const cells: React.ReactNode[] = [];
-                      let skipUntil = -1;
-                      for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
-                        if (dayIndex < skipUntil) continue;
-                        const dayDate = new Date(rangeStart);
-                        dayDate.setDate(dayDate.getDate() + dayIndex);
-                        const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                        if (owner) {
-                          let span = 1;
-                          for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
-                            const nextDate = new Date(rangeStart);
-                            nextDate.setDate(nextDate.getDate() + j);
-                            const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
-                            if (nextOwner && nextOwner.person === owner.person) span++;
-                            else break;
-                          }
-                          skipUntil = dayIndex + span;
-                          const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
-                          cells.push(
-                            <div key={dayIndex} className="border-r border-white/30 last:border-r-0 flex items-center gap-4 px-3 py-2" style={{ width: `${span * 90}px`, flexShrink: 0 }}>
-                              <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                              <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
-                            </div>
-                          );
-                        } else {
-                          cells.push(<div key={dayIndex} className="border-r border-white/30 last:border-r-0" style={{ width: '90px', flexShrink: 0 }} />);
-                        }
+                type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string };
+                const dayBlocks = new Map<number, BlockItem[]>();
+
+                for (let d = 0; d < TOTAL_DAYS; d++) {
+                  const blocks: BlockItem[] = [];
+                  const dayDate = new Date(rangeStart);
+                  dayDate.setDate(dayDate.getDate() + d);
+                  const jsDay = dayDate.getDay();
+                  const monBasedDay = (jsDay + 6) % 7;
+                  const data = avgGassiByDay.get(monBasedDay);
+
+                  if (data) {
+                    const allEvents: { hour: number; isPoop: boolean }[] = [
+                      ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                      ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                    ].sort((a, b) => a.hour - b.hour);
+
+                    const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                    for (const evt of allEvents) {
+                      const last = clusters[clusters.length - 1];
+                      if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                        last.hours.push(evt.hour);
+                        if (evt.isPoop) last.hasPoop = true;
+                      } else {
+                        clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
                       }
-                      return cells;
-                    })()}
-                  </div>
-
-                  {/* Timetable grid */}
-                  {(() => {
-                    const START_HOUR = 8;
-                    const END_HOUR = 20;
-                    const HOUR_HEIGHT = 40; // px per hour
-                    const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
-
-                    // Collect all events per day
-                    type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string };
-                    const dayBlocks = new Map<number, BlockItem[]>();
-
-                    for (let d = 0; d < TOTAL_DAYS; d++) {
-                      const blocks: BlockItem[] = [];
-                      const dayDate = new Date(rangeStart);
-                      dayDate.setDate(dayDate.getDate() + d);
-                      const jsDay = dayDate.getDay();
-                      const monBasedDay = (jsDay + 6) % 7;
-                      const data = avgGassiByDay.get(monBasedDay);
-
-                      if (data) {
-                        const allEvents: { hour: number; isPoop: boolean }[] = [
-                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                        ].sort((a, b) => a.hour - b.hour);
-
-                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                        for (const evt of allEvents) {
-                          const last = clusters[clusters.length - 1];
-                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                            last.hours.push(evt.hour);
-                            if (evt.isPoop) last.hasPoop = true;
-                          } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
-                          }
-                        }
-
-                        for (const c of clusters) {
-                          const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                          const rounded = Math.round(avgHour * 2) / 2;
-                          blocks.push({
-                            startHour: rounded,
-                            endHour: rounded + 0.5,
-                            label: `${Math.floor(rounded)}:${rounded % 1 === 0.5 ? '30' : '00'}`,
-                            emoji: c.hasPoop ? '💩' : '💦',
-                            color: c.hasPoop ? 'bg-amber-900/40' : 'bg-blue-900/40',
-                          });
-                        }
-                      }
-
-                      // iCal events
-                      const evts = weekIcalEvents.get(d) || [];
-                      for (const e of evts) {
-                        if (e.summary?.match(/hat\s+Kalle/i)) continue;
-                        const dtStart = new Date(e.dtstart);
-                        const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
-                        const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
-                        const endH = dtEnd.getHours() + dtEnd.getMinutes() / 60;
-                        const duration = Math.max(endH - startH, 0.5); // min 30min block
-                        blocks.push({
-                          startHour: startH,
-                          endHour: startH + duration,
-                          label: format(dtStart, 'HH:mm'),
-                          emoji: '',
-                          color: 'bg-green-900/40',
-                        });
-                      }
-
-                      dayBlocks.set(d, blocks);
                     }
 
-                    return (
-                      <div className="flex" style={{ height: `${totalHeight}px` }}>
-                        {/* Time axis */}
-                        <div className="border-r border-white/30 relative" style={{ width: '44px', flexShrink: 0 }}>
-                          {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
-                            <div
-                              key={i}
-                              className="absolute text-[10px] text-white/30 text-right pr-1.5 leading-none"
-                              style={{ top: `${i * HOUR_HEIGHT}px`, width: '44px', transform: 'translateY(-5px)' }}
-                            >
-                              {i > 0 ? `${START_HOUR + i}:00` : ''}
-                            </div>
-                          ))}
-                        </div>
+                    for (const c of clusters) {
+                      const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                      const rounded = Math.round(avgHour * 2) / 2;
+                      blocks.push({
+                        startHour: rounded,
+                        endHour: rounded + 0.5,
+                        label: `${Math.floor(rounded)}:${rounded % 1 === 0.5 ? '30' : '00'}`,
+                        emoji: c.hasPoop ? '💩' : '💦',
+                        color: c.hasPoop ? 'bg-amber-900/40' : 'bg-blue-900/40',
+                      });
+                    }
+                  }
 
-                        {/* Day columns */}
-                        {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                          const isToday = dayIndex === currentDayIndex;
-                          const blocks = dayBlocks.get(dayIndex) || [];
+                  const evts = weekIcalEvents.get(d) || [];
+                  for (const e of evts) {
+                    if (e.summary?.match(/hat\s+Kalle/i)) continue;
+                    const dtStart = new Date(e.dtstart);
+                    const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
+                    const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
+                    const endH = dtEnd.getHours() + dtEnd.getMinutes() / 60;
+                    const duration = Math.max(endH - startH, 0.5);
+                    blocks.push({
+                      startHour: startH,
+                      endHour: startH + duration,
+                      label: format(dtStart, 'HH:mm'),
+                      emoji: '',
+                      color: 'bg-green-900/40',
+                    });
+                  }
 
-                          return (
-                            <div
-                              key={dayIndex}
-                              className="relative border-r border-white/30 last:border-r-0"
-                              style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
-                            >
-                              {/* Hour gridlines */}
-                              {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
-                                <div
-                                  key={i}
-                                  className="absolute w-full border-t border-white/[0.06]"
-                                  style={{ top: `${i * HOUR_HEIGHT}px` }}
-                                />
-                              ))}
+                  dayBlocks.set(d, blocks);
+                }
 
-                              {/* Event blocks */}
-                              {blocks.map((block, i) => {
-                                const top = Math.max((block.startHour - START_HOUR) * HOUR_HEIGHT, 0);
-                                const height = Math.max((block.endHour - block.startHour) * HOUR_HEIGHT, 20);
-                                const clampedTop = Math.min(top, totalHeight - 20);
-
-                                return (
-                                  <div
-                                    key={i}
-                                    className={`absolute left-1 right-1 rounded-lg ${block.color} border border-white/15 px-2 py-0.5 overflow-hidden shadow-sm`}
-                                    style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
-                                  >
-                                    <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
-                                      {block.emoji} {block.label}
-                                    </div>
-                                    {block.emoji === '' && height >= 28 && (
-                                      <div className="text-[9px] text-white/50 leading-tight mt-0.5 line-clamp-2">
-                                        {(() => {
-                                          const evts = weekIcalEvents.get(dayIndex) || [];
-                                          const match = evts.find(e => {
-                                            if (e.summary?.match(/hat\s+Kalle/i)) return false;
-                                            const dt = new Date(e.dtstart);
-                                            return format(dt, 'HH:mm') === block.label;
-                                          });
-                                          return match?.summary || '';
-                                        })()}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
-
-                              {/* Current time indicator for today */}
-                              {isToday && (() => {
-                                const nowHour = new Date().getHours() + new Date().getMinutes() / 60;
-                                if (nowHour < START_HOUR || nowHour > END_HOUR) return null;
-                                const top = (nowHour - START_HOUR) * HOUR_HEIGHT;
-                                return (
-                                  <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
-                                    <div className="h-[2px] bg-[#5AD940] w-full" />
-                                    <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-[#5AD940]" />
-                                  </div>
-                                );
-                              })()}
-                            </div>
-                          );
-                        })}
+                return (
+                  <div className="flex">
+                    {/* Fixed time axis outside the scrollable area */}
+                    <div className="flex flex-col" style={{ width: '36px', flexShrink: 0 }}>
+                      {/* Header spacer */}
+                      <div style={{ height: '52px' }} />
+                      {/* Ownership row spacer */}
+                      <div style={{ height: '36px' }} />
+                      {/* Time labels */}
+                      <div className="relative" style={{ height: `${totalHeight}px` }}>
+                        {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
+                          <div
+                            key={i}
+                            className="absolute text-[10px] text-white/30 text-right pr-1 leading-none"
+                            style={{ top: `${i * HOUR_HEIGHT}px`, width: '36px', transform: 'translateY(-5px)' }}
+                          >
+                            {i > 0 ? `${START_HOUR + i}:00` : ''}
+                          </div>
+                        ))}
                       </div>
-                    );
-                  })()}
-                </div>
-                </div>
-              </div>
+                    </div>
+
+                    {/* Scrollable table */}
+                    <div
+                      ref={wochenplanScrollRef}
+                      className="overflow-x-auto flex-1 scrollbar-hide"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      <div className="min-w-fit">
+                        <div className="bg-black rounded-[16px] overflow-hidden border border-white/30 inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
+                          {/* Header: Day names + dates */}
+                          <div className="flex border-b border-white/30">
+                            {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                              const isToday = dayIndex === currentDayIndex;
+                              const dayDate = new Date(rangeStart);
+                              dayDate.setDate(dayDate.getDate() + dayIndex);
+                              const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+                              const jsDay = dayDate.getDay();
+                              return (
+                                <div
+                                  key={dayIndex}
+                                  ref={isToday ? todayColRef : undefined}
+                                  className="p-2 border-r border-white/30 last:border-r-0"
+                                  style={{ width: '90px', flexShrink: 0 }}
+                                >
+                                  <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
+                                  <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Kalle ownership row */}
+                          <div className="flex border-b border-white/30">
+                            {(() => {
+                              const cells: React.ReactNode[] = [];
+                              let skipUntil = -1;
+                              for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
+                                if (dayIndex < skipUntil) continue;
+                                const dayDate = new Date(rangeStart);
+                                dayDate.setDate(dayDate.getDate() + dayIndex);
+                                const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                                if (owner) {
+                                  let span = 1;
+                                  for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
+                                    const nextDate = new Date(rangeStart);
+                                    nextDate.setDate(nextDate.getDate() + j);
+                                    const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
+                                    if (nextOwner && nextOwner.person === owner.person) span++;
+                                    else break;
+                                  }
+                                  skipUntil = dayIndex + span;
+                                  const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
+                                  cells.push(
+                                    <div key={dayIndex} className="border-r border-white/30 last:border-r-0 flex items-center gap-4 px-3 py-2" style={{ width: `${span * 90}px`, flexShrink: 0 }}>
+                                      <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
+                                      <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
+                                    </div>
+                                  );
+                                } else {
+                                  cells.push(<div key={dayIndex} className="border-r border-white/30 last:border-r-0" style={{ width: '90px', flexShrink: 0 }} />);
+                                }
+                              }
+                              return cells;
+                            })()}
+                          </div>
+
+                          {/* Timetable grid */}
+                          <div className="flex" style={{ height: `${totalHeight}px` }}>
+                            {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                              const isToday = dayIndex === currentDayIndex;
+                              const blocks = dayBlocks.get(dayIndex) || [];
+
+                              return (
+                                <div
+                                  key={dayIndex}
+                                  className="relative border-r border-white/30 last:border-r-0"
+                                  style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
+                                >
+                                  {/* Hour gridlines */}
+                                  {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
+                                    <div
+                                      key={i}
+                                      className="absolute w-full border-t border-white/[0.06]"
+                                      style={{ top: `${i * HOUR_HEIGHT}px` }}
+                                    />
+                                  ))}
+
+                                  {/* Event blocks */}
+                                  {blocks.map((block, i) => {
+                                    const top = Math.max((block.startHour - START_HOUR) * HOUR_HEIGHT, 0);
+                                    const height = Math.max((block.endHour - block.startHour) * HOUR_HEIGHT, 20);
+                                    const clampedTop = Math.min(top, totalHeight - 20);
+
+                                    return (
+                                      <div
+                                        key={i}
+                                        className={`absolute left-1 right-1 rounded-lg ${block.color} border border-white/15 px-2 py-0.5 overflow-hidden shadow-sm`}
+                                        style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
+                                      >
+                                        <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
+                                          {block.emoji} {block.label}
+                                        </div>
+                                        {block.emoji === '' && height >= 28 && (
+                                          <div className="text-[9px] text-white/50 leading-tight mt-0.5 line-clamp-2">
+                                            {(() => {
+                                              const evts = weekIcalEvents.get(dayIndex) || [];
+                                              const match = evts.find(e => {
+                                                if (e.summary?.match(/hat\s+Kalle/i)) return false;
+                                                const dt = new Date(e.dtstart);
+                                                return format(dt, 'HH:mm') === block.label;
+                                              });
+                                              return match?.summary || '';
+                                            })()}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+
+                                  {/* Current time indicator for today */}
+                                  {isToday && (() => {
+                                    const nowHour = new Date().getHours() + new Date().getMinutes() / 60;
+                                    if (nowHour < START_HOUR || nowHour > END_HOUR) return null;
+                                    const top = (nowHour - START_HOUR) * HOUR_HEIGHT;
+                                    return (
+                                      <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
+                                        <div className="h-[2px] bg-[#5AD940] w-full" />
+                                        <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-[#5AD940]" />
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()
               )}
             </div>
             
