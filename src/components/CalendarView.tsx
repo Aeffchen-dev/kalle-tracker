@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { getSettings } from '@/lib/settings';
+import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 
 type SnapPoint = number | string;
 
@@ -30,6 +31,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
+  const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -82,6 +84,8 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
       }
     });
+    // Load iCal events
+    fetchICalEvents().then(setIcalEvents).catch(console.error);
   }, []);
 
   // Scroll to top when switching views
@@ -228,6 +232,11 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     const eventDate = new Date(event.time);
     return isSameDay(eventDate, selectedDate);
   }).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+
+  const filteredIcalEvents = useMemo(() => {
+    return getICalEventsForDate(icalEvents, selectedDate)
+      .sort((a, b) => new Date(a.dtstart).getTime() - new Date(b.dtstart).getTime());
+  }, [icalEvents, selectedDate]);
 
   // Check if content is scrollable
   useEffect(() => {
@@ -427,7 +436,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
             >
-              {filteredEvents.length === 0 && !isBirthdayToday ? (
+              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.length === 0 ? (
                 <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
@@ -444,6 +453,22 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       </span>
                     </div>
                   )}
+                  {/* iCal calendar events */}
+                  {filteredIcalEvents.map((evt, i) => {
+                    const time = new Date(evt.dtstart);
+                    const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+                    return (
+                      <div key={`ical-${i}`} className="flex items-center justify-between p-3 bg-[#60A5FA]/10 rounded-lg">
+                        <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
+                          <span className="shrink-0">📅</span>
+                          <span className="truncate">{evt.summary}</span>
+                        </span>
+                        <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                          {timeStr} Uhr
+                        </span>
+                      </div>
+                    );
+                  })}
                   {filteredEvents.map((event) => {
                     const isActive = activeEventId === event.id;
                     return (

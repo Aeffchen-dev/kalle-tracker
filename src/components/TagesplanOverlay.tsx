@@ -1,9 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
-import { differenceInMonths } from 'date-fns';
+import { differenceInMonths, format, getDay, getHours } from 'date-fns';
+import { de } from 'date-fns/locale';
 import { getCachedSettings } from '@/lib/settings';
+import { getEvents, Event as AppEvent } from '@/lib/events';
+import { fetchICalEvents, getICalEventsForWeek, ICalEvent } from '@/lib/ical';
 
 interface Ingredient {
   quantity: string;
@@ -34,7 +37,6 @@ const mealsData: MealData[] = [
 interface ScheduleCell {
   time: string;
   activity: string;
-  person?: 'niklas' | 'jana';
 }
 
 interface DaySchedule {
@@ -48,77 +50,77 @@ const weekSchedule: DaySchedule[] = [
     day: 'Mo',
     type: 'Aktion Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training', person: 'niklas' },
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
       { time: '19-21 Uhr', activity: 'Hundeplatz + Essen' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'jana' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'Di',
     type: 'Ruhe Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training', person: 'jana' },
-      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen', person: 'niklas' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'niklas' },
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'Mi',
     type: 'Aktion Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Joggen + Essen', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
-      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training', person: 'niklas' },
-      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen', person: 'jana' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'jana' },
+      { time: '8-9 Uhr', activity: 'Joggen + Essen' },
+      { time: '13 Uhr', activity: 'Essen + Pipi' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'Do',
     type: 'Aktion Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training', person: 'niklas' },
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
       { time: '18-20 Uhr', activity: 'Hundeplatz + Essen' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'jana' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'Fr',
     type: 'Ruhe Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '15-16 Uhr', activity: 'Ruhe Training', person: 'niklas' },
-      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen', person: 'jana' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'jana' },
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + große Runde' },
+      { time: '15-16 Uhr', activity: 'Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'Sa',
     type: 'Aktion Tag',
     slots: [
-      { time: '7-9 Uhr', activity: 'Joggen im Wald + Essen', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
-      { time: '15-16 Uhr', activity: 'Hundeplatz oder Ausflug', person: 'niklas' },
-      { time: '18-20 Uhr', activity: 'Hundeplatz', person: 'niklas' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'niklas' },
+      { time: '7-9 Uhr', activity: 'Joggen im Wald + Essen' },
+      { time: '13 Uhr', activity: 'Essen + Pipi' },
+      { time: '15-16 Uhr', activity: 'Hundeplatz oder Ausflug' },
+      { time: '18-20 Uhr', activity: 'Hundeplatz' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
   {
     day: 'So',
     type: 'Chill Tag',
     slots: [
-      { time: '8-9 Uhr', activity: 'Essen + große Runde', person: 'niklas' },
-      { time: '13 Uhr', activity: 'Essen + Pipi', person: 'jana' },
-      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training', person: 'jana' },
-      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen', person: 'jana' },
-      { time: '23 Uhr', activity: 'Pipi', person: 'jana' },
+      { time: '8-9 Uhr', activity: 'Essen + große Runde' },
+      { time: '13 Uhr', activity: 'Essen + Pipi' },
+      { time: '15-16 Uhr', activity: 'Pipi + Ruhe Training' },
+      { time: '18-20 Uhr', activity: 'Essen Spaziergang + Spielen' },
+      { time: '23 Uhr', activity: 'Pipi' },
     ],
   },
 ];
@@ -141,6 +143,44 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [addressCopied, setAddressCopied] = useState(false);
   const isReceivingRealtimeUpdate = useRef(false);
   const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
+  const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
+  const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
+
+  // Load iCal events and app events
+  useEffect(() => {
+    fetchICalEvents().then(setIcalEvents).catch(console.error);
+    getEvents().then(result => setAppEvents(result.events)).catch(console.error);
+  }, []);
+
+  // Compute average gassi times by day of week from app events
+  const avgGassiByDay = useMemo(() => {
+    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
+    for (let i = 0; i < 7; i++) {
+      dayMap.set(i, { pipiHours: [], stuhlgangHours: [] });
+    }
+    
+    for (const event of appEvents) {
+      if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
+      const d = new Date(event.time);
+      // getDay: 0=Sun, convert to Mon=0
+      const dayIndex = (d.getDay() + 6) % 7;
+      const hour = d.getHours() + d.getMinutes() / 60;
+      const entry = dayMap.get(dayIndex)!;
+      if (event.type === 'pipi') entry.pipiHours.push(hour);
+      else entry.stuhlgangHours.push(hour);
+    }
+    
+    return dayMap;
+  }, [appEvents]);
+
+  // Get iCal events for current week
+  const weekIcalEvents = useMemo(() => {
+    return getICalEventsForWeek(icalEvents, new Date());
+  }, [icalEvents]);
+
+  // Current day index (Mon=0)
+  const currentDayIndex = useMemo(() => (new Date().getDay() + 6) % 7, []);
+  const currentHour = useMemo(() => new Date().getHours(), []);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -350,26 +390,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     }
   };
 
-  const togglePerson = (dayIndex: number, slotIndex: number) => {
-    setHasLocalChanges(true);
-    setSchedule(prev => {
-      if (!prev) return prev;
-      const newSchedule = [...prev];
-      const currentPerson = newSchedule[dayIndex].slots[slotIndex]?.person;
-      let nextPerson: 'niklas' | 'jana' | undefined;
-      if (currentPerson === 'niklas') nextPerson = 'jana';
-      else if (currentPerson === 'jana') nextPerson = undefined;
-      else nextPerson = 'niklas';
-      
-      newSchedule[dayIndex] = {
-        ...newSchedule[dayIndex],
-        slots: newSchedule[dayIndex].slots.map((slot, i) =>
-          i === slotIndex ? { ...slot, person: nextPerson } : slot
-        ),
-      };
-      return newSchedule;
-    });
-  };
 
   const handleClose = () => {
     // Start animation immediately
@@ -754,14 +774,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
               
               {/* Legend */}
-              <div className="flex gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-blue-400">💙</span>
-                  <span className="text-[14px] text-white/60">= Niklas</span>
+              <div className="flex gap-4 mb-4 flex-wrap">
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#5AD940]" />
+                  <span className="text-[12px] text-white/60">Ø Pipi</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-pink-400">💗</span>
-                  <span className="text-[14px] text-white/60">= Jana</span>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#D97706]" />
+                  <span className="text-[12px] text-white/60">Ø Stuhlgang</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-[#60A5FA]" />
+                  <span className="text-[12px] text-white/60">Kalender</span>
                 </div>
               </div>
 
@@ -788,12 +812,15 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <table className="w-full text-[12px]">
                   <thead>
                     <tr className="border-b border-white/30">
-                      {schedule && schedule.map((day, index) => (
-                        <th key={index} className="p-2 text-left border-r border-white/30 last:border-r-0">
-                          <div className="text-white">{day.day}</div>
-                          <div className="text-white/60 font-normal">{day.type}</div>
-                        </th>
-                      ))}
+                      {schedule && schedule.map((day, index) => {
+                        const isToday = index === currentDayIndex;
+                        return (
+                          <th key={index} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
+                            <div className={`${isToday ? 'text-[#5AD940]' : 'text-white'}`}>{day.day}</div>
+                            <div className="text-white/60 font-normal">{day.type}</div>
+                          </th>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -801,66 +828,61 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <tr key={slotIndex} className="border-b border-white/30 last:border-b-0">
                         {schedule.map((day, dayIndex) => {
                           const slot = day.slots[slotIndex];
+                          const isToday = dayIndex === currentDayIndex;
                           const isEditingTime = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'time';
                           const isEditingActivity = editingCell?.dayIndex === dayIndex && editingCell?.slotIndex === slotIndex && editingCell?.field === 'activity';
+                          
+                          // Parse slot time to check if current time marker should show
+                          const slotHour = slot ? parseInt(slot.time) : 0;
+                          const isCurrentSlot = isToday && slotIndex < (schedule?.[dayIndex]?.slots?.length || 0) - 1 
+                            && currentHour >= slotHour 
+                            && currentHour < (day.slots[slotIndex + 1] ? parseInt(day.slots[slotIndex + 1].time) : 24);
+
                           return (
                             <td
                               key={dayIndex}
-                              className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                slot?.person === 'niklas'
-                                  ? 'bg-blue-500/20'
-                                  : slot?.person === 'jana'
-                                  ? 'bg-pink-500/20'
-                                  : ''
-                              }`}
+                              className={`p-2 border-r border-white/30 last:border-r-0 align-top relative ${
+                                isToday ? 'bg-white/[0.04]' : ''
+                              } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
                             >
                               {slot && (
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => togglePerson(dayIndex, slotIndex)}
-                                    className="w-5 h-5 flex-shrink-0 rounded flex items-center justify-center text-[10px] border border-white/30 hover:border-white/50 transition-colors"
-                                    title="Person wechseln"
-                                  >
-                                    {slot.person === 'niklas' ? '💙' : slot.person === 'jana' ? '💗' : '○'}
-                                  </button>
-                                  <div className="flex-1 min-w-0">
-                                    {isEditingTime ? (
-                                      <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={slot.time}
-                                        onChange={(e) => handleCellChange(e.target.value)}
-                                        onBlur={handleCellBlur}
-                                        onKeyDown={handleKeyDown}
-                                        className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
-                                      />
-                                    ) : (
-                                      <div
-                                        className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
-                                        onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
-                                      >
-                                        {slot.time}
-                                      </div>
-                                    )}
-                                    {isEditingActivity ? (
-                                      <input
-                                        ref={inputRef}
-                                        type="text"
-                                        value={slot.activity}
-                                        onChange={(e) => handleCellChange(e.target.value)}
-                                        onBlur={handleCellBlur}
-                                        onKeyDown={handleKeyDown}
-                                        className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
-                                      />
-                                    ) : (
-                                      <div
-                                        className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
-                                        onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
-                                      >
-                                        {slot.activity}
-                                      </div>
-                                    )}
-                                  </div>
+                                <div className="flex-1 min-w-0">
+                                  {isEditingTime ? (
+                                    <input
+                                      ref={inputRef}
+                                      type="text"
+                                      value={slot.time}
+                                      onChange={(e) => handleCellChange(e.target.value)}
+                                      onBlur={handleCellBlur}
+                                      onKeyDown={handleKeyDown}
+                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'time')}
+                                    >
+                                      {slot.time}
+                                    </div>
+                                  )}
+                                  {isEditingActivity ? (
+                                    <input
+                                      ref={inputRef}
+                                      type="text"
+                                      value={slot.activity}
+                                      onChange={(e) => handleCellChange(e.target.value)}
+                                      onBlur={handleCellBlur}
+                                      onKeyDown={handleKeyDown}
+                                      className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-1"
+                                    />
+                                  ) : (
+                                    <div
+                                      className="text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                      onClick={() => handleCellClick(dayIndex, slotIndex, 'activity')}
+                                    >
+                                      {slot.activity}
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </td>
@@ -868,6 +890,73 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         })}
                       </tr>
                     ))}
+                    {/* Average gassi times row */}
+                    <tr className="border-t border-white/30">
+                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                        const data = avgGassiByDay.get(dayIndex);
+                        const pipiCount = data?.pipiHours.length || 0;
+                        const stuhlgangCount = data?.stuhlgangHours.length || 0;
+                        const avgPipiHour = pipiCount > 0 ? data!.pipiHours.reduce((a, b) => a + b, 0) / pipiCount : null;
+                        const avgStuhlgangHour = stuhlgangCount > 0 ? data!.stuhlgangHours.reduce((a, b) => a + b, 0) / stuhlgangCount : null;
+                        const isToday = dayIndex === currentDayIndex;
+                        
+                        const formatHour = (h: number) => {
+                          const hours = Math.floor(h);
+                          const mins = Math.round((h - hours) * 60);
+                          return `${hours}:${mins.toString().padStart(2, '0')}`;
+                        };
+                        
+                        return (
+                          <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top text-[10px] ${isToday ? 'bg-white/[0.04]' : ''}`}>
+                            {avgPipiHour !== null && (
+                              <div className="flex items-center gap-1 mb-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#5AD940] flex-shrink-0" />
+                                <span className="text-white/40">Ø {formatHour(avgPipiHour)}</span>
+                              </div>
+                            )}
+                            {avgStuhlgangHour !== null && (
+                              <div className="flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] flex-shrink-0" />
+                                <span className="text-white/40">Ø {formatHour(avgStuhlgangHour)} 💩</span>
+                              </div>
+                            )}
+                            {pipiCount === 0 && stuhlgangCount === 0 && (
+                              <span className="text-white/20">–</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                    {/* iCal events row */}
+                    <tr className="border-t border-white/30">
+                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                        const dayIcalEvents = weekIcalEvents.get(dayIndex) || [];
+                        const isToday = dayIndex === currentDayIndex;
+                        return (
+                          <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top text-[10px] ${isToday ? 'bg-white/[0.04]' : ''}`}>
+                            {dayIcalEvents.length > 0 ? (
+                              <div className="space-y-1">
+                                {dayIcalEvents.map((evt, i) => {
+                                  const time = new Date(evt.dtstart);
+                                  const timeStr = `${time.getHours()}:${time.getMinutes().toString().padStart(2, '0')}`;
+                                  return (
+                                    <div key={i} className="flex items-start gap-1">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-[#60A5FA] flex-shrink-0 mt-0.5" />
+                                      <div>
+                                        <div className="text-white/50">{timeStr}</div>
+                                        <div className="text-white/70 leading-tight">{evt.summary}</div>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <span className="text-white/20">–</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
                   </tbody>
                 </table>
                 </div>
