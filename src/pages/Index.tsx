@@ -284,26 +284,26 @@ const Index = () => {
       
 
       {/* Header */}
-      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[3vw] md:pt-[2vw] md:pb-[2vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-start gap-2 md:gap-[1vw]">
+      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[3vw] md:pt-[2vw] md:pb-[2vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="flex items-start gap-2 md:gap-[1vw] lg:gap-[0.7vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-[14px] md:text-[3vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] cursor-pointer mt-2 md:mt-[1vw]"
+            className="text-[14px] md:text-[3vw] lg:text-[2vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[1vw] lg:mt-[0.7vw]"
           >
-            <span className="flex items-center gap-2 md:gap-[1vw]">🐶 <span>Kalle</span></span>
+            <span className="flex items-center gap-2 md:gap-[1vw] lg:gap-[0.7vw]">🐶 <span>Kalle</span></span>
           </button>
           {weatherTemp !== null && (
             <button 
               onClick={() => setShowWeather(true)}
-              className="text-[14px] md:text-[3vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] cursor-pointer mt-2 md:mt-[1vw]"
+              className="text-[14px] md:text-[3vw] lg:text-[2vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[1vw] lg:mt-[0.7vw]"
             >
-              <span className="flex items-center gap-2 md:gap-[1vw]">{weatherEmoji} <span>{weatherTemp}°</span></span>
+              <span className="flex items-center gap-2 md:gap-[1vw] lg:gap-[0.7vw]">{weatherEmoji} <span>{weatherTemp}°</span></span>
             </button>
           )}
         </div>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] md:text-[3vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] cursor-pointer mt-2 md:mt-[1vw]"
+          className="text-[14px] md:text-[3vw] lg:text-[2vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.8vw] md:px-[2vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[1vw] lg:mt-[0.7vw]"
         >
           Info
         </button>
