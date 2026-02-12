@@ -964,9 +964,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <div className="px-4" style={{ width: 'max-content' }}>
-                  {/* Sticky ownership bar */}
+                  {/* Ownership spans row */}
                   {(() => {
-                    const spans: { person: string; startIdx: number; length: number; endDate: Date }[] = [];
+                    const cardWidth = `calc((100vw - 48px) / 2.1)`;
+                    const gap = 8;
+                    const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
                     let i = 0;
                     while (i < TOTAL_DAYS) {
                       const d = new Date(rangeStart);
@@ -974,6 +976,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       const owner = getKalleOwnerForDate(icalEvents, d);
                       if (owner) {
                         const startIdx = i;
+                        const startDate = new Date(d);
                         let len = 1;
                         for (let j = i + 1; j < TOTAL_DAYS; j++) {
                           const nd = new Date(rangeStart);
@@ -983,24 +986,33 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         }
                         const lastDay = new Date(rangeStart);
                         lastDay.setDate(lastDay.getDate() + startIdx + len - 1);
-                        spans.push({ person: owner.person, startIdx, length: len, endDate: lastDay });
+                        spans.push({ person: owner.person, startIdx, length: len, endDate: lastDay, startDate });
                         i += len;
                       } else {
                         i++;
                       }
                     }
                     if (spans.length === 0) return null;
-                    const currentSpan = spans.find(s => currentDayIndex >= s.startIdx && currentDayIndex < s.startIdx + s.length) || spans[0];
-                    if (!currentSpan) return null;
                     return (
-                      <div className="sticky left-0 z-10 mb-2">
-                        <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg" style={{ width: 'calc((100vw - 48px) / 2.1)' }}>
-                          <span className="text-[12px] text-white flex items-center gap-1.5">
-                            <span className="text-white/40 shrink-0">bis {format(currentSpan.endDate, 'd.M.', { locale: de })}</span>
-                            <span className="text-white/60">{currentSpan.person} hat Kalle</span>
-                          </span>
-                          <span className="shrink-0">🐶</span>
-                        </div>
+                      <div className="relative mb-2" style={{ height: '28px' }}>
+                        {spans.map((span, si) => (
+                          <div
+                            key={si}
+                            className="absolute top-0 h-full rounded-lg bg-white/[0.06] flex items-center justify-between px-2"
+                            style={{
+                              left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
+                              width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
+                            }}
+                          >
+                            <span className="text-[12px] text-white flex items-center gap-1.5">
+                              <span className="text-white/40 shrink-0">
+                                {format(span.startDate, 'd.M.', { locale: de })} – {format(span.endDate, 'd.M.', { locale: de })}
+                              </span>
+                              <span className="text-white/60">{span.person} hat Kalle</span>
+                            </span>
+                            <span className="shrink-0">🐶</span>
+                          </div>
+                        ))}
                       </div>
                     );
                   })()}
