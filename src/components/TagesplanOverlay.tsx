@@ -998,7 +998,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2 overflow-visible"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
@@ -1010,9 +1010,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
                                 </span>
-                              </div>
-                              <div className="sticky right-0 h-full flex items-center justify-end pr-4 pointer-events-none" style={{ position: 'sticky', right: 0, marginTop: '-100%' }}>
-                                <span className="text-[11px] text-white/40 shrink-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                                <span className="flex-1" />
+                                <span className="text-[11px] text-white/40 shrink-0 mr-4">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
