@@ -1065,42 +1065,58 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <tbody>
                     {/* Walk times with 💩 indication from event data */}
                     {(() => {
-                      const daySlots = new Map<number, { avgHour: number; hasPoop: boolean }[]>();
+                      // Build unified cell items per day: walk slots + iCal events, sorted by time
+                      type CellItem = { hour: number; type: 'walk'; hasPoop: boolean } | { hour: number; type: 'ical'; summary: string; timeStr: string };
+                      const dayCellItems = new Map<number, CellItem[]>();
                       
                       for (let d = 0; d < TOTAL_DAYS; d++) {
-                        // Map each day to its weekday index (Mon=0..Sun=6) for avg data
+                        const items: CellItem[] = [];
+                        
+                        // Add walk slots
                         const dayDate = new Date(rangeStart);
                         dayDate.setDate(dayDate.getDate() + d);
-                        const jsDay = dayDate.getDay(); // 0=Sun
-                        const monBasedDay = (jsDay + 6) % 7; // Mon=0..Sun=6
+                        const jsDay = dayDate.getDay();
+                        const monBasedDay = (jsDay + 6) % 7;
                         const data = avgGassiByDay.get(monBasedDay);
-                        if (!data) { daySlots.set(d, []); continue; }
-                        
-                        const allEvents: { hour: number; isPoop: boolean }[] = [
-                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                        ].sort((a, b) => a.hour - b.hour);
-                        
-                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                        for (const evt of allEvents) {
-                          const last = clusters[clusters.length - 1];
-                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                            last.hours.push(evt.hour);
-                            if (evt.isPoop) last.hasPoop = true;
-                          } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                        if (data) {
+                          const allEvents: { hour: number; isPoop: boolean }[] = [
+                            ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                            ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                          ].sort((a, b) => a.hour - b.hour);
+                          
+                          const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                          for (const evt of allEvents) {
+                            const last = clusters[clusters.length - 1];
+                            if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                              last.hours.push(evt.hour);
+                              if (evt.isPoop) last.hasPoop = true;
+                            } else {
+                              clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                            }
+                          }
+                          
+                          for (const c of clusters) {
+                            const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                            items.push({ hour: avgHour, type: 'walk', hasPoop: c.hasPoop });
                           }
                         }
                         
-                        daySlots.set(d, clusters.map(c => ({
-                          avgHour: c.hours.reduce((a, b) => a + b, 0) / c.hours.length,
-                          hasPoop: c.hasPoop,
-                        })));
+                        // Add iCal events (excluding "hat Kalle")
+                        const evts = weekIcalEvents.get(d) || [];
+                        for (const e of evts) {
+                          if (e.summary?.match(/hat\s+Kalle/i)) continue;
+                          const dt = new Date(e.dtstart);
+                          const hour = dt.getHours() + dt.getMinutes() / 60;
+                          items.push({ hour, type: 'ical', summary: e.summary || '', timeStr: format(dt, 'HH:mm') });
+                        }
+                        
+                        items.sort((a, b) => a.hour - b.hour);
+                        dayCellItems.set(d, items);
                       }
                       
-                      const maxSlots = Math.max(...Array.from(daySlots.values()).map(s => s.length), 0);
+                      const maxItems = Math.max(...Array.from(dayCellItems.values()).map(s => s.length), 0);
                       
-                      if (maxSlots === 0) {
+                      if (maxItems === 0) {
                         return (
                           <tr>
                             <td colSpan={TOTAL_DAYS} className="p-4 text-center text-white/30 text-[12px]">
@@ -1117,46 +1133,29 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         return `${hours}:${mins.toString().padStart(2, '0')}`;
                       };
                       
-                      // Collect iCal events per day (excluding "hat Kalle")
-                      const dayIcalEvents = new Map<number, { summary: string; time: string }[]>();
-                      for (let d = 0; d < TOTAL_DAYS; d++) {
-                        const evts = weekIcalEvents.get(d) || [];
-                        dayIcalEvents.set(d, evts
-                          .filter(e => !e.summary?.match(/hat\s+Kalle/i))
-                          .map(e => ({
-                            summary: e.summary || '',
-                            time: format(new Date(e.dtstart), 'HH:mm'),
-                          }))
-                          .sort((a, b) => a.time.localeCompare(b.time))
-                        );
-                      }
-                      
-                      return Array.from({ length: maxSlots }, (_, rowIdx) => (
+                      return Array.from({ length: maxItems }, (_, rowIdx) => (
                         <tr key={rowIdx} className="border-b border-white/30 last:border-b-0">
                           {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                            const slots = daySlots.get(dayIndex) || [];
-                            const slot = slots[rowIdx];
-                            // Show iCal events below the last walk slot (or in first row if no walks)
-                            const isLastSlotRow = rowIdx === Math.max(slots.length - 1, 0);
-                            const icalEvts = isLastSlotRow ? (dayIcalEvents.get(dayIndex) || []) : [];
+                            const items = dayCellItems.get(dayIndex) || [];
+                            const item = items[rowIdx];
                             
                             return (
                               <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                {slot ? (
-                                  <div>
-                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
-                                    <div className="text-white/60 text-[14px] mt-0.5">
-                                      {slot.hasPoop ? '💩' : '💦'}
+                                {item ? (
+                                  item.type === 'walk' ? (
+                                    <div>
+                                      <div className="text-white/50 text-[14px]">{formatTime(item.hour)} Uhr</div>
+                                      <div className="text-white/60 text-[14px] mt-0.5">
+                                        {item.hasPoop ? '💩' : '💦'}
+                                      </div>
                                     </div>
-                                  </div>
-                                ) : null}
-                                {icalEvts.map((evt, i) => (
-                                  <div key={i} className={slot ? 'mt-2 pt-2 border-t border-white/10' : ''}>
-                                    <div className="text-white/40 text-[14px]">{evt.time} Uhr</div>
-                                    <div className="text-white/70 text-[14px] mt-0.5">{evt.summary}</div>
-                                  </div>
-                                ))}
-                                {!slot && icalEvts.length === 0 && (
+                                  ) : (
+                                    <div>
+                                      <div className="text-white/40 text-[14px]">📅 {item.timeStr} Uhr</div>
+                                      <div className="text-white/70 text-[14px] mt-0.5 truncate">{item.summary}</div>
+                                    </div>
+                                  )
+                                ) : (
                                   <div className="text-white/15">–</div>
                                 )}
                               </td>
