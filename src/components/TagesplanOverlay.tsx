@@ -1096,7 +1096,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
-                            <span className={`text-[13px] font-medium ${isToday ? 'text-white' : 'text-white/70'}`}>
+                            <span className={`text-[13px] font-medium ${isToday ? 'text-white/50' : 'text-white/70'}`}>
                               {isToday ? 'Heute' : dayAbbr[jsDay]}
                             </span>
                             <span className="text-white/35 text-[12px]">
@@ -1122,8 +1122,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {slot.isWalk && (
                                     <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
                                       <span className="text-[12px] text-white flex items-center gap-1.5">
-                                        <span className="text-white/40 shrink-0">{formatTime(slot.avgHour)}</span>
-                                        <span className="text-white/60">Gassi</span>
+                                        <span className="text-white/40 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
                                       </span>
                                       <span className="shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
                                     </div>
@@ -1133,8 +1132,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                       <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
                                         <span className="text-[12px] text-white flex items-center gap-1.5 truncate mr-2">
-                                          <span className="text-white/40 shrink-0">{evt.timeStr}</span>
-                                          <span className="text-white/60 truncate">{evt.summary}</span>
+                                          <span className="text-white/40 shrink-0">{evt.timeStr} Uhr</span>
+                                          <span className="text-white truncate">{evt.summary}</span>
                                         </span>
                                         <span className="shrink-0">📅</span>
                                       </div>
