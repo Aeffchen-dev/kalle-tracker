@@ -998,17 +998,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-lg bg-black flex items-center justify-between p-2"
+                            className="absolute top-0 h-full rounded-lg bg-black flex items-center justify-between px-3.5 py-2 overflow-hidden"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
-                            <span className="text-[12px] text-white flex items-center gap-1.5">
+                            <span className="text-[12px] text-white flex items-center gap-1.5 sticky left-3.5 shrink-0">
                               <span className="shrink-0">🐶</span>
-                              <span className="text-white/60">{span.person} hat Kalle</span>
+                              <span className="text-white">{span.person} hat Kalle</span>
                             </span>
-                            <span className="text-[11px] text-white/40 shrink-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                            <span className="text-[11px] text-white/40 shrink-0 sticky right-3.5">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                           </div>
                         ))}
                       </div>
@@ -1122,8 +1122,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg">
                                       <div className="flex items-center gap-1.5">
-                                        <span className="text-[12px] text-white/40 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] text-white shrink-0">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                   )}
@@ -1132,7 +1133,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                       <div className="p-2 bg-white/[0.06] rounded-lg">
                                         <div className="flex items-start gap-1.5">
-                                          <span className="text-[12px] text-white/40 shrink-0">{evt.timeStr} Uhr</span>
+                                          <span className="text-[12px] text-white shrink-0">{evt.timeStr} Uhr</span>
                                           <span className="text-[12px] text-white">{evt.summary}</span>
                                         </div>
                                       </div>
