@@ -530,7 +530,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 bg-spot pointer-events-auto md:top-[52px]" />
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
       )}
 
       {/* Content - only render when visible */}
