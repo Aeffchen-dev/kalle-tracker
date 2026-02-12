@@ -217,12 +217,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   // Auto-scroll wochenplan to today column
   useEffect(() => {
-    if (todayColRef.current && wochenplanScrollRef.current) {
-      const container = wochenplanScrollRef.current;
-      const col = todayColRef.current;
-      const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
-      container.scrollLeft = Math.max(0, scrollLeft);
-    }
+    if (!dataLoaded || currentDayIndex < 0) return;
+    const timer = setTimeout(() => {
+      if (todayColRef.current && wochenplanScrollRef.current) {
+        const container = wochenplanScrollRef.current;
+        const col = todayColRef.current;
+        const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
+        container.scrollLeft = Math.max(0, scrollLeft);
+      }
+    }, 100);
+    return () => clearTimeout(timer);
   }, [dataLoaded, currentDayIndex]);
 
   const copyAddress = async () => {
