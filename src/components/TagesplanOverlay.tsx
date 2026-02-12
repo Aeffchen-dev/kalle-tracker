@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths, format, getDay, getHours } from 'date-fns';
@@ -1019,7 +1019,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       </div>
                     );
                   })()}
-                  <div className="flex gap-2">
+                  <div className="flex gap-[6px]">
                   {Array.from({ length: TOTAL_DAYS }, (_, idx) => {
                     const dayDate = new Date(rangeStart);
                     dayDate.setDate(dayDate.getDate() + idx);
@@ -1148,12 +1148,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               ))}
                             </div>
                           )}
-                          {/* Add button */}
-                          <div className="flex justify-center pt-1.5 pb-0.5">
-                            <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/10 transition-colors">
-                              <Plus size={14} />
-                            </button>
-                          </div>
+                          
                         </div>
                       </div>
                     );
