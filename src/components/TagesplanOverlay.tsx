@@ -963,7 +963,52 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 className="overflow-x-auto -mx-4 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                <div className="flex gap-2 px-4" style={{ width: 'max-content' }}>
+                <div className="px-4" style={{ width: 'max-content' }}>
+                  {/* Owner spans row */}
+                  {(() => {
+                    const cardWidth = `calc((100vw - 48px) / 2.1)`;
+                    const gap = 8; // gap-2 = 8px
+                    // Build ownership spans
+                    const spans: { person: string; startIdx: number; length: number }[] = [];
+                    let i = 0;
+                    while (i < TOTAL_DAYS) {
+                      const d = new Date(rangeStart);
+                      d.setDate(d.getDate() + i);
+                      const owner = getKalleOwnerForDate(icalEvents, d);
+                      if (owner) {
+                        const startIdx = i;
+                        let len = 1;
+                        for (let j = i + 1; j < TOTAL_DAYS; j++) {
+                          const nd = new Date(rangeStart);
+                          nd.setDate(nd.getDate() + j);
+                          const no = getKalleOwnerForDate(icalEvents, nd);
+                          if (no && no.person === owner.person) { len++; } else break;
+                        }
+                        spans.push({ person: owner.person, startIdx, length: len });
+                        i += len;
+                      } else {
+                        i++;
+                      }
+                    }
+                    if (spans.length === 0) return null;
+                    return (
+                      <div className="relative mb-2" style={{ height: '22px' }}>
+                        {spans.map((span, si) => (
+                          <div
+                            key={si}
+                            className="absolute top-0 h-full rounded-full bg-white/[0.06] flex items-center justify-center"
+                            style={{
+                              left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
+                              width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
+                            }}
+                          >
+                            <span className="text-white/50 text-[11px] whitespace-nowrap">🐶 {span.person} hat Kalle</span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                  <div className="flex gap-2">
                   {Array.from({ length: TOTAL_DAYS }, (_, idx) => {
                     const dayDate = new Date(rangeStart);
                     dayDate.setDate(dayDate.getDate() + idx);
@@ -1039,9 +1084,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
-                        className={`shrink-0 rounded-[14px] overflow-hidden bg-black ${
-                          isToday ? 'border border-white/40' : 'border border-white/15'
-                        }`}
+                        className="shrink-0 rounded-[14px] overflow-hidden bg-black"
                         style={{ width: 'calc((100vw - 48px) / 2.1)' }}
                       >
                         {/* Compact day header */}
@@ -1059,12 +1102,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           )}
                         </div>
                         
-                        {/* Owner mini-bar */}
-                        {owner && (
-                          <div className="mx-2.5 mb-2 px-2 py-1 rounded-md bg-white/[0.06]">
-                            <span className="text-white/50 text-[11px]">🐶 {owner.person}</span>
-                          </div>
-                        )}
+                        
                         
                         {/* Entries */}
                         <div className="px-2.5 pb-2.5">
@@ -1104,6 +1142,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       </div>
                     );
                   })}
+                  </div>
                 </div>
               </div>
               )}
