@@ -1044,71 +1044,48 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         return `${hours}:${mins.toString().padStart(2, '0')}`;
                       };
                       
-                      // Merge iCal events into walk time slots
-                      // Collect iCal events per day
-                      // Build unified items per day: walks + ical merged by time
-                      type UnifiedItem = { kind: 'walk'; avgHour: number; hasPoop: boolean } | { kind: 'ical'; time: string; summary: string; sortHour: number };
-                      const dayItems = new Map<number, UnifiedItem[]>();
+                      // Collect iCal events per day (excluding "hat Kalle")
+                      const dayIcalEvents = new Map<number, { summary: string; time: string }[]>();
                       for (let d = 0; d < TOTAL_DAYS; d++) {
-                        const walks: UnifiedItem[] = (daySlots.get(d) || []).map(s => ({ kind: 'walk' as const, ...s }));
                         const evts = weekIcalEvents.get(d) || [];
-                        const icals: UnifiedItem[] = evts
+                        dayIcalEvents.set(d, evts
                           .filter(e => !e.summary?.match(/hat\s+Kalle/i))
-                          .map(e => {
-                            const dt = new Date(e.dtstart);
-                            return {
-                              kind: 'ical' as const,
-                              summary: e.summary || '',
-                              time: format(dt, 'HH:mm'),
-                              sortHour: dt.getHours() + dt.getMinutes() / 60,
-                            };
-                          });
-                        const all = [...walks, ...icals].sort((a, b) => {
-                          const ha = a.kind === 'walk' ? a.avgHour : a.sortHour;
-                          const hb = b.kind === 'walk' ? b.avgHour : b.sortHour;
-                          return ha - hb;
-                        });
-                        dayItems.set(d, all);
+                          .map(e => ({
+                            summary: e.summary || '',
+                            time: format(new Date(e.dtstart), 'HH:mm'),
+                          }))
+                          .sort((a, b) => a.time.localeCompare(b.time))
+                        );
                       }
                       
-                      const maxRows = Math.max(
-                        ...Array.from(dayItems.values()).map(items => items.length),
-                        0
-                      );
-                      
-                      return Array.from({ length: maxRows }, (_, rowIdx) => (
-                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ height: '52px' }}>
+                      return Array.from({ length: maxSlots }, (_, rowIdx) => (
+                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0">
                           {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                            const items = dayItems.get(dayIndex) || [];
-                            
-                            if (rowIdx < items.length) {
-                              const item = items[rowIdx];
-                              if (item.kind === 'walk') {
-                                return (
-                                  <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                    <div>
-                                      <div className="text-white/50 text-[14px]">{formatTime(item.avgHour)} Uhr</div>
-                                      <div className="text-white/60 text-[14px] mt-0.5">
-                                        {item.hasPoop ? '💩' : '💦'}
-                                      </div>
-                                    </div>
-                                  </td>
-                                );
-                              } else {
-                                return (
-                                  <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                    <div>
-                                      <div className="text-white/40 text-[14px]">{item.time} Uhr</div>
-                                      <div className="text-white/70 text-[14px] mt-0.5">{item.summary}</div>
-                                    </div>
-                                  </td>
-                                );
-                              }
-                            }
+                            const slots = daySlots.get(dayIndex) || [];
+                            const slot = slots[rowIdx];
+                            // Show iCal events below the last walk slot (or in first row if no walks)
+                            const isLastSlotRow = rowIdx === Math.max(slots.length - 1, 0);
+                            const icalEvts = isLastSlotRow ? (dayIcalEvents.get(dayIndex) || []) : [];
                             
                             return (
                               <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                <div className="text-white/15">–</div>
+                                {slot ? (
+                                  <div>
+                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
+                                    <div className="text-white/60 text-[14px] mt-0.5">
+                                      {slot.hasPoop ? '💩' : '💦'}
+                                    </div>
+                                  </div>
+                                ) : null}
+                                {icalEvts.map((evt, i) => (
+                                  <div key={i} className={slot ? 'mt-2 pt-2 border-t border-white/10' : ''}>
+                                    <div className="text-white/40 text-[14px]">{evt.time} Uhr</div>
+                                    <div className="text-white/70 text-[14px] mt-0.5">{evt.summary}</div>
+                                  </div>
+                                ))}
+                                {!slot && icalEvts.length === 0 && (
+                                  <div className="text-white/15">–</div>
+                                )}
                               </td>
                             );
                           })}
