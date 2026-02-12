@@ -224,8 +224,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       if (todayColRef.current && wochenplanScrollRef.current) {
         const container = wochenplanScrollRef.current;
         const col = todayColRef.current;
-        const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
-        container.scrollLeft = Math.max(0, scrollLeft);
+        container.scrollLeft = Math.max(0, col.offsetLeft - 16);
       }
     }, delay));
     return () => timers.forEach(clearTimeout);
