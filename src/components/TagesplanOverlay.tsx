@@ -1121,10 +1121,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
                                   {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg">
-                                      <div className="flex items-center gap-2.5">
+                                      <div className="flex items-center" style={{ gap: '5vw' }}>
                                         <span className="text-[12px] text-white/70 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="flex items-center gap-2 shrink-0">
+                                          <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                          <span className="text-[12px] text-white/70 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        </span>
                                       </div>
                                     </div>
                                   )}
@@ -1132,7 +1134,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {slot.icalEvents.map((evt, j) => (
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                       <div className="p-2 bg-white/[0.06] rounded-lg">
-                                        <div className="flex items-start gap-2.5">
+                                        <div className="flex items-start" style={{ gap: '5vw' }}>
                                           <span className="text-[12px] text-white/70 shrink-0">{evt.timeStr} Uhr</span>
                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
                                         </div>
