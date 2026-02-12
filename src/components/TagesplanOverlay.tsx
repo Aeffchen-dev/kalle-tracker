@@ -130,7 +130,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
-  const [actualSchedule, setActualSchedule] = useState<Record<number, { label: string; hasStuhlgang: boolean }[]> | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
   const [editingMeal, setEditingMeal] = useState<{ mealIndex: number; ingredientIndex: number; field: 'quantity' | 'name' | 'description' } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -179,61 +178,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       setDataLoaded(true);
     };
     loadData();
-
-    // Load actual event data for analysis
-    const loadActualSchedule = async () => {
-      const fourWeeksAgo = new Date();
-      fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
-      
-      const { data: events } = await supabase
-        .from('events')
-        .select('time, type')
-        .in('type', ['pipi', 'stuhlgang'])
-        .gte('time', fourWeeksAgo.toISOString())
-        .order('time', { ascending: true });
-
-      if (events && events.length > 0) {
-        // Group into 3h blocks per day of week, track if stuhlgang occurred
-        const timeBlocks = ['06-09', '09-12', '12-15', '15-18', '18-21', '21-00'];
-        const blockRanges = [[6,9],[9,12],[12,15],[15,18],[18,21],[21,24]];
-        
-        // dayData[dow][blockIndex] = { count, hasStuhlgang, totalDays }
-        const dayData: Record<number, { count: number; hasStuhlgang: boolean; days: Set<string> }[]> = {};
-        for (let d = 0; d < 7; d++) {
-          dayData[d] = blockRanges.map(() => ({ count: 0, hasStuhlgang: false, days: new Set<string>() }));
-        }
-
-        for (const event of events) {
-          const date = new Date(event.time);
-          const dow = date.getDay();
-          const hour = date.getHours();
-          const dateKey = date.toDateString();
-          const blockIdx = blockRanges.findIndex(([start, end]) => hour >= start && hour < end);
-          if (blockIdx >= 0) {
-            dayData[dow][blockIdx].count++;
-            dayData[dow][blockIdx].days.add(dateKey);
-            if (event.type === 'stuhlgang') {
-              dayData[dow][blockIdx].hasStuhlgang = true;
-            }
-          }
-        }
-
-        // Build result: only include blocks that have activity
-        const result: Record<number, { label: string; hasStuhlgang: boolean }[]> = {};
-        for (let d = 0; d < 7; d++) {
-          result[d] = dayData[d]
-            .map((block, i) => ({
-              label: timeBlocks[i],
-              hasStuhlgang: block.hasStuhlgang,
-              hasActivity: block.count > 0
-            }))
-            .filter(b => b.hasActivity)
-            .map(({ label, hasStuhlgang }) => ({ label, hasStuhlgang }));
-        }
-        setActualSchedule(result);
-      }
-    };
-    loadActualSchedule();
   }, []);
 
   // Track if user is currently editing
@@ -731,60 +675,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {/* Wochenplan Section */}
             <div className="mb-8">
               <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
-
-              {/* Actual Schedule Analysis */}
-              {actualSchedule && (
-                <div className="mb-6">
-                  <h3 className="text-[12px] text-white/40 uppercase tracking-wider mb-3">Tatsächlicher Rhythmus (letzte 4 Wochen)</h3>
-                  <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    <div className="px-4 min-w-fit">
-                      <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
-                        <table className="w-full text-[12px]">
-                          <thead>
-                            <tr className="border-b border-white/30">
-                              {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day, i) => {
-                                // Map display order (Mo=0..So=6) to JS DOW (Mo=1..So=0)
-                                const dow = i === 6 ? 0 : i + 1;
-                                return (
-                                  <th key={day} className="p-2 text-left border-r border-white/30 last:border-r-0">
-                                    <div className="text-white">{day}</div>
-                                    <div className="text-white/40 font-normal">{actualSchedule[dow]?.length || 0}× Gassi</div>
-                                  </th>
-                                );
-                              })}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day, i) => {
-                                const dow = i === 6 ? 0 : i + 1;
-                                const blocks = actualSchedule[dow] || [];
-                                return (
-                                  <td key={day} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                    <div className="flex flex-col gap-1">
-                                      {blocks.map((block, ti) => (
-                                        <div key={ti} className="flex items-center gap-1">
-                                          <span className="text-white/60 text-[11px]">{block.label}</span>
-                                          {block.hasStuhlgang && <span className="text-[10px]">💩</span>}
-                                        </div>
-                                      ))}
-                                      {blocks.length === 0 && (
-                                        <span className="text-white/20 text-[11px]">–</span>
-                                      )}
-                                    </div>
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <h3 className="text-[12px] text-white/40 uppercase tracking-wider mb-3">Geplant</h3>
               
               {/* Legend */}
               <div className="flex gap-4 mb-4">
