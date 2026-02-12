@@ -960,13 +960,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               ) : (
               <div 
                 ref={wochenplanScrollRef}
-                className="overflow-x-auto -mx-4 scrollbar-hide md:overflow-visible"
+                className="overflow-x-auto -mx-4 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <div className="px-4" style={{ width: 'max-content' }}>
                   {/* Ownership spans row */}
                   {(() => {
-                    const cardWidth = `calc((min(100vw, 430px) - 48px) / 2.1)`;
+                    const cardWidth = `calc((100vw - 48px) / 2.1)`;
                     const gap = 8;
                     const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
                     let i = 0;
@@ -1096,7 +1096,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
                         className="shrink-0 rounded-[14px] overflow-hidden bg-black"
-                        style={{ width: 'calc((min(100vw, 430px) - 48px) / 2.1)' }}
+                        style={{ width: 'calc((100vw - 48px) / 2.1)' }}
                       >
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
@@ -1118,7 +1118,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {/* Entries */}
                         <div className="px-2.5 pb-2.5">
                           {slots.length === 0 ? (
-                            <div className="text-white/15 text-[14px] py-2 text-center">–</div>
+                            <div className="text-white/15 text-[11px] py-2 text-center">–</div>
                           ) : (
                             <div className="space-y-1.5">
                               {slots.map((slot, i) => (
@@ -1127,9 +1127,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
                                       <div className="flex items-center overflow-hidden">
-                                        <span className="text-[14px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[14px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -1138,8 +1138,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
                                          <div className="flex items-start">
-                                           <span className="text-[14px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
-                                           <span className="text-[14px] text-white/70">{evt.summary}</span>
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
                                          </div>
                                        </div>
                                      </div>
