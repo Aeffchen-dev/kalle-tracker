@@ -904,6 +904,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         return cells;
                       })()}
                     </tr>
+                    <tr><td colSpan={7} className="h-0 border-b border-white/30"></td></tr>
                   </thead>
                   <tbody>
                     {/* Walk times with 💩 indication from event data */}
