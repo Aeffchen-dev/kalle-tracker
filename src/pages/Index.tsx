@@ -288,9 +288,9 @@ const Index = () => {
         <div className="flex items-start gap-2">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+            className="w-[48px] h-[48px] flex items-center justify-center text-[20px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full cursor-pointer"
           >
-            <span className="flex items-center gap-2">🐶 <span>Kalle</span></span>
+            🐶
           </button>
           {weatherTemp !== null && (
             <button 
