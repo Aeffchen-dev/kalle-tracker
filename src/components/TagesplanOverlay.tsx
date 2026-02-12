@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths } from 'date-fns';
+import { getCachedSettings } from '@/lib/settings';
 
 interface Ingredient {
   quantity: string;
@@ -139,6 +140,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const [addressCopied, setAddressCopied] = useState(false);
   const isReceivingRealtimeUpdate = useRef(false);
+  const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -676,9 +678,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Puberty Phase - only shown during puberty (6-30 months) */}
             {(() => {
-              const KALLE_BIRTHDAY = new Date('2025-01-20');
+              const settings = getCachedSettings();
+              const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
               const now = new Date();
-              const ageInMonths = differenceInMonths(now, KALLE_BIRTHDAY);
+              const ageInMonths = differenceInMonths(now, birthday);
               if (ageInMonths < 6 || ageInMonths > 30) return null;
               
               const phases = [
@@ -689,7 +692,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 { min: 24, max: 30, name: 'Junghund-Stabilisierung', characteristics: 'Die letzte Reifephase: Kalle findet sein inneres Gleichgewicht. Sein Verhalten und Charakter stabilisieren sich zunehmend. Reaktionen werden vorhersehbarer, die Bindung zu seinen Bezugspersonen vertieft sich und er zeigt immer mehr Anzeichen eines erwachsenen, souveränen Hundes.', needs: ['Vertrauen weiter stärken', 'Routine festigen', 'Neue Herausforderungen anbieten', 'Die Beziehung genießen – das Schwierigste liegt hinter euch!'] },
               ];
               
-              const phase = phases.find(p => ageInMonths >= p.min && ageInMonths < p.max) || phases[phases.length - 1];
+              const currentPhaseIndex = phases.findIndex(p => ageInMonths >= p.min && ageInMonths < p.max);
+              const displayIndex = selectedPubertyPhase !== null ? selectedPubertyPhase : (currentPhaseIndex >= 0 ? currentPhaseIndex : phases.length - 1);
+              const phase = phases[displayIndex];
+              const isCurrentPhase = displayIndex === currentPhaseIndex;
 
               return (
                 <div className="mb-8">
@@ -701,22 +707,33 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
                     </div>
                     
-                    {/* Progress bar */}
+                    {/* Clickable progress bar */}
                     <div className="flex gap-1 mb-4">
                       {phases.map((p, i) => (
-                        <div 
+                        <button
                           key={i}
-                          className={`flex-1 h-2 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-white' : 'bg-white/30') : 'bg-white/10'}`}
+                          onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                          className={`flex-1 h-2 rounded-full transition-all ${
+                            displayIndex === i 
+                              ? 'bg-white' 
+                              : ageInMonths >= p.min 
+                                ? 'bg-white/30' 
+                                : 'bg-white/10'
+                          }`}
                         />
                       ))}
                     </div>
+                    
+                    {!isCurrentPhase && (
+                      <p className="text-[12px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
+                    )}
                     
                     {/* Characteristics */}
                     <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
                     
                     {/* Needs as bullet points */}
                     <div className="text-[14px] text-white/60">
-                      <span className="text-white">Was Kalle jetzt braucht:</span>
+                      <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
                       <ul className="mt-2 space-y-1">
                         {phase.needs.map((need, i) => (
                           <li key={i} className="flex gap-2">

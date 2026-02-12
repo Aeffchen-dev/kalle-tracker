@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { getCachedSettings } from '@/lib/settings';
 
 interface TrendAnalysisProps {
   events: Event[];
@@ -75,8 +76,12 @@ StatCard.displayName = 'StatCard';
 const CHART_HEIGHT = 180;
 const FONT_FAMILY = "'Rauschen B', system-ui, sans-serif";
 
-// Growth curve constants - Kalle's birthday and target weight
-const KALLE_BIRTHDAY = new Date('2025-01-20');
+// Growth curve constants - birthday from settings, fallback to hardcoded
+const DEFAULT_BIRTHDAY = new Date('2025-01-20');
+const getBirthday = (): Date => {
+  const settings = getCachedSettings();
+  return settings.birthday ? new Date(settings.birthday) : DEFAULT_BIRTHDAY;
+};
 const TARGET_WEIGHT = 34;
 
 // Expected weight data points based on Dalmatian growth chart
@@ -108,7 +113,7 @@ const getExpectedWeight = (ageInMonths: number): number => {
 };
 
 export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean => {
-  const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+  const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
   if (ageInMonths < 2 || ageInMonths > 18) return false;
   const expected = getExpectedWeight(ageInMonths);
   const upperBound = expected * 1.05;
@@ -507,7 +512,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .map(e => {
         const eventDate = new Date(e.time);
-        const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
         const weight = Number(e.weight_value);
         const isOutOfBounds = isWeightOutOfBounds(weight, eventDate);
         
@@ -749,7 +754,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       .map(e => {
         const eventDate = new Date(e.time);
         const weight = Number(e.weight_value);
-        const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
         const expectedWeight = getExpectedWeight(ageInMonths);
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
@@ -806,7 +811,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
     
     if (lastWeightEvent) {
       const eventDate = new Date(lastWeightEvent.time);
-      const ageInMonths = differenceInMonths(eventDate, KALLE_BIRTHDAY) + (eventDate.getDate() / 30);
+      const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
       idealWeight = Math.round(getExpectedWeight(ageInMonths) * 10) / 10;
       
       const latestWeight = Number(lastWeightEvent.weight_value);
@@ -1232,8 +1237,9 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
   // Calculate Kalle's age
   const kalleAge = useMemo(() => {
     const now = new Date();
-    const years = differenceInYears(now, KALLE_BIRTHDAY);
-    const totalMonths = differenceInMonths(now, KALLE_BIRTHDAY);
+    const birthday = getBirthday();
+    const years = differenceInYears(now, birthday);
+    const totalMonths = differenceInMonths(now, birthday);
     const months = totalMonths % 12;
     
     if (years === 0) {

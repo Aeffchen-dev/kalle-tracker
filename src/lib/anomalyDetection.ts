@@ -13,8 +13,12 @@ export interface Anomaly {
   relatedEventId?: string;
 }
 
-// Kalle's growth curve - must match TrendAnalysis.tsx
-const KALLE_BIRTHDAY = new Date('2025-01-20');
+// Kalle's growth curve - birthday from settings, fallback to hardcoded
+const DEFAULT_BIRTHDAY = new Date('2025-01-20');
+const getBirthday = (): Date => {
+  const settings = getCachedSettings();
+  return settings.birthday ? new Date(settings.birthday) : DEFAULT_BIRTHDAY;
+};
 const TARGET_WEIGHT = 34;
 
 // Expected weight data points based on Dalmatian growth chart
@@ -45,7 +49,7 @@ function getExpectedWeight(ageInMonths: number): number {
 }
 
 function getAgeInMonths(date: Date): number {
-  return differenceInMonths(date, KALLE_BIRTHDAY) + (date.getDate() / 30);
+  return differenceInMonths(date, getBirthday()) + (date.getDate() / 30);
 }
 
 export function detectAnomalies(events: Event[]): Anomaly[] {
