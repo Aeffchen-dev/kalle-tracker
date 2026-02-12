@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
-import { differenceInMonths, format, getDay, getHours, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from 'date-fns';
+import { differenceInMonths, format, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { getCachedSettings } from '@/lib/settings';
 import { getEvents, Event as AppEvent } from '@/lib/events';
-import { fetchICalEvents, getICalEventsForWeek, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
+import { fetchICalEvents, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 
 interface Ingredient {
   quantity: string;
@@ -145,8 +145,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
-  const [weekOffset, setWeekOffset] = useState(0);
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+  const wochenplanScrollRef = useRef<HTMLDivElement>(null);
+  const todayCellRef = useRef<HTMLTableCellElement>(null);
 
   // Load iCal events and app events
   useEffect(() => {
@@ -154,64 +154,24 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
   }, []);
 
-  // Compute average gassi times from most recent 14 days, grouped by weekday vs weekend
-  const avgGassiByDay = useMemo(() => {
-    const now = new Date();
-    const cutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
-    
-    // Collect hours for weekdays (Mon-Fri) and weekends (Sat-Sun)
-    const groups = { weekday: { pipiHours: [] as number[], stuhlgangHours: [] as number[] }, weekend: { pipiHours: [] as number[], stuhlgangHours: [] as number[] } };
-    
-    for (const event of appEvents) {
-      if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
-      const d = new Date(event.time);
-      if (d < cutoff) continue;
-      const jsDay = d.getDay(); // 0=Sun, 6=Sat
-      const isWeekend = jsDay === 0 || jsDay === 6;
-      const group = isWeekend ? groups.weekend : groups.weekday;
-      const hour = d.getHours() + d.getMinutes() / 60;
-      if (event.type === 'pipi') group.pipiHours.push(hour);
-      else group.stuhlgangHours.push(hour);
-    }
-    
-    // Map each day index (Mon=0..Sun=6) to the correct group
-    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
-    for (let i = 0; i < 7; i++) {
-      const isWeekend = i >= 5; // 5=Sa, 6=So
-      dayMap.set(i, isWeekend ? groups.weekend : groups.weekday);
-    }
-    
-    return dayMap;
-  }, [appEvents]);
-
-  // Compute week start based on offset
-  const weekStart = useMemo(() => {
-    const now = new Date();
-    const currentDay = now.getDay();
-    const diff = currentDay === 0 ? -6 : 1 - currentDay;
-    const start = new Date(now);
-    start.setDate(start.getDate() + diff + weekOffset * 7);
-    start.setHours(0, 0, 0, 0);
-    return start;
-  }, [weekOffset]);
-
-  // Get iCal events for selected week
-  const weekIcalEvents = useMemo(() => {
-    return getICalEventsForWeek(icalEvents, weekStart);
-  }, [icalEvents, weekStart]);
-
-  // Month days for month view
+  // Month days for the wochenplan (always current month)
   const monthDays = useMemo(() => {
-    const refDate = viewMode === 'month' ? weekStart : new Date();
-    const monthStart = startOfMonth(refDate);
-    const monthEnd = endOfMonth(refDate);
-    return eachDayOfInterval({ start: monthStart, end: monthEnd });
-  }, [weekStart, viewMode]);
+    const now = new Date();
+    return eachDayOfInterval({ start: startOfMonth(now), end: endOfMonth(now) });
+  }, []);
 
-  // Current day index (Mon=0), only valid for current week
-  const currentDayIndex = useMemo(() => weekOffset === 0 ? (new Date().getDay() + 6) % 7 : -1, [weekOffset]);
-  const currentHour = useMemo(() => new Date().getHours(), []);
   const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
+  const currentHour = useMemo(() => new Date().getHours(), []);
+
+  // Auto-scroll to today when data loads
+  useEffect(() => {
+    if (dataLoaded && todayCellRef.current && wochenplanScrollRef.current) {
+      const container = wochenplanScrollRef.current;
+      const cell = todayCellRef.current;
+      const scrollLeft = cell.offsetLeft - container.clientWidth / 2 + cell.offsetWidth / 2;
+      container.scrollTo({ left: Math.max(0, scrollLeft), behavior: 'smooth' });
+    }
+  }, [dataLoaded]);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -821,22 +781,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Wochenplan Section */}
             <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-[14px] text-white">Wochenplan</h2>
-                  <div className="flex items-center bg-white/[0.06] rounded-lg overflow-hidden">
-                    <button onClick={() => setViewMode('week')} className={`px-2 py-1 text-[12px] ${viewMode === 'week' ? 'text-[#5AD940] bg-white/[0.06]' : 'text-white/40'}`}>Woche</button>
-                    <button onClick={() => setViewMode('month')} className={`px-2 py-1 text-[12px] ${viewMode === 'month' ? 'text-[#5AD940] bg-white/[0.06]' : 'text-white/40'}`}>Monat</button>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  {viewMode === 'week' && <button onClick={() => setWeekOffset(prev => prev - 4)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">‹‹</button>}
-                  <button onClick={() => setWeekOffset(prev => prev - (viewMode === 'month' ? 4 : 1))} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">‹</button>
-                  <button onClick={() => setWeekOffset(0)} className={`px-2 py-1 text-[12px] ${weekOffset === 0 ? 'text-[#5AD940]' : 'text-white/60 hover:text-white'}`}>Heute</button>
-                  <button onClick={() => setWeekOffset(prev => prev + (viewMode === 'month' ? 4 : 1))} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">›</button>
-                  {viewMode === 'week' && <button onClick={() => setWeekOffset(prev => prev + 4)} className="px-2 py-1 text-[12px] text-white/40 hover:text-white">››</button>}
-                </div>
-              </div>
+              <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
               
               {!dataLoaded ? (
                 <div className="border border-white/30 rounded-[16px] overflow-hidden p-4">
@@ -846,9 +791,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     ))}
                   </div>
                 </div>
-              ) : viewMode === 'month' ? (
-                /* Month View */
-                <div className="overflow-x-auto -mx-4 scrollbar-hide" data-vaul-no-drag style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', overscrollBehavior: 'contain' }}>
+              ) : (
+                <div ref={wochenplanScrollRef} className="overflow-x-auto -mx-4 scrollbar-hide" data-vaul-no-drag style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x', overscrollBehavior: 'contain' }}>
                   <div className="px-4 min-w-fit">
                   <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block" style={{ minWidth: `${monthDays.length * 100}px` }}>
                   <table className="w-full text-[14px]">
@@ -860,7 +804,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
                           const isWeekend = day.getDay() === 0 || day.getDay() === 6;
                           return (
-                            <th key={dayStr} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
+                            <th key={dayStr} ref={isToday ? todayCellRef : undefined} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
                               <div className={`text-[14px] ${isToday ? 'text-[#5AD940] font-bold' : isWeekend ? 'text-white/40' : 'text-white'}`}>{dayNames[day.getDay()]}</div>
                               <div className="text-[14px] text-white/60 font-normal">{format(day, 'd.', { locale: de })}</div>
                             </th>
@@ -923,7 +867,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         const maxEvts = Math.max(...allDayEvents.map(e => e.length), 0);
                         if (maxEvts === 0) return null;
                         return Array.from({ length: maxEvts }, (_, idx) => (
-                          <tr key={`m-ical-${idx}`} className="border-b border-white/30 last:border-b-0">
+                          <tr key={`ical-${idx}`} className="border-b border-white/30 last:border-b-0">
                             {monthDays.map((day, di) => {
                               const evt = allDayEvents[di][idx];
                               const dayStr = format(day, 'yyyy-MM-dd');
@@ -947,204 +891,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   </div>
                   </div>
                 </div>
-              ) : (
-              /* Week View */
-              <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                <div className="px-4 min-w-fit">
-                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
-                <table className="w-full text-[14px]">
-                  <thead>
-                    {/* Row 1: Date and Day */}
-                    <tr className="border-b border-white/30">
-                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                        const isToday = dayIndex === currentDayIndex;
-                        const dayDate = new Date(weekStart);
-                        dayDate.setDate(dayDate.getDate() + dayIndex);
-                        const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-                        
-                        return (
-                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
-                            <div className={`text-[14px] ${isToday ? 'text-[#5AD940] font-bold' : 'text-white'}`}>{dayNames[dayIndex]}</div>
-                            <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
-                          </th>
-                        );
-                      })}
-                    </tr>
-                    {/* Row 2: Who has Kalle */}
-                    <tr>
-                      {(() => {
-                        const cells: React.ReactNode[] = [];
-                        let skipUntil = -1;
-                        
-                        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
-                          if (dayIndex < skipUntil) continue;
-                          
-                          const dayDate = new Date(weekStart);
-                          dayDate.setDate(dayDate.getDate() + dayIndex);
-                          const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                          const isToday = dayIndex === currentDayIndex;
-                          
-                          if (owner) {
-                            let span = 1;
-                            for (let j = dayIndex + 1; j < 7; j++) {
-                              const nextDate = new Date(weekStart);
-                              nextDate.setDate(nextDate.getDate() + j);
-                              const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
-                              if (nextOwner && nextOwner.person === owner.person) {
-                                span++;
-                              } else {
-                                break;
-                              }
-                            }
-                            skipUntil = dayIndex + span;
-                            
-                            const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
-                            
-                            cells.push(
-                              <td
-                                key={dayIndex}
-                                colSpan={span}
-                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}
-                              >
-                                <div className="flex items-center justify-between px-3 py-2">
-                                  <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                  <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
-                                </div>
-                              </td>
-                            );
-                          } else {
-                            cells.push(
-                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
-                              </td>
-                            );
-                          }
-                        }
-                        return cells;
-                      })()}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Walk times with 💩 indication from event data */}
-                    {(() => {
-                      const daySlots = new Map<number, { avgHour: number; hasPoop: boolean }[]>();
-                      
-                      for (let d = 0; d < 7; d++) {
-                        const data = avgGassiByDay.get(d);
-                        if (!data) { daySlots.set(d, []); continue; }
-                        
-                        const allEvents: { hour: number; isPoop: boolean }[] = [
-                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                        ].sort((a, b) => a.hour - b.hour);
-                        
-                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                        for (const evt of allEvents) {
-                          const last = clusters[clusters.length - 1];
-                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                            last.hours.push(evt.hour);
-                            if (evt.isPoop) last.hasPoop = true;
-                          } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
-                          }
-                        }
-                        
-                        daySlots.set(d, clusters.map(c => ({
-                          avgHour: c.hours.reduce((a, b) => a + b, 0) / c.hours.length,
-                          hasPoop: c.hasPoop,
-                        })));
-                      }
-                      
-                      const maxSlots = Math.max(...Array.from(daySlots.values()).map(s => s.length), 0);
-                      
-                      if (maxSlots === 0) {
-                        return (
-                          <tr>
-                            <td colSpan={7} className="p-4 text-center text-white/30 text-[12px]">
-                              Noch keine Gassi-Daten
-                            </td>
-                          </tr>
-                        );
-                      }
-                      
-                      const formatTime = (h: number) => {
-                        const rounded = Math.round(h * 2) / 2;
-                        const hours = Math.floor(rounded);
-                        const mins = rounded % 1 === 0.5 ? 30 : 0;
-                        return `${hours}:${mins.toString().padStart(2, '0')}`;
-                      };
-                      
-                      return Array.from({ length: maxSlots }, (_, slotIdx) => (
-                        <tr key={slotIdx} className="border-b border-white/30 last:border-b-0">
-                          {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                            const slots = daySlots.get(dayIndex) || [];
-                            const slot = slots[slotIdx];
-                            const isToday = dayIndex === currentDayIndex;
-                            const isCurrentSlot = isToday && slot && currentHour >= Math.floor(slot.avgHour) - 1 && currentHour <= Math.floor(slot.avgHour) + 1;
-                            
-                            return (
-                              <td
-                                key={dayIndex}
-                                className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''
-                                } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
-                              >
-                                {slot ? (
-                                  <div>
-                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
-                                    <div className="text-white/60 text-[14px] mt-0.5">
-                                      {slot.hasPoop ? '💩' : '💦'}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-white/15">–</div>
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ));
-                    })()}
-                    {/* iCal events row */}
-                    {(() => {
-                      const dayEvents: { dayIndex: number; events: { summary: string; time: string }[] }[] = [];
-                      for (let d = 0; d < 7; d++) {
-                        const evts = weekIcalEvents.get(d) || [];
-                        const filtered = evts
-                          .filter(e => !e.summary?.match(/hat\s+Kalle/i))
-                          .map(e => ({
-                            summary: e.summary || '',
-                            time: format(new Date(e.dtstart), 'HH:mm'),
-                          }))
-                          .sort((a, b) => a.time.localeCompare(b.time));
-                        dayEvents.push({ dayIndex: d, events: filtered });
-                      }
-                      const hasAny = dayEvents.some(d => d.events.length > 0);
-                      if (!hasAny) return null;
-                      const maxEvents = Math.max(...dayEvents.map(d => d.events.length));
-                      return Array.from({ length: maxEvents }, (_, idx) => (
-                        <tr key={`ical-${idx}`} className="border-b border-white/30 last:border-b-0">
-                          {dayEvents.map(({ dayIndex, events }) => {
-                            const evt = events[idx];
-                            const isToday = dayIndex === currentDayIndex;
-                            return (
-                              <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
-                                {evt ? (
-                                  <div>
-                                    <div className="text-white/40 text-[12px]">{evt.time}</div>
-                                    <div className="text-white/70 text-[13px] mt-0.5 truncate max-w-[90px]">{evt.summary}</div>
-                                  </div>
-                                ) : null}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ));
-                    })()}
-                  </tbody>
-                </table>
-                </div>
-                </div>
-              </div>
               )}
             </div>
           </div>
