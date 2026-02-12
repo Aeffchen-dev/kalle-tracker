@@ -1084,21 +1084,22 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             <div className="space-y-1.5">
                               {slots.map((slot, i) => (
                                 <div key={i}>
-                                  {/* Walk entry - time inside the box */}
+                                  {/* Walk entry - matches CalendarView bottom sheet style */}
                                   {slot.isWalk && (
-                                    <div className="px-2 py-1.5 rounded-lg bg-white/[0.06]">
-                                      <div className="flex items-center gap-1.5">
-                                        <span className="text-white/30 text-[11px]">{formatTime(slot.avgHour)}</span>
-                                        <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
-                                      </div>
+                                    <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
+                                      <span className="text-[12px] text-white flex items-center gap-1.5">
+                                        <span className="shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-white/60">Gassi</span>
+                                      </span>
+                                      <span className="text-[11px] text-white/40 shrink-0">{formatTime(slot.avgHour)}</span>
                                     </div>
                                   )}
-                                  {/* iCal events - distinct styling */}
+                                  {/* iCal events - same layout, border-l accent */}
                                   {slot.icalEvents.map((evt, j) => (
-                                    <div key={j} className="mt-1">
-                                      <div className="px-2 py-1.5 rounded-lg bg-white/[0.06] border-l-2 border-white/25">
-                                        <span className="text-white/30 text-[11px]">{evt.timeStr}</span>
-                                        <div className="text-white/60 text-[11px] leading-tight mt-0.5 line-clamp-2">{evt.summary}</div>
+                                    <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
+                                      <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg border-l-2 border-white/20">
+                                        <span className="text-[12px] text-white/60 truncate mr-2">{evt.summary}</span>
+                                        <span className="text-[11px] text-white/40 shrink-0">{evt.timeStr}</span>
                                       </div>
                                     </div>
                                   ))}
