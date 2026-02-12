@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
+import { differenceInMonths } from 'date-fns';
 
 interface Ingredient {
   quantity: string;
@@ -486,6 +487,63 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto px-4 pb-8">
+            {/* Puberty Phase - only shown during puberty (6-30 months) */}
+            {(() => {
+              const KALLE_BIRTHDAY = new Date('2025-01-20');
+              const now = new Date();
+              const ageInMonths = differenceInMonths(now, KALLE_BIRTHDAY);
+              if (ageInMonths < 6 || ageInMonths > 30) return null;
+              
+              const phases = [
+                { min: 6, max: 8, name: 'Vorpubertät', characteristics: 'Neugier nimmt zu, erste Selbstständigkeit, vorsichtiges Grenzen testen', needs: 'Sichere Umgebung zum Erkunden, positive Verstärkung, sanfte Konsequenz' },
+                { min: 8, max: 12, name: 'Frühe Pubertät', characteristics: 'Unsicherheiten, Trotzverhalten, selektives Hören, erste Rangordnungstests', needs: 'Klare Regeln, Geduld, viel Lob für gewünschtes Verhalten' },
+                { min: 12, max: 18, name: 'Hochphase', characteristics: 'Unberechenbare Reaktionen, Kommandos werden „vergessen", starke Umweltreize', needs: 'Maximale Konsequenz, kurze Trainingseinheiten, Ruhe bewahren, Routine beibehalten' },
+                { min: 18, max: 24, name: 'Späte Pubertät', characteristics: 'Langsam ruhiger, Gelerntes festigt sich, erwachsene Persönlichkeit bildet sich', needs: 'Weiterhin konsequent bleiben, Training vertiefen, mehr Freiheiten schrittweise gewähren' },
+                { min: 24, max: 30, name: 'Junghund-Stabilisierung', characteristics: 'Gleichgewicht finden, Charakter stabilisiert sich, zuverlässigeres Verhalten', needs: 'Vertrauen stärken, Routine festigen, Herausforderungen anbieten' },
+              ];
+              
+              const phase = phases.find(p => ageInMonths >= p.min && ageInMonths < p.max) || phases[phases.length - 1];
+              const progress = Math.round(((ageInMonths - 6) / 24) * 100);
+
+              return (
+                <div className="mb-8">
+                  <h2 className="text-[14px] text-white mb-4">👹 Pubertät</h2>
+                  <div className="border border-white/30 rounded-lg p-4">
+                    {/* Progress bar */}
+                    <div className="mb-4">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[12px] text-white/60">Fortschritt</span>
+                        <span className="text-[12px] text-white/40">{Math.min(progress, 100)}%</span>
+                      </div>
+                      <div className="flex gap-1">
+                        {phases.map((p, i) => (
+                          <div 
+                            key={i}
+                            className={`flex-1 h-2 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-amber-400' : 'bg-white/30') : 'bg-white/10'}`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Current phase */}
+                    <div className="text-[14px] text-white font-medium mb-1">{phase.name}</div>
+                    <div className="text-[12px] text-white/40 mb-3">{phase.min}–{phase.max} Monate</div>
+                    
+                    {/* Characteristics */}
+                    <div className="mb-3">
+                      <div className="text-[11px] text-white/50 uppercase tracking-wide mb-1">Merkmale</div>
+                      <p className="text-[13px] text-white/60 leading-relaxed">{phase.characteristics}</p>
+                    </div>
+                    
+                    {/* Needs */}
+                    <div>
+                      <div className="text-[11px] text-white/50 uppercase tracking-wide mb-1">Was Kalle jetzt braucht</div>
+                      <p className="text-[13px] text-white/60 leading-relaxed">{phase.needs}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
               <div className="mb-8">
