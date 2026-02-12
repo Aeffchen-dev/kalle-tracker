@@ -440,7 +440,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
             >
-              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.length === 0 ? (
+              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).length === 0 ? (
                 <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
@@ -457,14 +457,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       </span>
                     </div>
                   )}
-                  {/* iCal calendar events */}
-                  {filteredIcalEvents.map((evt, i) => {
+                  {/* iCal calendar events - exclude "hat Kalle" entries */}
+                  {filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).map((evt, i) => {
                     const time = new Date(evt.dtstart);
                     const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
                     return (
-                      <div key={`ical-${i}`} className="flex items-center justify-between p-3 bg-[#60A5FA]/10 rounded-lg">
+                      <div key={`ical-${i}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
                         <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
-                          <span className="shrink-0">📅</span>
                           <span className="truncate">{evt.summary}</span>
                         </span>
                         <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
@@ -524,11 +523,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                   {/* Who has Kalle - only show when there are other entries */}
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
                     <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
-                      <span className="text-[12px] text-white/40 flex items-center gap-2">
-                        <span>🐶</span>
+                      <span className="text-[14px] text-white/40 flex items-center gap-2">
                         <span>{kalleOwner.person} hat Kalle</span>
                       </span>
-                      <span className="text-[10px] text-white/20 whitespace-nowrap shrink-0 ml-2">
+                      <span className="text-[14px] text-white/20 whitespace-nowrap shrink-0 ml-2">
                         bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
                       </span>
                     </div>
