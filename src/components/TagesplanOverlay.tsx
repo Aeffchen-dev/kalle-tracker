@@ -653,7 +653,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Emergency Section */}
             <div className="mb-8">
-              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>🚑</span> <span>im Notfall</span></h2>
+              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
               <div className="border border-white/30 rounded-lg p-4 mb-4">
