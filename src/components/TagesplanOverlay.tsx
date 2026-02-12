@@ -950,7 +950,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
             <div className="mb-0 -mx-4">
-              <div className="mb-3 px-4 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
+              <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2-16px)] lg:pl-[calc((100vw-50vw)/2-16px)]">
                 <h2 className="flex items-center gap-2 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
               </div>
               
@@ -964,7 +964,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 className="overflow-x-auto scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                <div className="px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)] [--card-w:calc((100vw-48px)/2.1)] md:[--card-w:calc((60vw-48px)/2.5)] lg:[--card-w:calc((50vw-48px)/2.5)]" style={{ width: 'max-content' }}>
+                <div className="px-4 md:pl-[calc((100vw-60vw)/2-16px)] lg:pl-[calc((100vw-50vw)/2-16px)] [--card-w:calc((100vw-48px)/2.1)] md:[--card-w:calc((60vw-16px)/2.5)] lg:[--card-w:calc((50vw-16px)/2.5)]" style={{ width: 'max-content' }}>
                   {/* Ownership spans row */}
                   {(() => {
                     const cardWidth = `var(--card-w)`;
