@@ -1149,12 +1149,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               ))}
                             </div>
                           )}
-                          {/* Add button */}
-                          <div className="flex justify-center pt-1.5 pb-0.5">
-                            <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/10 transition-colors">
-                              <Plus size={14} />
-                            </button>
-                          </div>
                         </div>
                       </div>
                     );
