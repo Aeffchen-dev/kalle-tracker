@@ -1147,7 +1147,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       };
                       
                       return Array.from({ length: maxSlots }, (_, rowIdx) => (
-                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0">
+                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ height: '60px' }}>
                           {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
                             const slots = daySlots.get(dayIndex) || [];
                             const slot = slots[rowIdx];
