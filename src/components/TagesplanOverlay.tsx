@@ -780,20 +780,22 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       </div>
                       
                       {/* Clickable progress bar */}
-                      <div className="flex gap-1 mb-4">
-                        {phases.map((p, i) => {
-                          const isActive = displayIndex === i;
-                          
-                          return (
-                            <button
-                              key={i}
-                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                              className={`flex-1 h-2 rounded-full transition-all duration-500 ease-out ${
-                                isActive ? 'bg-white scale-y-125' : 'bg-white/10'
-                              }`}
-                            />
-                          );
-                        })}
+                      <div className="relative flex gap-1 mb-4">
+                        {/* Sliding indicator */}
+                        <div
+                          className="absolute h-2 rounded-full bg-white transition-all duration-400 ease-out pointer-events-none"
+                          style={{
+                            width: `calc(${100 / phases.length}% - ${(phases.length - 1) * 4 / phases.length}px)`,
+                            left: `calc(${(100 / phases.length) * displayIndex}% + ${displayIndex * 4 / phases.length}px)`,
+                          }}
+                        />
+                        {phases.map((p, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                            className="flex-1 h-2 rounded-full bg-white/10 relative z-10"
+                          />
+                        ))}
                       </div>
                     </div>
                     
