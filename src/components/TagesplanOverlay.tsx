@@ -550,7 +550,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         <div className="absolute inset-0 flex flex-col pointer-events-auto">
           {/* Header */}
           <header className="p-4 flex justify-between items-center">
-            <h1 className="text-[14px] uppercase text-white">Tagesplan</h1>
+            <h1 className="text-[14px] uppercase text-white">Info</h1>
             <button onClick={handleClose} className="text-white p-1">
               <X size={20} />
             </button>
