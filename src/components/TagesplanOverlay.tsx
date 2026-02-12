@@ -783,14 +783,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <div className="flex gap-1 mb-4">
                         {phases.map((p, i) => {
                           const isActive = displayIndex === i;
-                          const isPast = ageInMonths >= p.max;
                           
                           return (
                             <button
                               key={i}
                               onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                              className={`flex-1 h-2 rounded-full transition-all duration-300 ${
-                                isActive ? 'bg-white' : isPast ? 'bg-white/30' : 'bg-white/10'
+                              className={`flex-1 h-2 rounded-full transition-all duration-500 ease-out ${
+                                isActive ? 'bg-white scale-y-125' : 'bg-white/10'
                               }`}
                             />
                           );
