@@ -250,6 +250,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
+      setSelectedPubertyPhase(null);
       setAnimationPhase('expanding');
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
