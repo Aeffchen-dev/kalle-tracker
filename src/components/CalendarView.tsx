@@ -325,7 +325,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >
-      <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[40vw] lg:mx-auto">
+      <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[60vw] lg:mx-auto">
         <DrawerHeader 
           className="sticky top-0 z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
