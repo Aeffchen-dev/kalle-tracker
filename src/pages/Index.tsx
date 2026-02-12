@@ -288,7 +288,7 @@ const Index = () => {
         <div className="flex items-start gap-2">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="w-[48px] h-[48px] text-[48px] leading-none cursor-pointer mr-[16px]"
+            className="w-[48px] h-[48px] text-[48px] leading-none cursor-pointer mr-[8px]"
           >
             🐶
           </button>
