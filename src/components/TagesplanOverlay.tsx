@@ -1099,6 +1099,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               </div>
               )}
             </div>
+            <div className="pb-4" />
           </div>
         </div>
       )}
