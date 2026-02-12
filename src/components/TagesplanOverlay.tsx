@@ -887,7 +887,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             })()}
 
             {/* Wochenplan Section */}
-            <div className="mb-4">
+            <div className="mb-0">
               <div className="mb-4">
                 <h2 className="text-[14px] text-white">Wochenplan</h2>
               </div>
