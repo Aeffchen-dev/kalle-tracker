@@ -1076,6 +1076,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     <div className="flex flex-col bg-transparent pl-4" style={{ width: '52px', flexShrink: 0 }}>
                       {/* Header spacer */}
                       <div style={{ height: '52px' }} />
+                      {/* Ownership row spacer */}
+                      <div style={{ height: '28px' }} />
                       {/* Time labels */}
                       <div className="relative" style={{ height: `${totalHeight}px` }}>
                         {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
@@ -1110,7 +1112,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 <div
                                   key={dayIndex}
                                   ref={isToday ? todayColRef : undefined}
-                                  className="p-2 border-r border-white/30 last:border-r-0"
+                                  className="p-2 border-r border-white/[0.08] last:border-r-0"
                                   style={{ width: '90px', flexShrink: 0 }}
                                 >
                                   <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
@@ -1120,8 +1122,45 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             })}
                           </div>
 
-
-
+                          {/* Kalle ownership row - spanning blocks */}
+                          {(() => {
+                            const ownerCells: React.ReactNode[] = [];
+                            let skipUntil = -1;
+                            for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
+                              if (dayIndex < skipUntil) continue;
+                              const dayDate = new Date(rangeStart);
+                              dayDate.setDate(dayDate.getDate() + dayIndex);
+                              const owner = getKalleOwnerForDate(icalEvents, dayDate);
+                              if (owner) {
+                                let span = 1;
+                                for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
+                                  const nextDate = new Date(rangeStart);
+                                  nextDate.setDate(nextDate.getDate() + j);
+                                  const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
+                                  if (nextOwner && nextOwner.person === owner.person) span++;
+                                  else break;
+                                }
+                                skipUntil = dayIndex + span;
+                                ownerCells.push(
+                                  <div key={dayIndex} className="border-r border-white/[0.08] last:border-r-0 flex items-center px-2 py-1.5 bg-white/[0.04]" style={{ width: `${span * 90}px`, flexShrink: 0 }}>
+                                    <span className="text-[10px] text-white/50 whitespace-nowrap truncate">🐶 {owner.person}</span>
+                                  </div>
+                                );
+                              } else {
+                                ownerCells.push(<div key={dayIndex} className="border-r border-white/[0.08] last:border-r-0" style={{ width: '90px', flexShrink: 0 }} />);
+                              }
+                            }
+                            const hasAnyOwner = ownerCells.some(c => {
+                              const props = (c as React.ReactElement)?.props;
+                              return props?.children;
+                            });
+                            if (!hasAnyOwner) return null;
+                            return (
+                              <div className="flex border-b border-white/30">
+                                {ownerCells}
+                              </div>
+                            );
+                          })()}
 
                           {/* Timetable grid */}
                           <div className="flex" style={{ height: `${totalHeight}px` }}>
@@ -1132,37 +1171,23 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               return (
                                 <div
                                   key={dayIndex}
-                                  className="relative border-r border-white/30 last:border-r-0"
+                                  className="relative border-r border-white/[0.08] last:border-r-0"
                                   style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
                                 >
-                                  {/* Hour gridlines - reduced */}
+                                  {/* Hour gridlines */}
                                   {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => {
-                                    if (i === 0 || i % 2 !== 0) return null;
+                                    if (i === 0) return null;
                                     return (
                                       <div
                                         key={i}
-                                        className="absolute w-full border-t border-white/[0.03]"
+                                        className="absolute w-full border-t border-white/[0.08]"
                                         style={{ top: `${i * HOUR_HEIGHT}px` }}
                                       />
                                     );
                                   })}
 
                                   {/* Event blocks */}
-                                  {blocks.map((block, i) => {
-                                    if (block.isOwnership) {
-                                      // Full-height ownership background
-                                      return (
-                                        <div
-                                          key={i}
-                                          className="absolute inset-0 bg-white/[0.03] flex items-end justify-center pb-2"
-                                          style={{ zIndex: 0 }}
-                                        >
-                                          <div className="text-[9px] text-white/30 writing-mode-vertical whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
-                                            {block.label}
-                                          </div>
-                                        </div>
-                                      );
-                                    }
+                                  {blocks.filter(b => !b.isOwnership).map((block, i) => {
                                     const top = Math.max((block.startHour - START_HOUR) * HOUR_HEIGHT, 0);
                                     const height = Math.max((block.endHour - block.startHour) * HOUR_HEIGHT, 20);
                                     const clampedTop = Math.min(top, totalHeight - 20);
