@@ -1,4 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { format, addDays } from 'date-fns';
+import { de } from 'date-fns/locale';
 import { MoreHorizontal } from 'lucide-react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
@@ -27,6 +29,28 @@ const weatherCodeToEmoji = (code: number): string => {
   return '🌡️';
 };
 
+const weatherCodeToLabel = (code: number): string => {
+  if (code === 0) return 'Sonnig';
+  if (code <= 3) return 'Bewölkt';
+  if (code <= 48) return 'Nebel';
+  if (code <= 55) return 'Nieselregen';
+  if (code <= 65) return 'Regen';
+  if (code <= 67) return 'Gefrierender Regen';
+  if (code <= 75) return 'Schnee';
+  if (code <= 77) return 'Schneegriesel';
+  if (code <= 82) return 'Regenschauer';
+  if (code <= 86) return 'Schneeschauer';
+  if (code <= 99) return 'Gewitter';
+  return 'Unbekannt';
+};
+
+type DayForecast = {
+  date: string;
+  tempMin: number;
+  tempMax: number;
+  weatherCode: number;
+};
+
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00min');
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
@@ -46,6 +70,8 @@ const Index = () => {
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [weatherEmoji, setWeatherEmoji] = useState('🌡️');
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
+  const [forecast, setForecast] = useState<DayForecast[]>([]);
+  const [showWeather, setShowWeather] = useState(false);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -179,12 +205,21 @@ const Index = () => {
 
     // Fetch weather for current location
     const fetchWeather = (lat: number, lon: number) => {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`)
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7`)
         .then(r => r.json())
         .then(data => {
           if (data.current) {
             setWeatherTemp(Math.round(data.current.temperature_2m));
             setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
+          }
+          if (data.daily) {
+            const days: DayForecast[] = data.daily.time.map((date: string, i: number) => ({
+              date,
+              tempMin: Math.round(data.daily.temperature_2m_min[i]),
+              tempMax: Math.round(data.daily.temperature_2m_max[i]),
+              weatherCode: data.daily.weather_code[i],
+            }));
+            setForecast(days);
           }
         })
         .catch(() => {});
@@ -258,6 +293,7 @@ const Index = () => {
           </button>
           {weatherTemp !== null && (
             <button 
+              onClick={() => setShowWeather(true)}
               className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
             >
               <span className="flex items-center gap-2">{weatherEmoji} <span>{weatherTemp}°</span></span>
@@ -365,6 +401,45 @@ const Index = () => {
         isOpen={showTagesplan} 
         onClose={() => setShowTagesplan(false)} 
       />
+
+      {/* Weather forecast drawer */}
+      {showWeather && (
+        <div className="fixed inset-0 z-50 flex flex-col">
+          <div className="flex-1 bg-black/60" onClick={() => setShowWeather(false)} />
+          <div className="bg-black rounded-t-[24px] pt-4 pb-[env(safe-area-inset-bottom)] max-h-[70dvh] flex flex-col">
+            <div className="px-4 pb-3 flex items-center justify-between">
+              <h2 className="text-white text-[16px] font-semibold flex items-center gap-2">
+                {weatherEmoji} <span>7-Tage-Vorhersage</span>
+              </h2>
+              <button onClick={() => setShowWeather(false)} className="text-white/50 text-[14px]">Schließen</button>
+            </div>
+            <div className="px-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
+              {forecast.map((day) => {
+                const date = new Date(day.date + 'T00:00:00');
+                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+                return (
+                  <div key={day.date} className="bg-white/[0.06] rounded-lg p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
+                      <div>
+                        <p className="text-white text-[14px]">
+                          {isToday ? 'Heute' : format(date, 'EEEE', { locale: de })}
+                          <span className="text-white/50 ml-2">{format(date, 'd. MMM', { locale: de })}</span>
+                        </p>
+                        <p className="text-white/50 text-[12px]">{weatherCodeToLabel(day.weatherCode)}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-white text-[14px]">{day.tempMax}°</span>
+                      <span className="text-white/40 text-[14px] ml-1">{day.tempMin}°</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Gassi settings sheet */}
       <GassiSettingsSheet 
