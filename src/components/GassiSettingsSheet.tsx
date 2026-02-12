@@ -116,7 +116,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} snapPoints={[0.95]}>
-      <DrawerContent className="bg-black border-black flex flex-col max-h-[95dvh] max-w-[500px] mx-auto">
+      <DrawerContent className="bg-black border-black flex flex-col max-h-[95dvh] lg:max-w-[40vw] lg:mx-auto">
         <DrawerHeader className="pb-4 flex-shrink-0 cursor-pointer" onClick={() => onOpenChange(false)}>
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
