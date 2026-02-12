@@ -682,11 +682,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               if (ageInMonths < 6 || ageInMonths > 30) return null;
               
               const phases = [
-                { min: 6, max: 8, name: 'Vorpubertät', characteristics: 'In dieser Phase beginnen die ersten hormonellen Veränderungen. Kalle wird merklich neugieriger, zeigt erste Anzeichen von Selbstständigkeit und testet vorsichtig seine Grenzen aus. Er könnte anfangen, bekannte Regeln in Frage zu stellen und sich von vertrauten Personen etwas mehr zu lösen.', needs: 'Jetzt ist es wichtig, eine sichere Umgebung zum Erkunden zu bieten. Positive Verstärkung und sanfte, aber klare Konsequenz helfen Kalle, Vertrauen in sich und seine Umgebung aufzubauen. Neue Situationen sollten behutsam eingeführt werden.' },
-                { min: 8, max: 12, name: 'Frühe Pubertät', characteristics: 'Kalle zeigt möglicherweise erste Unsicherheiten und Trotzverhalten. Selektives Hören wird häufiger – Kommandos, die vorher gut saßen, werden plötzlich ignoriert. Erste Rangordnungstests mit anderen Hunden und auch gegenüber den Bezugspersonen können auftreten.', needs: 'Klare, verlässliche Regeln sind jetzt besonders wichtig. Geduld ist der Schlüssel – Kalle testet nicht aus Bosheit, sondern weil sein Gehirn sich umbaut. Viel Lob für gewünschtes Verhalten und kurze, motivierende Trainingseinheiten helfen am meisten.' },
-                { min: 12, max: 18, name: 'Hochphase', characteristics: 'Das ist die intensivste Phase der Pubertät. Kalle kann unberechenbar auf Reize reagieren, die ihn vorher nicht gestört haben. Bekannte Kommandos werden scheinbar „vergessen", die Impulskontrolle ist eingeschränkt und Umweltreize wie andere Hunde, Geräusche oder Wild können extrem ablenkend wirken.', needs: 'Maximale Konsequenz bei gleichzeitiger Ruhe und Gelassenheit. Trainingseinheiten kurz und erfolgreich gestalten, damit Kalle Erfolgserlebnisse hat. Die tägliche Routine beibehalten und keine neuen, überfordernden Situationen einführen. Rückschritte sind normal und kein Grund zur Sorge.' },
-                { min: 18, max: 24, name: 'Späte Pubertät', characteristics: 'Kalle wird langsam ruhiger und ausgeglichener. Das in den Monaten zuvor Gelernte festigt sich wieder und wird zuverlässiger abrufbar. Die erwachsene Persönlichkeit beginnt sich herauszubilden – man kann erste Züge seines endgültigen Charakters erkennen.', needs: 'Weiterhin konsequent bleiben, auch wenn es besser wird. Das Training kann jetzt vertieft und anspruchsvoller gestaltet werden. Schrittweise mehr Freiheiten gewähren und Kalles wachsende Zuverlässigkeit belohnen.' },
-                { min: 24, max: 30, name: 'Junghund-Stabilisierung', characteristics: 'Die letzte Reifephase: Kalle findet sein inneres Gleichgewicht. Sein Verhalten und Charakter stabilisieren sich zunehmend. Reaktionen werden vorhersehbarer, die Bindung zu seinen Bezugspersonen vertieft sich und er zeigt immer mehr Anzeichen eines erwachsenen, souveränen Hundes.', needs: 'Das Vertrauen weiter stärken und die gemeinsame Routine festigen. Neue Herausforderungen und Aufgaben anbieten, um Kalle geistig auszulasten. Die Beziehung genießen – das Schwierigste liegt hinter euch!' },
+                { min: 6, max: 8, name: 'Vorpubertät', characteristics: 'In dieser Phase beginnen die ersten hormonellen Veränderungen. Kalle wird merklich neugieriger, zeigt erste Anzeichen von Selbstständigkeit und testet vorsichtig seine Grenzen aus. Er könnte anfangen, bekannte Regeln in Frage zu stellen und sich von vertrauten Personen etwas mehr zu lösen.', needs: ['Sichere Umgebung zum Erkunden bieten', 'Positive Verstärkung bei jedem Erfolg', 'Sanfte, aber klare Konsequenz', 'Neue Situationen behutsam einführen'] },
+                { min: 8, max: 12, name: 'Frühe Pubertät', characteristics: 'Kalle zeigt möglicherweise erste Unsicherheiten und Trotzverhalten. Selektives Hören wird häufiger – Kommandos, die vorher gut saßen, werden plötzlich ignoriert. Erste Rangordnungstests mit anderen Hunden und auch gegenüber den Bezugspersonen können auftreten.', needs: ['Klare, verlässliche Regeln aufstellen', 'Geduld – er testet nicht aus Bosheit', 'Viel Lob für gewünschtes Verhalten', 'Kurze, motivierende Trainingseinheiten'] },
+                { min: 12, max: 18, name: 'Hochphase', characteristics: 'Das ist die intensivste Phase der Pubertät. Kalle kann unberechenbar auf Reize reagieren, die ihn vorher nicht gestört haben. Bekannte Kommandos werden scheinbar „vergessen", die Impulskontrolle ist eingeschränkt und Umweltreize wie andere Hunde, Geräusche oder Wild können extrem ablenkend wirken.', needs: ['Maximale Konsequenz, dabei ruhig bleiben', 'Trainingseinheiten kurz und erfolgreich halten', 'Tägliche Routine unbedingt beibehalten', 'Keine neuen, überfordernden Situationen', 'Rückschritte sind normal – nicht stressen'] },
+                { min: 18, max: 24, name: 'Späte Pubertät', characteristics: 'Kalle wird langsam ruhiger und ausgeglichener. Das in den Monaten zuvor Gelernte festigt sich wieder und wird zuverlässiger abrufbar. Die erwachsene Persönlichkeit beginnt sich herauszubilden – man kann erste Züge seines endgültigen Charakters erkennen.', needs: ['Weiterhin konsequent bleiben', 'Training vertiefen und anspruchsvoller gestalten', 'Schrittweise mehr Freiheiten gewähren', 'Wachsende Zuverlässigkeit belohnen'] },
+                { min: 24, max: 30, name: 'Junghund-Stabilisierung', characteristics: 'Die letzte Reifephase: Kalle findet sein inneres Gleichgewicht. Sein Verhalten und Charakter stabilisieren sich zunehmend. Reaktionen werden vorhersehbarer, die Bindung zu seinen Bezugspersonen vertieft sich und er zeigt immer mehr Anzeichen eines erwachsenen, souveränen Hundes.', needs: ['Vertrauen weiter stärken', 'Routine festigen', 'Neue Herausforderungen anbieten', 'Die Beziehung genießen – das Schwierigste liegt hinter euch!'] },
               ];
               
               const phase = phases.find(p => ageInMonths >= p.min && ageInMonths < p.max) || phases[phases.length - 1];
@@ -701,7 +701,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
                     </div>
                     
-                    {/* Progress bar - current phase is white, completed are white/30, future are white/10 */}
+                    {/* Progress bar */}
                     <div className="flex gap-1 mb-4">
                       {phases.map((p, i) => (
                         <div 
@@ -712,10 +712,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     </div>
                     
                     {/* Characteristics */}
-                    <p className="text-[14px] text-white/60 mb-3">{phase.characteristics}</p>
+                    <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
                     
-                    {/* Needs */}
-                    <p className="text-[14px] text-white/60">{phase.needs}</p>
+                    {/* Needs as bullet points */}
+                    <div className="text-[14px] text-white/60">
+                      <span className="text-white">Was Kalle jetzt braucht:</span>
+                      <ul className="mt-2 space-y-1">
+                        {phase.needs.map((need, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="text-white/30">•</span>
+                            <span>{need}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               );
