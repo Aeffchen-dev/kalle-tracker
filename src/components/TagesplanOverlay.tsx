@@ -783,33 +783,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       <div className="flex gap-1 mb-4">
                         {phases.map((p, i) => {
                           const isActive = displayIndex === i;
-                          const isPast = ageInMonths >= p.min;
-                          // For current phase, show proportional fill (+20%)
-                          const isCurrent = i === currentPhaseIndex;
-                          let fillPercent = 0;
-                          if (isActive) fillPercent = 100;
-                          else if (isPast) fillPercent = 100;
-                          
-                          if (isCurrent && !isActive) {
-                            const progress = Math.min(100, ((ageInMonths - p.min) / (p.max - p.min)) * 100 + 20);
-                            fillPercent = progress;
-                          }
+                          const isPast = ageInMonths >= p.max;
                           
                           return (
                             <button
                               key={i}
                               onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                              className="flex-1 h-2 rounded-full overflow-hidden relative"
-                              style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
-                            >
-                              <div
-                                className="absolute inset-0 rounded-full transition-all duration-300 ease-out"
-                                style={{
-                                  width: `${fillPercent}%`,
-                                  backgroundColor: isActive ? 'white' : isPast ? 'rgba(255,255,255,0.3)' : 'transparent',
-                                }}
-                              />
-                            </button>
+                              className={`flex-1 h-2 rounded-full transition-all duration-300 ${
+                                isActive ? 'bg-white' : isPast ? 'bg-white/30' : 'bg-white/10'
+                              }`}
+                            />
                           );
                         })}
                       </div>
@@ -1063,38 +1046,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         return `${hours}:${mins.toString().padStart(2, '0')}`;
                       };
                       
-                      return Array.from({ length: maxSlots }, (_, slotIdx) => (
-                        <tr key={slotIdx} className="border-b border-white/30 last:border-b-0">
-                          {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                            const slots = daySlots.get(dayIndex) || [];
-                            const slot = slots[slotIdx];
-                            const isToday = dayIndex === currentDayIndex;
-                            const isCurrentSlot = isToday && slot && currentHour >= Math.floor(slot.avgHour) - 1 && currentHour <= Math.floor(slot.avgHour) + 1;
-                            
-                            return (
-                              <td
-                                key={dayIndex}
-                                className="p-2 border-r border-white/30 last:border-r-0 align-top"
-                              >
-                                {slot ? (
-                                  <div>
-                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
-                                    <div className="text-white/60 text-[14px] mt-0.5">
-                                      {slot.hasPoop ? '💩' : '💦'}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="text-white/15">–</div>
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ));
-                    })()}
-                    {/* iCal events row */}
-                    {(() => {
-                      const dayEvents: { dayIndex: number; events: { summary: string; time: string }[] }[] = [];
+                      // Merge iCal events into walk time slots
+                      // Collect iCal events per day
+                      const dayIcalEvents = new Map<number, { summary: string; time: string }[]>();
                       for (let d = 0; d < TOTAL_DAYS; d++) {
                         const evts = weekIcalEvents.get(d) || [];
                         const filtered = evts
@@ -1104,33 +1058,61 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             time: format(new Date(e.dtstart), 'HH:mm'),
                           }))
                           .sort((a, b) => a.time.localeCompare(b.time));
-                        dayEvents.push({ dayIndex: d, events: filtered });
+                        dayIcalEvents.set(d, filtered);
                       }
-                      const hasAny = dayEvents.some(d => d.events.length > 0);
-                      if (!hasAny) return null;
-                      const maxEvents = Math.max(...dayEvents.map(d => d.events.length));
-                      return Array.from({ length: maxEvents }, (_, idx) => {
-                        // Check if this is the last iCal row
-                        const isLastRow = idx === maxEvents - 1;
-                        return (
-                          <tr key={`ical-${idx}`} className="border-b border-white/30 last:border-b-0">
-                            {dayEvents.map(({ dayIndex, events }) => {
-                              const evt = events[idx];
-                              const isToday = dayIndex === currentDayIndex;
+                      
+                      // Find max rows needed (walk slots + ical events combined per day)
+                      const maxRows = Math.max(
+                        ...Array.from({ length: TOTAL_DAYS }, (_, d) => {
+                          const walkCount = (daySlots.get(d) || []).length;
+                          const icalCount = (dayIcalEvents.get(d) || []).length;
+                          return walkCount + icalCount;
+                        }),
+                        0
+                      );
+                      
+                      return Array.from({ length: maxRows }, (_, rowIdx) => (
+                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ height: '52px' }}>
+                          {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                            const slots = daySlots.get(dayIndex) || [];
+                            const icalEvts = dayIcalEvents.get(dayIndex) || [];
+                            
+                            // Walk slots first, then iCal events
+                            if (rowIdx < slots.length) {
+                              const slot = slots[rowIdx];
                               return (
                                 <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                  {evt ? (
-                                    <div>
-                                      <div className="text-white/40 text-[14px]">{evt.time}</div>
-                                      <div className="text-white/70 text-[14px] mt-0.5 truncate max-w-[80px]">{evt.summary}</div>
+                                  <div>
+                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
+                                    <div className="text-white/60 text-[14px] mt-0.5">
+                                      {slot.hasPoop ? '💩' : '💦'}
                                     </div>
-                                  ) : null}
+                                  </div>
                                 </td>
                               );
-                            })}
-                          </tr>
-                        );
-                      });
+                            }
+                            
+                            const icalIdx = rowIdx - slots.length;
+                            if (icalIdx < icalEvts.length) {
+                              const evt = icalEvts[icalIdx];
+                              return (
+                                <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                  <div>
+                                    <div className="text-white/40 text-[14px]">{evt.time} Uhr</div>
+                                    <div className="text-white/70 text-[14px] mt-0.5">{evt.summary}</div>
+                                  </div>
+                                </td>
+                              );
+                            }
+                            
+                            return (
+                              <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                <div className="text-white/15">–</div>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ));
                     })()}
                   </tbody>
                 </table>
