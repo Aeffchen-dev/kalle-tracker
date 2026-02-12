@@ -876,17 +876,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 colSpan={span}
-                                className={`px-1 py-1 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
+                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
                               >
-                                <div className="bg-white rounded-md px-2 py-1 flex items-center justify-between gap-1">
-                                  <span className="text-black text-[10px] font-medium whitespace-nowrap">🐶 {owner.person}</span>
+                                <div className="bg-white flex items-center justify-between px-2">
+                                  <span className="text-black text-[10px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
                                   <span className="text-black/40 text-[9px] whitespace-nowrap">bis {endDateStr}</span>
                                 </div>
                               </td>
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`px-1 py-1 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
+                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
                               </td>
                             );
                           }
@@ -944,8 +944,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       }
                       
                       const formatTime = (h: number) => {
-                        const hours = Math.floor(h);
-                        const mins = Math.round((h - hours) * 60);
+                        // Round to nearest half hour
+                        const rounded = Math.round(h * 2) / 2;
+                        const hours = Math.floor(rounded);
+                        const mins = rounded % 1 === 0.5 ? 30 : 0;
                         return `${hours}:${mins.toString().padStart(2, '0')}`;
                       };
                       
