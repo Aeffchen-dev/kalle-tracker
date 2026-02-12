@@ -1328,47 +1328,23 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
 
         return (
           <div className="mt-6 bg-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">🐾</span>
-              <span className="text-[13px] text-white font-medium">Pubertäts-Phase</span>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🐾</span>
+                <span className="text-[13px] text-white font-medium">{phase.name}</span>
+              </div>
+              <span className="text-[11px] text-white/40">{phase.min}–{phase.max} Mon.</span>
             </div>
-            {/* Overall progress */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-white/50">Gesamtfortschritt</span>
-                <span className="text-[11px] text-white/40">{Math.min(progress, 100)}%</span>
-              </div>
-              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-white/20 rounded-full transition-all"
-                  style={{ width: `${Math.min(progress, 100)}%` }}
-                />
-              </div>
-            </div>
-            {/* Current phase */}
-            <div className="bg-white/[0.06] rounded-md p-3 mb-3">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[12px] text-amber-400 font-medium">{phase.name}</span>
-                <span className="text-[10px] text-white/40">{phase.min}–{phase.max} Mon.</span>
-              </div>
-              <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
-                <div 
-                  className="h-full bg-amber-400 rounded-full transition-all"
-                  style={{ width: `${Math.min(phaseProgress, 100)}%` }}
-                />
-              </div>
-              <p className="text-[11px] text-white/50 leading-relaxed">{phase.desc}</p>
-            </div>
-            {/* Phase overview */}
-            <div className="flex gap-1">
+            {/* Phase segments */}
+            <div className="flex gap-1 mb-2">
               {phases.map((p, i) => (
                 <div 
                   key={i}
-                  className={`flex-1 h-1 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-amber-400' : 'bg-white/30') : 'bg-white/10'}`}
+                  className={`flex-1 h-1.5 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-amber-400' : 'bg-white/30') : 'bg-white/10'}`}
                 />
               ))}
             </div>
-            <p className="text-[10px] text-white/30 mt-2">Ca. 6–30 Monate · Verschwindet automatisch danach</p>
+            <p className="text-[10px] text-white/30">Gesamt: {Math.min(progress, 100)}% · 6–30 Monate</p>
           </div>
         );
       })()}
