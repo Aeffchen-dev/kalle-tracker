@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { getSettings } from '@/lib/settings';
-import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
+import { fetchICalEvents, getICalEventsForDate, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 
 type SnapPoint = number | string;
 
@@ -238,6 +238,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       .sort((a, b) => new Date(a.dtstart).getTime() - new Date(b.dtstart).getTime());
   }, [icalEvents, selectedDate]);
 
+  const kalleOwner = useMemo(() => {
+    return getKalleOwnerForDate(icalEvents, selectedDate);
+  }, [icalEvents, selectedDate]);
+
   // Check if content is scrollable
   useEffect(() => {
     const checkScrollable = () => {
@@ -436,7 +440,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
             >
-              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.length === 0 ? (
+              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.length === 0 && !kalleOwner ? (
                 <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
@@ -517,6 +521,18 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       </div>
                     );
                   })}
+                  {/* Who has Kalle */}
+                  {kalleOwner && (
+                    <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                      <span className="text-[14px] text-black font-medium flex items-center gap-2">
+                        <span>🐶</span>
+                        <span>{kalleOwner.person} hat Kalle</span>
+                      </span>
+                      <span className="text-[12px] text-black/50 whitespace-nowrap shrink-0 ml-2">
+                        bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
