@@ -177,16 +177,27 @@ const Index = () => {
     // Load settings first, then events
     getSettings().then(() => loadEvents());
 
-    // Fetch weather (Berlin coordinates)
-    fetch('https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,weather_code')
-      .then(r => r.json())
-      .then(data => {
-        if (data.current) {
-          setWeatherTemp(Math.round(data.current.temperature_2m));
-          setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
-        }
-      })
-      .catch(() => {});
+    // Fetch weather for current location
+    const fetchWeather = (lat: number, lon: number) => {
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.current) {
+            setWeatherTemp(Math.round(data.current.temperature_2m));
+            setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
+          }
+        })
+        .catch(() => {});
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => fetchWeather(52.52, 13.41) // Fallback: Berlin
+      );
+    } else {
+      fetchWeather(52.52, 13.41);
+    }
     
     const eventsChannel = supabase
       .channel('events-changes')
