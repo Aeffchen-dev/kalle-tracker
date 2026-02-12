@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths, format, getDay, getHours } from 'date-fns';
@@ -146,8 +146,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [scrollBgColor, setScrollBgColor] = useState('#3d2b1f');
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -326,30 +324,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     return () => clearTimeout(timeout);
   }, [meals, schedule, dataLoaded, hasLocalChanges]);
 
-  // Scroll-based background color blend from brown to black
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el || animationPhase !== 'visible') return;
-    const handleScroll = () => {
-      const scrollTop = el.scrollTop;
-      const threshold = window.innerHeight * 0.2; // 20vh
-      const t = Math.min(scrollTop / threshold, 1);
-      // Lerp from #3d2b1f (61,43,31) to #000000
-      const r = Math.round(61 * (1 - t));
-      const g = Math.round(43 * (1 - t));
-      const b = Math.round(31 * (1 - t));
-      const color = `rgb(${r},${g},${b})`;
-      setScrollBgColor(color);
-      document.body.style.backgroundColor = color;
-    };
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, [animationPhase]);
-
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
-      setScrollBgColor('#3d2b1f');
       setAnimationPhase('expanding');
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
@@ -553,7 +530,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 pointer-events-auto" style={{ backgroundColor: scrollBgColor }} />
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
       )}
 
       {/* Content - only render when visible */}
@@ -568,7 +545,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
@@ -587,7 +564,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
-                <h2 className="text-[14px] text-white mb-4 flex items-center gap-2">{mealIndex === 0 ? <span>🍖</span> : null}<span>{meal.title}</span></h2>
+                <h2 className="text-[14px] text-white mb-4">{mealIndex === 0 ? '🍖 ' : ''}{meal.title}</h2>
                 <div className="border border-white/30 rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
@@ -676,7 +653,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Emergency Section */}
             <div className="mb-8">
-              <h2 className="text-[14px] text-white mb-4 flex items-center gap-2"><span>🚑</span><span>im Notfall</span></h2>
+              <h2 className="text-[14px] text-white mb-4">🚑 im Notfall</h2>
               
               {/* Tierarztpraxis Sonnenallee */}
               <div className="border border-white/30 rounded-lg p-4 mb-4">
@@ -779,7 +756,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               return (
                 <div className="mb-8">
-                  <h2 className="text-[14px] text-white mb-4 flex items-center gap-2"><span>👹</span><span>Pubertät</span></h2>
+                  <h2 className="text-[14px] text-white mb-4">👹 Pubertät</h2>
                   <div 
                     className="border border-white/30 rounded-lg overflow-hidden"
                   >
@@ -953,7 +930,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
               return (
                 <div className="mb-8">
-                  <h2 className="text-[14px] text-white mb-4 flex items-center gap-2"><span>🧑‍🏫</span><span>Training</span></h2>
+                  <h2 className="text-[14px] text-white mb-4">🧑‍🏫 Training</h2>
                   <div className="border border-white/30 rounded-lg overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
@@ -973,7 +950,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
             <div className="mb-0">
               <div className="mb-3">
-                <h2 className="text-[14px] text-white flex items-center gap-2"><span>📅</span><span>Wochenplan</span></h2>
+                <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
               </div>
               
               {!dataLoaded ? (
@@ -990,7 +967,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   {/* Ownership spans row */}
                   {(() => {
                     const cardWidth = `calc((100vw - 48px) / 2.1)`;
-                    const gap = 6;
+                    const gap = 8;
                     const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
                     let i = 0;
                     while (i < TOTAL_DAYS) {
@@ -1017,18 +994,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     }
                     if (spans.length === 0) return null;
                     return (
-                      <div className="relative mb-1" style={{ height: '34px' }}>
+                      <div className="relative mb-2" style={{ height: '34px' }}>
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-black py-2 px-4"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
-                            <div className="h-full overflow-visible">
-                              <div className="sticky left-4 h-full flex items-center pointer-events-none" style={{ width: 'calc(100vw - 32px)' }}>
+                            <div className="relative h-full">
+                              <div className="sticky left-0 h-full flex items-center pl-3 pr-0 pointer-events-none" style={{ width: 'calc(min(100%, (100vw - 32px)))' }}>
                                 <span className="text-[12px] text-white/70 flex items-center gap-1.5 shrink-0">
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
@@ -1042,7 +1019,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       </div>
                     );
                   })()}
-                  <div className="flex gap-[6px]">
+                  <div className="flex gap-2">
                   {Array.from({ length: TOTAL_DAYS }, (_, idx) => {
                     const dayDate = new Date(rangeStart);
                     dayDate.setDate(dayDate.getDate() + idx);
@@ -1150,8 +1127,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
                                       <div className="flex items-center overflow-hidden">
-                                        <span className="text-[12px] text-white/70 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[12px] shrink-0 ml-1.5">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -1159,9 +1137,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div>
-                                           <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
-                                           <div className="text-[12px] text-white/70 mt-0.5">{evt.summary}</div>
+                                         <div className="flex items-start">
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
                                          </div>
                                        </div>
                                      </div>
@@ -1170,7 +1148,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               ))}
                             </div>
                           )}
-                          
+                          {/* Add button */}
+                          <div className="flex justify-center pt-1.5 pb-0.5">
+                            <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/10 transition-colors">
+                              <Plus size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
