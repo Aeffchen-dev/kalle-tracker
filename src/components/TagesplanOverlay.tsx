@@ -132,6 +132,8 @@ interface TagesplanOverlayProps {
 
 const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [overlayBg, setOverlayBg] = useState('#3d2b1f');
+  const scrollContentRef = useRef<HTMLDivElement>(null);
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
@@ -217,6 +219,25 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const currentHour = useMemo(() => new Date().getHours(), []);
 
   // Auto-scroll removed per user request
+
+  // Fade background from brown to black on scroll
+  useEffect(() => {
+    const el = scrollContentRef.current;
+    if (!el || animationPhase !== 'visible') return;
+    const handleScroll = () => {
+      const maxScroll = el.scrollHeight - el.clientHeight;
+      if (maxScroll <= 0) return;
+      const progress = Math.min(el.scrollTop / (maxScroll * 0.7), 1); // fully black at 70% scroll
+      const r = Math.round(61 * (1 - progress));
+      const g = Math.round(43 * (1 - progress));
+      const b = Math.round(31 * (1 - progress));
+      const color = `rgb(${r},${g},${b})`;
+      setOverlayBg(color);
+      document.body.style.backgroundColor = color;
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [animationPhase]);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -327,6 +348,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
+      setOverlayBg('#3d2b1f');
       setAnimationPhase('expanding');
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
@@ -530,7 +552,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 bg-spot pointer-events-auto" />
+        <div className="absolute inset-0 pointer-events-auto transition-colors duration-150" style={{ backgroundColor: overlayBg }} />
       )}
 
       {/* Content - only render when visible */}
@@ -545,7 +567,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div ref={scrollContentRef} className="flex-1 overflow-y-auto px-4 pb-4">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
