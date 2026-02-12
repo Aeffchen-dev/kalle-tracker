@@ -1042,7 +1042,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         className={`shrink-0 rounded-[14px] overflow-hidden bg-black ${
                           isToday ? 'border border-white/40' : 'border border-white/15'
                         }`}
-                        style={{ width: 'calc((100vw - 48px) / 2.5)' }}
+                        style={{ width: 'calc((100vw - 48px) / 2.1)' }}
                       >
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
