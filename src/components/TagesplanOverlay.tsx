@@ -1166,8 +1166,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     )}
                                     {slot.icalEvents.map((evt, i) => (
                                       <div key={i} className={slot.isWalk ? 'mt-1 pt-1 border-t border-white/10' : ''}>
-                                        <div className="text-white/40 text-[14px]">📅 {evt.timeStr} Uhr</div>
-                                        <div className="text-white/70 text-[14px] mt-0.5 truncate">{evt.summary}</div>
+                                        <div className="text-white/40 text-[12px]">{evt.timeStr} Uhr</div>
+                                        <div className="text-white/70 text-[12px] mt-0.5">{evt.summary}</div>
                                       </div>
                                     ))}
                                   </div>
