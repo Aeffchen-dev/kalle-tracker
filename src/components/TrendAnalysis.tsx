@@ -1308,46 +1308,6 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         </div>
       </div>
 
-      {/* Puberty Phase Info - only shown during puberty (6-30 months) */}
-      {(() => {
-        const now = new Date();
-        const ageInMonths = differenceInMonths(now, KALLE_BIRTHDAY);
-        if (ageInMonths < 6 || ageInMonths > 30) return null;
-        
-        const phases = [
-          { min: 6, max: 8, name: 'Vorpubertät', desc: 'Erste hormonelle Veränderungen beginnen. Kalle wird neugieriger, unabhängiger und testet vorsichtig Grenzen.' },
-          { min: 8, max: 12, name: 'Frühe Pubertät', desc: 'Kalle zeigt möglicherweise erste Unsicherheiten, Trotzverhalten und selektives Hören. Konsequenz und Geduld sind wichtig.' },
-          { min: 12, max: 18, name: 'Hochphase', desc: 'Intensivste Phase: Kalle kann unberechenbarer reagieren, bekannte Kommandos „vergessen" und stärker auf Umweltreize reagieren.' },
-          { min: 18, max: 24, name: 'Späte Pubertät', desc: 'Kalle wird langsam ruhiger und ausgeglichener. Das Gelernte festigt sich wieder. Die erwachsene Persönlichkeit bildet sich heraus.' },
-          { min: 24, max: 30, name: 'Junghund-Stabilisierung', desc: 'Die letzte Reifephase: Kalle findet sein Gleichgewicht. Verhalten und Charakter stabilisieren sich zunehmend.' },
-        ];
-        
-        const phase = phases.find(p => ageInMonths >= p.min && ageInMonths < p.max) || phases[phases.length - 1];
-        const progress = Math.round(((ageInMonths - 6) / 24) * 100);
-        const phaseProgress = Math.round(((ageInMonths - phase.min) / (phase.max - phase.min)) * 100);
-
-        return (
-          <div className="mt-6 bg-white/[0.06] rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">🐾</span>
-                <span className="text-[13px] text-white font-medium">{phase.name}</span>
-              </div>
-              <span className="text-[11px] text-white/40">{phase.min}–{phase.max} Mon.</span>
-            </div>
-            {/* Phase segments */}
-            <div className="flex gap-1 mb-2">
-              {phases.map((p, i) => (
-                <div 
-                  key={i}
-                  className={`flex-1 h-1.5 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-amber-400' : 'bg-white/30') : 'bg-white/10'}`}
-                />
-              ))}
-            </div>
-            <p className="text-[10px] text-white/30">Gesamt: {Math.min(progress, 100)}% · 6–30 Monate</p>
-          </div>
-        );
-      })()}
       
       {/* Export Button */}
       <div className="mt-8 pb-4">
