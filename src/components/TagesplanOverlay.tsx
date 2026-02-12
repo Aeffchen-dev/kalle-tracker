@@ -535,7 +535,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 pointer-events-auto overflow-hidden">
+        <div className="absolute inset-0 pointer-events-auto">
           {/* Header - floating over scroll content */}
           <header className="absolute top-0 left-0 right-0 z-10 p-4 flex justify-between items-center bg-spot md:bg-transparent">
             <h1 className="text-[14px] uppercase text-white">Info</h1>
@@ -545,7 +545,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-14 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full">
+          <div className="absolute inset-0 overflow-y-auto px-4 pb-4 pt-14 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
@@ -948,7 +948,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             })()}
 
             {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
-            <div className="mb-0 overflow-hidden">
+            <div className="mb-0">
               <div className="mb-3">
                 <h2 className="flex items-center gap-2 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
               </div>
