@@ -721,7 +721,26 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               return (
                 <div className="mb-8">
                   <h2 className="text-[14px] text-white mb-4">👹 Pubertät</h2>
-                  <div className="border border-white/30 rounded-lg p-4">
+                  <div 
+                    className="border border-white/30 rounded-lg p-4"
+                    onTouchStart={(e) => {
+                      (e.currentTarget as any)._swipeX = e.touches[0].clientX;
+                    }}
+                    onTouchEnd={(e) => {
+                      const startX = (e.currentTarget as any)._swipeX;
+                      if (startX === undefined) return;
+                      const endX = e.changedTouches[0].clientX;
+                      const diff = startX - endX;
+                      if (Math.abs(diff) > 50) {
+                        const nextIdx = diff > 0 
+                          ? Math.min(displayIndex + 1, phases.length - 1) 
+                          : Math.max(displayIndex - 1, 0);
+                        if (nextIdx !== displayIndex) {
+                          setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
+                        }
+                      }
+                    }}
+                  >
                     {/* Header with phase name and progress */}
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[14px] text-white">{phase.name}</span>
@@ -873,33 +892,42 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   <tbody>
                     {/* Walk times with 💩 indication from event data */}
                     {(() => {
-                      // Collect unique walk time slots across all days
-                      const allSlotHours = new Set<number>();
+                      // For each day, compute average times for each event
+                      // Group all events per day into time-sorted entries with their avg time
+                      const daySlots = new Map<number, { avgHour: number; hasPoop: boolean }[]>();
+                      
                       for (let d = 0; d < 7; d++) {
                         const data = avgGassiByDay.get(d);
-                        if (data) {
-                          // Cluster pipi and stuhlgang hours into time slots
-                          [...data.pipiHours, ...data.stuhlgangHours].forEach(h => {
-                            allSlotHours.add(Math.round(h));
-                          });
+                        if (!data) { daySlots.set(d, []); continue; }
+                        
+                        // Combine all hours with their type
+                        const allEvents: { hour: number; isPoop: boolean }[] = [
+                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                        ].sort((a, b) => a.hour - b.hour);
+                        
+                        // Cluster nearby events (within 1.5h)
+                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                        for (const evt of allEvents) {
+                          const last = clusters[clusters.length - 1];
+                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                            last.hours.push(evt.hour);
+                            if (evt.isPoop) last.hasPoop = true;
+                          } else {
+                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                          }
                         }
+                        
+                        daySlots.set(d, clusters.map(c => ({
+                          avgHour: c.hours.reduce((a, b) => a + b, 0) / c.hours.length,
+                          hasPoop: c.hasPoop,
+                        })));
                       }
                       
-                      // Create sorted unique hour slots
-                      const sortedHours = Array.from(allSlotHours).sort((a, b) => a - b);
+                      // Find max number of slots across all days
+                      const maxSlots = Math.max(...Array.from(daySlots.values()).map(s => s.length), 0);
                       
-                      // Cluster nearby hours (within 2h) into ranges
-                      const clusters: number[][] = [];
-                      for (const h of sortedHours) {
-                        const lastCluster = clusters[clusters.length - 1];
-                        if (lastCluster && h - lastCluster[lastCluster.length - 1] <= 2) {
-                          lastCluster.push(h);
-                        } else {
-                          clusters.push([h]);
-                        }
-                      }
-                      
-                      if (clusters.length === 0) {
+                      if (maxSlots === 0) {
                         return (
                           <tr>
                             <td colSpan={7} className="p-4 text-center text-white/30 text-[12px]">
@@ -909,49 +937,42 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         );
                       }
                       
-                      return clusters.map((cluster, clusterIdx) => {
-                        const clusterMin = Math.min(...cluster);
-                        const clusterMax = Math.max(...cluster);
-                        const timeLabel = clusterMin === clusterMax 
-                          ? `${clusterMin}:00` 
-                          : `${clusterMin}–${clusterMax} Uhr`;
-                        
-                        return (
-                          <tr key={clusterIdx} className="border-b border-white/30 last:border-b-0">
-                            {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
-                              const data = avgGassiByDay.get(dayIndex);
-                              const isToday = dayIndex === currentDayIndex;
-                              const isCurrentSlot = isToday && currentHour >= clusterMin && currentHour <= clusterMax + 1;
-                              
-                              // Count events in this cluster for this day
-                              const pipiInCluster = data?.pipiHours.filter(h => h >= clusterMin - 1 && h <= clusterMax + 1).length || 0;
-                              const poopInCluster = data?.stuhlgangHours.filter(h => h >= clusterMin - 1 && h <= clusterMax + 1).length || 0;
-                              const hasPoop = poopInCluster > 0;
-                              const hasActivity = pipiInCluster > 0 || poopInCluster > 0;
-                              
-                              return (
-                                <td
-                                  key={dayIndex}
-                                  className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                    isToday ? 'bg-white/[0.04]' : ''
-                                  } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
-                                >
-                                  {hasActivity ? (
-                                    <div>
-                                      <div className="text-white/40 text-[10px]">{timeLabel}</div>
-                                      <div className="text-white/60 text-[11px] mt-0.5">
-                                        {hasPoop ? '💩' : '💦'}
-                                      </div>
+                      const formatTime = (h: number) => {
+                        const hours = Math.floor(h);
+                        const mins = Math.round((h - hours) * 60);
+                        return `${hours}:${mins.toString().padStart(2, '0')}`;
+                      };
+                      
+                      return Array.from({ length: maxSlots }, (_, slotIdx) => (
+                        <tr key={slotIdx} className="border-b border-white/30 last:border-b-0">
+                          {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                            const slots = daySlots.get(dayIndex) || [];
+                            const slot = slots[slotIdx];
+                            const isToday = dayIndex === currentDayIndex;
+                            const isCurrentSlot = isToday && slot && currentHour >= Math.floor(slot.avgHour) - 1 && currentHour <= Math.floor(slot.avgHour) + 1;
+                            
+                            return (
+                              <td
+                                key={dayIndex}
+                                className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
+                                  isToday ? 'bg-white/[0.04]' : ''
+                                } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
+                              >
+                                {slot ? (
+                                  <div>
+                                    <div className="text-white/50 text-[10px]">{formatTime(slot.avgHour)} Uhr</div>
+                                    <div className="text-white/60 text-[11px] mt-0.5">
+                                      {slot.hasPoop ? '💩' : '💦'}
                                     </div>
-                                  ) : (
-                                    <div className="text-white/15">–</div>
-                                  )}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        );
-                      });
+                                  </div>
+                                ) : (
+                                  <div className="text-white/15">–</div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ));
                     })()}
                   </tbody>
                 </table>
