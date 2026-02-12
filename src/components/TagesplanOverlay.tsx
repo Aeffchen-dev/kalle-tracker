@@ -1030,7 +1030,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 }
 
                 return (
-                  <div className="flex">
+                  <div className="flex -mr-4">
                     {/* Fixed time axis outside the scrollable area */}
                     <div className="flex flex-col" style={{ width: '36px', flexShrink: 0 }}>
                       {/* Header spacer */}
@@ -1058,7 +1058,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
                       <div className="min-w-fit">
-                        <div className="bg-black rounded-[16px] overflow-hidden border border-white/30 inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
+                        <div className="bg-black rounded-l-[16px] overflow-hidden border border-white/30 border-r-0 inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
                           {/* Header: Day names + dates */}
                           <div className="flex border-b border-white/30">
                             {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
