@@ -994,11 +994,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     }
                     if (spans.length === 0) return null;
                     return (
-                      <div className="relative mb-2" style={{ height: '28px' }}>
+                      <div className="relative mb-2" style={{ height: '34px' }}>
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-lg bg-black flex items-center justify-between px-2"
+                            className="absolute top-0 h-full rounded-lg bg-black flex items-center justify-between p-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
