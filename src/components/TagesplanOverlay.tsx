@@ -964,10 +964,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 className="overflow-x-auto scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                <div className="px-4 md:pl-[calc((100vw-60vw)/2+16px)] lg:pl-[calc((100vw-50vw)/2+16px)]" style={{ width: 'max-content' }}>
+                <div className="px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)] [--card-w:calc((100vw-48px)/2.1)] md:[--card-w:calc((60vw-48px)/2.5)] lg:[--card-w:calc((50vw-48px)/2.5)]" style={{ width: 'max-content' }}>
                   {/* Ownership spans row */}
                   {(() => {
-                    const cardWidth = `calc((100vw - 48px) / 2.1)`;
+                    const cardWidth = `var(--card-w)`;
                     const gap = 8;
                     const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
                     let i = 0;
@@ -1097,7 +1097,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
                         className="shrink-0 rounded-[14px] overflow-hidden bg-black"
-                        style={{ width: 'calc((100vw - 48px) / 2.1)' }}
+                        style={{ width: 'var(--card-w)' }}
                       >
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
