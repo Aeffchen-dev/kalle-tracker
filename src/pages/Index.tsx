@@ -284,26 +284,26 @@ const Index = () => {
       
 
       {/* Header */}
-      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-start gap-2">
+      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2vw] md:pt-[1.5vw] md:pb-[1.5vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="flex items-start gap-2 md:gap-[0.5vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+            className="text-[14px] md:text-[1.4vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.3vw] md:px-[1vw] cursor-pointer mt-2 md:mt-[0.5vw]"
           >
-            <span className="flex items-center gap-2">🐶 <span>Kalle</span></span>
+            <span className="flex items-center gap-2 md:gap-[0.5vw]">🐶 <span>Kalle</span></span>
           </button>
           {weatherTemp !== null && (
             <button 
               onClick={() => setShowWeather(true)}
-              className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+              className="text-[14px] md:text-[1.4vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.3vw] md:px-[1vw] cursor-pointer mt-2 md:mt-[0.5vw]"
             >
-              <span className="flex items-center gap-2">{weatherEmoji} <span>{weatherTemp}°</span></span>
+              <span className="flex items-center gap-2 md:gap-[0.5vw]">{weatherEmoji} <span>{weatherTemp}°</span></span>
             </button>
           )}
         </div>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+          className="text-[14px] md:text-[1.4vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] md:py-[0.3vw] md:px-[1vw] cursor-pointer mt-2 md:mt-[0.5vw]"
         >
           Info
         </button>
