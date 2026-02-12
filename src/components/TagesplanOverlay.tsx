@@ -967,7 +967,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   {/* Ownership spans row */}
                   {(() => {
                     const cardWidth = `calc((100vw - 48px) / 2.1)`;
-                    const gap = 8;
+                    const gap = 6;
                     const spans: { person: string; startIdx: number; length: number; endDate: Date; startDate: Date }[] = [];
                     let i = 0;
                     while (i < TOTAL_DAYS) {
@@ -1127,9 +1127,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
                                       <div className="flex items-center overflow-hidden">
-                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="text-[12px] text-white/70 shrink-0">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] shrink-0 ml-1.5">{slot.hasPoop ? '💩' : '💦'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -1137,9 +1136,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div className="flex items-start">
-                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
-                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
+                                         <div>
+                                           <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
+                                           <div className="text-[12px] text-white/70 mt-0.5">{evt.summary}</div>
                                          </div>
                                        </div>
                                      </div>
