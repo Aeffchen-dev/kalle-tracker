@@ -948,7 +948,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             })()}
 
             {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
-            <div className="mb-0">
+            <div className="mb-0 overflow-hidden">
               <div className="mb-3">
                 <h2 className="flex items-center gap-2 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
               </div>
@@ -960,7 +960,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               ) : (
               <div 
                 ref={wochenplanScrollRef}
-                className="overflow-x-auto -mx-4 scrollbar-hide max-w-[100vw] md:max-w-[60vw] lg:max-w-[50vw]"
+                className="overflow-x-auto -mx-4 scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <div className="px-4" style={{ width: 'max-content' }}>
