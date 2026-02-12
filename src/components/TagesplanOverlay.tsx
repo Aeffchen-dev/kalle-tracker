@@ -1122,7 +1122,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.isWalk && (
                                     <div className="p-2 bg-white/[0.06] rounded-lg">
                                       <div className="flex items-center">
-                                        <span className="text-[12px] text-white/70 shrink-0 w-40">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] text-white/70 shrink-0 w-[40px]">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="flex items-center gap-2 shrink-0">
                                           <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
                                           <span className="text-[12px] text-white/70 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
@@ -1135,7 +1135,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
                                          <div className="flex items-start">
-                                           <span className="text-[12px] text-white/70 shrink-0 w-40">{evt.timeStr} Uhr</span>
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[40px]">{evt.timeStr} Uhr</span>
                                            <span className="text-[12px] text-white/70">{evt.summary}</span>
                                          </div>
                                        </div>
