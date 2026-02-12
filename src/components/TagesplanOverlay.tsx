@@ -994,7 +994,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         <div
                           key={dayIndex}
                           ref={isToday ? todayColRef : undefined}
-                          className={`p-2 border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/[0.06]' : ''}`}
+                          className="p-2 border-r border-white/30 last:border-r-0"
                           style={{ width: '90px', flexShrink: 0 }}
                         >
                           <div className="text-[14px] text-white font-medium">{dayNames[jsDay]}</div>
@@ -1042,8 +1042,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
                   {/* Timetable grid */}
                   {(() => {
-                    const START_HOUR = 6;
-                    const END_HOUR = 22;
+                    const START_HOUR = 8;
+                    const END_HOUR = 20;
                     const HOUR_HEIGHT = 40; // px per hour
                     const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
@@ -1133,7 +1133,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           return (
                             <div
                               key={dayIndex}
-                              className={`relative border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/[0.06]' : ''}`}
+                              className="relative border-r border-white/30 last:border-r-0"
                               style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
                             >
                               {/* Hour gridlines */}
@@ -1154,10 +1154,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 return (
                                   <div
                                     key={i}
-                                    className={`absolute left-0.5 right-0.5 rounded ${block.color} border border-white/10 px-1 overflow-hidden`}
+                                    className={`absolute left-1 right-1 rounded-lg ${block.color} border border-white/15 px-2 py-0.5 overflow-hidden shadow-sm`}
                                     style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
                                   >
-                                    <div className="text-[10px] text-white/70 leading-tight mt-0.5">
+                                    <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
                                       {block.emoji} {block.label}
                                     </div>
                                     {block.emoji === '' && height >= 28 && (
@@ -1184,8 +1184,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 const top = (nowHour - START_HOUR) * HOUR_HEIGHT;
                                 return (
                                   <div className="absolute left-0 right-0 z-10" style={{ top: `${top}px` }}>
-                                    <div className="h-[2px] bg-red-500 w-full" />
-                                    <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-red-500" />
+                                    <div className="h-[2px] bg-[#5AD940] w-full" />
+                                    <div className="absolute -top-[3px] -left-[3px] w-[8px] h-[8px] rounded-full bg-[#5AD940]" />
                                   </div>
                                 );
                               })()}
