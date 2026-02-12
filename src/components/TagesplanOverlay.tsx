@@ -994,7 +994,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     }
                     if (spans.length === 0) return null;
                     return (
-                      <div className="relative mb-2" style={{ height: '34px' }}>
+                      <div className="relative mb-1" style={{ height: '34px' }}>
                         {spans.map((span, si) => (
                           <div
                             key={si}
