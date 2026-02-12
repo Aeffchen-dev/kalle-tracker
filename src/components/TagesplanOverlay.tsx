@@ -964,12 +964,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <div className="px-4" style={{ width: 'max-content' }}>
-                  {/* Owner spans row */}
+                  {/* Sticky ownership bar */}
                   {(() => {
-                    const cardWidth = `calc((100vw - 48px) / 2.1)`;
-                    const gap = 8; // gap-2 = 8px
-                    // Build ownership spans
-                    const spans: { person: string; startIdx: number; length: number }[] = [];
+                    const spans: { person: string; startIdx: number; length: number; endDate: Date }[] = [];
                     let i = 0;
                     while (i < TOTAL_DAYS) {
                       const d = new Date(rangeStart);
@@ -984,27 +981,24 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           const no = getKalleOwnerForDate(icalEvents, nd);
                           if (no && no.person === owner.person) { len++; } else break;
                         }
-                        spans.push({ person: owner.person, startIdx, length: len });
+                        const lastDay = new Date(rangeStart);
+                        lastDay.setDate(lastDay.getDate() + startIdx + len - 1);
+                        spans.push({ person: owner.person, startIdx, length: len, endDate: lastDay });
                         i += len;
                       } else {
                         i++;
                       }
                     }
                     if (spans.length === 0) return null;
+                    const currentSpan = spans.find(s => currentDayIndex >= s.startIdx && currentDayIndex < s.startIdx + s.length) || spans[0];
+                    if (!currentSpan) return null;
                     return (
-                      <div className="relative mb-2" style={{ height: '22px' }}>
-                        {spans.map((span, si) => (
-                          <div
-                            key={si}
-                            className="absolute top-0 h-full rounded-full bg-white/[0.06] flex items-center justify-center"
-                            style={{
-                              left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
-                              width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
-                            }}
-                          >
-                            <span className="text-white/50 text-[11px] whitespace-nowrap">🐶 {span.person} hat Kalle</span>
-                          </div>
-                        ))}
+                      <div className="sticky left-0 z-10 mb-2">
+                        <div className="rounded-full bg-white/[0.06] flex items-center justify-center py-1 px-3 w-fit mx-auto">
+                          <span className="text-white/50 text-[11px] whitespace-nowrap">
+                            🐶 {currentSpan.person} hat Kalle bis {format(currentSpan.endDate, 'd.M.', { locale: de })}
+                          </span>
+                        </div>
                       </div>
                     );
                   })()}
@@ -1116,21 +1110,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   {slot.isWalk && (
                                     <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
                                       <span className="text-[12px] text-white flex items-center gap-1.5">
-                                        <span className="shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-white/40 shrink-0">{formatTime(slot.avgHour)}</span>
                                         <span className="text-white/60">Gassi</span>
                                       </span>
-                                      <span className="text-[11px] text-white/40 shrink-0">{formatTime(slot.avgHour)}</span>
+                                      <span className="shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
                                     </div>
                                   )}
-                                  {/* iCal events - same layout, border-l accent */}
+                                  {/* iCal events */}
                                   {slot.icalEvents.map((evt, j) => (
                                     <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                       <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg">
                                         <span className="text-[12px] text-white flex items-center gap-1.5 truncate mr-2">
-                                          <span className="shrink-0">📅</span>
+                                          <span className="text-white/40 shrink-0">{evt.timeStr}</span>
                                           <span className="text-white/60 truncate">{evt.summary}</span>
                                         </span>
-                                        <span className="text-[11px] text-white/40 shrink-0">{evt.timeStr}</span>
+                                        <span className="shrink-0">📅</span>
                                       </div>
                                     </div>
                                   ))}
