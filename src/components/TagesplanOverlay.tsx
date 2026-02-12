@@ -216,10 +216,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
 
-  // Auto-scroll wochenplan to today column every time overlay opens
+  // Auto-scroll wochenplan to today column every time overlay becomes visible
   useEffect(() => {
-    if (!isOpen || !dataLoaded || currentDayIndex < 0) return;
-    const attempts = [50, 200, 500];
+    if (animationPhase !== 'visible' || !dataLoaded || currentDayIndex < 0) return;
+    const attempts = [100, 300, 600];
     const timers = attempts.map(delay => setTimeout(() => {
       if (todayColRef.current && wochenplanScrollRef.current) {
         const container = wochenplanScrollRef.current;
@@ -229,7 +229,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       }
     }, delay));
     return () => timers.forEach(clearTimeout);
-  }, [isOpen, dataLoaded, currentDayIndex]);
+  }, [animationPhase, dataLoaded, currentDayIndex]);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
