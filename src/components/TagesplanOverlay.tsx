@@ -1057,11 +1057,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
                     const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
                     const endH = dtEnd.getHours() + dtEnd.getMinutes() / 60;
-                    const duration = Math.max(endH - startH, 0.5);
                     blocks.push({
                       startHour: startH,
-                      endHour: startH + duration,
-                      label: format(dtStart, 'HH:mm'),
+                      endHour: Math.max(endH, startH + 0.5),
+                      label: `${format(dtStart, 'HH:mm')}–${format(dtEnd, 'HH:mm')}`,
                       emoji: '',
                       color: '',
                     });
