@@ -6,7 +6,7 @@ import { differenceInMonths, format, getDay, getHours } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { getCachedSettings } from '@/lib/settings';
 import { getEvents, Event as AppEvent } from '@/lib/events';
-import { fetchICalEvents, getICalEventsForWeek, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
+import { fetchICalEvents, getICalEventsForWeek, getICalEventsForRange, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 
 interface Ingredient {
   quantity: string;
@@ -144,6 +144,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const isReceivingRealtimeUpdate = useRef(false);
   const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
+  const wochenplanScrollRef = useRef<HTMLDivElement>(null);
+  const todayColRef = useRef<HTMLTableCellElement>(null);
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -183,25 +185,45 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     return dayMap;
   }, [appEvents]);
 
-  // Compute week start based on offset
-  const weekStart = useMemo(() => {
+  // Total days to display
+  const TOTAL_DAYS = 31;
+
+  // Compute range start: 15 days before today, shifted by weekOffset
+  const rangeStart = useMemo(() => {
     const now = new Date();
-    const currentDay = now.getDay();
-    const diff = currentDay === 0 ? -6 : 1 - currentDay;
+    now.setHours(0, 0, 0, 0);
     const start = new Date(now);
-    start.setDate(start.getDate() + diff + weekOffset * 7);
-    start.setHours(0, 0, 0, 0);
+    start.setDate(start.getDate() - 15 + weekOffset * 7);
     return start;
   }, [weekOffset]);
 
-  // Get iCal events for selected week
-  const weekIcalEvents = useMemo(() => {
-    return getICalEventsForWeek(icalEvents, weekStart);
-  }, [icalEvents, weekStart]);
+  // For backward compat keep weekStart for any other usage
+  const weekStart = rangeStart;
 
-  // Current day index (Mon=0), only valid for current week
-  const currentDayIndex = useMemo(() => weekOffset === 0 ? (new Date().getDay() + 6) % 7 : -1, [weekOffset]);
+  // Get iCal events for the range
+  const weekIcalEvents = useMemo(() => {
+    return getICalEventsForRange(icalEvents, rangeStart, TOTAL_DAYS);
+  }, [icalEvents, rangeStart]);
+
+  // Current day index within the range (-1 if today not in range)
+  const currentDayIndex = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffMs = today.getTime() - rangeStart.getTime();
+    const idx = Math.round(diffMs / (24 * 60 * 60 * 1000));
+    return idx >= 0 && idx < TOTAL_DAYS ? idx : -1;
+  }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
+
+  // Auto-scroll wochenplan to today column
+  useEffect(() => {
+    if (todayColRef.current && wochenplanScrollRef.current) {
+      const container = wochenplanScrollRef.current;
+      const col = todayColRef.current;
+      const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
+      container.scrollLeft = Math.max(0, scrollLeft);
+    }
+  }, [dataLoaded, currentDayIndex]);
 
   const copyAddress = async () => {
     const address = 'Uhlandstraße 151, 10719 Berlin';
@@ -831,22 +853,38 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   </div>
                 </div>
               ) : (
-              <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+              <div
+                ref={wochenplanScrollRef}
+                className="overflow-x-auto -mx-4 scrollbar-hide"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
                 <div className="px-4 min-w-fit">
-                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
-                <table className="w-full text-[14px]">
+                <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block" style={{ minWidth: `${TOTAL_DAYS * 90}px` }}>
+                <table className="w-full text-[14px]" style={{ tableLayout: 'fixed' }}>
+                  <colgroup>
+                    {Array.from({ length: TOTAL_DAYS }, (_, i) => (
+                      <col key={i} style={{ width: '90px' }} />
+                    ))}
+                  </colgroup>
                   <thead>
                     {/* Row 1: Date and Day */}
                     <tr className="border-b border-white/30">
-                      {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                      {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
                         const isToday = dayIndex === currentDayIndex;
-                        const dayDate = new Date(weekStart);
+                        const dayDate = new Date(rangeStart);
                         dayDate.setDate(dayDate.getDate() + dayIndex);
-                        const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+                        const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+                        const jsDay = dayDate.getDay();
                         
                         return (
-                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
-                            <div className={`text-[14px] ${isToday ? 'text-[#5AD940] font-bold' : 'text-white'}`}>{dayNames[dayIndex]}</div>
+                          <th
+                            key={dayIndex}
+                            ref={isToday ? todayColRef : undefined}
+                            className={`p-2 text-left border-r border-white/30 last:border-r-0 ${
+                              isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940] border-t-2 border-t-[#5AD940]' : ''
+                            }`}
+                          >
+                            <div className={`text-[14px] ${isToday ? 'font-bold' : ''} text-white`}>{dayNames[jsDay]}</div>
                             <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
                           </th>
                         );
@@ -858,18 +896,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         const cells: React.ReactNode[] = [];
                         let skipUntil = -1;
                         
-                        for (let dayIndex = 0; dayIndex < 7; dayIndex++) {
+                        for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
                           if (dayIndex < skipUntil) continue;
                           
-                          const dayDate = new Date(weekStart);
+                          const dayDate = new Date(rangeStart);
                           dayDate.setDate(dayDate.getDate() + dayIndex);
                           const owner = getKalleOwnerForDate(icalEvents, dayDate);
                           const isToday = dayIndex === currentDayIndex;
                           
                           if (owner) {
                             let span = 1;
-                            for (let j = dayIndex + 1; j < 7; j++) {
-                              const nextDate = new Date(weekStart);
+                            for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
+                              const nextDate = new Date(rangeStart);
                               nextDate.setDate(nextDate.getDate() + j);
                               const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
                               if (nextOwner && nextOwner.person === owner.person) {
@@ -881,12 +919,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             skipUntil = dayIndex + span;
                             
                             const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
+                            const spanIncludesToday = currentDayIndex >= dayIndex && currentDayIndex < dayIndex + span;
                             
                             cells.push(
                               <td
                                 key={dayIndex}
                                 colSpan={span}
-                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}
+                                className={`border-r border-white/30 last:border-r-0`}
                               >
                                  <div className="flex items-center justify-between px-3 py-2">
                                    <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
@@ -896,7 +935,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
+                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${
+                                isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940]' : ''
+                              }`}>
                               </td>
                             );
                           }
@@ -904,26 +945,27 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         return cells;
                       })()}
                     </tr>
-                    <tr><td colSpan={7} className="h-0 border-b border-white/30"></td></tr>
+                    <tr><td colSpan={TOTAL_DAYS} className="h-0 border-b border-white/30"></td></tr>
                   </thead>
                   <tbody>
                     {/* Walk times with 💩 indication from event data */}
                     {(() => {
-                      // For each day, compute average times for each event
-                      // Group all events per day into time-sorted entries with their avg time
                       const daySlots = new Map<number, { avgHour: number; hasPoop: boolean }[]>();
                       
-                      for (let d = 0; d < 7; d++) {
-                        const data = avgGassiByDay.get(d);
+                      for (let d = 0; d < TOTAL_DAYS; d++) {
+                        // Map each day to its weekday index (Mon=0..Sun=6) for avg data
+                        const dayDate = new Date(rangeStart);
+                        dayDate.setDate(dayDate.getDate() + d);
+                        const jsDay = dayDate.getDay(); // 0=Sun
+                        const monBasedDay = (jsDay + 6) % 7; // Mon=0..Sun=6
+                        const data = avgGassiByDay.get(monBasedDay);
                         if (!data) { daySlots.set(d, []); continue; }
                         
-                        // Combine all hours with their type
                         const allEvents: { hour: number; isPoop: boolean }[] = [
                           ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
                           ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
                         ].sort((a, b) => a.hour - b.hour);
                         
-                        // Cluster nearby events (within 1.5h)
                         const clusters: { hours: number[]; hasPoop: boolean }[] = [];
                         for (const evt of allEvents) {
                           const last = clusters[clusters.length - 1];
@@ -941,13 +983,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         })));
                       }
                       
-                      // Find max number of slots across all days
                       const maxSlots = Math.max(...Array.from(daySlots.values()).map(s => s.length), 0);
                       
                       if (maxSlots === 0) {
                         return (
                           <tr>
-                            <td colSpan={7} className="p-4 text-center text-white/30 text-[12px]">
+                            <td colSpan={TOTAL_DAYS} className="p-4 text-center text-white/30 text-[12px]">
                               Noch keine Gassi-Daten
                             </td>
                           </tr>
@@ -955,7 +996,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       }
                       
                       const formatTime = (h: number) => {
-                        // Round to nearest half hour
                         const rounded = Math.round(h * 2) / 2;
                         const hours = Math.floor(rounded);
                         const mins = rounded % 1 === 0.5 ? 30 : 0;
@@ -964,7 +1004,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       
                       return Array.from({ length: maxSlots }, (_, slotIdx) => (
                         <tr key={slotIdx} className="border-b border-white/30 last:border-b-0">
-                          {[0, 1, 2, 3, 4, 5, 6].map((dayIndex) => {
+                          {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
                             const slots = daySlots.get(dayIndex) || [];
                             const slot = slots[slotIdx];
                             const isToday = dayIndex === currentDayIndex;
@@ -974,7 +1014,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''
+                                  isToday ? 'border-l border-l-[#5AD940] border-r-[#5AD940]' : ''
                                 } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
                               >
                                 {slot ? (
@@ -995,9 +1035,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     })()}
                     {/* iCal events row */}
                     {(() => {
-                      // Collect non-Kalle iCal events for each day
                       const dayEvents: { dayIndex: number; events: { summary: string; time: string }[] }[] = [];
-                      for (let d = 0; d < 7; d++) {
+                      for (let d = 0; d < TOTAL_DAYS; d++) {
                         const evts = weekIcalEvents.get(d) || [];
                         const filtered = evts
                           .filter(e => !e.summary?.match(/hat\s+Kalle/i))
@@ -1011,24 +1050,30 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       const hasAny = dayEvents.some(d => d.events.length > 0);
                       if (!hasAny) return null;
                       const maxEvents = Math.max(...dayEvents.map(d => d.events.length));
-                      return Array.from({ length: maxEvents }, (_, idx) => (
-                        <tr key={`ical-${idx}`} className="border-b border-white/30 last:border-b-0">
-                          {dayEvents.map(({ dayIndex, events }) => {
-                            const evt = events[idx];
-                            const isToday = dayIndex === currentDayIndex;
-                            return (
-                              <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top ${isToday ? 'ring-1 ring-inset ring-[#5AD940]' : ''}`}>
-                                {evt ? (
-                                  <div>
-                                    <div className="text-white/40 text-[12px]">{evt.time}</div>
-                                    <div className="text-white/70 text-[13px] mt-0.5 truncate max-w-[90px]">{evt.summary}</div>
-                                  </div>
-                                ) : null}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ));
+                      return Array.from({ length: maxEvents }, (_, idx) => {
+                        // Check if this is the last iCal row
+                        const isLastRow = idx === maxEvents - 1;
+                        return (
+                          <tr key={`ical-${idx}`} className="border-b border-white/30 last:border-b-0">
+                            {dayEvents.map(({ dayIndex, events }) => {
+                              const evt = events[idx];
+                              const isToday = dayIndex === currentDayIndex;
+                              return (
+                                <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
+                                  isToday ? `border-l border-l-[#5AD940] border-r-[#5AD940] ${isLastRow ? 'border-b-2 border-b-[#5AD940]' : ''}` : ''
+                                }`}>
+                                  {evt ? (
+                                    <div>
+                                      <div className="text-white/40 text-[12px]">{evt.time}</div>
+                                      <div className="text-white/70 text-[13px] mt-0.5 truncate max-w-[90px]">{evt.summary}</div>
+                                    </div>
+                                  ) : null}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      });
                     })()}
                   </tbody>
                 </table>
