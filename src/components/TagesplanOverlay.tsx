@@ -187,7 +187,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [appEvents]);
 
   // Total days to display
-  const TOTAL_DAYS = 31;
+  const TOTAL_DAYS = 62;
 
   // Compute range start: today, shifted by weekOffset
   const rangeStart = useMemo(() => {
@@ -972,9 +972,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 colSpan={span}
                                 className="border-r border-white/30 last:border-r-0"
                               >
-                                <div className="flex items-center justify-between px-3 py-2">
-                                  <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                  <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
+                                <div className="px-3 py-2">
+                                  <div className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</div>
+                                  <div className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</div>
                                 </div>
                               </td>
                             );
@@ -1059,7 +1059,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       }
                       
                       return Array.from({ length: maxSlots }, (_, rowIdx) => (
-                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0">
+                        <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ minHeight: '100px' }}>
                           {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
                             const slots = daySlots.get(dayIndex) || [];
                             const slot = slots[rowIdx];
