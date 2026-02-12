@@ -146,6 +146,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollBgColor, setScrollBgColor] = useState('#3d2b1f');
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -324,9 +326,30 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     return () => clearTimeout(timeout);
   }, [meals, schedule, dataLoaded, hasLocalChanges]);
 
+  // Scroll-based background color blend from brown to black
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el || animationPhase !== 'visible') return;
+    const handleScroll = () => {
+      const scrollTop = el.scrollTop;
+      const threshold = window.innerHeight * 0.2; // 20vh
+      const t = Math.min(scrollTop / threshold, 1);
+      // Lerp from #3d2b1f (61,43,31) to #000000
+      const r = Math.round(61 * (1 - t));
+      const g = Math.round(43 * (1 - t));
+      const b = Math.round(31 * (1 - t));
+      const color = `rgb(${r},${g},${b})`;
+      setScrollBgColor(color);
+      document.body.style.backgroundColor = color;
+    };
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [animationPhase]);
+
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
+      setScrollBgColor('#3d2b1f');
       setAnimationPhase('expanding');
       // Recolor body after dots have mostly expanded
       setTimeout(() => {
@@ -530,7 +553,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 bg-spot pointer-events-auto" />
+        <div className="absolute inset-0 pointer-events-auto" style={{ backgroundColor: scrollBgColor }} />
       )}
 
       {/* Content - only render when visible */}
@@ -545,7 +568,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 pb-4">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
