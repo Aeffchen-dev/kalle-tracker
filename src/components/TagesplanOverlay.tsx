@@ -887,10 +887,74 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               );
             })()}
 
+            {/* Training Section */}
+            {(() => {
+              const settings = getCachedSettings();
+              const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
+              const ageInMonths = differenceInMonths(new Date(), birthday);
+
+              const trainingsByAge: { maxAge: number; tricks: { name: string; description: string }[] }[] = [
+                { maxAge: 4, tricks: [
+                  { name: 'Name lernen', description: 'Rufe Kalles Namen und belohne sofort, wenn er dich anschaut. 10x am Tag, immer mit Leckerli.' },
+                  { name: 'Sitz', description: 'Leckerli über die Nase führen, bis der Po auf dem Boden ist. Sofort belohnen und „Sitz" sagen.' },
+                  { name: 'Rückruf Basics', description: 'In der Wohnung üben: Name rufen → Kalle kommt → Jackpot-Belohnung. Niemals schimpfen beim Kommen!' },
+                  { name: 'Beißhemmung', description: 'Wenn Kalle zu fest zubeißt: kurz „Au!" sagen und Spiel 3 Sekunden unterbrechen. Dann weiterspielen.' },
+                  { name: 'Leinenführigkeit Intro', description: 'Drinnen mit Leine üben. Kalle läuft neben dir → Leckerli. Zieht er → stehen bleiben, warten.' },
+                ]},
+                { maxAge: 8, tricks: [
+                  { name: 'Platz', description: 'Aus dem Sitz: Leckerli vor der Nase langsam zum Boden führen. Sobald Kalle liegt → belohnen.' },
+                  { name: 'Bleib', description: 'Sitz → Handfläche zeigen → 1 Schritt zurück → sofort zurück und belohnen. Langsam steigern.' },
+                  { name: 'Pfote geben', description: 'Leckerli in geschlossener Faust halten. Kalle wird irgendwann die Pfote heben → sofort belohnen und „Pfote" sagen.' },
+                  { name: 'Impulskontrolle', description: 'Leckerli auf den Boden legen, mit Hand abdecken. Kalle wartet → Hand weg → „Nimm". Geduld aufbauen.' },
+                  { name: 'Deckentraining', description: 'Kalle auf seine Decke schicken und dort belohnen. Dauer langsam steigern. Wichtig für Ruhe lernen.' },
+                  { name: 'Touch', description: 'Offene Handfläche hinhalten. Kalle stupst mit der Nase dran → Click/Marker + Belohnung.' },
+                ]},
+                { maxAge: 14, tricks: [
+                  { name: 'Fuß gehen', description: 'Kalle läuft eng an deiner Seite. Leckerli an der Hüfte halten, alle 3 Schritte belohnen. Langsam Abstände erhöhen.' },
+                  { name: 'Abrufen unter Ablenkung', description: 'Im Park üben: Schleppleine, andere Hunde in Sicht. Rückruf → mega Belohnung. Nur rufen, wenn du sicher bist!' },
+                  { name: 'Dreh dich', description: 'Leckerli in der Hand, Kalle im Kreis führen. Erst eine Richtung, dann die andere. Sieht cool aus!' },
+                  { name: 'Slalom durch die Beine', description: 'Breitbeinig stehen, Kalle mit Leckerli durch die Beine locken. Abwechselnd links/rechts.' },
+                  { name: 'Warten am Bordstein', description: 'Vor jeder Straße: automatisches Sitz. Erst bei „Okay" weitergehen. Lebensrettend!' },
+                  { name: 'Gegenstand bringen', description: 'Spielzeug werfen → Kalle bringt es zurück → Tauschen gegen Leckerli. Kein Ziehen-Spiel daraus machen.' },
+                ]},
+                { maxAge: 24, tricks: [
+                  { name: 'Rolle', description: 'Aus dem Platz: Leckerli seitlich über den Rücken führen. Kalle rollt sich → „Rolle!" + Belohnung.' },
+                  { name: 'Männchen', description: 'Aus dem Sitz: Leckerli langsam nach oben. Kalle hebt die Vorderpfoten → kurz halten → belohnen.' },
+                  { name: 'Schäm dich', description: 'Klebeband auf die Nase → Kalle wischt mit der Pfote → „Schäm dich!" + Belohnung. Klebeband nach und nach weglassen.' },
+                  { name: 'Rückwärts gehen', description: 'In engem Gang üben. Kalle auf dich zulaufen lassen, dann Schritt auf ihn zu → er geht rückwärts → belohnen.' },
+                  { name: 'Distanzkontrolle', description: 'Sitz → Platz → Steh aus 5m Entfernung. Nur mit Handzeichen, kein Leckerli zeigen.' },
+                  { name: 'Apportieren mit Benennung', description: 'Verschiedene Spielzeuge benennen lernen. „Bring den Ball" vs „Bring das Seil". Kalle kann Wörter lernen!' },
+                ]},
+                { maxAge: 100, tricks: [
+                  { name: 'Aufräumen', description: 'Spielzeug in eine Kiste bringen. Erst ein Spielzeug direkt über der Kiste → fallen lassen → belohnen. Dann Distanz erhöhen.' },
+                  { name: 'Verstecken spielen', description: 'Du versteckst dich, Kalle sucht. Stärkt die Bindung und den Rückruf. Anfangs leichte Verstecke wählen.' },
+                  { name: 'Nasenarbeit', description: 'Leckerli unter einem von 3 Bechern verstecken. Kalle zeigt den richtigen an → Belohnung. Gehirntraining!' },
+                  { name: 'Longieren', description: 'Kalle läuft außen um einen Kreis aus Pylonen. Du stehst in der Mitte und leitest mit Körpersprache.' },
+                  { name: 'Trick-Kette', description: 'Mehrere bekannte Tricks hintereinander: Sitz → Pfote → Platz → Rolle. Erst am Ende belohnen.' },
+                  { name: 'Fährtenarbeit', description: 'Eine Spur mit Leckerlis legen (Schlangenlinie). Kalle folgt der Nase. Geistig sehr anstrengend – 10 min reichen!' },
+                ]},
+              ];
+
+              const ageGroup = trainingsByAge.find(g => ageInMonths < g.maxAge) || trainingsByAge[trainingsByAge.length - 1];
+              // Pick a random trick based on current date (changes daily)
+              const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+              const trick = ageGroup.tricks[dayIndex % ageGroup.tricks.length];
+
+              return (
+                <div className="mb-8">
+                  <h2 className="text-[14px] text-white mb-4">🧑‍🏫 Training</h2>
+                  <div className="border border-white/30 rounded-lg overflow-hidden p-4">
+                    <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
+                    <div className="text-white/60 text-[14px] leading-relaxed">{trick.description}</div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Wochenplan Section */}
             <div className="mb-0">
               <div className="mb-4">
-                <h2 className="text-[14px] text-white">Wochenplan</h2>
+                <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
               </div>
               
               {!dataLoaded ? (
