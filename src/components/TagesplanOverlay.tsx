@@ -829,7 +829,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
                         
                         return (
-                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}>
+                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'border-l-2 border-l-[#5AD940] bg-[#5AD940]/[0.06]' : ''}`}>
                             <div className={`text-[14px] ${isToday ? 'text-[#5AD940] font-bold' : 'text-white'}`}>{dayNames[dayIndex]}</div>
                             <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
                           </th>
@@ -876,9 +876,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 colSpan={span}
-                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}
+                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'border-l-2 border-l-[#5AD940] bg-[#5AD940]/[0.06]' : ''}`}
                               >
-                                <div className="bg-white flex items-center justify-between px-2">
+                                <div className="bg-white flex items-center justify-between px-3 py-2">
                                   <span className="text-black text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
                                   <span className="text-black/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
                                 </div>
@@ -886,7 +886,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}>
+                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'border-l-2 border-l-[#5AD940] bg-[#5AD940]/[0.06]' : ''}`}>
                               </td>
                             );
                           }
@@ -963,7 +963,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'bg-[#5AD940]/10' : ''
+                                  isToday ? 'border-l-2 border-l-[#5AD940] bg-[#5AD940]/[0.06]' : ''
                                 } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
                               >
                                 {slot ? (
