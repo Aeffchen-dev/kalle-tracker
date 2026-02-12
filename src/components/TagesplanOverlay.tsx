@@ -1006,14 +1006,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
                             }}
                           >
-                            <div className="relative h-full">
-                              <div className="sticky left-0 h-full flex items-center pl-4 pointer-events-none" style={{ maxWidth: 'calc(100vw - 100px)', width: '100%' }}>
+                            <div className="h-full flex items-center justify-between">
+                              <div className="sticky left-0 h-full flex items-center pl-4 pointer-events-none z-[1]">
                                 <span className="text-[12px] text-white/70 flex items-center gap-1.5 shrink-0">
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
                                 </span>
                               </div>
-                              <div className="absolute top-0 right-0 h-full flex items-center pr-4 pointer-events-none">
+                              <div className="sticky h-full flex items-center pointer-events-none z-[1]" style={{ right: '16px' }}>
                                 <span className="text-[11px] text-white/40 shrink-0">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
