@@ -155,30 +155,31 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
   }, []);
 
-  // Compute average gassi times from most recent 14 days, grouped by weekday vs weekend
+  // Compute average gassi times, grouped by weekday vs weekend
+  // Use 14 days for weekdays, 60 days for weekends (less frequent data)
   const avgGassiByDay = useMemo(() => {
     const now = new Date();
-    const cutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const weekdayCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const weekendCutoff = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
     
-    // Collect hours for weekdays (Mon-Fri) and weekends (Sat-Sun)
     const groups = { weekday: { pipiHours: [] as number[], stuhlgangHours: [] as number[] }, weekend: { pipiHours: [] as number[], stuhlgangHours: [] as number[] } };
     
     for (const event of appEvents) {
       if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
       const d = new Date(event.time);
-      if (d < cutoff) continue;
-      const jsDay = d.getDay(); // 0=Sun, 6=Sat
+      const jsDay = d.getDay();
       const isWeekend = jsDay === 0 || jsDay === 6;
+      const cutoff = isWeekend ? weekendCutoff : weekdayCutoff;
+      if (d < cutoff) continue;
       const group = isWeekend ? groups.weekend : groups.weekday;
       const hour = d.getHours() + d.getMinutes() / 60;
       if (event.type === 'pipi') group.pipiHours.push(hour);
       else group.stuhlgangHours.push(hour);
     }
     
-    // Map each day index (Mon=0..Sun=6) to the correct group
     const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
     for (let i = 0; i < 7; i++) {
-      const isWeekend = i >= 5; // 5=Sa, 6=So
+      const isWeekend = i >= 5;
       dayMap.set(i, isWeekend ? groups.weekend : groups.weekday);
     }
     
@@ -218,15 +219,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Auto-scroll wochenplan to today column
   useEffect(() => {
     if (!dataLoaded || currentDayIndex < 0) return;
-    const timer = setTimeout(() => {
+    // Use multiple attempts to ensure element is rendered
+    const attempts = [50, 200, 500];
+    const timers = attempts.map(delay => setTimeout(() => {
       if (todayColRef.current && wochenplanScrollRef.current) {
         const container = wochenplanScrollRef.current;
         const col = todayColRef.current;
         const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
         container.scrollLeft = Math.max(0, scrollLeft);
       }
-    }, 100);
-    return () => clearTimeout(timer);
+    }, delay));
+    return () => timers.forEach(clearTimeout);
   }, [dataLoaded, currentDayIndex]);
 
   const copyAddress = async () => {
@@ -780,19 +783,37 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       
                       {/* Clickable progress bar */}
                       <div className="flex gap-1 mb-4">
-                        {phases.map((p, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                            className={`flex-1 h-2 rounded-full transition-all ${
-                              displayIndex === i 
-                                ? 'bg-white' 
-                                : ageInMonths >= p.min 
-                                  ? 'bg-white/30' 
-                                  : 'bg-white/10'
-                            }`}
-                          />
-                        ))}
+                        {phases.map((p, i) => {
+                          const isActive = displayIndex === i;
+                          const isPast = ageInMonths >= p.min;
+                          // For current phase, show proportional fill (+20%)
+                          const isCurrent = i === currentPhaseIndex;
+                          let fillPercent = 0;
+                          if (isActive) fillPercent = 100;
+                          else if (isPast) fillPercent = 100;
+                          
+                          if (isCurrent && !isActive) {
+                            const progress = Math.min(100, ((ageInMonths - p.min) / (p.max - p.min)) * 100 + 20);
+                            fillPercent = progress;
+                          }
+                          
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                              className="flex-1 h-2 rounded-full overflow-hidden relative"
+                              style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                            >
+                              <div
+                                className="absolute inset-0 rounded-full transition-all duration-300 ease-out"
+                                style={{
+                                  width: `${fillPercent}%`,
+                                  backgroundColor: isActive ? 'white' : isPast ? 'rgba(255,255,255,0.3)' : 'transparent',
+                                }}
+                              />
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                     
@@ -830,7 +851,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         if (nextIdx !== displayIndex && contentEl) {
                           // Slide out in swipe direction
                           const direction = deltaX < 0 ? -1 : 1;
-                          contentEl.style.transition = 'transform 0.2s ease-out';
+                          contentEl.style.transition = 'transform 0.15s ease-out';
                           contentEl.style.transform = `translateX(${direction * 300}px)`;
                           setTimeout(() => {
                             setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
@@ -839,13 +860,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               contentEl.style.transition = 'none';
                               contentEl.style.transform = `translateX(${-direction * 300}px)`;
                               requestAnimationFrame(() => {
-                                contentEl.style.transition = 'transform 0.2s ease-out';
+                                contentEl.style.transition = 'transform 0.15s ease-out';
                                 contentEl.style.transform = 'translateX(0)';
                               });
                             }
-                          }, 200);
+                          }, 150);
                         } else if (contentEl) {
-                          contentEl.style.transition = 'transform 0.2s ease-out';
+                          contentEl.style.transition = 'transform 0.15s ease-out';
                           contentEl.style.transform = 'translateX(0)';
                         }
                         
