@@ -813,7 +813,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="px-4 min-w-fit">
                 <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
-                <table className="w-full text-[12px]">
+                <table className="w-full text-[14px]">
                   <thead>
                     {/* Row 1: Date and Day */}
                     <tr className="border-b border-white/30">
@@ -829,9 +829,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         const dayNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
                         
                         return (
-                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
-                            <div className={`${isToday ? 'text-[#5AD940]' : 'text-white'}`}>{dayNames[dayIndex]}</div>
-                            <div className="text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
+                          <th key={dayIndex} className={`p-2 text-left border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}>
+                            <div className={`text-[14px] ${isToday ? 'text-[#5AD940] font-bold' : 'text-white'}`}>{dayNames[dayIndex]}</div>
+                            <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
                           </th>
                         );
                       })}
@@ -876,17 +876,17 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 colSpan={span}
-                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}
+                                className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}
                               >
                                 <div className="bg-white flex items-center justify-between px-2">
-                                  <span className="text-black text-[10px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                  <span className="text-black/40 text-[9px] whitespace-nowrap">bis {endDateStr}</span>
+                                  <span className="text-black text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
+                                  <span className="text-black/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
                                 </div>
                               </td>
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-white/10' : ''}`}>
+                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${isToday ? 'bg-[#5AD940]/10' : ''}`}>
                               </td>
                             );
                           }
@@ -963,13 +963,13 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               <td
                                 key={dayIndex}
                                 className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'bg-white/[0.04]' : ''
+                                  isToday ? 'bg-[#5AD940]/10' : ''
                                 } ${isCurrentSlot ? 'border-l-2 border-l-[#5AD940]' : ''}`}
                               >
                                 {slot ? (
                                   <div>
-                                    <div className="text-white/50 text-[10px]">{formatTime(slot.avgHour)} Uhr</div>
-                                    <div className="text-white/60 text-[11px] mt-0.5">
+                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
+                                    <div className="text-white/60 text-[14px] mt-0.5">
                                       {slot.hasPoop ? '💩' : '💦'}
                                     </div>
                                   </div>
