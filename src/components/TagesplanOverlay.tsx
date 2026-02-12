@@ -996,7 +996,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 const HOUR_HEIGHT = 40;
                 const totalHeight = (END_HOUR - START_HOUR) * HOUR_HEIGHT;
 
-                type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string };
+                type BlockItem = { startHour: number; endHour: number; label: string; emoji: string; color: string; isOwnership?: boolean };
                 const dayBlocks = new Map<number, BlockItem[]>();
 
                 for (let d = 0; d < TOTAL_DAYS; d++) {
@@ -1039,7 +1039,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
                   const evts = weekIcalEvents.get(d) || [];
                   for (const e of evts) {
-                    if (e.summary?.match(/hat\s+Kalle/i)) continue;
+                    if (e.summary?.match(/hat\s+Kalle/i)) {
+                      // Add ownership as a full-height background block
+                      const match = e.summary.match(/(?:🐶\s*)?(\w+)\s+hat\s+Kalle/i);
+                      const person = match?.[1] || '';
+                      blocks.push({
+                        startHour: START_HOUR,
+                        endHour: END_HOUR,
+                        label: `🐶 ${person}`,
+                        emoji: '🐶',
+                        color: '',
+                        isOwnership: true,
+                      });
+                      continue;
+                    }
                     const dtStart = new Date(e.dtstart);
                     const dtEnd = e.dtend ? new Date(e.dtend) : new Date(dtStart.getTime() + 3600000);
                     const startH = dtStart.getHours() + dtStart.getMinutes() / 60;
@@ -1050,7 +1063,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       endHour: startH + duration,
                       label: format(dtStart, 'HH:mm'),
                       emoji: '',
-                      color: 'bg-green-900/40',
+                      color: '',
                     });
                   }
 
@@ -1058,20 +1071,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 }
 
                 return (
-                  <div className="flex -mr-4">
+                  <div className="flex -mx-4">
                     {/* Fixed time axis outside the scrollable area */}
-                    <div className="flex flex-col bg-transparent" style={{ width: '36px', flexShrink: 0 }}>
+                    <div className="flex flex-col bg-transparent pl-4" style={{ width: '52px', flexShrink: 0 }}>
                       {/* Header spacer */}
                       <div style={{ height: '52px' }} />
-                      {/* Ownership row spacer */}
-                      <div style={{ height: '36px' }} />
                       {/* Time labels */}
                       <div className="relative" style={{ height: `${totalHeight}px` }}>
                         {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
                           <div
                             key={i}
                             className="absolute text-[10px] text-white/30 text-right pr-1 leading-none"
-                            style={{ top: `${i * HOUR_HEIGHT}px`, width: '36px', transform: 'translateY(-5px)' }}
+                            style={{ top: `${i * HOUR_HEIGHT}px`, width: '52px', transform: 'translateY(-5px)' }}
                           >
                             {i > 0 ? `${START_HOUR + i}:00` : ''}
                           </div>
@@ -1109,40 +1120,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             })}
                           </div>
 
-                          {/* Kalle ownership row */}
-                          <div className="flex border-b border-white/30">
-                            {(() => {
-                              const cells: React.ReactNode[] = [];
-                              let skipUntil = -1;
-                              for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
-                                if (dayIndex < skipUntil) continue;
-                                const dayDate = new Date(rangeStart);
-                                dayDate.setDate(dayDate.getDate() + dayIndex);
-                                const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                                if (owner) {
-                                  let span = 1;
-                                  for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
-                                    const nextDate = new Date(rangeStart);
-                                    nextDate.setDate(nextDate.getDate() + j);
-                                    const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
-                                    if (nextOwner && nextOwner.person === owner.person) span++;
-                                    else break;
-                                  }
-                                  skipUntil = dayIndex + span;
-                                  const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
-                                  cells.push(
-                                    <div key={dayIndex} className="border-r border-white/30 last:border-r-0 flex items-center gap-4 px-3 py-2" style={{ width: `${span * 90}px`, flexShrink: 0 }}>
-                                      <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                      <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
-                                    </div>
-                                  );
-                                } else {
-                                  cells.push(<div key={dayIndex} className="border-r border-white/30 last:border-r-0" style={{ width: '90px', flexShrink: 0 }} />);
-                                }
-                              }
-                              return cells;
-                            })()}
-                          </div>
+
+
 
                           {/* Timetable grid */}
                           <div className="flex" style={{ height: `${totalHeight}px` }}>
@@ -1156,17 +1135,34 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                   className="relative border-r border-white/30 last:border-r-0"
                                   style={{ width: '90px', flexShrink: 0, height: `${totalHeight}px` }}
                                 >
-                                  {/* Hour gridlines */}
-                                  {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => (
-                                    <div
-                                      key={i}
-                                      className="absolute w-full border-t border-white/[0.06]"
-                                      style={{ top: `${i * HOUR_HEIGHT}px` }}
-                                    />
-                                  ))}
+                                  {/* Hour gridlines - reduced */}
+                                  {Array.from({ length: END_HOUR - START_HOUR }, (_, i) => {
+                                    if (i === 0 || i % 2 !== 0) return null;
+                                    return (
+                                      <div
+                                        key={i}
+                                        className="absolute w-full border-t border-white/[0.03]"
+                                        style={{ top: `${i * HOUR_HEIGHT}px` }}
+                                      />
+                                    );
+                                  })}
 
                                   {/* Event blocks */}
                                   {blocks.map((block, i) => {
+                                    if (block.isOwnership) {
+                                      // Full-height ownership background
+                                      return (
+                                        <div
+                                          key={i}
+                                          className="absolute inset-0 bg-white/[0.03] flex items-end justify-center pb-2"
+                                          style={{ zIndex: 0 }}
+                                        >
+                                          <div className="text-[9px] text-white/30 writing-mode-vertical whitespace-nowrap" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+                                            {block.label}
+                                          </div>
+                                        </div>
+                                      );
+                                    }
                                     const top = Math.max((block.startHour - START_HOUR) * HOUR_HEIGHT, 0);
                                     const height = Math.max((block.endHour - block.startHour) * HOUR_HEIGHT, 20);
                                     const clampedTop = Math.min(top, totalHeight - 20);
@@ -1174,7 +1170,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     return (
                                       <div
                                         key={i}
-                                        className="absolute left-1 right-1 rounded-[2px] bg-white/[0.06] px-2 py-0.5 overflow-hidden"
+                                        className="absolute left-1 right-1 rounded-[2px] bg-white/[0.06] border-t border-white/10 px-2 py-0.5 overflow-hidden"
                                         style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
                                       >
                                         <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
