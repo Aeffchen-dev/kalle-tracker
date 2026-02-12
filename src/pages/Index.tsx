@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { format, addDays } from 'date-fns';
+import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { MoreHorizontal } from 'lucide-react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
@@ -289,7 +290,7 @@ const Index = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
           >
-            <span className="flex items-center gap-2">🐶 <span>Kalle Tracker</span></span>
+            <span className="flex items-center gap-2">🐶 <span>Kalle</span></span>
           </button>
           {weatherTemp !== null && (
             <button 
@@ -403,43 +404,39 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      {showWeather && (
-        <div className="fixed inset-0 z-50 flex flex-col">
-          <div className="flex-1 bg-black/60" onClick={() => setShowWeather(false)} />
-          <div className="bg-black rounded-t-[24px] pt-4 pb-[env(safe-area-inset-bottom)] max-h-[70dvh] flex flex-col">
-            <div className="px-4 pb-3 flex items-center justify-between">
-              <h2 className="text-white text-[16px] font-semibold flex items-center gap-2">
-                {weatherEmoji} <span>7-Tage-Vorhersage</span>
-              </h2>
-              <button onClick={() => setShowWeather(false)} className="text-white/50 text-[14px]">Schließen</button>
-            </div>
-            <div className="px-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
-              {forecast.map((day) => {
-                const date = new Date(day.date + 'T00:00:00');
-                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
-                return (
-                  <div key={day.date} className="bg-white/[0.06] rounded-lg p-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
-                      <div>
-                        <p className="text-white text-[14px]">
-                          {isToday ? 'Heute' : format(date, 'EEEE', { locale: de })}
-                          <span className="text-white/50 ml-2">{format(date, 'd. MMM', { locale: de })}</span>
-                        </p>
-                        <p className="text-white/50 text-[12px]">{weatherCodeToLabel(day.weatherCode)}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-white text-[14px]">{day.tempMax}°</span>
-                      <span className="text-white/40 text-[14px] ml-1">{day.tempMin}°</span>
+      <Drawer open={showWeather} onOpenChange={setShowWeather}>
+        <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh]">
+          <div className="pt-4 px-4 pb-3">
+            <h2 className="text-white text-[16px] font-semibold flex items-center gap-2">
+              {weatherEmoji} <span>Wettervorhersage</span>
+            </h2>
+          </div>
+          <div className="px-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
+            {forecast.map((day) => {
+              const date = new Date(day.date + 'T00:00:00');
+              const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
+              return (
+                <div key={day.date} className="bg-white/[0.06] rounded-lg p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
+                    <div>
+                      <p className="text-white text-[14px]">
+                        {isToday ? 'Heute' : format(date, 'EEEE', { locale: de })}
+                        <span className="text-white/50 ml-2">{format(date, 'd. MMM', { locale: de })}</span>
+                      </p>
+                      <p className="text-white/50 text-[12px]">{weatherCodeToLabel(day.weatherCode)}</p>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="text-right">
+                    <span className="text-white text-[14px]">{day.tempMax}°</span>
+                    <span className="text-white/40 text-[14px] ml-1">{day.tempMin}°</span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
-      )}
+        </DrawerContent>
+      </Drawer>
 
       {/* Gassi settings sheet */}
       <GassiSettingsSheet 
