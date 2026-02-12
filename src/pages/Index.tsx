@@ -11,18 +11,30 @@ import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
 import dogInCar from '@/assets/dog-in-car.png';
-import dalmatianHeader from '@/assets/dalmatian-header.png';
+
+const weatherCodeToEmoji = (code: number): string => {
+  if (code === 0) return '☀️';
+  if (code <= 3) return '⛅';
+  if (code <= 48) return '🌫️';
+  if (code <= 55) return '🌦️';
+  if (code <= 65) return '🌧️';
+  if (code <= 67) return '🌧️';
+  if (code <= 75) return '❄️';
+  if (code <= 77) return '❄️';
+  if (code <= 82) return '🌧️';
+  if (code <= 86) return '❄️';
+  if (code <= 99) return '⛈️';
+  return '🌡️';
+};
 
 const Index = () => {
   const [timeDisplay, setTimeDisplay] = useState('00min');
   const [countdownMode, setCountdownMode] = useState<CountdownMode>('count_up');
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
-  const [speechBubble, setSpeechBubble] = useState<string | null>(null);
-  const [dogBounce, setDogBounce] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   
-  const [imageLoaded, setImageLoaded] = useState(true); // Start true since static loader already showed it
+  const [imageLoaded, setImageLoaded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -32,6 +44,8 @@ const Index = () => {
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const [weatherEmoji, setWeatherEmoji] = useState('🌡️');
+  const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -162,6 +176,17 @@ const Index = () => {
     
     // Load settings first, then events
     getSettings().then(() => loadEvents());
+
+    // Fetch weather (Berlin coordinates)
+    fetch('https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current=temperature_2m,weather_code')
+      .then(r => r.json())
+      .then(data => {
+        if (data.current) {
+          setWeatherTemp(Math.round(data.current.temperature_2m));
+          setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
+        }
+      })
+      .catch(() => {});
     
     const eventsChannel = supabase
       .channel('events-changes')
@@ -207,94 +232,25 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-hide speech bubble after 600ms
-  useEffect(() => {
-    if (speechBubble) {
-      const timer = setTimeout(() => setSpeechBubble(null), 600);
-      return () => clearTimeout(timer);
-    }
-  }, [speechBubble]);
-
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
       
 
       {/* Header */}
-      <header className={`p-4 flex justify-between items-start relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      <header className={`p-4 flex justify-end items-start gap-2 relative z-10 transition-opacity duration-500 ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <button 
-          onClick={() => {
-            const hour = new Date().getHours();
-            
-            // Time-based greetings
-            const morningPhrases = [
-              'Guten Morgen!',
-              'Aufstehen!',
-              'Frühstück?',
-              'Erst mal raus...',
-            ];
-            
-            const afternoonPhrases = [
-              'Mittagsschlaf?',
-              'Noch ein Spaziergang?',
-              'Langeweile...',
-              'Spielen!',
-            ];
-            
-            const eveningPhrases = [
-              'Gute Nacht!',
-              'Müde...',
-              'Kuscheln?',
-              'Letzte Runde?',
-            ];
-            
-            // General phrases (any time)
-            const generalPhrases = [
-              'Wuff!',
-              'Gassi?',
-              'Leckerli!',
-              'Bauch kraulen?',
-              'Spielen!',
-              'Hunger!',
-              'Wasser?',
-              'Kuscheln!',
-              'Raus!',
-              'Hallo!',
-              'Was gibts?',
-              'Langeweile...',
-              'Stöckchen?',
-              'Ball!',
-              'Schnüffeln!',
-            ];
-            
-            let phrases: string[];
-            if (hour >= 5 && hour < 10) {
-              phrases = [...morningPhrases, ...generalPhrases];
-            } else if (hour >= 10 && hour < 18) {
-              phrases = [...afternoonPhrases, ...generalPhrases];
-            } else {
-              phrases = [...eveningPhrases, ...generalPhrases];
-            }
-            
-            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            setSpeechBubble(randomPhrase);
-            setDogBounce(true);
-            setTimeout(() => setDogBounce(false), 400);
-          }}
-          className="cursor-pointer -mt-2 -ml-[18px] relative"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
         >
-          <img 
-            src={dalmatianHeader} 
-            alt="Kalle" 
-            className={`h-[100px] w-auto relative z-10 transition-transform ${dogBounce ? 'animate-dog-bounce' : ''}`}
-          />
-          {/* Speech bubble */}
-          {speechBubble && (
-            <div className="absolute left-[95px] top-[22px] bg-black text-white text-[10px] px-2 py-1.5 rounded-md whitespace-nowrap animate-speech-pop z-20">
-              {speechBubble}
-              <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-r-[5px] border-r-black" />
-            </div>
-          )}
+          🐶 Kalle Tracker
         </button>
+        {weatherTemp !== null && (
+          <button 
+            className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
+          >
+            {weatherEmoji} {weatherTemp}°
+          </button>
+        )}
         <button 
           onClick={() => setShowTagesplan(true)}
           className="text-[14px] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[2px] px-[8px] cursor-pointer mt-2"
