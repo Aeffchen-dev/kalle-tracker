@@ -545,7 +545,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full">
+          <div className="flex-1 overflow-y-auto px-4 pb-4 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto md:w-full md:h-screen md:max-h-screen">
             
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
