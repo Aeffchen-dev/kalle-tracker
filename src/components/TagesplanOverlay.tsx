@@ -584,11 +584,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             onChange={(e) => handleMealChange(e.target.value)}
                             onBlur={handleMealBlur}
                             onKeyDown={handleMealKeyDown}
-                            className="bg-white/10 text-white/60 text-[14px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
+                            className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
                           />
                         ) : (
                           <span
-                            className="text-[14px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                            className="text-[12px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
                             onClick={() => handleMealClick(mealIndex, index, 'quantity')}
                           >
                             {ingredient.quantity}
@@ -603,12 +603,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               onChange={(e) => handleMealChange(e.target.value)}
                               onBlur={handleMealBlur}
                               onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
                           ) : (
                             <div className="flex items-center gap-2">
                               <span
-                                className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
+                                className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
                                 onClick={() => handleMealClick(mealIndex, index, 'name')}
                               >
                                 {ingredient.name}
@@ -633,11 +633,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               onChange={(e) => handleMealChange(e.target.value)}
                               onBlur={handleMealBlur}
                               onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
+                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
                             />
                           ) : ingredient.description ? (
                             <p
-                              className="text-[14px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                              className="text-[12px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
                               onClick={() => handleMealClick(mealIndex, index, 'description')}
                             >
                               {ingredient.description}
@@ -661,14 +661,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
                   <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+49306814455"
-                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
                 >
                   <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
@@ -681,14 +681,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
                   <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+493023362627"
-                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors mb-3"
+                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors mb-3"
                 >
                   <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
@@ -702,7 +702,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
                     }
                   }}
-                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
                 >
                   <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
@@ -717,7 +717,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
                       }
                     }}
-                    className="text-[14px] text-white/60 hover:text-white transition-colors"
+                    className="text-[12px] text-white/60 hover:text-white transition-colors"
                   >
                     Uhlandstraße 151<br />
                     10719 Berlin
@@ -763,8 +763,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[14px] text-white">{phase.name}</span>
-                        <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
+                        <span className="text-[12px] text-white">{phase.name}</span>
+                        <span className="text-[12px] text-white/60">{phase.min}–{phase.max} Monate</span>
                       </div>
                       
                       {/* Clickable progress bar */}
@@ -854,10 +854,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         )}
                         
                         {/* Characteristics */}
-                        <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
+                        <p className="text-[12px] text-white/60 mb-4">{phase.characteristics}</p>
                         
                         {/* Needs as bullet points */}
-                        <div className="text-[14px] text-white/60">
+                        <div className="text-[12px] text-white/60">
                           <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
                           <ul className="mt-2 space-y-1">
                             {phase.needs.map((need, i) => (
@@ -932,11 +932,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span>🧑‍🏫</span> <span>Training</span></h2>
                   <div className="bg-white/[0.06] rounded-lg overflow-hidden p-4">
-                    <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
-                    <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
+                    <div className="text-white text-[12px] font-medium mb-2">{trick.name}</div>
+                    <div className="text-white/60 text-[12px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
                       {trick.steps.map((step, i) => (
-                        <li key={i} className="flex gap-2 text-[14px] text-white/50">
+                        <li key={i} className="flex gap-2 text-[12px] text-white/50">
                           <span className="text-white/30 shrink-0">{i + 1}.</span>
                           <span>{step}</span>
                         </li>
@@ -964,7 +964,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 className="overflow-x-auto scrollbar-hide"
                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                <div className="px-4" style={{ width: 'max-content' }}>
+                <div className="px-4 md:pl-[calc((100vw-60vw)/2+16px)] lg:pl-[calc((100vw-50vw)/2+16px)]" style={{ width: 'max-content' }}>
                   {/* Ownership spans row */}
                   {(() => {
                     const cardWidth = `calc((100vw - 48px) / 2.1)`;
@@ -1006,7 +1006,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             }}
                           >
                             <div className="relative h-full">
-                              <div className="sticky left-0 h-full flex items-center pl-3 pr-0 pointer-events-none" style={{ width: 'calc(min(100%, (100vw - 32px)))' }}>
+                              <div className="sticky left-0 h-full flex items-center pl-3 pr-4 pointer-events-none" style={{ width: 'calc(min(100%, (100vw - 32px)))' }}>
                                 <span className="text-[12px] text-white/70 flex items-center gap-1.5 shrink-0">
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
