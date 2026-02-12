@@ -1174,7 +1174,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     return (
                                       <div
                                         key={i}
-                                        className={`absolute left-1 right-1 rounded-lg ${block.color} border border-white/15 px-2 py-0.5 overflow-hidden shadow-sm`}
+                                        className="absolute left-1 right-1 rounded-[2px] bg-white/[0.06] px-2 py-0.5 overflow-hidden"
                                         style={{ top: `${clampedTop}px`, height: `${height}px`, zIndex: 1 }}
                                       >
                                         <div className="text-[10px] text-white/80 leading-tight mt-0.5 font-medium">
