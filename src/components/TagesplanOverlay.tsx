@@ -189,12 +189,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Total days to display
   const TOTAL_DAYS = 31;
 
-  // Compute range start: 15 days before today, shifted by weekOffset
+  // Compute range start: today, shifted by weekOffset
   const rangeStart = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const start = new Date(now);
-    start.setDate(start.getDate() - 15 + weekOffset * 7);
+    start.setDate(start.getDate() + weekOffset * 7);
     return start;
   }, [weekOffset]);
 
@@ -945,11 +945,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           <th
                             key={dayIndex}
                             ref={isToday ? todayColRef : undefined}
-                            className={`p-2 text-left border-r border-white/30 last:border-r-0 ${
-                              isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940] border-t-2 border-t-[#5AD940]' : ''
-                            }`}
+                            className="p-2 text-left border-r border-white/30 last:border-r-0"
                           >
-                            <div className={`text-[14px] ${isToday ? 'font-bold' : ''} text-white`}>{dayNames[jsDay]}</div>
+                            <div className="text-[14px] text-white">{dayNames[jsDay]}</div>
                             <div className="text-[14px] text-white/60 font-normal">{format(dayDate, 'd. MMM', { locale: de })}</div>
                           </th>
                         );
@@ -1000,9 +998,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             );
                           } else {
                             cells.push(
-                              <td key={dayIndex} className={`border-r border-white/30 last:border-r-0 ${
-                                isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940]' : ''
-                              }`}>
+                              <td key={dayIndex} className="border-r border-white/30 last:border-r-0">
                               </td>
                             );
                           }
@@ -1078,9 +1074,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                             return (
                               <td
                                 key={dayIndex}
-                                className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? 'border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940]' : ''
-                                }`}
+                                className="p-2 border-r border-white/30 last:border-r-0 align-top"
                               >
                                 {slot ? (
                                   <div>
@@ -1124,9 +1118,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               const evt = events[idx];
                               const isToday = dayIndex === currentDayIndex;
                               return (
-                                <td key={dayIndex} className={`p-2 border-r border-white/30 last:border-r-0 align-top ${
-                                  isToday ? `border-l-2 border-l-[#5AD940] border-r-2 border-r-[#5AD940] ${isLastRow ? 'border-b-2 border-b-[#5AD940]' : ''}` : ''
-                                }`}>
+                                <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
                                   {evt ? (
                                     <div>
                                       <div className="text-white/40 text-[14px]">{evt.time}</div>
