@@ -57,12 +57,19 @@ export const scheduleWalkReminder = async (
       if (delay > 0) {
         // Store timeout ID to allow cancellation
         const timeoutId = setTimeout(() => {
-          new Notification(title, { 
+          const notification = new Notification(title, { 
             body, 
             icon: '/favicon.png',
             tag: 'walk-reminder',
             requireInteraction: true
           });
+          // Auto-close at 8:00 next day
+          const now = new Date();
+          const closeAt = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+          const closeDelay = closeAt.getTime() - now.getTime();
+          if (closeDelay > 0) {
+            setTimeout(() => notification.close(), closeDelay);
+          }
         }, delay);
         // Store for later cancellation
         (window as any).__walkReminderTimeout = timeoutId;
