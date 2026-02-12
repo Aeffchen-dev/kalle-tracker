@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check } from 'lucide-react';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths, format, getDay, getHours } from 'date-fns';
@@ -148,10 +148,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const todayColRef = useRef<HTMLTableCellElement>(null);
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
-  const [cardDayIndex, setCardDayIndex] = useState(0);
-  const cardSwipeRef = useRef<{ startX: number; startY: number; deltaX: number } | null>(null);
-  const [cardSwipeDelta, setCardSwipeDelta] = useState(0);
-  const [cardTransitioning, setCardTransitioning] = useState(false);
 
   // Load iCal events and app events
   useEffect(() => {
@@ -963,32 +959,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               );
             })()}
 
-            {/* Wochenplan Section - Card Stack */}
+            {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
             <div className="mb-0">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
-                <div className="flex items-center gap-1">
-                  <button 
-                    onClick={() => setCardDayIndex(Math.max(0, cardDayIndex - 1))}
-                    className="p-1.5 text-white/40 hover:text-white transition-colors disabled:opacity-20"
-                    disabled={cardDayIndex === 0}
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    onClick={() => setCardDayIndex(0)}
-                    className="text-[12px] text-white/40 hover:text-white transition-colors px-2"
-                  >
-                    Heute
-                  </button>
-                  <button 
-                    onClick={() => setCardDayIndex(Math.min(TOTAL_DAYS - 1, cardDayIndex + 1))}
-                    className="p-1.5 text-white/40 hover:text-white transition-colors disabled:opacity-20"
-                    disabled={cardDayIndex >= TOTAL_DAYS - 1}
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    // Scroll to today
+                    const el = document.getElementById('wochenplan-today');
+                    el?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                  }}
+                  className="text-[12px] text-white/40 hover:text-white transition-colors px-2"
+                >
+                  Heute
+                </button>
               </div>
               
               {!dataLoaded ? (
@@ -997,213 +981,143 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 </div>
               ) : (
               <div 
-                className="relative overflow-hidden"
-                onTouchStart={(e) => {
-                  if (cardTransitioning) return;
-                  cardSwipeRef.current = { 
-                    startX: e.touches[0].clientX, 
-                    startY: e.touches[0].clientY, 
-                    deltaX: 0 
-                  };
-                }}
-                onTouchMove={(e) => {
-                  if (!cardSwipeRef.current || cardTransitioning) return;
-                  const deltaX = e.touches[0].clientX - cardSwipeRef.current.startX;
-                  const deltaY = e.touches[0].clientY - cardSwipeRef.current.startY;
-                  // Only track horizontal swipes
-                  if (Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
-                    e.preventDefault();
-                    cardSwipeRef.current.deltaX = deltaX;
-                    setCardSwipeDelta(deltaX);
-                  }
-                }}
-                onTouchEnd={() => {
-                  if (!cardSwipeRef.current || cardTransitioning) return;
-                  const deltaX = cardSwipeRef.current.deltaX;
-                  const threshold = 80;
-                  
-                  if (deltaX < -threshold && cardDayIndex < TOTAL_DAYS - 1) {
-                    // Swipe left → next day
-                    setCardTransitioning(true);
-                    setCardSwipeDelta(-window.innerWidth);
-                    setTimeout(() => {
-                      setCardDayIndex(prev => prev + 1);
-                      setCardSwipeDelta(0);
-                      setCardTransitioning(false);
-                    }, 200);
-                  } else if (deltaX > threshold && cardDayIndex > 0) {
-                    // Swipe right → previous day
-                    setCardTransitioning(true);
-                    setCardSwipeDelta(window.innerWidth);
-                    setTimeout(() => {
-                      setCardDayIndex(prev => prev - 1);
-                      setCardSwipeDelta(0);
-                      setCardTransitioning(false);
-                    }, 200);
-                  } else {
-                    setCardSwipeDelta(0);
-                  }
-                  cardSwipeRef.current = null;
-                }}
+                ref={wochenplanScrollRef}
+                className="overflow-x-auto -mx-4 scrollbar-hide"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                {/* Render current day card and peek cards */}
-                {[-1, 0, 1].map(offset => {
-                  const idx = cardDayIndex + offset;
-                  if (idx < 0 || idx >= TOTAL_DAYS) return null;
-                  
-                  const dayDate = new Date(rangeStart);
-                  dayDate.setDate(dayDate.getDate() + idx);
-                  const dayNames = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-                  const jsDay = dayDate.getDay();
-                  const isToday = idx === currentDayIndex;
-                  const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                  
-                  // Build walk slots for this day
-                  const monBasedDay = (jsDay + 6) % 7;
-                  const data = avgGassiByDay.get(monBasedDay);
-                  type ICalItem = { summary: string; timeStr: string };
-                  type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
-                  const slots: SlotItem[] = [];
-                  
-                  if (data) {
-                    const allEvents: { hour: number; isPoop: boolean }[] = [
-                      ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                      ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                    ].sort((a, b) => a.hour - b.hour);
+                <div className="flex gap-2 px-4" style={{ width: 'max-content' }}>
+                  {Array.from({ length: TOTAL_DAYS }, (_, idx) => {
+                    const dayDate = new Date(rangeStart);
+                    dayDate.setDate(dayDate.getDate() + idx);
+                    const dayAbbr = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+                    const jsDay = dayDate.getDay();
+                    const isToday = idx === currentDayIndex;
+                    const owner = getKalleOwnerForDate(icalEvents, dayDate);
                     
-                    const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                    for (const evt of allEvents) {
-                      const last = clusters[clusters.length - 1];
-                      if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                        last.hours.push(evt.hour);
-                        if (evt.isPoop) last.hasPoop = true;
+                    // Build walk slots
+                    const monBasedDay = (jsDay + 6) % 7;
+                    const data = avgGassiByDay.get(monBasedDay);
+                    type ICalItem = { summary: string; timeStr: string };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
+                    const slots: SlotItem[] = [];
+                    
+                    if (data) {
+                      const allEvents: { hour: number; isPoop: boolean }[] = [
+                        ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                        ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                      ].sort((a, b) => a.hour - b.hour);
+                      
+                      const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                      for (const evt of allEvents) {
+                        const last = clusters[clusters.length - 1];
+                        if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                          last.hours.push(evt.hour);
+                          if (evt.isPoop) last.hasPoop = true;
+                        } else {
+                          clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                        }
+                      }
+                      
+                      for (const c of clusters) {
+                        const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                        slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
+                      }
+                    }
+                    
+                    // Attach iCal events to nearest slot or standalone
+                    const evts = weekIcalEvents.get(idx) || [];
+                    for (const e of evts) {
+                      if (e.summary?.match(/hat\s+Kalle/i)) continue;
+                      const dt = new Date(e.dtstart);
+                      const hour = dt.getHours() + dt.getMinutes() / 60;
+                      const icalItem: ICalItem = { summary: e.summary || '', timeStr: format(dt, 'HH:mm') };
+                      
+                      if (slots.length > 0) {
+                        let nearest = 0;
+                        let minDist = Math.abs(slots[0].avgHour - hour);
+                        for (let s = 1; s < slots.length; s++) {
+                          const dist = Math.abs(slots[s].avgHour - hour);
+                          if (dist < minDist) { nearest = s; minDist = dist; }
+                        }
+                        slots[nearest].icalEvents.push(icalItem);
                       } else {
-                        clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                        slots.push({ avgHour: hour, hasPoop: false, isWalk: false, icalEvents: [icalItem] });
                       }
                     }
                     
-                    for (const c of clusters) {
-                      const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                      slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
-                    }
-                  }
-                  
-                  // Attach iCal events
-                  const evts = weekIcalEvents.get(idx) || [];
-                  for (const e of evts) {
-                    if (e.summary?.match(/hat\s+Kalle/i)) continue;
-                    const dt = new Date(e.dtstart);
-                    const hour = dt.getHours() + dt.getMinutes() / 60;
-                    const icalItem: ICalItem = { summary: e.summary || '', timeStr: format(dt, 'HH:mm') };
+                    // Sort all slots by time
+                    slots.sort((a, b) => a.avgHour - b.avgHour);
                     
-                    if (slots.length > 0) {
-                      let nearest = 0;
-                      let minDist = Math.abs(slots[0].avgHour - hour);
-                      for (let s = 1; s < slots.length; s++) {
-                        const dist = Math.abs(slots[s].avgHour - hour);
-                        if (dist < minDist) { nearest = s; minDist = dist; }
-                      }
-                      slots[nearest].icalEvents.push(icalItem);
-                    } else {
-                      slots.push({ avgHour: hour, hasPoop: false, isWalk: false, icalEvents: [icalItem] });
-                    }
-                  }
-                  
-                  const formatTime = (h: number) => {
-                    const rounded = Math.round(h * 2) / 2;
-                    const hours = Math.floor(rounded);
-                    const mins = rounded % 1 === 0.5 ? 30 : 0;
-                    return `${hours}:${mins.toString().padStart(2, '0')}`;
-                  };
-                  
-                  const translateX = offset * 100 + (cardSwipeDelta / (window.innerWidth || 400)) * 100;
-                  
-                  return (
-                    <div
-                      key={idx}
-                      className={offset === 0 ? 'relative w-full' : 'absolute inset-0 w-full'}
-                      style={{
-                        transform: `translateX(${translateX}%)`,
-                        transition: cardTransitioning ? 'transform 0.2s ease-out' : 'none',
-                      }}
-                    >
-                      <div className={`border rounded-[16px] overflow-hidden ${isToday ? 'border-white/50' : 'border-white/20'}`}>
-                        {/* Day header */}
-                        <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-                          <div>
-                            <div className="text-white text-[16px] font-medium">
-                              {isToday ? 'Heute' : dayNames[jsDay]}
-                            </div>
-                            <div className="text-white/50 text-[13px]">
-                              {format(dayDate, 'd. MMMM yyyy', { locale: de })}
-                            </div>
+                    const formatTime = (h: number) => {
+                      const rounded = Math.round(h * 2) / 2;
+                      const hours = Math.floor(rounded);
+                      const mins = rounded % 1 === 0.5 ? 30 : 0;
+                      return `${hours}:${mins.toString().padStart(2, '0')}`;
+                    };
+                    
+                    // Card width: calc((100vw - 32px - 2*8px) / 2.5) ≈ 40vw
+                    return (
+                      <div
+                        key={idx}
+                        id={isToday ? 'wochenplan-today' : undefined}
+                        ref={isToday ? todayColRef : undefined}
+                        className={`shrink-0 rounded-[14px] overflow-hidden ${
+                          isToday ? 'border border-white/40' : 'border border-white/15'
+                        }`}
+                        style={{ width: 'calc((100vw - 48px) / 2.5)' }}
+                      >
+                        {/* Compact day header */}
+                        <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-[13px] font-medium ${isToday ? 'text-white' : 'text-white/70'}`}>
+                              {isToday ? 'Heute' : dayAbbr[jsDay]}
+                            </span>
+                            <span className="text-white/35 text-[12px]">
+                              {format(dayDate, 'd.M.', { locale: de })}
+                            </span>
                           </div>
                           {isToday && (
-                            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                           )}
                         </div>
                         
-                        {/* Owner bar */}
+                        {/* Owner mini-bar */}
                         {owner && (
-                          <div className="mx-4 mb-3 px-3 py-2 rounded-lg bg-white/[0.06]">
-                            <span className="text-white/70 text-[13px]">🐶 {owner.person} hat Kalle</span>
-                            <span className="text-white/30 text-[12px] ml-2">bis {format(owner.endDate, 'd. MMM', { locale: de })}</span>
+                          <div className="mx-2.5 mb-2 px-2 py-1 rounded-md bg-white/[0.06]">
+                            <span className="text-white/50 text-[11px]">🐶 {owner.person}</span>
                           </div>
                         )}
                         
-                        {/* Walk slots */}
-                        <div className="px-4 pb-4">
+                        {/* Entries */}
+                        <div className="px-2.5 pb-2.5">
                           {slots.length === 0 ? (
-                            <div className="text-white/20 text-[13px] py-3 text-center">Keine Einträge</div>
+                            <div className="text-white/15 text-[11px] py-2 text-center">–</div>
                           ) : (
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                               {slots.map((slot, i) => (
-                                <div key={i} className="flex items-start gap-3">
-                                  {/* Time column */}
-                                  <div className="w-[52px] shrink-0 text-right">
-                                    {slot.isWalk && (
-                                      <span className="text-white/40 text-[13px]">{formatTime(slot.avgHour)}</span>
-                                    )}
-                                  </div>
-                                  {/* Content */}
-                                  <div className="flex-1 py-1.5 px-3 rounded-lg bg-white/[0.04]">
-                                    {slot.isWalk && (
-                                      <div className="text-[14px]">
-                                        <span className="mr-1.5">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-white/50">Gassi</span>
+                                <div key={i}>
+                                  {/* Walk entry */}
+                                  {slot.isWalk && (
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-white/30 text-[11px] w-[32px] shrink-0 text-right">{formatTime(slot.avgHour)}</span>
+                                      <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
+                                    </div>
+                                  )}
+                                  {/* iCal events - distinct styling */}
+                                  {slot.icalEvents.map((evt, j) => (
+                                    <div key={j} className="flex items-start gap-1.5 mt-0.5">
+                                      <span className="text-white/30 text-[11px] w-[32px] shrink-0 text-right">{evt.timeStr}</span>
+                                      <div className="flex-1 min-w-0 px-1.5 py-0.5 rounded bg-white/[0.08] border-l-2 border-white/20">
+                                        <span className="text-white/60 text-[11px] leading-tight line-clamp-2">{evt.summary}</span>
                                       </div>
-                                    )}
-                                    {slot.icalEvents.map((evt, j) => (
-                                      <div key={j} className={slot.isWalk && j === 0 ? 'mt-1.5 pt-1.5 border-t border-white/10' : ''}>
-                                        <div className="text-white/40 text-[12px]">{evt.timeStr} Uhr</div>
-                                        <div className="text-white/70 text-[13px] mt-0.5">{evt.summary}</div>
-                                      </div>
-                                    ))}
-                                  </div>
+                                    </div>
+                                  ))}
                                 </div>
                               ))}
                             </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-                
-                {/* Day indicator dots */}
-                <div className="flex justify-center gap-1 mt-2" style={{ paddingTop: '0' }}>
-                  {Array.from({ length: Math.min(7, TOTAL_DAYS) }, (_, i) => {
-                    const weekStart = Math.floor(cardDayIndex / 7) * 7;
-                    const dotIdx = weekStart + i;
-                    if (dotIdx >= TOTAL_DAYS) return null;
-                    return (
-                      <button
-                        key={dotIdx}
-                        onClick={() => setCardDayIndex(dotIdx)}
-                        className={`w-1.5 h-1.5 rounded-full transition-all ${
-                          dotIdx === cardDayIndex ? 'bg-white w-4' : 'bg-white/20'
-                        }`}
-                      />
                     );
                   })}
                 </div>
