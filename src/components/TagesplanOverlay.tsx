@@ -1032,7 +1032,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                 return (
                   <div className="flex -mr-4">
                     {/* Fixed time axis outside the scrollable area */}
-                    <div className="flex flex-col" style={{ width: '36px', flexShrink: 0 }}>
+                    <div className="flex flex-col bg-transparent" style={{ width: '36px', flexShrink: 0 }}>
                       {/* Header spacer */}
                       <div style={{ height: '52px' }} />
                       {/* Ownership row spacer */}
