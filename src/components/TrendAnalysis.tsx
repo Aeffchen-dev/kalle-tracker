@@ -1308,40 +1308,67 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
         </div>
       </div>
 
-      {/* Puberty Phase Info - only shown during puberty (6-18 months) */}
+      {/* Puberty Phase Info - only shown during puberty (6-30 months) */}
       {(() => {
         const now = new Date();
         const ageInMonths = differenceInMonths(now, KALLE_BIRTHDAY);
-        if (ageInMonths < 6 || ageInMonths > 18) return null;
+        if (ageInMonths < 6 || ageInMonths > 30) return null;
         
-        const phase = ageInMonths <= 9 
-          ? { name: 'Frühe Pubertät', desc: 'Hormonelle Veränderungen beginnen. Kalle testet Grenzen und zeigt möglicherweise erste Unsicherheiten oder Trotzverhalten.' }
-          : ageInMonths <= 14 
-          ? { name: 'Hauptphase', desc: 'Intensivste Phase: Kalle kann unberechenbarer reagieren, selektives Hören zeigen und bekannte Kommandos „vergessen". Geduld und Konsequenz sind jetzt besonders wichtig.' }
-          : { name: 'Späte Pubertät', desc: 'Kalle wird langsam ruhiger und ausgeglichener. Das Gelernte festigt sich wieder. Die erwachsene Persönlichkeit bildet sich heraus.' };
-
-        const progress = Math.round(((ageInMonths - 6) / 12) * 100);
+        const phases = [
+          { min: 6, max: 8, name: 'Vorpubertät', desc: 'Erste hormonelle Veränderungen beginnen. Kalle wird neugieriger, unabhängiger und testet vorsichtig Grenzen.' },
+          { min: 8, max: 12, name: 'Frühe Pubertät', desc: 'Kalle zeigt möglicherweise erste Unsicherheiten, Trotzverhalten und selektives Hören. Konsequenz und Geduld sind wichtig.' },
+          { min: 12, max: 18, name: 'Hochphase', desc: 'Intensivste Phase: Kalle kann unberechenbarer reagieren, bekannte Kommandos „vergessen" und stärker auf Umweltreize reagieren.' },
+          { min: 18, max: 24, name: 'Späte Pubertät', desc: 'Kalle wird langsam ruhiger und ausgeglichener. Das Gelernte festigt sich wieder. Die erwachsene Persönlichkeit bildet sich heraus.' },
+          { min: 24, max: 30, name: 'Junghund-Stabilisierung', desc: 'Die letzte Reifephase: Kalle findet sein Gleichgewicht. Verhalten und Charakter stabilisieren sich zunehmend.' },
+        ];
+        
+        const phase = phases.find(p => ageInMonths >= p.min && ageInMonths < p.max) || phases[phases.length - 1];
+        const progress = Math.round(((ageInMonths - 6) / 24) * 100);
+        const phaseProgress = Math.round(((ageInMonths - phase.min) / (phase.max - phase.min)) * 100);
 
         return (
-          <div className="mt-6 bg-white/[0.06] backdrop-blur-sm rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="mt-6 bg-white/[0.06] rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">🐾</span>
               <span className="text-[13px] text-white font-medium">Pubertäts-Phase</span>
             </div>
+            {/* Overall progress */}
             <div className="mb-3">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-white/50 uppercase tracking-wide">{phase.name}</span>
-                <span className="text-[11px] text-white/40">{progress}%</span>
+                <span className="text-[11px] text-white/50">Gesamtfortschritt</span>
+                <span className="text-[11px] text-white/40">{Math.min(progress, 100)}%</span>
               </div>
-              <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-amber-400 rounded-full transition-all"
-                  style={{ width: `${progress}%` }}
+                  className="h-full bg-white/20 rounded-full transition-all"
+                  style={{ width: `${Math.min(progress, 100)}%` }}
                 />
               </div>
             </div>
-            <p className="text-[11px] text-white/50 leading-relaxed">{phase.desc}</p>
-            <p className="text-[10px] text-white/30 mt-2">Ca. 6–18 Monate · Verschwindet automatisch nach der Pubertät</p>
+            {/* Current phase */}
+            <div className="bg-white/[0.06] rounded-md p-3 mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[12px] text-amber-400 font-medium">{phase.name}</span>
+                <span className="text-[10px] text-white/40">{phase.min}–{phase.max} Mon.</span>
+              </div>
+              <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden mb-2">
+                <div 
+                  className="h-full bg-amber-400 rounded-full transition-all"
+                  style={{ width: `${Math.min(phaseProgress, 100)}%` }}
+                />
+              </div>
+              <p className="text-[11px] text-white/50 leading-relaxed">{phase.desc}</p>
+            </div>
+            {/* Phase overview */}
+            <div className="flex gap-1">
+              {phases.map((p, i) => (
+                <div 
+                  key={i}
+                  className={`flex-1 h-1 rounded-full ${ageInMonths >= p.min ? (ageInMonths < p.max ? 'bg-amber-400' : 'bg-white/30') : 'bg-white/10'}`}
+                />
+              ))}
+            </div>
+            <p className="text-[10px] text-white/30 mt-2">Ca. 6–30 Monate · Verschwindet automatisch danach</p>
           </div>
         );
       })()}
