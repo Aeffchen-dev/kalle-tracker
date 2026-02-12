@@ -216,23 +216,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
 
-  // Auto-scroll wochenplan to today column only when overlay opens
-  const hasScrolledRef = useRef(false);
-  
+  // Auto-scroll wochenplan to today column every time overlay opens
   useEffect(() => {
-    if (!isOpen) {
-      hasScrolledRef.current = false;
-      return;
-    }
-    if (hasScrolledRef.current || !dataLoaded || currentDayIndex < 0) return;
+    if (!isOpen || !dataLoaded || currentDayIndex < 0) return;
     const attempts = [50, 200, 500];
     const timers = attempts.map(delay => setTimeout(() => {
-      if (todayColRef.current && wochenplanScrollRef.current && !hasScrolledRef.current) {
+      if (todayColRef.current && wochenplanScrollRef.current) {
         const container = wochenplanScrollRef.current;
         const col = todayColRef.current;
         const scrollLeft = col.offsetLeft - container.clientWidth / 2 + col.offsetWidth / 2;
         container.scrollLeft = Math.max(0, scrollLeft);
-        hasScrolledRef.current = true;
       }
     }, delay));
     return () => timers.forEach(clearTimeout);
