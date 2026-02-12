@@ -1120,13 +1120,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                 <div key={i}>
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
                                    {slot.isWalk && (
-                                    <div className="p-2 bg-white/[0.06] rounded-lg">
-                                      <div className="flex items-center">
+                                    <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
+                                      <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="flex items-center gap-2 shrink-0">
-                                          <span className="text-[12px]">{slot.hasPoop ? '💩' : '💦'}</span>
-                                          <span className="text-[12px] text-white/70 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
-                                        </span>
+                                        <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
