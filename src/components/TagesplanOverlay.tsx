@@ -134,6 +134,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [overlayBg, setOverlayBg] = useState('#3d2b1f');
   const scrollContentRef = useRef<HTMLDivElement>(null);
+  const wochenplanSectionRef = useRef<HTMLDivElement>(null);
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
@@ -225,9 +226,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     const el = scrollContentRef.current;
     if (!el || animationPhase !== 'visible') return;
     const handleScroll = () => {
-      const maxScroll = el.scrollHeight - el.clientHeight;
-      if (maxScroll <= 0) return;
-      const progress = Math.min(el.scrollTop / (maxScroll * 0.7), 1); // fully black at 70% scroll
+      const section = wochenplanSectionRef.current;
+      if (!section) return;
+      const sectionTop = section.offsetTop;
+      const viewportH = el.clientHeight;
+      // Start fading when calendar enters viewport, fully black at 25% of calendar scrolled in
+      const fadeStart = sectionTop - viewportH;
+      const fadeEnd = sectionTop - viewportH * 0.75;
+      const progress = Math.max(0, Math.min((el.scrollTop - fadeStart) / (fadeEnd - fadeStart), 1));
       const r = Math.round(61 * (1 - progress));
       const g = Math.round(43 * (1 - progress));
       const b = Math.round(31 * (1 - progress));
@@ -970,7 +976,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             })()}
 
             {/* Wochenplan Section */}
-            <div className="mb-0">
+            <div ref={wochenplanSectionRef} className="mb-0">
               <div className="mb-4">
                 <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
               </div>
