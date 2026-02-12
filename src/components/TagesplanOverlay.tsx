@@ -949,18 +949,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
             {/* Wochenplan Section - Horizontal scrollable cards, ~2.5 days visible */}
             <div className="mb-0">
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-3">
                 <h2 className="text-[14px] text-white">📅 Wochenplan</h2>
-                <button
-                  onClick={() => {
-                    // Scroll to today
-                    const el = document.getElementById('wochenplan-today');
-                    el?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-                  }}
-                  className="text-[12px] text-white/40 hover:text-white transition-colors px-2"
-                >
-                  Heute
-                </button>
               </div>
               
               {!dataLoaded ? (
@@ -1049,7 +1039,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
-                        className={`shrink-0 rounded-[14px] overflow-hidden ${
+                        className={`shrink-0 rounded-[14px] overflow-hidden bg-black ${
                           isToday ? 'border border-white/40' : 'border border-white/15'
                         }`}
                         style={{ width: 'calc((100vw - 48px) / 2.5)' }}
