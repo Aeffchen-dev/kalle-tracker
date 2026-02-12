@@ -130,6 +130,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
+  const [actualSchedule, setActualSchedule] = useState<Record<number, string[]> | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
   const [editingMeal, setEditingMeal] = useState<{ mealIndex: number; ingredientIndex: number; field: 'quantity' | 'name' | 'description' } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -178,6 +179,45 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       setDataLoaded(true);
     };
     loadData();
+
+    // Load actual event data for analysis
+    const loadActualSchedule = async () => {
+      const fourWeeksAgo = new Date();
+      fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+      
+      const { data: events } = await supabase
+        .from('events')
+        .select('time, type')
+        .in('type', ['pipi', 'stuhlgang'])
+        .gte('time', fourWeeksAgo.toISOString())
+        .order('time', { ascending: true });
+
+      if (events && events.length > 0) {
+        // Group by day of week (0=Sun, 1=Mon, ..., 6=Sat) -> collect unique times per day
+        const dayTimes: Record<number, Map<string, number>> = {};
+        for (let d = 0; d < 7; d++) dayTimes[d] = new Map();
+
+        for (const event of events) {
+          const date = new Date(event.time);
+          const dow = date.getDay();
+          const hour = date.getHours();
+          const minuteBlock = Math.round(date.getMinutes() / 30) * 30;
+          const timeKey = `${hour.toString().padStart(2, '0')}:${(minuteBlock % 60).toString().padStart(2, '0')}`;
+          dayTimes[dow].set(timeKey, (dayTimes[dow].get(timeKey) || 0) + 1);
+        }
+
+        // For each day, get sorted unique times
+        const result: Record<number, string[]> = {};
+        for (let d = 0; d < 7; d++) {
+          const sorted = Array.from(dayTimes[d].entries())
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([time]) => time);
+          result[d] = sorted;
+        }
+        setActualSchedule(result);
+      }
+    };
+    loadActualSchedule();
   }, []);
 
   // Track if user is currently editing
@@ -675,6 +715,57 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             {/* Wochenplan Section */}
             <div className="mb-8">
               <h2 className="text-[14px] text-white mb-4">Wochenplan</h2>
+
+              {/* Actual Schedule Analysis */}
+              {actualSchedule && (
+                <div className="mb-6">
+                  <h3 className="text-[12px] text-white/40 uppercase tracking-wider mb-3">Tatsächlicher Rhythmus (letzte 4 Wochen)</h3>
+                  <div className="overflow-x-auto -mx-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <div className="px-4 min-w-fit">
+                      <div className="border border-white/30 rounded-[16px] overflow-hidden inline-block min-w-[700px]">
+                        <table className="w-full text-[12px]">
+                          <thead>
+                            <tr className="border-b border-white/30">
+                              {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day, i) => {
+                                // Map display order (Mo=0..So=6) to JS DOW (Mo=1..So=0)
+                                const dow = i === 6 ? 0 : i + 1;
+                                return (
+                                  <th key={day} className="p-2 text-left border-r border-white/30 last:border-r-0">
+                                    <div className="text-white">{day}</div>
+                                    <div className="text-white/40 font-normal">{actualSchedule[dow]?.length || 0}× Gassi</div>
+                                  </th>
+                                );
+                              })}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((day, i) => {
+                                const dow = i === 6 ? 0 : i + 1;
+                                const times = actualSchedule[dow] || [];
+                                return (
+                                  <td key={day} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                    <div className="flex flex-col gap-1">
+                                      {times.map((time, ti) => (
+                                        <span key={ti} className="text-white/60 text-[11px]">{time} Uhr</span>
+                                      ))}
+                                      {times.length === 0 && (
+                                        <span className="text-white/20 text-[11px]">–</span>
+                                      )}
+                                    </div>
+                                  </td>
+                                );
+                              })}
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <h3 className="text-[12px] text-white/40 uppercase tracking-wider mb-3">Geplant</h3>
               
               {/* Legend */}
               <div className="flex gap-4 mb-4">
