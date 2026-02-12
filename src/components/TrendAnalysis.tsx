@@ -1307,6 +1307,44 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
           </div>
         </div>
       </div>
+
+      {/* Puberty Phase Info - only shown during puberty (6-18 months) */}
+      {(() => {
+        const now = new Date();
+        const ageInMonths = differenceInMonths(now, KALLE_BIRTHDAY);
+        if (ageInMonths < 6 || ageInMonths > 18) return null;
+        
+        const phase = ageInMonths <= 9 
+          ? { name: 'Frühe Pubertät', desc: 'Hormonelle Veränderungen beginnen. Kalle testet Grenzen und zeigt möglicherweise erste Unsicherheiten oder Trotzverhalten.' }
+          : ageInMonths <= 14 
+          ? { name: 'Hauptphase', desc: 'Intensivste Phase: Kalle kann unberechenbarer reagieren, selektives Hören zeigen und bekannte Kommandos „vergessen". Geduld und Konsequenz sind jetzt besonders wichtig.' }
+          : { name: 'Späte Pubertät', desc: 'Kalle wird langsam ruhiger und ausgeglichener. Das Gelernte festigt sich wieder. Die erwachsene Persönlichkeit bildet sich heraus.' };
+
+        const progress = Math.round(((ageInMonths - 6) / 12) * 100);
+
+        return (
+          <div className="mt-6 bg-white/[0.06] backdrop-blur-sm rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">🐾</span>
+              <span className="text-[13px] text-white font-medium">Pubertäts-Phase</span>
+            </div>
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] text-white/50 uppercase tracking-wide">{phase.name}</span>
+                <span className="text-[11px] text-white/40">{progress}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-amber-400 rounded-full transition-all"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-white/50 leading-relaxed">{phase.desc}</p>
+            <p className="text-[10px] text-white/30 mt-2">Ca. 6–18 Monate · Verschwindet automatisch nach der Pubertät</p>
+          </div>
+        );
+      })()}
       
       {/* Export Button */}
       <div className="mt-8 pb-4">
