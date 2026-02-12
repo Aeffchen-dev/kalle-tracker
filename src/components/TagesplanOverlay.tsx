@@ -938,56 +938,21 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     </tr>
                     {/* Row 2: Who has Kalle */}
                     <tr>
-                      {(() => {
-                        const cells: React.ReactNode[] = [];
-                        let skipUntil = -1;
+                      {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
+                        const dayDate = new Date(rangeStart);
+                        dayDate.setDate(dayDate.getDate() + dayIndex);
+                        const owner = getKalleOwnerForDate(icalEvents, dayDate);
                         
-                        for (let dayIndex = 0; dayIndex < TOTAL_DAYS; dayIndex++) {
-                          if (dayIndex < skipUntil) continue;
-                          
-                          const dayDate = new Date(rangeStart);
-                          dayDate.setDate(dayDate.getDate() + dayIndex);
-                          const owner = getKalleOwnerForDate(icalEvents, dayDate);
-                          const isToday = dayIndex === currentDayIndex;
-                          
-                          if (owner) {
-                            let span = 1;
-                            for (let j = dayIndex + 1; j < TOTAL_DAYS; j++) {
-                              const nextDate = new Date(rangeStart);
-                              nextDate.setDate(nextDate.getDate() + j);
-                              const nextOwner = getKalleOwnerForDate(icalEvents, nextDate);
-                              if (nextOwner && nextOwner.person === owner.person) {
-                                span++;
-                              } else {
-                                break;
-                              }
-                            }
-                            skipUntil = dayIndex + span;
-                            
-                            const endDateStr = format(owner.endDate, 'd. MMM', { locale: de });
-                            const spanIncludesToday = currentDayIndex >= dayIndex && currentDayIndex < dayIndex + span;
-                            
-                            cells.push(
-                              <td
-                                key={dayIndex}
-                                colSpan={span}
-                                className={`border-r border-white/30 last:border-r-0`}
-                              >
-                                 <div className="flex items-center justify-between px-3 py-2">
-                                   <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person} hat Kalle</span>
-                                   <span className="text-white/40 text-[12px] whitespace-nowrap">bis {endDateStr}</span>
-                                 </div>
-                              </td>
-                            );
-                          } else {
-                            cells.push(
-                              <td key={dayIndex} className="border-r border-white/30 last:border-r-0">
-                              </td>
-                            );
-                          }
-                        }
-                        return cells;
-                      })()}
+                        return (
+                          <td key={dayIndex} className="border-r border-white/30 last:border-r-0">
+                            {owner ? (
+                              <div className="px-2 py-2">
+                                <span className="text-white text-[14px] font-medium whitespace-nowrap">🐶 {owner.person}</span>
+                              </div>
+                            ) : null}
+                          </td>
+                        );
+                      })}
                     </tr>
                     <tr><td colSpan={TOTAL_DAYS} className="h-0 border-b border-white/30"></td></tr>
                   </thead>
@@ -1048,61 +1013,64 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       
                       // Merge iCal events into walk time slots
                       // Collect iCal events per day
-                      const dayIcalEvents = new Map<number, { summary: string; time: string }[]>();
+                      // Build unified items per day: walks + ical merged by time
+                      type UnifiedItem = { kind: 'walk'; avgHour: number; hasPoop: boolean } | { kind: 'ical'; time: string; summary: string; sortHour: number };
+                      const dayItems = new Map<number, UnifiedItem[]>();
                       for (let d = 0; d < TOTAL_DAYS; d++) {
+                        const walks: UnifiedItem[] = (daySlots.get(d) || []).map(s => ({ kind: 'walk' as const, ...s }));
                         const evts = weekIcalEvents.get(d) || [];
-                        const filtered = evts
+                        const icals: UnifiedItem[] = evts
                           .filter(e => !e.summary?.match(/hat\s+Kalle/i))
-                          .map(e => ({
-                            summary: e.summary || '',
-                            time: format(new Date(e.dtstart), 'HH:mm'),
-                          }))
-                          .sort((a, b) => a.time.localeCompare(b.time));
-                        dayIcalEvents.set(d, filtered);
+                          .map(e => {
+                            const dt = new Date(e.dtstart);
+                            return {
+                              kind: 'ical' as const,
+                              summary: e.summary || '',
+                              time: format(dt, 'HH:mm'),
+                              sortHour: dt.getHours() + dt.getMinutes() / 60,
+                            };
+                          });
+                        const all = [...walks, ...icals].sort((a, b) => {
+                          const ha = a.kind === 'walk' ? a.avgHour : a.sortHour;
+                          const hb = b.kind === 'walk' ? b.avgHour : b.sortHour;
+                          return ha - hb;
+                        });
+                        dayItems.set(d, all);
                       }
                       
-                      // Find max rows needed (walk slots + ical events combined per day)
                       const maxRows = Math.max(
-                        ...Array.from({ length: TOTAL_DAYS }, (_, d) => {
-                          const walkCount = (daySlots.get(d) || []).length;
-                          const icalCount = (dayIcalEvents.get(d) || []).length;
-                          return walkCount + icalCount;
-                        }),
+                        ...Array.from(dayItems.values()).map(items => items.length),
                         0
                       );
                       
                       return Array.from({ length: maxRows }, (_, rowIdx) => (
                         <tr key={rowIdx} className="border-b border-white/30 last:border-b-0" style={{ height: '52px' }}>
                           {Array.from({ length: TOTAL_DAYS }, (_, dayIndex) => {
-                            const slots = daySlots.get(dayIndex) || [];
-                            const icalEvts = dayIcalEvents.get(dayIndex) || [];
+                            const items = dayItems.get(dayIndex) || [];
                             
-                            // Walk slots first, then iCal events
-                            if (rowIdx < slots.length) {
-                              const slot = slots[rowIdx];
-                              return (
-                                <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                  <div>
-                                    <div className="text-white/50 text-[14px]">{formatTime(slot.avgHour)} Uhr</div>
-                                    <div className="text-white/60 text-[14px] mt-0.5">
-                                      {slot.hasPoop ? '💩' : '💦'}
+                            if (rowIdx < items.length) {
+                              const item = items[rowIdx];
+                              if (item.kind === 'walk') {
+                                return (
+                                  <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                    <div>
+                                      <div className="text-white/50 text-[14px]">{formatTime(item.avgHour)} Uhr</div>
+                                      <div className="text-white/60 text-[14px] mt-0.5">
+                                        {item.hasPoop ? '💩' : '💦'}
+                                      </div>
                                     </div>
-                                  </div>
-                                </td>
-                              );
-                            }
-                            
-                            const icalIdx = rowIdx - slots.length;
-                            if (icalIdx < icalEvts.length) {
-                              const evt = icalEvts[icalIdx];
-                              return (
-                                <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
-                                  <div>
-                                    <div className="text-white/40 text-[14px]">{evt.time} Uhr</div>
-                                    <div className="text-white/70 text-[14px] mt-0.5">{evt.summary}</div>
-                                  </div>
-                                </td>
-                              );
+                                  </td>
+                                );
+                              } else {
+                                return (
+                                  <td key={dayIndex} className="p-2 border-r border-white/30 last:border-r-0 align-top">
+                                    <div>
+                                      <div className="text-white/40 text-[14px]">{item.time} Uhr</div>
+                                      <div className="text-white/70 text-[14px] mt-0.5">{item.summary}</div>
+                                    </div>
+                                  </td>
+                                );
+                              }
                             }
                             
                             return (
