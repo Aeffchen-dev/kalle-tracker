@@ -30,14 +30,7 @@ const Index = () => {
   const [showGassiSettings, setShowGassiSettings] = useState(false);
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
-  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(() => {
-    // Check if gassi reminder was dismissed today
-    const dismissed = localStorage.getItem('gassi_dismissed_date');
-    if (dismissed === new Date().toDateString()) {
-      return new Set(['gassi_dismissed']);
-    }
-    return new Set();
-  });
+  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Remove static loader on mount to prevent flicker
@@ -112,11 +105,7 @@ const Index = () => {
     calculateTimeDisplay();
     // Detect anomalies
     const detected = detectAnomalies(result.events);
-    const gassiDismissedToday = localStorage.getItem('gassi_dismissed_date') === new Date().toDateString();
-    const filteredAnomalies = detected.filter(a => {
-      if (a.type === 'upcoming_break' && gassiDismissedToday) return false;
-      return !dismissedAnomalies.has(a.id);
-    });
+    const filteredAnomalies = detected.filter(a => !dismissedAnomalies.has(a.id));
     setAnomalies(filteredAnomalies);
     
     // Schedule native notifications for walk reminders
@@ -143,12 +132,6 @@ const Index = () => {
   };
 
   const handleDismissAnomaly = (id: string) => {
-    // Check if this is a gassi reminder - dismiss until next day
-    const anomaly = anomalies.find(a => a.id === id);
-    if (anomaly?.type === 'upcoming_break') {
-      localStorage.setItem('gassi_dismissed_date', new Date().toDateString());
-      cancelWalkReminders();
-    }
     setDismissedAnomalies(prev => new Set([...prev, id]));
     setAnomalies(prev => prev.filter(a => a.id !== id));
   };
