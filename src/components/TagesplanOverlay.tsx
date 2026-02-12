@@ -994,10 +994,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     if (!currentSpan) return null;
                     return (
                       <div className="sticky left-0 z-10 mb-2">
-                        <div className="rounded-full bg-white/[0.06] flex items-center justify-center py-1 px-3 w-fit mx-auto">
-                          <span className="text-white/50 text-[11px] whitespace-nowrap">
-                            🐶 {currentSpan.person} hat Kalle bis {format(currentSpan.endDate, 'd.M.', { locale: de })}
+                        <div className="flex items-center justify-between p-2 bg-white/[0.06] rounded-lg" style={{ width: 'calc((100vw - 48px) / 2.1)' }}>
+                          <span className="text-[12px] text-white flex items-center gap-1.5">
+                            <span className="text-white/40 shrink-0">bis {format(currentSpan.endDate, 'd.M.', { locale: de })}</span>
+                            <span className="text-white/60">{currentSpan.person} hat Kalle</span>
                           </span>
+                          <span className="shrink-0">🐶</span>
                         </div>
                       </div>
                     );
