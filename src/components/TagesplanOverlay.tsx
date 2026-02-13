@@ -775,9 +775,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               key={i}
                               onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
                               className={`flex-1 relative z-10 transition-colors ${
-                                i < currentPhaseIndex ? 'bg-white/70' : 
-                                i === currentPhaseIndex ? 'bg-transparent' : 'bg-transparent'
-                              } ${i !== 0 ? 'border-l border-white/15' : ''}`}
+                                i <= currentPhaseIndex ? 'bg-white/70' : 'bg-transparent'
+                              } ${i === currentPhaseIndex ? 'rounded-r-full' : ''} ${i !== 0 && i <= currentPhaseIndex ? 'border-l border-white/15' : ''}`}
                             />
                           ))}
                         </div>
