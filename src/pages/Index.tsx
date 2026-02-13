@@ -478,14 +478,8 @@ const Index = () => {
                       ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
                     </span>
                     <span className="shrink-0 text-right">
-                      {isToday && weatherTemp !== null ? (
-                        <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
-                      ) : (
-                        <>
-                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
-                        </>
-                      )}
+                      <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                      <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
                     </span>
                   </div>
                 </div>
