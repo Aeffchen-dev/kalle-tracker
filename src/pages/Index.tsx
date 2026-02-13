@@ -432,20 +432,20 @@ const Index = () => {
                         <span className="relative inline-flex rounded-full h-[8px] w-[8px] bg-[#5AD940]"></span>
                       </span>
                     ) : (
-                      <span className="text-white/40 text-[12px] truncate">{format(date, 'EEE', { locale: de })}</span>
+                      <span className="text-white/50 text-[14px] truncate">{format(date, 'EEE', { locale: de })}</span>
                     )}
                   </span>
                   <span className="text-[20px] shrink-0">{weatherCodeToEmoji(day.weatherCode)}</span>
-                  <span className="text-white text-[13px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
+                  <span className="text-white text-[14px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
                   <div className="shrink-0 flex items-center gap-[40px]">
                     {isRainCode(day.weatherCode) ? (
-                      <span className="text-white/40 text-[12px] flex items-center gap-[4px]"><span className="text-[12px]">☔️</span>{String(day.precipSum).replace('.', ',')} mm</span>
+                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><span className="text-[14px]">☔️</span>{String(day.precipSum).replace('.', ',')} mm</span>
                     ) : day.precipProbability > 30 ? (
-                      <span className="text-white/40 text-[12px] flex items-center gap-[4px]"><span className="text-[12px]">☔️</span>{day.precipProbability}%</span>
-                    ) : <span className="text-white/40 text-[12px] invisible">☔️ 00%</span>}
+                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><span className="text-[14px]">☔️</span>{day.precipProbability}%</span>
+                    ) : <span className="text-white/50 text-[14px] invisible">☔️ 00%</span>}
                     <div className="shrink-0 text-right mr-[-4px]">
                       <span className="text-white text-[14px]">{day.tempMax}°</span>
-                      <span className="text-white/40 text-[14px] ml-2">{day.tempMin}°</span>
+                      <span className="text-white/50 text-[14px] ml-2">{day.tempMin}°</span>
                     </div>
                   </div>
                 </div>
