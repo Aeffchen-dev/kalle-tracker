@@ -1010,7 +1010,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] glass-card py-2"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
@@ -1107,7 +1107,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
-                        className="shrink-0 rounded-[14px] overflow-hidden glass-card"
+                        className="shrink-0 rounded-[14px] overflow-hidden bg-black"
                         style={{ width: 'var(--card-w)' }}
                       >
                         {/* Compact day header */}
@@ -1141,7 +1141,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                       <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -1149,11 +1149,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div className="flex items-center">
-                                           <span className="text-[12px] shrink-0">📅</span>
-                                           <span className="text-[12px] text-white/70 ml-1.5">{evt.timeStr} Uhr</span>
+                                         <div className="flex items-start">
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
                                          </div>
-                                         <div className="text-[12px] text-white/70 mt-1 truncate">{evt.summary}</div>
                                        </div>
                                      </div>
                                    ))}
