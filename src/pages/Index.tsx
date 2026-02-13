@@ -419,7 +419,7 @@ const Index = () => {
               Wettervorhersage
             </h2>
           </div>
-          <div className="px-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
+          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
             {forecast.map((day) => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
