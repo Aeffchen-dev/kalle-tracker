@@ -450,7 +450,7 @@ const Index = () => {
                     {currentWeatherCode !== null && isRainCode(currentWeatherCode) && (
                       <div className="rounded-lg py-1.5 backdrop-blur-xl border border-white/15 bg-gradient-to-br from-white/25 to-white/10 flex items-center gap-3 px-3">
                         <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] shrink-0" />
-                        <span className="text-black text-[12px] leading-[16px]">Nimm lieber einen Schirm mit, es könnte nass werden.</span>
+                        <span className="text-black text-[12px] leading-[16px]">Nimm lieber einen Schirm mit</span>
                       </div>
                     )}
                   </div>
