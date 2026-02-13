@@ -14,6 +14,7 @@ import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
 import dogInCar from '@/assets/dog-in-car.png';
+import muetzeIcon from '@/assets/muetze-icon.png';
 
 
 const weatherCodeToEmoji = (code: number): string => {
@@ -298,7 +299,7 @@ const Index = () => {
               onClick={() => setShowWeather(true)}
               className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[3px] px-[10px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
             >
-              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp <= 7 && <svg width="12" height="12" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8 2 4.5 4.5 4 8H3a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-1c-.5-3.5-4-6-8-6Zm0 2c2.8 0 5.1 1.8 5.8 4H6.2c.7-2.2 3-4 5.8-4ZM4 13v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7H4Z"/></svg>}</span>
+              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp <= 7 && <img src={muetzeIcon} alt="Mütze" width={12} height={12} className="inline-block" />}</span>
             </button>
           )}
         </div>
