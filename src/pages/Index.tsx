@@ -438,10 +438,8 @@ const Index = () => {
                     <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{isToday && currentWeatherCode !== null ? weatherCodeToEmoji(currentWeatherCode) : weatherCodeToEmoji(day.weatherCode)}</span>
                     <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
                     <span className="flex-1 flex justify-center shrink-0">
-                      {isRainCode(isToday && currentWeatherCode !== null ? currentWeatherCode : day.weatherCode) ? (
-                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} mm</span>
-                      ) : day.precipProbability > 30 ? (
-                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{day.precipProbability}%</span>
+                      {day.precipSum > 0.5 ? (
+                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} l</span>
                       ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
                     </span>
                     <span className="shrink-0 text-right">
