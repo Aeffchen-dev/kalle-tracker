@@ -4,7 +4,7 @@ import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { MoreHorizontal } from 'lucide-react';
 import rainIcon from '@/assets/rain-umbrella.png';
-import knittedHat from '@/assets/scarf-icon.png';
+import knittedHat from '@/assets/puffer-coat-icon.png';
 import umbrellaIcon from '@/assets/rain-umbrella-icon.png';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
