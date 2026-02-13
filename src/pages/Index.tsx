@@ -309,7 +309,7 @@ const Index = () => {
               onClick={() => setShowWeather(true)}
               className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[12px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
             >
-              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp <= 7 && <img src={pufferCoat} alt="cold" className="w-[12px] h-[12px] md:w-[1.6vw] md:h-[1.6vw] lg:w-[1.3vw] lg:h-[1.3vw] -ml-[4px]" />}</span>
+              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp <= 7 && <img src={pufferCoat} alt="cold" className="w-[14px] h-[14px] md:w-[1.75vw] md:h-[1.75vw] lg:w-[1.4vw] lg:h-[1.4vw] -ml-[4px]" />}</span>
             </button>
           )}
         </div>
