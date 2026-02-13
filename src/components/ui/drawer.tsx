@@ -28,13 +28,6 @@ const DrawerContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
-    {/* Background extension for iOS safe area - only visible on iPhone */}
-    {/iPhone/.test(navigator.userAgent) && (
-      <div 
-        className="fixed inset-x-0 bottom-0 z-40 bg-black" 
-        style={{ height: 'calc(env(safe-area-inset-bottom) + 50px)' }}
-      />
-    )}
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
