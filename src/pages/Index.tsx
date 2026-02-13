@@ -429,7 +429,7 @@ const Index = () => {
                     {format(date, 'EEE', { locale: de })}
                   </span>
                   <span className="text-[20px] shrink-0 mr-2 translate-y-[2px]">{weatherCodeToEmoji(day.weatherCode)}</span>
-                  <span className="text-white text-[14px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
+                  <span className="text-white text-[14px] w-[118px] shrink-0 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
                   <span className="w-[72px] text-center shrink-0 mx-2">
                     {isRainCode(day.weatherCode) ? (
                       <span className="text-white/50 text-[14px] inline-flex items-baseline gap-[4px]"><CloudRain size={12} className="text-white/50 translate-y-[2px]" />{String(day.precipSum).replace('.', ',')} mm</span>
