@@ -425,7 +425,7 @@ const Index = () => {
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
                 <div key={day.date} className="bg-white/[0.06] rounded-lg pl-2 pr-4 py-2.5 flex items-center gap-2">
-                  <span className="w-[52px] shrink-0 flex items-center justify-center">
+                  <span className="w-[36px] shrink-0 flex items-center justify-center">
                     {isToday ? (
                       <span className="relative flex h-[8px] w-[8px]">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5AD940] opacity-75"></span>
