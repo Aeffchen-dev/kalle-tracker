@@ -1154,7 +1154,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                               <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
                                               <span className="text-[14px] shrink-0 ml-2">📅</span>
                                             </div>
-                                            <div className="text-[12px] text-white/70 mt-0.5 truncate">{evt.summary}</div>
+                                            <div className="text-[12px] text-white/70 mt-0.5">{evt.summary}</div>
                                           </div>
                                         </div>
                                      </div>
