@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -430,7 +430,8 @@ const Index = () => {
                const date = new Date(day.date + 'T00:00:00');
                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
-                 <div key={day.date} className="rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06]">
+                <React.Fragment key={day.date}>
+                 <div className="rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06]">
                   <div className="flex items-center">
                     <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
                       {format(date, 'EEE', { locale: de })}
@@ -465,6 +466,19 @@ const Index = () => {
                     </span>
                   </div>
                 </div>
+                {isToday && weatherTemp !== null && weatherTemp <= 7 && (
+                  <div className="rounded-lg p-3 bg-white/[0.06] flex items-center gap-3">
+                    <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0" />
+                    <span className="text-white/70 text-[12px] leading-[16px]">Bei Temperaturen unter 7 Grad braucht Kalle eine Jacke. Unter 0 Grad braucht er die dicke Winterjacke.</span>
+                  </div>
+                )}
+                {isToday && currentWeatherCode !== null && isRainCode(currentWeatherCode) && (
+                  <div className="rounded-lg p-3 bg-white/[0.06] flex items-center gap-3">
+                    <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] shrink-0" />
+                    <span className="text-white/70 text-[12px] leading-[16px]">Nimm lieber einen Schirm mit, es könnte nass werden.</span>
+                  </div>
+                )}
+                </React.Fragment>
               );
             })}
             </div>
