@@ -1141,7 +1141,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                       <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 ml-2 truncate">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -1149,11 +1149,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div className="flex items-start">
-                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
-                                           <span className="text-[12px] text-white/70">{evt.summary}</span>
-                                         </div>
-                                       </div>
+                                         <div>
+                                            <div className="flex items-center">
+                                              <span className="text-[12px] shrink-0 mr-1">📅</span>
+                                              <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
+                                            </div>
+                                            <div className="text-[12px] text-white/70 mt-0.5 truncate">{evt.summary}</div>
+                                          </div>
+                                        </div>
                                      </div>
                                    ))}
                                 </div>
