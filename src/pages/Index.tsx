@@ -78,6 +78,7 @@ const Index = () => {
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [weatherEmoji, setWeatherEmoji] = useState('🌡️');
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
+  const [currentWeatherCode, setCurrentWeatherCode] = useState<number | null>(null);
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
   const [weatherWeekOffset, setWeatherWeekOffset] = useState(0);
@@ -225,6 +226,7 @@ const Index = () => {
           if (data.current) {
             setWeatherTemp(Math.round(data.current.temperature_2m));
             setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
+            setCurrentWeatherCode(data.current.weather_code);
           }
           if (data.daily) {
             const days: DayForecast[] = data.daily.time.map((date: string, i: number) => ({
@@ -466,26 +468,26 @@ const Index = () => {
                     <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
                       {format(date, 'EEE', { locale: de })}
                     </span>
-                    <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
-                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
+                    <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{isToday && currentWeatherCode !== null ? weatherCodeToEmoji(currentWeatherCode) : weatherCodeToEmoji(day.weatherCode)}</span>
+                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
                     <span className="flex-1 flex justify-center shrink-0">
-                      {isRainCode(day.weatherCode) ? (
+                      {isRainCode(isToday && currentWeatherCode !== null ? currentWeatherCode : day.weatherCode) ? (
                         <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{String(day.precipSum).replace('.', ',')} mm</span>
                       ) : day.precipProbability > 30 ? (
                         <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{day.precipProbability}%</span>
                       ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
                     </span>
                     <span className="shrink-0 text-right">
-                      <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                      <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                      {isToday && weatherTemp !== null ? (
+                        <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
+                      ) : (
+                        <>
+                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                        </>
+                      )}
                     </span>
                   </div>
-                  {isToday && weatherTemp !== null && (
-                    <div className="flex items-center mt-1.5 pl-[44px]">
-                      <span className="text-[14px] shrink-0 mr-1.5 leading-[20px]">{weatherEmoji}</span>
-                      <span className="text-white/50 text-[12px] leading-[20px]">Aktuell {weatherTemp}°</span>
-                    </div>
-                  )}
                 </div>
               );
             })}
