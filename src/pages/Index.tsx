@@ -297,7 +297,7 @@ const Index = () => {
               onClick={() => setShowWeather(true)}
               className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[3px] px-[10px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
             >
-              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span></span>
+              <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp <= 7 && <svg width="12" height="12" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><path d="M16 3h-2v1H10V3H8l-1 1v4l-3 3v10h2v-2h12v2h2V11l-3-3V4l-1-1Zm-6 2h4v3h-4V5ZM6 18v-6l3-3h6l3 3v6H6Z"/></svg>}</span>
             </button>
           )}
         </div>
