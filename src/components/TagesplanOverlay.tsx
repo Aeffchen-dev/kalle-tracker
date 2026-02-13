@@ -792,10 +792,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         <div className="flex mt-1.5">
                           {phases.map((p, i) => (
                             <span key={i} className={`flex-1 text-[9px] text-center ${
-                              i < currentPhaseIndex ? 'text-white/50' : 
-                              i === currentPhaseIndex ? 'text-white/70' : 'text-white/20'
+                              i <= currentPhaseIndex ? 'text-white/50' : 'text-white/20'
                             }`}>
-                              {i < currentPhaseIndex ? '✓' : ''}
+                              {`${p.min}–${p.max}M`}
                             </span>
                           ))}
                         </div>
