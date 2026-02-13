@@ -467,7 +467,7 @@ const Index = () => {
                   </div>
                 </div>
                 {isToday && (weatherTemp !== null && weatherTemp <= 7 || currentWeatherCode !== null && isRainCode(currentWeatherCode)) && (
-                  <div className="flex flex-col gap-1 -mt-1">
+                  <div className="flex flex-col gap-0.5 -mt-1.5">
                     {weatherTemp !== null && weatherTemp <= 7 && (
                       <div className="rounded-lg py-1.5 bg-white/[0.06] flex items-center gap-3 px-3">
                         <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0 invert opacity-30" />
