@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Umbrella } from 'lucide-react';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
@@ -425,16 +425,16 @@ const Index = () => {
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
                 <div key={day.date} className={`rounded-lg pl-2 pr-[18px] py-2.5 flex items-center ${isToday ? 'bg-white/[0.08] border border-white/[0.15]' : 'bg-white/[0.06]'}`}>
-                  <span className={`w-[36px] shrink-0 flex items-center justify-center mr-2 text-[14px] truncate ${isToday ? 'text-white' : 'text-white/50'}`}>
+                  <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[14px] truncate text-white/50">
                     {format(date, 'EEE', { locale: de })}
                   </span>
                   <span className="text-[20px] shrink-0 mr-2">{weatherCodeToEmoji(day.weatherCode)}</span>
                   <span className="text-white text-[14px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
                   <div className="shrink-0 flex items-center gap-[40px]">
                     {isRainCode(day.weatherCode) ? (
-                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><span className="text-[14px]">☔️</span>{String(day.precipSum).replace('.', ',')} mm</span>
+                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{String(day.precipSum).replace('.', ',')} mm</span>
                     ) : day.precipProbability > 30 ? (
-                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><span className="text-[14px]">☔️</span>{day.precipProbability}%</span>
+                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{day.precipProbability}%</span>
                     ) : <span className="text-white/50 text-[14px] invisible">☔️ 00%</span>}
                     <div className="shrink-0 text-right mr-[-4px]">
                       <span className="text-white text-[14px]">{day.tempMax}°</span>
