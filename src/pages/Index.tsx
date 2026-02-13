@@ -221,9 +221,9 @@ const Index = () => {
         .then(r => r.json())
         .then(data => {
           if (data.current) {
-            setWeatherTemp(30); // TEMP TEST: was Math.round(data.current.temperature_2m)
-            setWeatherEmoji(weatherCodeToEmoji(0)); // TEMP TEST: was data.current.weather_code
-            setCurrentWeatherCode(0); // TEMP TEST: was data.current.weather_code
+            setWeatherTemp(Math.round(data.current.temperature_2m));
+            setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
+            setCurrentWeatherCode(data.current.weather_code);
           }
           if (data.daily) {
             const days: DayForecast[] = data.daily.time.map((date: string, i: number) => ({
