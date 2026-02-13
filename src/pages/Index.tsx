@@ -81,6 +81,7 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
   const [weatherWeekOffset, setWeatherWeekOffset] = useState(0);
+  const [weatherSlideDir, setWeatherSlideDir] = useState<'left' | 'right' | null>(null);
   const weatherSwipeStartX = useRef(0);
   const weatherSwipeStartY = useRef(0);
   const weatherSwipeDecided = useRef(false);
@@ -447,12 +448,15 @@ const Index = () => {
               if (!weatherIsHorizontal.current) return;
               const dx = e.changedTouches[0].clientX - weatherSwipeStartX.current;
               if (dx < -50 && weatherWeekOffset === 0 && forecast.length > 7) {
-                setWeatherWeekOffset(1);
+                setWeatherSlideDir('left');
+                setTimeout(() => { setWeatherWeekOffset(1); setWeatherSlideDir(null); }, 200);
               } else if (dx > 50 && weatherWeekOffset === 1) {
-                setWeatherWeekOffset(0);
+                setWeatherSlideDir('right');
+                setTimeout(() => { setWeatherWeekOffset(0); setWeatherSlideDir(null); }, 200);
               }
             }}
           >
+            <div className={`flex flex-col gap-[6px] transition-all duration-200 ease-out ${weatherSlideDir === 'left' ? 'translate-x-[-100%] opacity-0' : weatherSlideDir === 'right' ? 'translate-x-[100%] opacity-0' : 'translate-x-0 opacity-100'}`}>
             {forecast.slice(weatherWeekOffset * 7, weatherWeekOffset * 7 + 7).map((day) => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
@@ -477,6 +481,7 @@ const Index = () => {
                 </div>
               );
             })}
+            </div>
             <div className="flex justify-center gap-2 pt-2 pb-1">
               <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 0 ? 'bg-white/60' : 'bg-white/20'}`} />
               <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 1 ? 'bg-white/60' : 'bg-white/20'}`} />
