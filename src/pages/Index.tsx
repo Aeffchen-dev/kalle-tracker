@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { MoreHorizontal, Droplets } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
+import rainIcon from '@/assets/rain-icon.png';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
@@ -425,16 +426,16 @@ const Index = () => {
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
                 <div key={day.date} className={`rounded-lg pl-2 pr-[16px] py-2.5 flex items-center ${isToday ? 'bg-white/[0.08] border border-white/[0.15]' : 'bg-white/[0.06]'}`}>
-                  <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[14px] leading-[20px] text-white/50">
+                  <span className="w-[36px] shrink-0 flex items-center justify-center mr-3 text-[12px] leading-[20px] text-white/50">
                     {format(date, 'EEE', { locale: de })}
                   </span>
                   <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
                   <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
                   <span className="flex-1 flex justify-center shrink-0">
                     {isRainCode(day.weatherCode) ? (
-                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><Droplets size={12} className="text-white/50" />{String(day.precipSum).replace('.', ',')} mm</span>
+                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{String(day.precipSum).replace('.', ',')} mm</span>
                     ) : day.precipProbability > 30 ? (
-                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><Droplets size={12} className="text-white/50" />{day.precipProbability}%</span>
+                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{day.precipProbability}%</span>
                     ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
                   </span>
                   <span className="shrink-0 text-right">
