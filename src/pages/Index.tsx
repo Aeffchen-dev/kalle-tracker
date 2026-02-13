@@ -472,13 +472,13 @@ const Index = () => {
                 {hasInfoBox && (
                   <div className="flex flex-col gap-2">
                     {weatherTemp !== null && weatherTemp <= 7 && (
-                      <div className="rounded-lg h-[36px] backdrop-blur-xl border border-white/20 bg-gradient-to-br from-white/40 to-white/20 flex items-center gap-3 px-3">
+                      <div className="rounded-lg h-[36px] bg-white/10 flex items-center gap-3 px-3">
                         <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0" />
                         <span className="text-black text-[12px] leading-[16px]">Unter 7° braucht Kalle eine Jacke</span>
                       </div>
                     )}
                     {currentWeatherCode !== null && isRainCode(currentWeatherCode) && (
-                      <div className="rounded-lg h-[36px] backdrop-blur-xl border border-white/20 bg-gradient-to-br from-white/40 to-white/20 flex items-center gap-3 px-3">
+                      <div className="rounded-lg h-[36px] bg-white/10 flex items-center gap-3 px-3">
                         <img src={umbrellaIcon} alt="rain" className="w-[18px] h-[18px] shrink-0" />
                         <span className="text-black text-[12px] leading-[16px]">Nimm lieber einen Schirm mit</span>
                       </div>
