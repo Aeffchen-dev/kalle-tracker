@@ -1007,7 +1007,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           >
                             <div className="relative h-full">
                               <div className="sticky left-0 h-full flex items-center pl-3 pr-4 pointer-events-none" style={{ width: 'calc(min(100%, (100vw - 32px)))' }}>
-                                <span className="text-[12px] text-white/70 flex items-center gap-1.5 shrink-0">
+                                <span className="text-[12px] text-white flex items-center gap-1.5 shrink-0">
                                   <span className="shrink-0">🐶</span>
                                   <span>{span.person} hat Kalle</span>
                                 </span>
@@ -1102,7 +1102,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
-                            <span className={`text-[13px] font-medium ${isToday ? 'text-white/50' : 'text-white/70'}`}>
+                            <span className="text-[13px] font-medium text-white">
                               {isToday ? 'Heute' : dayAbbr[jsDay]}
                             </span>
                             <span className="text-white/35 text-[12px]">
