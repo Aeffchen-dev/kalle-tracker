@@ -431,57 +431,32 @@ const Index = () => {
                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
                 <React.Fragment key={day.date}>
-                 <div className="rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06]">
+                 {(() => {
+                   const hasInfoBox = isToday && (weatherTemp !== null && weatherTemp <= 7 || currentWeatherCode !== null && isRainCode(currentWeatherCode));
+                   return (<>
+                 <div className={`rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06] ${hasInfoBox ? 'rounded-b-none' : ''}`}>
                   <div className="flex items-center">
-                    <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
-                      {format(date, 'EEE', { locale: de })}
-                    </span>
-                    <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{isToday && currentWeatherCode !== null ? weatherCodeToEmoji(currentWeatherCode) : weatherCodeToEmoji(day.weatherCode)}</span>
-                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
-                    <span className="flex-1 flex justify-center shrink-0">
-                      {day.precipSum > 0.5 ? (
-                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} l</span>
-                      ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
-                    </span>
-                    <span className="shrink-0 text-right">
-                      {isToday && weatherTemp !== null ? (() => {
-                        const closerToMax = Math.abs(weatherTemp - day.tempMax) <= Math.abs(weatherTemp - day.tempMin);
-                        return closerToMax ? (
-                          <>
-                            <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
-                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{weatherTemp}°</span>
-                          </>
-                        );
-                      })() : (
-                        <>
-                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
-                        </>
-                      )}
-                    </span>
+...
                   </div>
                 </div>
-                {isToday && (weatherTemp !== null && weatherTemp <= 7 || currentWeatherCode !== null && isRainCode(currentWeatherCode)) && (
-                  <div className="flex flex-col gap-0.5 -mt-1.5">
+                {hasInfoBox && (
+                  <div className="flex flex-col gap-0.5">
                     {weatherTemp !== null && weatherTemp <= 7 && (
-                      <div className="rounded-lg py-1.5 bg-white/[0.06] flex items-center gap-3 px-3">
+                      <div className="rounded-lg rounded-t-none py-1.5 bg-white/[0.06] flex items-center gap-3 px-3">
                         <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0 invert opacity-30" />
                         <span className="text-white/30 text-[12px] leading-[16px]">Unter 7° braucht Kalle eine Jacke<br/>Unter 0° braucht er die dicke Winterjacke</span>
                       </div>
                     )}
                     {currentWeatherCode !== null && isRainCode(currentWeatherCode) && (
-                      <div className="rounded-lg p-3 bg-white/[0.06] flex items-center gap-3">
+                      <div className="rounded-lg rounded-t-none p-3 bg-white/[0.06] flex items-center gap-3">
                         <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] shrink-0" />
                         <span className="text-white/70 text-[12px] leading-[16px]">Nimm lieber einen Schirm mit, es könnte nass werden.</span>
                       </div>
                     )}
                   </div>
                 )}
+                </>);
+                 })()}
                 </React.Fragment>
               );
             })}
