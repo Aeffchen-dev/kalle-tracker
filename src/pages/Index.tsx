@@ -45,11 +45,17 @@ const weatherCodeToLabel = (code: number): string => {
   return 'Unbekannt';
 };
 
+const isRainCode = (code: number): boolean => {
+  return (code >= 51 && code <= 67) || (code >= 80 && code <= 82) || (code >= 95 && code <= 99);
+};
+
 type DayForecast = {
   date: string;
   tempMin: number;
   tempMax: number;
   weatherCode: number;
+  precipProbability: number;
+  precipSum: number;
 };
 
 const Index = () => {
@@ -206,7 +212,7 @@ const Index = () => {
 
     // Fetch weather for current location
     const fetchWeather = (lat: number, lon: number) => {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=7`)
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=7`)
         .then(r => r.json())
         .then(data => {
           if (data.current) {
@@ -219,6 +225,8 @@ const Index = () => {
               tempMin: Math.round(data.daily.temperature_2m_min[i]),
               tempMax: Math.round(data.daily.temperature_2m_max[i]),
               weatherCode: data.daily.weather_code[i],
+              precipProbability: Math.round(data.daily.precipitation_probability_max?.[i] ?? 0),
+              precipSum: Math.round((data.daily.precipitation_sum?.[i] ?? 0) * 10) / 10,
             }));
             setForecast(days);
           }
@@ -420,16 +428,22 @@ const Index = () => {
                   <div className="flex items-center gap-3">
                     <span className="text-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
                     <div>
-                      <p className="text-white text-[14px]">
+                      <p className="text-white/50 text-[12px]">
                         {isToday ? 'Heute' : format(date, 'EEEE', { locale: de })}
-                        <span className="text-white/50 ml-2">{format(date, 'd. MMM', { locale: de })}</span>
                       </p>
-                      <p className="text-white/50 text-[12px]">{weatherCodeToLabel(day.weatherCode)}</p>
+                      <p className="text-white text-[14px]">{weatherCodeToLabel(day.weatherCode)}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-white text-[14px]">{day.tempMax}°</span>
-                    <span className="text-white/40 text-[14px] ml-1">{day.tempMin}°</span>
+                  <div className="flex items-center gap-3">
+                    {isRainCode(day.weatherCode) ? (
+                      <span className="text-white/50 text-[12px]">{String(day.precipSum).replace('.', ',')} mm</span>
+                    ) : day.precipProbability > 0 ? (
+                      <span className="text-white/50 text-[12px]">🌧️ {day.precipProbability}%</span>
+                    ) : null}
+                    <div className="text-right">
+                      <span className="text-white text-[14px]">{day.tempMax}°</span>
+                      <span className="text-white/40 text-[14px] ml-1">{day.tempMin}°</span>
+                    </div>
                   </div>
                 </div>
               );
