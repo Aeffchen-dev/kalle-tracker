@@ -781,7 +781,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           <button
                             key={i}
                             onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                            className={`flex-1 h-2 rounded-full relative z-10 ${i < currentPhaseIndex ? 'bg-white/40' : 'bg-white/10'}`}
+                            className={`flex-1 h-2 rounded-full relative z-10 ${i < currentPhaseIndex ? 'bg-white/70' : 'bg-white/10'}`}
                           />
                         ))}
                       </div>
