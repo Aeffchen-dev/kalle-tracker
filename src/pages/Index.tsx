@@ -290,14 +290,14 @@ const Index = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="text-[14px] md:text-[2.55vw] lg:text-[2vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[3px] px-[10px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
           >
-            <span className="flex items-center gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">🐶 <span>Kalle</span></span>
+            <span className="flex items-center gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px]">🐶</span> <span>Kalle</span></span>
           </button>
           {weatherTemp !== null && (
             <button 
               onClick={() => setShowWeather(true)}
               className="text-[14px] md:text-[2.55vw] lg:text-[2vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[3px] px-[10px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
             >
-              <span className="flex items-center gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">{weatherEmoji} <span>{weatherTemp}°</span></span>
+              <span className="flex items-center gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px]">{weatherEmoji}</span> <span>{weatherTemp}°</span></span>
             </button>
           )}
         </div>
