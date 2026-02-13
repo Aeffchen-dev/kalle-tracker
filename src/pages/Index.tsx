@@ -424,9 +424,16 @@ const Index = () => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
-                <div key={day.date} className="bg-white/[0.06] rounded-lg px-3 py-2.5 flex items-center gap-3">
-                  <span className="text-white/40 text-[12px] w-[52px] shrink-0 truncate">
-                    {isToday ? 'Heute' : format(date, 'EEE', { locale: de })}
+                <div key={day.date} className="bg-white/[0.06] rounded-lg px-3 py-2.5 flex items-center gap-2">
+                  <span className="w-[52px] shrink-0 flex items-center justify-center">
+                    {isToday ? (
+                      <span className="relative flex h-[8px] w-[8px]">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#5AD940] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-[8px] w-[8px] bg-[#5AD940]"></span>
+                      </span>
+                    ) : (
+                      <span className="text-white/40 text-[12px] truncate">{format(date, 'EEE', { locale: de })}</span>
+                    )}
                   </span>
                   <span className="text-[20px] shrink-0">{weatherCodeToEmoji(day.weatherCode)}</span>
                   <span className="text-white text-[13px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
