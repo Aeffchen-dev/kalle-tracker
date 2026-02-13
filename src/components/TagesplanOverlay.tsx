@@ -1101,7 +1101,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       >
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-6">
                             <span className="text-[13px] font-medium text-white">
                               {isToday ? 'Heute' : dayAbbr[jsDay]}
                             </span>
