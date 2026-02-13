@@ -775,19 +775,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               key={i}
                               onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
                               className={`flex-1 relative z-10 transition-colors ${
-                                i <= currentPhaseIndex ? 'bg-white/70' : 'bg-transparent'
+                                i <= currentPhaseIndex ? 'bg-white' : 'bg-transparent'
                               } ${i === currentPhaseIndex ? 'rounded-r-full' : ''} ${i !== 0 && i <= currentPhaseIndex ? 'border-l border-white/15' : ''}`}
                             />
                           ))}
                         </div>
-                        {/* Sliding active indicator */}
-                        <div
-                          className="absolute top-0 h-2 rounded-full bg-white transition-all duration-400 ease-out pointer-events-none z-20"
-                          style={{
-                            width: `${100 / phases.length}%`,
-                            left: `${(100 / phases.length) * displayIndex}%`,
-                          }}
-                        />
                         {/* Phase labels */}
                         <div className="flex mt-1.5 gap-1">
                           {phases.map((p, i) => (
