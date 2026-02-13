@@ -314,9 +314,9 @@ const Index = () => {
                 <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span></span>
               </button>
               {currentWeatherCode !== null && isRainCode(currentWeatherCode) ? (
-                <img src={umbrellaIcon} alt="rain" className="absolute -top-[5px] -right-[5px] md:-top-[0.5vw] md:-right-[0.5vw] w-[11px] h-[11px] md:w-[1.4vw] md:h-[1.4vw] lg:w-[1.1vw] lg:h-[1.1vw] pointer-events-none" />
+                <img src={umbrellaIcon} alt="rain" className="absolute top-[11px] -right-[5px] md:-top-[0.5vw] md:-right-[0.5vw] w-[11px] h-[11px] md:w-[1.4vw] md:h-[1.4vw] lg:w-[1.1vw] lg:h-[1.1vw] pointer-events-none" />
               ) : weatherTemp !== null && weatherTemp <= 7 ? (
-                <img src={pufferCoat} alt="cold" className="absolute -top-[5px] -right-[5px] md:-top-[0.5vw] md:-right-[0.5vw] w-[14px] h-[14px] md:w-[1.75vw] md:h-[1.75vw] lg:w-[1.4vw] lg:h-[1.4vw] pointer-events-none" />
+                <img src={pufferCoat} alt="cold" className="absolute top-[11px] -right-[5px] md:-top-[0.5vw] md:-right-[0.5vw] w-[14px] h-[14px] md:w-[1.75vw] md:h-[1.75vw] lg:w-[1.4vw] lg:h-[1.4vw] pointer-events-none" />
               ) : null}
             </div>
           )}
