@@ -81,12 +81,6 @@ const Index = () => {
   const [currentWeatherCode, setCurrentWeatherCode] = useState<number | null>(null);
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
-  const [weatherWeekOffset, setWeatherWeekOffset] = useState(0);
-  const [weatherSlideDir, setWeatherSlideDir] = useState<'left' | 'right' | null>(null);
-  const weatherSwipeStartX = useRef(0);
-  const weatherSwipeStartY = useRef(0);
-  const weatherSwipeDecided = useRef(false);
-  const weatherIsHorizontal = useRef(false);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -421,45 +415,16 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      <Drawer open={showWeather} onOpenChange={(open) => { setShowWeather(open); if (!open) setWeatherWeekOffset(0); }}>
+      <Drawer open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
               Wettervorhersage
             </h2>
           </div>
-          <div 
-            className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-2"
-            onTouchStart={(e) => {
-              weatherSwipeStartX.current = e.touches[0].clientX;
-              weatherSwipeStartY.current = e.touches[0].clientY;
-              weatherSwipeDecided.current = false;
-              weatherIsHorizontal.current = false;
-            }}
-            onTouchMove={(e) => {
-              if (!weatherSwipeDecided.current) {
-                const dx = Math.abs(e.touches[0].clientX - weatherSwipeStartX.current);
-                const dy = Math.abs(e.touches[0].clientY - weatherSwipeStartY.current);
-                if (dx > 10 || dy > 10) {
-                  weatherSwipeDecided.current = true;
-                  weatherIsHorizontal.current = dx > dy;
-                }
-              }
-            }}
-            onTouchEnd={(e) => {
-              if (!weatherIsHorizontal.current) return;
-              const dx = e.changedTouches[0].clientX - weatherSwipeStartX.current;
-              if (dx < -50 && weatherWeekOffset === 0 && forecast.filter(d => new Date(d.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).length > 7) {
-                setWeatherSlideDir('left');
-                setTimeout(() => { setWeatherWeekOffset(1); setWeatherSlideDir(null); }, 200);
-              } else if (dx > 50 && weatherWeekOffset === 1) {
-                setWeatherSlideDir('right');
-                setTimeout(() => { setWeatherWeekOffset(0); setWeatherSlideDir(null); }, 200);
-              }
-            }}
-          >
-            <div className={`flex flex-col gap-2 transition-all duration-200 ease-out ${weatherSlideDir === 'left' ? 'translate-x-[-100%] opacity-0' : weatherSlideDir === 'right' ? 'translate-x-[100%] opacity-0' : 'translate-x-0 opacity-100'}`}>
-            {forecast.filter(day => new Date(day.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).slice(weatherWeekOffset * 7, weatherWeekOffset * 7 + 7).map((day) => {
+          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
+            {forecast.filter(day => new Date(day.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).slice(0, 7).map((day) => {
                const date = new Date(day.date + 'T00:00:00');
                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
