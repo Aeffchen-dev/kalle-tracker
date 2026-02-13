@@ -336,6 +336,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
         document.documentElement.style.backgroundColor = '#3d2b1f';
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', '#3d2b1f');
       }, 1400);
     }
   }, [isOpen, animationPhase]);
@@ -345,6 +347,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     if (animationPhase === 'idle' && !isOpen) {
       document.body.style.backgroundColor = '';
       document.documentElement.style.backgroundColor = '';
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', '#e8e2db');
     }
   }, [animationPhase, isOpen]);
 
@@ -434,6 +438,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     setAnimationPhase('dots-collapsing');
     document.body.style.backgroundColor = '';
     document.documentElement.style.backgroundColor = '';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', '#e8e2db');
     
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
