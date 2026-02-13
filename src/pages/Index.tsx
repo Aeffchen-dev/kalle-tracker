@@ -429,7 +429,7 @@ const Index = () => {
             </h2>
           </div>
           <div 
-            className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-[6px]"
+            className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-2"
             onTouchStart={(e) => {
               weatherSwipeStartX.current = e.touches[0].clientX;
               weatherSwipeStartY.current = e.touches[0].clientY;
@@ -458,12 +458,12 @@ const Index = () => {
               }
             }}
           >
-            <div className={`flex flex-col gap-[6px] transition-all duration-200 ease-out ${weatherSlideDir === 'left' ? 'translate-x-[-100%] opacity-0' : weatherSlideDir === 'right' ? 'translate-x-[100%] opacity-0' : 'translate-x-0 opacity-100'}`}>
+            <div className={`flex flex-col gap-2 transition-all duration-200 ease-out ${weatherSlideDir === 'left' ? 'translate-x-[-100%] opacity-0' : weatherSlideDir === 'right' ? 'translate-x-[100%] opacity-0' : 'translate-x-0 opacity-100'}`}>
             {forecast.filter(day => new Date(day.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).slice(weatherWeekOffset * 7, weatherWeekOffset * 7 + 7).map((day) => {
                const date = new Date(day.date + 'T00:00:00');
                const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
-                 <div key={day.date} className="rounded-lg pl-0 pr-[16px] py-2.5 bg-white/[0.06]">
+                 <div key={day.date} className="rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06]">
                   <div className="flex items-center">
                     <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
                       {format(date, 'EEE', { locale: de })}
