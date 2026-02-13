@@ -440,7 +440,7 @@ const Index = () => {
                   <div className="shrink-0 flex items-center gap-[40px]">
                     {isRainCode(day.weatherCode) ? (
                       <span className="text-white/40 text-[12px] flex items-center gap-[4px]"><span className="text-[12px]">☔️</span>{String(day.precipSum).replace('.', ',')} mm</span>
-                    ) : day.precipProbability > 0 ? (
+                    ) : day.precipProbability > 30 ? (
                       <span className="text-white/40 text-[12px] flex items-center gap-[4px]"><span className="text-[12px]">☔️</span>{day.precipProbability}%</span>
                     ) : <span className="text-white/40 text-[12px] invisible">☔️ 00%</span>}
                     <div className="shrink-0 text-right mr-[-4px]">
