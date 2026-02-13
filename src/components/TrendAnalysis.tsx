@@ -64,7 +64,7 @@ const StatCard = memo(({
         <span className="text-[12px] text-white/40">{unit}</span>
       </div>
       {trend === 'up' && <TrendingUp size={18} className="text-[#5AD940]" />}
-      {trend === 'down' && <TrendingDown size={18} className="text-[#FF4444]" />}
+      {trend === 'down' && <TrendingDown size={18} className="text-[#FF0000]" />}
       {trend === 'neutral' && <Minus size={18} className="text-white/40" />}
     </div>
     {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
@@ -173,7 +173,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       formatter: (params: any) => {
         const idx = params.dataIndex;
         const d = data[idx];
-        const status = d.isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+        const status = d.isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
           <div style="font-weight:600;margin-bottom:4px">${d.date}</div>
           <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
@@ -229,7 +229,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         },
         itemStyle: {
           color: (params: any) => {
-            return data[params.dataIndex]?.isOutOfBounds ? '#FF4444' : '#5AD940';
+            return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
         },
@@ -349,7 +349,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         const d = data[idx];
         const ph = d.value;
         const isOutOfRange = ph < 6.5 || ph > 7.2;
-        const status = isOutOfRange ? '<span style="color:#FF4444">⚠️ Außerhalb (6,5-7,2)</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+        const status = isOutOfRange ? '<span style="color:#FF0000">⚠️ Außerhalb (6,5-7,2)</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
           <div style="font-weight:600;margin-bottom:4px">${d.dateLine1}</div>
           <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.dateLine2}</div>
@@ -408,7 +408,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         itemStyle: {
           color: (params: any) => {
             const ph = data[params.dataIndex]?.value;
-            return ph < 6.5 || ph > 7.2 ? '#FF4444' : '#5AD940';
+            return ph < 6.5 || ph > 7.2 ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
         },
@@ -565,7 +565,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           const weight = params.data[1];
           const expected = getExpectedWeight(month);
           const isOutOfBounds = params.seriesName === 'Abweichung';
-          const status = isOutOfBounds ? '<span style="color:#FF4444">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
+          const status = isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
           return `<div style="padding:4px 0">
             <div style="font-weight:600;margin-bottom:4px">Alter: ${formatDecimal(month)} Monate</div>
             <div>Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
@@ -690,10 +690,10 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
         symbolSize: 8,
         itemStyle: {
-          color: '#FF4444',
+          color: '#FF0000',
           opacity: 1,
           shadowBlur: 8,
-          shadowColor: 'rgba(255, 68, 68, 0.6)',
+          shadowColor: 'rgba(255, 0, 0, 0.6)',
         },
         emphasis: {
           scale: 1.8,
@@ -732,7 +732,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           <span>Normal</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-[#FF4444]"></div>
+          <div className="w-2 h-2 rounded-full bg-[#FF0000]"></div>
           <span>Abweichung</span>
         </div>
       </div>

@@ -155,7 +155,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact 
                   {anomaly.highlightText ? (
                     <>
                       {anomaly.description.split(anomaly.highlightText)[0]}
-                      <span className="text-[#FF4444]">{anomaly.highlightText}</span>
+                      <span className="text-[#FF0000]">{anomaly.highlightText}</span>
                       {anomaly.description.split(anomaly.highlightText)[1]}
                     </>
                   ) : (

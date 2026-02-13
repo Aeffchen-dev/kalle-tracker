@@ -183,7 +183,7 @@
     filter: drop-shadow(0 0 0 transparent);
   }
   50% {
-    filter: drop-shadow(0 0 6px #FF4444);
+    filter: drop-shadow(0 0 6px #FF0000);
   }
 }
 
