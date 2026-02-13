@@ -1121,9 +1121,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                               {format(dayDate, 'd. MMM', { locale: de })}
                             </span>
                           </div>
-                          {isToday && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#5AD940] animate-pulse" />
-                          )}
                         </div>
                         
                         
