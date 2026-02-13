@@ -430,15 +430,17 @@ const Index = () => {
                   </span>
                   <span className="text-[20px] shrink-0 mr-2">{weatherCodeToEmoji(day.weatherCode)}</span>
                   <span className="text-white text-[14px] flex-1 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
-                  <div className="shrink-0 flex items-center gap-[40px]">
-                    {isRainCode(day.weatherCode) ? (
-                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{String(day.precipSum).replace('.', ',')} mm</span>
-                    ) : day.precipProbability > 30 ? (
-                      <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{day.precipProbability}%</span>
-                    ) : <span className="text-white/50 text-[14px] invisible">☔️ 00%</span>}
-                    <div className="shrink-0 text-right mr-[12px]">
+                  <div className="shrink-0 flex items-center">
+                    <span className="w-[80px] text-center">
+                      {isRainCode(day.weatherCode) ? (
+                        <span className="text-white/50 text-[14px] inline-flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{String(day.precipSum).replace('.', ',')} mm</span>
+                      ) : day.precipProbability > 30 ? (
+                        <span className="text-white/50 text-[14px] inline-flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{day.precipProbability}%</span>
+                      ) : <span className="text-white/50 text-[14px] invisible">— 00%</span>}
+                    </span>
+                    <div className="shrink-0 text-right">
                       <span className="text-white text-[14px]">{day.tempMax}°</span>
-                      <span className="text-white/50 text-[14px] ml-2">{day.tempMin}°</span>
+                      <span className="text-white/50 text-[14px] ml-[8px]">{day.tempMin}°</span>
                     </div>
                   </div>
                 </div>
