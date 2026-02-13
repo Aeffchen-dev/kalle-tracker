@@ -328,14 +328,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
       setAnimationPhase('expanding');
-      // Recolor body after dots have mostly expanded
-      setTimeout(() => {
-        document.body.style.backgroundColor = '#3d2b1f';
-      }, 900);
-      // Reveal content 200ms later
+      // Reveal content after dots have mostly expanded
       setTimeout(() => {
         setAnimationPhase('visible');
       }, 1100);
+      // Recolor body (status bar + bottom bar) after dot transition completes
+      setTimeout(() => {
+        document.body.style.backgroundColor = '#3d2b1f';
+      }, 1400);
     }
   }, [isOpen, animationPhase]);
 
