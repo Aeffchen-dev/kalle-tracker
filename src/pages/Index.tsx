@@ -476,7 +476,7 @@ const Index = () => {
                   <div className="flex flex-col gap-px -mt-[7px]">
                     {hasCold && (
                       <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${hasBoth ? 'rounded-b-none' : ''}`}>
-                        <img src={knittedHat} alt="cold" className="w-[14px] h-[14px] shrink-0 invert opacity-50" />
+                        <img src={knittedHat} alt="cold" className="w-[13px] h-[13px] shrink-0 invert opacity-50" />
                         <span className="text-white/50 text-[10px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
                       </div>
                     )}
