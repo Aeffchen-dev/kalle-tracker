@@ -220,7 +220,7 @@ const Index = () => {
         .then(r => r.json())
         .then(data => {
           if (data.current) {
-            setWeatherTemp(Math.round(data.current.temperature_2m));
+            setWeatherTemp(10); // TEMP TEST: was Math.round(data.current.temperature_2m)
             setWeatherEmoji(weatherCodeToEmoji(data.current.weather_code));
             setCurrentWeatherCode(data.current.weather_code);
           }
