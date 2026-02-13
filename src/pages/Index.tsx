@@ -478,8 +478,25 @@ const Index = () => {
                       ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
                     </span>
                     <span className="shrink-0 text-right">
-                      <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                      <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                      {isToday && weatherTemp !== null ? (() => {
+                        const closerToMax = Math.abs(weatherTemp - day.tempMax) <= Math.abs(weatherTemp - day.tempMin);
+                        return closerToMax ? (
+                          <>
+                            <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
+                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{weatherTemp}°</span>
+                          </>
+                        );
+                      })() : (
+                        <>
+                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
