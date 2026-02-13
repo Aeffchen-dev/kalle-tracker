@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -80,6 +80,11 @@ const Index = () => {
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
+  const [weatherWeekOffset, setWeatherWeekOffset] = useState(0);
+  const weatherSwipeStartX = useRef(0);
+  const weatherSwipeStartY = useRef(0);
+  const weatherSwipeDecided = useRef(false);
+  const weatherIsHorizontal = useRef(false);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
@@ -213,7 +218,7 @@ const Index = () => {
 
     // Fetch weather for current location
     const fetchWeather = (lat: number, lon: number) => {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=7`)
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max,precipitation_sum&timezone=auto&forecast_days=14`)
         .then(r => r.json())
         .then(data => {
           if (data.current) {
@@ -413,15 +418,42 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      <Drawer open={showWeather} onOpenChange={setShowWeather}>
+      <Drawer open={showWeather} onOpenChange={(open) => { setShowWeather(open); if (!open) setWeatherWeekOffset(0); }}>
         <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
               Wettervorhersage
             </h2>
           </div>
-          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
-            {forecast.map((day) => {
+          <div 
+            className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-[6px]"
+            onTouchStart={(e) => {
+              weatherSwipeStartX.current = e.touches[0].clientX;
+              weatherSwipeStartY.current = e.touches[0].clientY;
+              weatherSwipeDecided.current = false;
+              weatherIsHorizontal.current = false;
+            }}
+            onTouchMove={(e) => {
+              if (!weatherSwipeDecided.current) {
+                const dx = Math.abs(e.touches[0].clientX - weatherSwipeStartX.current);
+                const dy = Math.abs(e.touches[0].clientY - weatherSwipeStartY.current);
+                if (dx > 10 || dy > 10) {
+                  weatherSwipeDecided.current = true;
+                  weatherIsHorizontal.current = dx > dy;
+                }
+              }
+            }}
+            onTouchEnd={(e) => {
+              if (!weatherIsHorizontal.current) return;
+              const dx = e.changedTouches[0].clientX - weatherSwipeStartX.current;
+              if (dx < -50 && weatherWeekOffset === 0 && forecast.length > 7) {
+                setWeatherWeekOffset(1);
+              } else if (dx > 50 && weatherWeekOffset === 1) {
+                setWeatherWeekOffset(0);
+              }
+            }}
+          >
+            {forecast.slice(weatherWeekOffset * 7, weatherWeekOffset * 7 + 7).map((day) => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
@@ -445,6 +477,10 @@ const Index = () => {
                 </div>
               );
             })}
+            <div className="flex justify-center gap-2 pt-2 pb-1">
+              <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 0 ? 'bg-white/60' : 'bg-white/20'}`} />
+              <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 1 ? 'bg-white/60' : 'bg-white/20'}`} />
+            </div>
           </div>
         </DrawerContent>
       </Drawer>
