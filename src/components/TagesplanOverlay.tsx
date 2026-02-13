@@ -789,13 +789,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                           }}
                         />
                         {/* Phase labels */}
-                        <div className="flex mt-1.5">
+                        <div className="flex mt-1.5 gap-1">
                           {phases.map((p, i) => (
-                            <span key={i} className={`flex-1 text-[9px] text-center ${
-                              i <= currentPhaseIndex ? 'text-white/50' : 'text-white/20'
-                            }`}>
+                            <button
+                              key={i}
+                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                              className={`flex-1 text-[9px] text-center py-1 rounded-full transition-colors ${
+                                i === displayIndex ? 'bg-white/20 text-white' :
+                                i <= currentPhaseIndex ? 'text-white/50 hover:bg-white/10' : 'text-white/20 hover:bg-white/10'
+                              }`}
+                            >
                               {`${p.min}–${p.max}M`}
-                            </span>
+                            </button>
                           ))}
                         </div>
                       </div>
