@@ -473,15 +473,15 @@ const Index = () => {
                   </div>
                 </div>
                 {hasInfoBox && (
-                  <div className="flex flex-col gap-0.5 -mt-1.5">
+                  <div className="flex flex-col gap-px -mt-[7px]">
                     {hasCold && (
-                      <div className={`rounded-lg h-[24px] bg-white/[0.08] flex items-center gap-3 px-3 rounded-t-none ${hasBoth ? 'rounded-b-none' : ''}`}>
+                      <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${hasBoth ? 'rounded-b-none' : ''}`}>
                         <img src={knittedHat} alt="cold" className="w-[12px] h-[12px] shrink-0 invert opacity-50" />
                         <span className="text-white/50 text-[10px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
                       </div>
                     )}
                     {hasRain && (
-                      <div className={`rounded-lg h-[24px] bg-white/[0.08] flex items-center gap-3 px-3 ${hasBoth ? 'rounded-t-none' : 'rounded-t-none'}`}>
+                      <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 ${hasBoth ? 'rounded-t-none' : 'rounded-t-none'}`}>
                         <img src={umbrellaIcon} alt="rain" className="w-[12px] h-[12px] shrink-0 invert opacity-50" />
                         <span className="text-white/50 text-[10px] leading-[20px]">Nimm lieber einen Schirm mit</span>
                       </div>
