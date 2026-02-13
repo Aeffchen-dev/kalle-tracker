@@ -436,7 +436,7 @@ const Index = () => {
                     ) : day.precipProbability > 30 ? (
                       <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><Umbrella size={14} className="text-white/50" />{day.precipProbability}%</span>
                     ) : <span className="text-white/50 text-[14px] invisible">☔️ 00%</span>}
-                    <div className="shrink-0 text-right mr-[-4px]">
+                    <div className="shrink-0 text-right mr-[-20px]">
                       <span className="text-white text-[14px]">{day.tempMax}°</span>
                       <span className="text-white/50 text-[14px] ml-2">{day.tempMin}°</span>
                     </div>
