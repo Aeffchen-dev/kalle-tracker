@@ -440,17 +440,17 @@ const Index = () => {
                   </div>
                 </div>
                 {hasInfoBox && (
-                  <div className="flex flex-col gap-0.5">
+                  <div className="flex flex-col gap-0.5 mt-1">
                     {weatherTemp !== null && weatherTemp <= 7 && (
-                      <div className="rounded-lg rounded-t-none py-1.5 bg-white/[0.06] flex items-center gap-3 px-3">
-                        <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0 invert opacity-30" />
-                        <span className="text-white/30 text-[12px] leading-[16px]">Unter 7° braucht Kalle eine Jacke<br/>Unter 0° braucht er die dicke Winterjacke</span>
+                      <div className="rounded-lg rounded-t-none py-1.5 bg-white/20 flex items-center gap-3 px-3">
+                        <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0 opacity-30" />
+                        <span className="text-black/30 text-[12px] leading-[16px]">Unter 7° braucht Kalle eine Jacke<br/>Unter 0° braucht er die dicke Winterjacke</span>
                       </div>
                     )}
                     {currentWeatherCode !== null && isRainCode(currentWeatherCode) && (
-                      <div className="rounded-lg rounded-t-none p-3 bg-white/[0.06] flex items-center gap-3">
-                        <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] shrink-0" />
-                        <span className="text-white/70 text-[12px] leading-[16px]">Nimm lieber einen Schirm mit, es könnte nass werden.</span>
+                      <div className="rounded-lg rounded-t-none p-3 bg-white/20 flex items-center gap-3">
+                        <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] shrink-0 opacity-70" />
+                        <span className="text-black/70 text-[12px] leading-[16px]">Nimm lieber einen Schirm mit, es könnte nass werden.</span>
                       </div>
                     )}
                   </div>
