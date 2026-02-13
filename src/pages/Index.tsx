@@ -461,23 +461,31 @@ const Index = () => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
               return (
-                <div key={day.date} className={`rounded-lg pl-0 pr-[16px] py-2.5 flex items-center bg-white/[0.06] ${isToday ? 'border border-white/[0.08]' : ''}`}>
-                  <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
-                    {format(date, 'EEE', { locale: de })}
-                  </span>
-                  <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
-                  <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
-                  <span className="flex-1 flex justify-center shrink-0">
-                    {isRainCode(day.weatherCode) ? (
-                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{String(day.precipSum).replace('.', ',')} mm</span>
-                    ) : day.precipProbability > 30 ? (
-                      <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{day.precipProbability}%</span>
-                    ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
-                  </span>
-                  <span className="shrink-0 text-right">
-                    <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                    <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
-                  </span>
+                <div key={day.date} className={`rounded-lg pl-0 pr-[16px] py-2.5 bg-white/[0.06] ${isToday ? 'border border-white/[0.08]' : ''}`}>
+                  <div className="flex items-center">
+                    <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
+                      {format(date, 'EEE', { locale: de })}
+                    </span>
+                    <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{weatherCodeToEmoji(day.weatherCode)}</span>
+                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{weatherCodeToLabel(day.weatherCode)}</span>
+                    <span className="flex-1 flex justify-center shrink-0">
+                      {isRainCode(day.weatherCode) ? (
+                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{String(day.precipSum).replace('.', ',')} mm</span>
+                      ) : day.precipProbability > 30 ? (
+                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center gap-[4px]"><img src={rainIcon} alt="rain" className="w-[12px] h-[12px] opacity-50 invert" />{day.precipProbability}%</span>
+                      ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                      <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                    </span>
+                  </div>
+                  {isToday && weatherTemp !== null && (
+                    <div className="flex items-center mt-1.5 pl-[44px]">
+                      <span className="text-[14px] shrink-0 mr-1.5 leading-[20px]">{weatherEmoji}</span>
+                      <span className="text-white/50 text-[12px] leading-[20px]">Aktuell {weatherTemp}°</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
