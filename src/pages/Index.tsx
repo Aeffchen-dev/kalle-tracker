@@ -477,13 +477,13 @@ const Index = () => {
                     {hasCold && (
                       <div className={`rounded-lg h-[24px] bg-white/10 flex items-center gap-3 px-3 rounded-t-none ${hasBoth ? 'rounded-b-none' : ''}`}>
                         <img src={knittedHat} alt="cold" className="w-[10px] h-[10px] shrink-0 invert opacity-50" />
-                        <span className="text-white/50 text-[12px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
+                        <span className="text-white/50 text-[10px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
                       </div>
                     )}
                     {hasRain && (
                       <div className={`rounded-lg h-[24px] bg-white/10 flex items-center gap-3 px-3 ${hasBoth ? 'rounded-t-none' : 'rounded-t-none'}`}>
                         <img src={umbrellaIcon} alt="rain" className="w-[10px] h-[10px] shrink-0 invert opacity-50" />
-                        <span className="text-white/50 text-[12px] leading-[20px]">Nimm lieber einen Schirm mit</span>
+                        <span className="text-white/50 text-[10px] leading-[20px]">Nimm lieber einen Schirm mit</span>
                       </div>
                     )}
                   </div>
