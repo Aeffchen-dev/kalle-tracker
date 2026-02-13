@@ -1010,7 +1010,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
+                            className="absolute top-0 h-full rounded-[14px] glass-card py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
@@ -1107,7 +1107,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
-                        className="shrink-0 rounded-[14px] overflow-hidden bg-black"
+                        className="shrink-0 rounded-[14px] overflow-hidden glass-card"
                         style={{ width: 'var(--card-w)' }}
                       >
                         {/* Compact day header */}
