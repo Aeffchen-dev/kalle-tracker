@@ -768,22 +768,38 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                       </div>
                       
                       {/* Clickable progress bar */}
-                      <div className="relative flex gap-1 mb-4">
-                        {/* Sliding indicator */}
+                      <div className="relative mb-4">
+                        <div className="flex h-2 rounded-full overflow-hidden bg-white/10">
+                          {phases.map((p, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
+                              className={`flex-1 relative z-10 transition-colors ${
+                                i < currentPhaseIndex ? 'bg-white/70' : 
+                                i === currentPhaseIndex ? 'bg-transparent' : 'bg-transparent'
+                              } ${i !== 0 ? 'border-l border-white/15' : ''}`}
+                            />
+                          ))}
+                        </div>
+                        {/* Sliding active indicator */}
                         <div
-                          className="absolute h-2 rounded-full bg-white transition-all duration-400 ease-out pointer-events-none"
+                          className="absolute top-0 h-2 rounded-full bg-white transition-all duration-400 ease-out pointer-events-none z-20"
                           style={{
-                            width: `calc(${100 / phases.length}% - ${(phases.length - 1) * 4 / phases.length}px)`,
-                            left: `calc(${(100 / phases.length) * displayIndex}% + ${displayIndex * 4 / phases.length}px)`,
+                            width: `${100 / phases.length}%`,
+                            left: `${(100 / phases.length) * displayIndex}%`,
                           }}
                         />
-                        {phases.map((p, i) => (
-                          <button
-                            key={i}
-                            onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                            className={`flex-1 h-2 rounded-full relative z-10 ${i < currentPhaseIndex ? 'bg-white/70' : 'bg-white/10'}`}
-                          />
-                        ))}
+                        {/* Phase labels */}
+                        <div className="flex mt-1.5">
+                          {phases.map((p, i) => (
+                            <span key={i} className={`flex-1 text-[9px] text-center ${
+                              i < currentPhaseIndex ? 'text-white/50' : 
+                              i === currentPhaseIndex ? 'text-white/70' : 'text-white/20'
+                            }`}>
+                              {i < currentPhaseIndex ? '✓' : ''}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     
