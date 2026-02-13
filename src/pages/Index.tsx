@@ -436,7 +436,37 @@ const Index = () => {
                    return (<>
                  <div className="rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06]">
                   <div className="flex items-center">
-...
+                    <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
+                      {format(date, 'EEE', { locale: de })}
+                    </span>
+                    <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{isToday && currentWeatherCode !== null ? weatherCodeToEmoji(currentWeatherCode) : weatherCodeToEmoji(day.weatherCode)}</span>
+                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
+                    <span className="flex-1 flex justify-center shrink-0">
+                      {day.precipSum > 0.5 ? (
+                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} l</span>
+                      ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
+                    </span>
+                    <span className="shrink-0 text-right">
+                      {isToday && weatherTemp !== null ? (() => {
+                        const closerToMax = Math.abs(weatherTemp - day.tempMax) <= Math.abs(weatherTemp - day.tempMin);
+                        return closerToMax ? (
+                          <>
+                            <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
+                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{weatherTemp}°</span>
+                          </>
+                        );
+                      })() : (
+                        <>
+                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
+                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                        </>
+                      )}
+                    </span>
                   </div>
                 </div>
                 {hasInfoBox && (
