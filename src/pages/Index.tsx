@@ -316,14 +316,14 @@ const Index = () => {
           {currentWeatherCode !== null && isRainCode(currentWeatherCode) ? (
             <button
               onClick={() => setShowWeather(true)}
-              className="bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[4px] md:py-[0.68vw] md:px-[0.68vw] lg:py-[0.5vw] lg:px-[0.5vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw] flex items-center justify-center"
+              className="bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[8px] md:py-[0.68vw] md:px-[1.2vw] lg:py-[0.5vw] lg:px-[1vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw] flex items-center justify-center"
             >
               <img src={umbrellaIcon} alt="rain" className="w-[20px] h-[20px] md:w-[2.55vw] md:h-[2.55vw] lg:w-[2vw] lg:h-[2vw]" />
             </button>
           ) : weatherTemp !== null && weatherTemp <= 7 && (
             <button
               onClick={() => setShowWeather(true)}
-              className="bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[4px] md:py-[0.68vw] md:px-[0.68vw] lg:py-[0.5vw] lg:px-[0.5vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw] flex items-center justify-center"
+              className="bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[8px] md:py-[0.68vw] md:px-[1.2vw] lg:py-[0.5vw] lg:px-[1vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw] flex items-center justify-center"
             >
               <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] md:w-[2.55vw] md:h-[2.55vw] lg:w-[2vw] lg:h-[2vw]" />
             </button>
