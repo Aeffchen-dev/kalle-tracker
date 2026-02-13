@@ -537,7 +537,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       {animationPhase === 'visible' && (
         <div className="absolute inset-0 pointer-events-auto">
           {/* Header - floating over scroll content */}
-          <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-14 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
+          <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-10 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 45%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
             <button onClick={handleClose} className="text-white p-1">
               <X size={20} />
@@ -564,7 +564,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
             
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-8">
-                <h2 className="flex items-center gap-2 text-[14px] text-white mb-4">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>{meal.title}</span></h2>
+                <h2 className="flex items-center gap-2 text-[14px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
+                <p className="text-[12px] text-white/60 mb-4">{meal.title}</p>
                 <div className="glass-card rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
