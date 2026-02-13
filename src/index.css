@@ -191,6 +191,37 @@
   animation: chartPulse 2s ease-in-out infinite;
 }
 
+/* Glassmorphism card style for Info overlay */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid transparent;
+  border-image: linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04)) 1;
+  border-radius: 0; /* border-image doesn't work with border-radius, use mask approach */
+}
+
+.glass-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.20), rgba(255,255,255,0.05));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
 /* Prevent horizontal scroll on page */
 html, body {
   overflow-x: hidden;
