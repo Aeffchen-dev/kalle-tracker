@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { MoreHorizontal } from 'lucide-react';
-import rainIcon from '@/assets/rain-icon.png';
+import rainIcon from '@/assets/rain-drop.png';
 import EventSheet from '@/components/EventSheet';
 import CalendarView from '@/components/CalendarView';
 import TagesplanOverlay from '@/components/TagesplanOverlay';
