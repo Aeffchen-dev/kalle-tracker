@@ -419,7 +419,7 @@ const Index = () => {
               Wettervorhersage
             </h2>
           </div>
-          <div className="pl-4 pr-2 pb-4 overflow-y-auto flex flex-col gap-[6px]">
+          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-[6px]">
             {forecast.map((day) => {
               const date = new Date(day.date + 'T00:00:00');
               const isToday = format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd');
@@ -443,7 +443,7 @@ const Index = () => {
                     ) : day.precipProbability > 30 ? (
                       <span className="text-white/50 text-[14px] flex items-center gap-[4px]"><span className="text-[14px]">☔️</span>{day.precipProbability}%</span>
                     ) : <span className="text-white/50 text-[14px] invisible">☔️ 00%</span>}
-                    <div className="shrink-0 text-right mr-[-32px]">
+                    <div className="shrink-0 text-right mr-[-4px]">
                       <span className="text-white text-[14px]">{day.tempMax}°</span>
                       <span className="text-white/50 text-[14px] ml-2">{day.tempMin}°</span>
                     </div>
