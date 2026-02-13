@@ -467,7 +467,7 @@ const Index = () => {
                   </div>
                 </div>
                 {isToday && weatherTemp !== null && weatherTemp <= 7 && (
-                  <div className="rounded-lg py-1.5 bg-white/[0.06] flex items-center gap-3 ml-[44px] px-3">
+                  <div className="rounded-lg py-1.5 bg-white/[0.06] flex items-center gap-3 px-3">
                     <img src={knittedHat} alt="cold" className="w-[20px] h-[20px] shrink-0 invert opacity-30" />
                     <span className="text-white/30 text-[12px] leading-[16px]">Unter 7° braucht Kalle eine Jacke<br/>Unter 0° braucht er die dicke Winterjacke</span>
                   </div>
