@@ -503,10 +503,6 @@ const Index = () => {
               );
             })}
             </div>
-            <div className="flex justify-center gap-2 pt-2 pb-1">
-              <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 0 ? 'bg-white/60' : 'bg-white/20'}`} />
-              <span className={`w-[6px] h-[6px] rounded-full transition-colors ${weatherWeekOffset === 1 ? 'bg-white/60' : 'bg-white/20'}`} />
-            </div>
           </div>
         </DrawerContent>
       </Drawer>
