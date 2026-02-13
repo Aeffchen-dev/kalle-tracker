@@ -1140,7 +1140,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                     <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
                                       <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[12px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
                                         <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
@@ -1152,7 +1152,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                                          <div>
                                             <div className="flex items-center">
                                               <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
-                                              <span className="text-[12px] shrink-0 ml-1">📅</span>
+                                              <span className="text-[14px] shrink-0 ml-2">📅</span>
                                             </div>
                                             <div className="text-[12px] text-white/70 mt-0.5 truncate">{evt.summary}</div>
                                           </div>
