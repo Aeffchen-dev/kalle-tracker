@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus, Trash2 } from 'lucide-react';
 import DogFoodChecker from '@/components/DogFoodChecker';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -150,6 +150,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const todayColRef = useRef<HTMLTableCellElement>(null);
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
+  const [snacks, setSnacks] = useState<{ id: string; name: string; shop_name: string | null; link: string | null; image_url: string | null }[]>([]);
+  const [showAddSnack, setShowAddSnack] = useState(false);
+  const [newSnackName, setNewSnackName] = useState('');
+  const [newSnackShop, setNewSnackShop] = useState('');
+  const [newSnackLink, setNewSnackLink] = useState('');
 
   // Load iCal events and app events
   useEffect(() => {
@@ -158,7 +163,38 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
   }, [isOpen]);
 
-  // Compute average gassi times, grouped by weekday vs weekend
+  // Load snacks from DB
+  const loadSnacks = async () => {
+    const { data } = await supabase.from('snacks').select('*').order('created_at');
+    if (data) setSnacks(data as typeof snacks);
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    loadSnacks();
+  }, [isOpen]);
+
+  const handleAddSnack = async () => {
+    if (!newSnackName.trim()) return;
+    const { error } = await (supabase.from('snacks') as any).insert({
+      name: newSnackName.trim(),
+      shop_name: newSnackShop.trim() || null,
+      link: newSnackLink.trim() || null,
+    });
+    if (!error) {
+      setNewSnackName('');
+      setNewSnackShop('');
+      setNewSnackLink('');
+      setShowAddSnack(false);
+      loadSnacks();
+    }
+  };
+
+  const handleDeleteSnack = async (id: string) => {
+    await (supabase.from('snacks') as any).delete().eq('id', id);
+    loadSnacks();
+  };
+
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
   const avgGassiByDay = useMemo(() => {
     const now = new Date();
@@ -667,24 +703,91 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <DogFoodChecker />
 
             {/* Snacks Section */}
-            <div className="mb-8 flex flex-col gap-2">
-              {[
-                { name: 'Stayz', link: 'https://zooplus.onelink.me/yg8Z/w5lhg0qf' },
-                { name: 'Urinary Snacks', link: 'https://zooplus.onelink.me/yg8Z/eayl3i89' },
-                { name: 'Apfel Streifen', link: 'https://www.futterfreund.de/sanadog-veggie-streifen-apfel-100g' },
-                { name: 'Knabbersticks Karotte', link: 'https://www.dm.de/applink/dein-bestes-hundeleckerli-knabbersticks-mit-karotte-naturverliebt-vegan-p4066447297850.html?appPageType=productdetails&appProductId=1589925&wt_mc=app.dm.pdsteilen.laufend' },
-              ].map((snack, i) => (
-                <a
-                  key={i}
-                  href={snack.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass-card rounded-lg p-4 flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors no-underline"
-                >
-                  <span>{snack.name}</span>
-                  <ExternalLink size={14} className="text-white/60 flex-shrink-0 ml-auto" />
-                </a>
-              ))}
+            <div className="mb-8">
+              <div className="glass-card rounded-lg p-4">
+                <div className="flex flex-col gap-3">
+                  {snacks.map((snack) => (
+                    <div key={snack.id} className="flex items-center gap-3">
+                      {snack.image_url ? (
+                        <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                      ) : (
+                        <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <span className="text-[14px]">🦴</span>
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        {snack.link ? (
+                          <a href={snack.link} target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/80 hover:text-white transition-colors flex items-center gap-1.5">
+                            <span className="truncate">{snack.name}</span>
+                            <ExternalLink size={12} className="text-white/40 flex-shrink-0" />
+                          </a>
+                        ) : (
+                          <span className="text-[12px] text-white/80 truncate block">{snack.name}</span>
+                        )}
+                        {snack.shop_name && (
+                          <span className="text-[10px] text-white/40">{snack.shop_name}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteSnack(snack.id)}
+                        className="text-white/20 hover:text-white/60 transition-colors p-1 flex-shrink-0"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Add snack form */}
+                {showAddSnack ? (
+                  <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      value={newSnackName}
+                      onChange={(e) => setNewSnackName(e.target.value)}
+                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                      autoFocus
+                    />
+                    <input
+                      type="text"
+                      placeholder="Shop (z.B. zooplus)"
+                      value={newSnackShop}
+                      onChange={(e) => setNewSnackShop(e.target.value)}
+                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Link (optional)"
+                      value={newSnackLink}
+                      onChange={(e) => setNewSnackLink(e.target.value)}
+                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleAddSnack}
+                        className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
+                      >
+                        Speichern
+                      </button>
+                      <button
+                        onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
+                        className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
+                      >
+                        Abbrechen
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowAddSnack(true)}
+                    className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
+                  >
+                    <Plus size={14} />
+                    <span>Snack hinzufügen</span>
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Emergency Section */}
