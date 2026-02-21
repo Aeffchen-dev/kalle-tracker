@@ -149,10 +149,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
   const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
-  const snackLongPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const snackLongPressTriggered = useRef<boolean>(false);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+
+  // Swipe state for snacks & medicines
+  const [swipingItemId, setSwipingItemId] = useState<string | null>(null);
+  const [swipeItemOffset, setSwipeItemOffset] = useState(0);
+  const swipeStartX = useRef(0);
+  const swipeStartY = useRef(0);
+  const swipeDecided = useRef(false);
+  const swipeIsHorizontal = useRef(false);
+  const swipeJustEnded = useRef(false);
 
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -166,8 +173,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [newMedicineLink, setNewMedicineLink] = useState('');
   const [isFetchingMedicineMeta, setIsFetchingMedicineMeta] = useState(false);
   const [activeMedicineId, setActiveMedicineId] = useState<string | null>(null);
-  const medicineLongPressTimer = useRef<NodeJS.Timeout | null>(null);
-  const medicineLongPressTriggered = useRef<boolean>(false);
   const [medicineDeleting, setMedicineDeleting] = useState<string | null>(null);
 
   // Load iCal events and app events
@@ -224,20 +229,72 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     loadMedicines();
   };
 
-  const handleMedicineLongPressStart = (id: string) => {
-    medicineLongPressTriggered.current = false;
-    medicineLongPressTimer.current = setTimeout(() => {
-      medicineLongPressTriggered.current = true;
-      if (activeMedicineId === id) { setActiveMedicineId(null); } else { setActiveMedicineId(id); if ('vibrate' in navigator) navigator.vibrate(10); }
-    }, 500);
+  // Unified swipe handlers for snacks & medicines
+  const handleItemTouchStart = (e: React.TouchEvent, id: string) => {
+    swipeStartX.current = e.touches[0].clientX;
+    swipeStartY.current = e.touches[0].clientY;
+    setSwipingItemId(id);
+    swipeDecided.current = false;
+    swipeIsHorizontal.current = false;
+    // Close any other open swipe
+    if (activeSnackId && activeSnackId !== id) setActiveSnackId(null);
+    if (activeMedicineId && activeMedicineId !== id) setActiveMedicineId(null);
   };
 
-  const handleMedicineLongPressEnd = () => { if (medicineLongPressTimer.current) { clearTimeout(medicineLongPressTimer.current); medicineLongPressTimer.current = null; } };
-  const handleMedicineLongPressMove = () => { if (medicineLongPressTimer.current) { clearTimeout(medicineLongPressTimer.current); medicineLongPressTimer.current = null; } };
+  const handleItemTouchMove = (e: React.TouchEvent) => {
+    if (!swipingItemId) return;
+    const dx = swipeStartX.current - e.touches[0].clientX;
+    const dy = Math.abs(e.touches[0].clientY - swipeStartY.current);
+    if (!swipeDecided.current && (Math.abs(dx) > 10 || dy > 10)) {
+      swipeDecided.current = true;
+      swipeIsHorizontal.current = Math.abs(dx) > dy;
+    }
+    if (swipeIsHorizontal.current) {
+      const isOpen = activeSnackId === swipingItemId || activeMedicineId === swipingItemId;
+      const offset = isOpen ? Math.max(0, Math.min(82 - (-dx), 90)) : Math.max(0, Math.min(dx, 90));
+      setSwipeItemOffset(offset);
+    }
+  };
 
-  const handleMedicineClick = (id: string) => {
-    if (medicineLongPressTriggered.current) { medicineLongPressTriggered.current = false; return; }
-    if (activeMedicineId === id) { setActiveMedicineId(null); }
+  const handleItemTouchEnd = (type: 'snack' | 'medicine') => {
+    if (!swipingItemId) return;
+    const isOpen = (type === 'snack' ? activeSnackId : activeMedicineId) === swipingItemId;
+    if (swipeItemOffset >= 50) {
+      if (type === 'snack') setActiveSnackId(swipingItemId);
+      else setActiveMedicineId(swipingItemId);
+    } else if (isOpen) {
+      if (type === 'snack') setActiveSnackId(null);
+      else setActiveMedicineId(null);
+    }
+    if (swipeIsHorizontal.current || isOpen) {
+      swipeJustEnded.current = true;
+      setTimeout(() => { swipeJustEnded.current = false; }, 50);
+    }
+    setSwipingItemId(null);
+    setSwipeItemOffset(0);
+  };
+
+  const handleItemClick = (item: { id: string; link: string | null }, type: 'snack' | 'medicine') => {
+    if (swipeJustEnded.current) return;
+    const activeId = type === 'snack' ? activeSnackId : activeMedicineId;
+    if (activeId) {
+      if (type === 'snack') setActiveSnackId(null);
+      else setActiveMedicineId(null);
+      return;
+    }
+    if (item.link) window.open(item.link, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleDeleteSnack = async (id: string) => {
+    setSnackDeleting(id);
+    await (supabase.from('snacks') as any).delete().eq('id', id);
+    setActiveSnackId(null);
+    loadSnacks();
+  };
+
+  const handleSwipeDelete = (id: string, type: 'snack' | 'medicine') => {
+    if (type === 'snack') handleDeleteSnack(id);
+    else handleDeleteMedicine(id);
   };
 
   const handleAddSnackFromUrl = async () => {
@@ -250,84 +307,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       let image = '';
       try {
         const { data, error } = await supabase.functions.invoke('fetch-url-meta', { body: { url } });
-        if (!error && data) {
-          name = data.name || '';
-          shop = data.shop || '';
-          image = data.image || '';
-        }
-      } catch (e) {
-        console.error('Failed to fetch URL metadata:', e);
-      }
+        if (!error && data) { name = data.name || ''; shop = data.shop || ''; image = data.image || ''; }
+      } catch (e) { console.error('Failed to fetch URL metadata:', e); }
       if (!name) {
-        // Fallback: use domain as name
-        try {
-          const hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.replace(/^www\./, '');
-          name = hostname;
-        } catch { name = url; }
+        try { const hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.replace(/^www\./, ''); name = hostname; } catch { name = url; }
       }
       const { error: insertError } = await (supabase.from('snacks') as any).insert({
-        name: name,
-        shop_name: shop || null,
-        link: url.startsWith('http') ? url : `https://${url}`,
-        image_url: image || null,
+        name, shop_name: shop || null, link: url.startsWith('http') ? url : `https://${url}`, image_url: image || null,
       });
-      if (!insertError) {
-        setNewSnackLink('');
-        setShowAddSnack(false);
-        loadSnacks();
-      }
-    } finally {
-      setIsFetchingMeta(false);
-    }
+      if (!insertError) { setNewSnackLink(''); setShowAddSnack(false); loadSnacks(); }
+    } finally { setIsFetchingMeta(false); }
   };
-
-  const handleDeleteSnack = async (id: string) => {
-    setSnackDeleting(id);
-    await (supabase.from('snacks') as any).delete().eq('id', id);
-    setActiveSnackId(null);
-    loadSnacks();
-  };
-
-  // Snack long-press handlers (same pattern as CalendarView events)
-  const handleSnackLongPressStart = (id: string) => {
-    snackLongPressTriggered.current = false;
-    snackLongPressTimer.current = setTimeout(() => {
-      snackLongPressTriggered.current = true;
-      if (activeSnackId === id) {
-        setActiveSnackId(null);
-      } else {
-        setActiveSnackId(id);
-        if ('vibrate' in navigator) navigator.vibrate(10);
-      }
-    }, 500);
-  };
-
-  const handleSnackLongPressEnd = () => {
-    if (snackLongPressTimer.current) {
-      clearTimeout(snackLongPressTimer.current);
-      snackLongPressTimer.current = null;
-    }
-  };
-
-  const handleSnackLongPressMove = () => {
-    if (snackLongPressTimer.current) {
-      clearTimeout(snackLongPressTimer.current);
-      snackLongPressTimer.current = null;
-    }
-  };
-
-  const handleSnackClick = (id: string) => {
-    if (snackLongPressTriggered.current) {
-      snackLongPressTriggered.current = false;
-      return;
-    }
-    // Single click toggles delete button off
-    if (activeSnackId === id) {
-      setActiveSnackId(null);
-    }
-  };
-
-  // Removed - now handled inline in handleAddSnackFromUrl
 
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
   const avgGassiByDay = useMemo(() => {
@@ -847,17 +837,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     const isLast = index === snacks.length - 1;
 
                     return (
-                      <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
+                      <div
+                        key={snack.id}
+                        className="relative flex w-full items-stretch overflow-hidden gap-1"
+                        onTouchStart={(e) => handleItemTouchStart(e, snack.id)}
+                        onTouchMove={handleItemTouchMove}
+                        onTouchEnd={() => handleItemTouchEnd('snack')}
+                      >
                         <div
-                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                          onClick={() => handleSnackClick(snack.id)}
-                          onTouchStart={() => handleSnackLongPressStart(snack.id)}
-                          onTouchMove={handleSnackLongPressMove}
-                          onTouchEnd={handleSnackLongPressEnd}
-                          onMouseDown={() => handleSnackLongPressStart(snack.id)}
-                          onMouseMove={handleSnackLongPressMove}
-                          onMouseUp={handleSnackLongPressEnd}
-                          onMouseLeave={handleSnackLongPressEnd}
+                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none min-w-0 flex-1`}
+                          onClick={() => handleItemClick(snack, 'snack')}
+                          style={{ transition: swipingItemId === snack.id ? 'none' : 'all 150ms ease-linear' }}
                         >
                           {snack.image_url ? (
                             <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
@@ -869,22 +859,22 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{snack.name}</span>
                           <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
                           {snack.link && (
-                            <a
-                              href={snack.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white/40 p-1 flex-shrink-0"
-                              onClick={(e) => e.stopPropagation()}
-                            >
+                            <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
-                            </a>
+                            </span>
                           )}
                         </div>
                         <button
-                          onClick={() => handleDeleteSnack(snack.id)}
-                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                          onClick={(e) => { e.stopPropagation(); handleSwipeDelete(snack.id, 'snack'); }}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg overflow-hidden self-stretch"
+                          style={{
+                            width: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            minWidth: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            transition: swipingItemId === snack.id ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+                          }}
                         >
-                          Löschen
+                          <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
                         </button>
                       </div>
                     );
@@ -1022,17 +1012,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     const isFirst = index === 0;
 
                     return (
-                      <div key={med.id} className="relative flex w-full items-stretch overflow-hidden">
+                      <div
+                        key={med.id}
+                        className="relative flex w-full items-stretch overflow-hidden gap-1"
+                        onTouchStart={(e) => handleItemTouchStart(e, med.id)}
+                        onTouchMove={handleItemTouchMove}
+                        onTouchEnd={() => handleItemTouchEnd('medicine')}
+                      >
                         <div
-                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                          onClick={() => handleMedicineClick(med.id)}
-                          onTouchStart={() => handleMedicineLongPressStart(med.id)}
-                          onTouchMove={handleMedicineLongPressMove}
-                          onTouchEnd={handleMedicineLongPressEnd}
-                          onMouseDown={() => handleMedicineLongPressStart(med.id)}
-                          onMouseMove={handleMedicineLongPressMove}
-                          onMouseUp={handleMedicineLongPressEnd}
-                          onMouseLeave={handleMedicineLongPressEnd}
+                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none min-w-0 flex-1`}
+                          onClick={() => handleItemClick(med, 'medicine')}
+                          style={{ transition: swipingItemId === med.id ? 'none' : 'all 150ms ease-linear' }}
                         >
                           {med.image_url ? (
                             <img src={med.image_url} alt={med.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
@@ -1044,22 +1034,22 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
                           <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{med.shop_name || ''}</span>
                           {med.link && (
-                            <a
-                              href={med.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white/40 p-1 flex-shrink-0"
-                              onClick={(e) => e.stopPropagation()}
-                            >
+                            <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
-                            </a>
+                            </span>
                           )}
                         </div>
                         <button
-                          onClick={() => handleDeleteMedicine(med.id)}
-                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                          onClick={(e) => { e.stopPropagation(); handleSwipeDelete(med.id, 'medicine'); }}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg overflow-hidden self-stretch"
+                          style={{
+                            width: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            minWidth: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            transition: swipingItemId === med.id ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+                          }}
                         >
-                          Löschen
+                          <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
                         </button>
                       </div>
                     );
