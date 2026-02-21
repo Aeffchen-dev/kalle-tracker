@@ -321,7 +321,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         open={true} 
         dismissible={false}
         modal={false}
-        snapPoints={[0.2, 0.9]}
+        snapPoints={[0.25, 0.9]}
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >
