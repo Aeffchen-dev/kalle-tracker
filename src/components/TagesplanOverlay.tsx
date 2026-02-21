@@ -158,8 +158,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [weekOffset, setWeekOffset] = useState(0);
   const [snacks, setSnacks] = useState<{ id: string; name: string; shop_name: string | null; link: string | null; image_url: string | null }[]>([]);
   const [showAddSnack, setShowAddSnack] = useState(false);
-  const [newSnackName, setNewSnackName] = useState('');
-  const [newSnackShop, setNewSnackShop] = useState('');
   const [newSnackLink, setNewSnackLink] = useState('');
 
   // Load iCal events and app events
@@ -180,19 +178,44 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     loadSnacks();
   }, [isOpen]);
 
-  const handleAddSnack = async () => {
-    if (!newSnackName.trim()) return;
-    const { error } = await (supabase.from('snacks') as any).insert({
-      name: newSnackName.trim(),
-      shop_name: newSnackShop.trim() || null,
-      link: newSnackLink.trim() || null,
-    });
-    if (!error) {
-      setNewSnackName('');
-      setNewSnackShop('');
-      setNewSnackLink('');
-      setShowAddSnack(false);
-      loadSnacks();
+  const handleAddSnackFromUrl = async () => {
+    const url = newSnackLink.trim();
+    if (!url) return;
+    setIsFetchingMeta(true);
+    try {
+      let name = '';
+      let shop = '';
+      let image = '';
+      try {
+        const { data, error } = await supabase.functions.invoke('fetch-url-meta', { body: { url } });
+        if (!error && data) {
+          name = data.name || '';
+          shop = data.shop || '';
+          image = data.image || '';
+        }
+      } catch (e) {
+        console.error('Failed to fetch URL metadata:', e);
+      }
+      if (!name) {
+        // Fallback: use domain as name
+        try {
+          const hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.replace(/^www\./, '');
+          name = hostname;
+        } catch { name = url; }
+      }
+      const { error: insertError } = await (supabase.from('snacks') as any).insert({
+        name: name,
+        shop_name: shop || null,
+        link: url.startsWith('http') ? url : `https://${url}`,
+        image_url: image || null,
+      });
+      if (!insertError) {
+        setNewSnackLink('');
+        setShowAddSnack(false);
+        loadSnacks();
+      }
+    } finally {
+      setIsFetchingMeta(false);
     }
   };
 
@@ -242,23 +265,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     }
   };
 
-  // Auto-fetch metadata from URL
-  const handleSnackLinkBlur = async () => {
-    const url = newSnackLink.trim();
-    if (!url || newSnackName.trim()) return; // Don't overwrite existing name
-    try {
-      setIsFetchingMeta(true);
-      const { data, error } = await supabase.functions.invoke('fetch-url-meta', { body: { url } });
-      if (!error && data) {
-        if (data.name && !newSnackName.trim()) setNewSnackName(data.name);
-        if (data.shop && !newSnackShop.trim()) setNewSnackShop(data.shop);
-      }
-    } catch (e) {
-      console.error('Failed to fetch URL metadata:', e);
-    } finally {
-      setIsFetchingMeta(false);
-    }
-  };
+  // Removed - now handled inline in handleAddSnackFromUrl
 
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
   const avgGassiByDay = useMemo(() => {
@@ -822,52 +829,31 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   })}
                 </div>
 
-                {/* Add snack form */}
-                {showAddSnack ? (
-                  <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
-                    <input
-                      type="url"
-                      placeholder="Link einfügen"
-                      value={newSnackLink}
-                      onChange={(e) => setNewSnackLink(e.target.value)}
-                      onBlur={handleSnackLinkBlur}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                      autoFocus
-                    />
-                    {isFetchingMeta && (
-                      <span className="text-[10px] text-white/40">Lade Infos...</span>
-                    )}
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      value={newSnackName}
-                      onChange={(e) => setNewSnackName(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Shop (z.B. zooplus)"
-                      value={newSnackShop}
-                      onChange={(e) => setNewSnackShop(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <div className="flex gap-2">
+                {/* Add snack inline */}
+                <div className="border-t border-white/10">
+                  {showAddSnack ? (
+                    <div className="flex items-center gap-2 pt-1.5">
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="Link einfügen"
+                        value={newSnackLink}
+                        onChange={(e) => setNewSnackLink(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddSnackFromUrl(); if (e.key === 'Escape') { setShowAddSnack(false); setNewSnackLink(''); } }}
+                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30"
+                        autoFocus
+                      />
                       <button
-                        onClick={handleAddSnack}
-                        className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
+                        onClick={handleAddSnackFromUrl}
+                        disabled={isFetchingMeta || !newSnackLink.trim()}
+                        className="text-[10px] text-white/40 hover:text-white/60 transition-colors flex-shrink-0 disabled:opacity-30"
                       >
-                        Speichern
-                      </button>
-                      <button
-                        onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
-                        className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
-                      >
-                        Abbrechen
+                        {isFetchingMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="border-t border-white/10">
+                  ) : (
                     <button
                       onClick={() => setShowAddSnack(true)}
                       className="flex items-center gap-3 pt-1.5 w-full text-left hover:opacity-80 transition-opacity"
@@ -877,8 +863,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       </div>
                       <span className="text-[12px] text-white/40">Snack hinzufügen</span>
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
