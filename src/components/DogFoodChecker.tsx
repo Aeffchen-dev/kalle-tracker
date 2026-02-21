@@ -37,6 +37,7 @@ const DogFoodChecker = () => {
   const measureRef = useRef<HTMLSpanElement>(null);
   const charIndexRef = useRef(0);
   const [inputWidth, setInputWidth] = useState(48);
+  const [minInputWidth, setMinInputWidth] = useState(48);
 
   // IntersectionObserver to start animation when visible
   useEffect(() => {
@@ -48,6 +49,20 @@ const DogFoodChecker = () => {
     );
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // Measure longest placeholder word once to set min width
+  useEffect(() => {
+    if (measureRef.current) {
+      let maxW = 0;
+      for (const food of PLACEHOLDER_FOODS) {
+        measureRef.current.textContent = food;
+        maxW = Math.max(maxW, measureRef.current.offsetWidth);
+      }
+      const w = maxW + 32;
+      setMinInputWidth(w);
+      setInputWidth(w);
+    }
   }, []);
 
   // Typing animation - runs endlessly when visible
@@ -132,11 +147,11 @@ const DogFoodChecker = () => {
   useEffect(() => {
     if (measureRef.current && query) {
       measureRef.current.textContent = query;
-      setInputWidth(Math.max(48, measureRef.current.offsetWidth + 32));
+      setInputWidth(Math.max(minInputWidth, measureRef.current.offsetWidth + 32));
     } else if (!query) {
-      setInputWidth(48);
+      setInputWidth(minInputWidth);
     }
-  }, [query]);
+  }, [query, minInputWidth]);
 
   const config = result ? STATUS_CONFIG[result.status] : null;
 
