@@ -162,25 +162,27 @@ const DogFoodChecker = () => {
           <div className="flex items-center gap-2 flex-1">
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-white shrink-0">Darf Kalle</span>
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => { setQuery(e.target.value); setResult(null); }}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            onKeyDown={handleKeyDown}
-            className="min-w-0 bg-transparent text-[13px] text-white outline-none text-center transition-all duration-150"
-            style={{ caretColor: 'white', width: `${inputWidth}px` }}
-            placeholder=""
-          />
+          <div className="relative" style={{ width: `${inputWidth}px` }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => { setQuery(e.target.value); setResult(null); }}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onKeyDown={handleKeyDown}
+              className="w-full min-w-0 bg-transparent text-[13px] text-white outline-none text-center transition-all duration-150"
+              style={{ caretColor: 'white' }}
+              placeholder=""
+            />
+            {!query && !isFocused && (
+              <span className="absolute inset-0 flex items-center justify-center text-[13px] text-white/25 pointer-events-none">
+                {placeholderText}
+                <span className="animate-pulse ml-[1px]">|</span>
+              </span>
+            )}
+          </div>
           <span ref={measureRef} className="absolute invisible whitespace-pre text-[13px]" style={{ pointerEvents: 'none' }} />
-          {!query && !isFocused && (
-            <span className="absolute left-1/2 -translate-x-1/2 text-[13px] text-white/25 pointer-events-none flex items-center">
-              {placeholderText}
-              <span className="animate-pulse ml-[1px]">|</span>
-            </span>
-          )}
           <span className="text-[13px] text-white shrink-0 -ml-1">essen?</span>
           </div>
           <div className="ml-auto">
