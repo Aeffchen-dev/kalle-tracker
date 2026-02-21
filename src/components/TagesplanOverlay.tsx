@@ -769,112 +769,113 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Snacks Section */}
             <div className="mb-8">
-              <div className="glass-card rounded-lg p-4">
-                <div className="flex flex-col gap-3">
-                  {snacks.map((snack) => {
-                    const isActive = activeSnackId === snack.id;
+              <h3 className="text-white text-[16px] font-medium mb-3 px-1">Snacks</h3>
+              <div className="flex flex-col divide-y divide-white/10">
+                {snacks.map((snack) => {
+                  const isActive = activeSnackId === snack.id;
 
-                    return (
-                      <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden rounded-lg">
-                        <div
-                          className={`flex items-center gap-3 p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                          onClick={() => handleSnackClick(snack.id)}
-                          onTouchStart={() => handleSnackLongPressStart(snack.id)}
-                          onTouchMove={handleSnackLongPressMove}
-                          onTouchEnd={handleSnackLongPressEnd}
-                          onMouseDown={() => handleSnackLongPressStart(snack.id)}
-                          onMouseMove={handleSnackLongPressMove}
-                          onMouseUp={handleSnackLongPressEnd}
-                          onMouseLeave={handleSnackLongPressEnd}
-                        >
-                          {snack.image_url ? (
-                            <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
-                          ) : (
-                            <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[14px]">🦴</span>
-                            </div>
-                          )}
-                          <span className="text-[12px] text-white/80 flex-1 min-w-0 truncate">{snack.name}</span>
+                  return (
+                    <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
+                      <div
+                        className={`flex items-center gap-3 py-3 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                        onClick={() => handleSnackClick(snack.id)}
+                        onTouchStart={() => handleSnackLongPressStart(snack.id)}
+                        onTouchMove={handleSnackLongPressMove}
+                        onTouchEnd={handleSnackLongPressEnd}
+                        onMouseDown={() => handleSnackLongPressStart(snack.id)}
+                        onMouseMove={handleSnackLongPressMove}
+                        onMouseUp={handleSnackLongPressEnd}
+                        onMouseLeave={handleSnackLongPressEnd}
+                      >
+                        {snack.image_url ? (
+                          <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                        ) : (
+                          <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <span className="text-[14px]">🦴</span>
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="text-[12px] text-white/80 truncate">{snack.name}</span>
                           {snack.shop_name && (
-                            <span className="text-[10px] text-white/40 flex-shrink-0 mr-4">{snack.shop_name}</span>
-                          )}
-                          {snack.link && (
-                            <a
-                              href={snack.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white/40 hover:text-white transition-colors p-1 flex-shrink-0"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <ExternalLink size={14} />
-                            </a>
+                            <span className="text-[10px] text-white/40">{snack.shop_name}</span>
                           )}
                         </div>
-                        <button
-                          onClick={() => handleDeleteSnack(snack.id)}
-                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
-                        >
-                          Löschen
-                        </button>
+                        {snack.link && (
+                          <a
+                            href={snack.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white/40 hover:text-white transition-colors p-1 flex-shrink-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
-
-                {/* Add snack form */}
-                {showAddSnack ? (
-                  <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
-                    <input
-                      type="url"
-                      placeholder="Link einfügen"
-                      value={newSnackLink}
-                      onChange={(e) => setNewSnackLink(e.target.value)}
-                      onBlur={handleSnackLinkBlur}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                      autoFocus
-                    />
-                    {isFetchingMeta && (
-                      <span className="text-[10px] text-white/40">Lade Infos...</span>
-                    )}
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      value={newSnackName}
-                      onChange={(e) => setNewSnackName(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Shop (z.B. zooplus)"
-                      value={newSnackShop}
-                      onChange={(e) => setNewSnackShop(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <div className="flex gap-2">
                       <button
-                        onClick={handleAddSnack}
-                        className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
+                        onClick={() => handleDeleteSnack(snack.id)}
+                        className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                       >
-                        Speichern
-                      </button>
-                      <button
-                        onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
-                        className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
-                      >
-                        Abbrechen
+                        Löschen
                       </button>
                     </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowAddSnack(true)}
-                    className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
-                  >
-                    <Plus size={14} />
-                    <span>Snack hinzufügen</span>
-                  </button>
-                )}
+                  );
+                })}
               </div>
+
+              {/* Add snack form */}
+              {showAddSnack ? (
+                <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
+                  <input
+                    type="url"
+                    placeholder="Link einfügen"
+                    value={newSnackLink}
+                    onChange={(e) => setNewSnackLink(e.target.value)}
+                    onBlur={handleSnackLinkBlur}
+                    className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                    autoFocus
+                  />
+                  {isFetchingMeta && (
+                    <span className="text-[10px] text-white/40">Lade Infos...</span>
+                  )}
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={newSnackName}
+                    onChange={(e) => setNewSnackName(e.target.value)}
+                    className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Shop (z.B. zooplus)"
+                    value={newSnackShop}
+                    onChange={(e) => setNewSnackShop(e.target.value)}
+                    className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddSnack}
+                      className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
+                    >
+                      Speichern
+                    </button>
+                    <button
+                      onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
+                      className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowAddSnack(true)}
+                  className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
+                >
+                  <Plus size={14} />
+                  <span>Snack hinzufügen</span>
+                </button>
+              )}
             </div>
 
             {/* Emergency Section */}
