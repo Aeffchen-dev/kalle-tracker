@@ -325,7 +325,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >
-      <DrawerContent className="bg-spot border-spot flex flex-col h-full lg:max-w-[80vw] lg:mx-auto">
+      <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[80vw] lg:mx-auto">
         <DrawerHeader 
           className="sticky top-0 z-10 pb-4 cursor-pointer" 
           onClick={toggleSnapPoint}
@@ -364,7 +364,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             <CalendarIcon size={20} className="text-white" />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-spot border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
+                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
                           <Calendar
                             mode="single"
                             selected={selectedDate}
@@ -379,7 +379,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             modifiersClassNames={{ 
                               hasEntry: 'has-entry'
                             }}
-                            className="pointer-events-auto bg-spot text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
+                            className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
                             locale={de}
                           />
                         </PopoverContent>
@@ -411,13 +411,12 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 overflow-y-auto overflow-x-hidden flex-1"
+          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ 
             minHeight: 0, 
             flexGrow: 1, 
             flexShrink: 1, 
             flexBasis: '100%',
-            paddingBottom: '0px',
             touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
           }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}

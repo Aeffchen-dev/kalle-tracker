@@ -145,11 +145,11 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="bg-spot border-spot overflow-hidden lg:max-w-[80vw] lg:mx-auto">
+      <DrawerContent className="bg-black border-black overflow-hidden lg:max-w-[80vw] lg:mx-auto">
         <DrawerHeader className="pb-4">
           <DrawerTitle className="text-center text-[14px] text-white">Eintrag hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 pb-0 space-y-4 overflow-hidden">
+        <div className="px-4 pb-4 space-y-4 overflow-hidden">
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => toggleType('pipi')}
@@ -271,7 +271,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                       <CalendarIcon size={18} />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-spot border-white/20" align="start">
+                  <PopoverContent className="w-auto p-0 bg-black border-white/20" align="start">
                     <Calendar
                       mode="single"
                       selected={selectedDate}
@@ -282,7 +282,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                         }
                       }}
                       initialFocus
-                      className={cn("p-3 pointer-events-auto bg-spot text-white")}
+                      className={cn("p-3 pointer-events-auto bg-black text-white")}
                     />
                   </PopoverContent>
                 </Popover>

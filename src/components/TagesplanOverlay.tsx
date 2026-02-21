@@ -334,7 +334,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       }, 1100);
       // Recolor body (status bar + bottom bar) after dot transition completes
       setTimeout(() => {
-        document.documentElement.style.backgroundColor = '#3d2b1f';
         document.body.style.backgroundColor = '#3d2b1f';
       }, 1400);
     }
@@ -343,7 +342,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Reset when fully closed
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
-      document.documentElement.style.backgroundColor = '';
       document.body.style.backgroundColor = '';
     }
   }, [animationPhase, isOpen]);
@@ -432,9 +430,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const handleClose = () => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
-    document.documentElement.style.backgroundColor = '';
     document.body.style.backgroundColor = '';
-
+    
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
       onClose();
@@ -533,7 +530,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 pointer-events-auto" style={{ backgroundColor: '#3d2b1f' }} />
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
       )}
 
       {/* Content - only render when visible */}
@@ -548,7 +545,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pb-0 pt-14">
+          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-14">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
@@ -1014,7 +1011,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         {spans.map((span, si) => (
                           <div
                             key={si}
-                            className="absolute top-0 h-full rounded-[14px] bg-spot py-2"
+                            className="absolute top-0 h-full rounded-[14px] bg-black py-2"
                             style={{
                               left: `calc(${span.startIdx} * (${cardWidth} + ${gap}px))`,
                               width: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)`,
@@ -1111,7 +1108,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
                         ref={isToday ? todayColRef : undefined}
-                        className="shrink-0 rounded-[14px] overflow-hidden bg-spot"
+                        className="shrink-0 rounded-[14px] overflow-hidden bg-black"
                         style={{ width: 'var(--card-w)' }}
                       >
                         {/* Compact day header */}

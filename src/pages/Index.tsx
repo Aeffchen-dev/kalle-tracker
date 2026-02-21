@@ -294,7 +294,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-dvh flex flex-col bg-transparent relative">
+    <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
       
 
       {/* Header */}
@@ -419,13 +419,13 @@ const Index = () => {
 
       {/* Weather forecast drawer */}
       <Drawer open={showWeather} onOpenChange={setShowWeather}>
-        <DrawerContent className="bg-spot rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
+        <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
               Wettervorhersage
             </h2>
           </div>
-          <div className="pl-2 pr-4 pb-0 overflow-y-auto flex flex-col gap-2">
+          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-2">
             <div className="flex flex-col gap-2">
             {forecast.filter(day => new Date(day.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).slice(0, 7).map((day) => {
                const date = new Date(day.date + 'T00:00:00');
