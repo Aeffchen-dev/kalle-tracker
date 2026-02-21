@@ -338,15 +338,15 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Set brown background only AFTER dot animation completes (animationPhase === 'visible')
   useEffect(() => {
     if (animationPhase === 'visible') {
+      const brown = '#3d2b1f';
+      // CSS class for !important override
       document.documentElement.classList.add('overlay-brown');
+      // Also set inline styles as fallback
+      document.documentElement.style.setProperty('background-color', brown, 'important');
+      document.body.style.setProperty('background-color', brown, 'important');
       // Set theme-color meta for iOS browser chrome
-      let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-      if (!meta) {
-        meta = document.createElement('meta');
-        meta.name = 'theme-color';
-        document.head.appendChild(meta);
-      }
-      meta.content = '#3d2b1f';
+      const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+      if (meta) meta.content = brown;
     }
   }, [animationPhase]);
 
@@ -434,10 +434,10 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const handleClose = () => {
     setAnimationPhase('dots-collapsing');
     document.documentElement.classList.remove('overlay-brown');
-    document.documentElement.style.backgroundColor = '';
-    document.body.style.backgroundColor = '';
+    document.documentElement.style.removeProperty('background-color');
+    document.body.style.removeProperty('background-color');
     const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-    if (meta) meta.content = '#000000'; // Reset to black (matches html bg in CSS)
+    if (meta) meta.content = '#e8e2db'; // Reset to beige (matches app background)
 
     requestAnimationFrame(() => {
       onClose();
@@ -451,7 +451,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   if (animationPhase === 'idle') return null;
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none" style={{ bottom: '-100px' }}>
+    <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Animated spots using SVG with SMIL animation for sharp scaling */}
       <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
         {[
@@ -537,7 +537,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto bg-spot" style={{ bottom: '-100px', paddingBottom: '100px' }}>
+        <div className="fixed inset-0 pointer-events-auto bg-spot">
           {/* Header - floating over scroll content */}
           <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
