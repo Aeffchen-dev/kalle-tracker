@@ -746,7 +746,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     return (
                       <div
                         key={index}
-                        className={`flex p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/[0.06]' : ''}`}
+                        className={`flex items-start p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/[0.06]' : ''}`}
                       >
                         {isEditingQuantity ? (
                           <input
@@ -778,24 +778,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
                           ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center">
                               <span
                                 className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
                                 onClick={() => handleMealClick(mealIndex, index, 'name')}
                               >
                                 {ingredient.name}
                               </span>
-                              {ingredient.link && (
-                                <a
-                                  href={ingredient.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-white/40 hover:text-white transition-colors p-1"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <ExternalLink size={14} />
-                                </a>
-                              )}
                             </div>
                           )}
                           {isEditingDescription ? (
@@ -816,6 +805,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </p>
                           ) : null}
                         </div>
+                        {ingredient.link && (
+                          <a
+                            href={ingredient.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white/40 hover:text-white transition-colors flex-shrink-0 flex items-center justify-center w-[48px] h-[48px] -m-3 ml-0"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
                       </div>
                     );
                   })}
