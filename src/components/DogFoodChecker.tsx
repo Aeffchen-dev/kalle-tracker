@@ -130,13 +130,13 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-8" ref={containerRef}>
-      <div className="glass-card overflow-hidden" style={{ borderRadius: '99px' }}>
+      <div className="glass-card overflow-hidden pr-0" style={{ borderRadius: '99px' }}>
           <div className="flex items-center">
             <div className="flex items-center gap-2 pl-4 flex-1 min-w-0">
             <span className="text-[18px] shrink-0">🐶</span>
             <span className="text-[13px] text-white shrink-0">Kann ich</span>
             <div
-              className="flex-1 min-w-0 bg-white/[0.03] rounded-full px-3 py-2 self-stretch flex items-center cursor-text"
+              className="flex-1 min-w-0 bg-white/[0.03] rounded-none px-3 py-2 self-stretch flex items-center cursor-text"
               onClick={() => inputRef.current?.focus()}
             >
               <div className="relative">
