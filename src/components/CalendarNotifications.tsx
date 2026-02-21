@@ -48,6 +48,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   const startYRef = useRef(0);
   const isHorizontalSwipe = useRef(false);
   const swipeDecided = useRef(false);
+  const justTouchedRef = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -164,6 +165,10 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
 
   const handleTouchEnd = () => {
     if (!swipingId) return;
+    // Mark that a touch interaction just happened — suppress the subsequent onClick
+    justTouchedRef.current = true;
+    setTimeout(() => { justTouchedRef.current = false; }, 50);
+
     if (swipeOffset >= 50) {
       setActiveId(swipingId);
     } else if (swipingId === activeId) {
@@ -175,6 +180,8 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   };
 
   const handleCardClick = (id: string, evt: ICalEvent) => {
+    // Suppress click that fires right after a touch interaction
+    if (justTouchedRef.current) return;
     // If any swipe is open, close it first — require a second tap for the action
     if (activeId) {
       setActiveId(null);
