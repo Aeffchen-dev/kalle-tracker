@@ -130,13 +130,13 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-8" ref={containerRef}>
-      <div className="glass-card rounded-lg overflow-hidden">
-          <div className="flex items-stretch">
-            <div className="flex items-center gap-2 pl-3 flex-1 min-w-0">
+      <div className="glass-card rounded-full overflow-hidden">
+          <div className="flex items-center">
+            <div className="flex items-center gap-2 pl-4 py-2.5 flex-1 min-w-0">
             <span className="text-[18px] shrink-0">🐶</span>
             <span className="text-[13px] text-white/60 shrink-0">Kann ich</span>
             <div
-              className="flex-1 min-w-0 bg-white/[0.05] border border-white/10 px-3 py-1.5 cursor-text focus-within:border-white/25 focus-within:bg-white/[0.08] transition-all"
+              className="flex-1 min-w-0 cursor-text"
               onClick={() => inputRef.current?.focus()}
             >
               <div className="relative">
@@ -159,12 +159,12 @@ const DogFoodChecker = () => {
                 )}
               </div>
             </div>
-            <span className="text-[13px] text-white/60 shrink-0 pr-4">essen?</span>
+            <span className="text-[13px] text-white/60 shrink-0 pr-3">essen?</span>
           </div>
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 rounded-r-lg bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[56px] cursor-pointer"
+            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] mr-1 cursor-pointer"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
