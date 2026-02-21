@@ -131,7 +131,7 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-3 border border-white/10 overflow-hidden relative" style={{ borderRadius: '99px', padding: '4px 4px 4px 4px', background: 'rgba(0,0,0,0.15)' }}>
+        <div className="flex items-center gap-2 mb-3 border border-white/10 overflow-hidden relative" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.15)' }}>
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-white shrink-0">Darf Kalle</span>
           <input
@@ -142,7 +142,7 @@ const DogFoodChecker = () => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
-            className="flex-1 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
+            className="w-24 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
             style={{ caretColor: 'white' }}
             placeholder=""
           />
@@ -166,12 +166,9 @@ const DogFoodChecker = () => {
           </button>
         </div>
 
-        <div className="flex items-start gap-2">
-          <span className="text-[14px] shrink-0 mt-0.5">🐶</span>
-          <p className="text-[12px] text-white/40 leading-relaxed text-justify">
-            Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
-          </p>
-        </div>
+        <p className="text-[12px] text-white/40 leading-relaxed">
+          Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
+        </p>
 
         {result && config && (
           <div className="mt-3">
