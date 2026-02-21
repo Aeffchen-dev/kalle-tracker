@@ -68,6 +68,9 @@ const CalendarNotifications: React.FC = () => {
     return true;
   });
 
+  // Sort newest first
+  visibleEvents.sort((a, b) => new Date(b.dtstart).getTime() - new Date(a.dtstart).getTime());
+
   if (visibleEvents.length === 0) return null;
 
   const getEvtKey = (evt: ICalEvent) => `${evt.uid}-${evt.dtstart}`;
