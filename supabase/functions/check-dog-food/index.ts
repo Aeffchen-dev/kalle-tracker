@@ -45,13 +45,29 @@ Antworte NUR mit einem JSON-Objekt in diesem Format:
   "reason": "Kurze Begründung auf Deutsch, max 2 Sätze"
 }
 
-Regeln:
-- "giftig": Lebensmittel die für Hunde giftig/toxisch sind (z.B. Schokolade, Weintrauben, Rosinen, Zwiebeln, Knoblauch, Xylit, Macadamia-Nüsse, Avocado)
-- "schadet": Lebensmittel die gesundheitliche Probleme verursachen können aber nicht direkt giftig sind (z.B. sehr fettiges, stark gewürztes, roher Teig, Alkohol)
-- "nicht_optimal": Lebensmittel die nicht ideal sind aber in kleinen Mengen ok (z.B. Milchprodukte bei Laktoseintoleranz, sehr süßes Obst, Brot)
-- "ok": Lebensmittel die unbedenklich für Hunde sind (z.B. Karotten, Reis, Hühnchen gekocht, Äpfel ohne Kerne)
+OBERSTE PRIORITÄT - PURIN- UND PROTEINGEHALT:
+Dieser Hund ist ein Dalmatiner mit diagnostizierten Harnsteinen (Uratsteine). Die WICHTIGSTE Bewertungsgrundlage ist IMMER der Purin- und Proteingehalt eines Lebensmittels. Jedes Lebensmittel muss ZUERST auf seinen Puringehalt und dann auf seinen Proteingehalt geprüft werden, BEVOR andere Faktoren berücksichtigt werden.
 
-WICHTIG - Puringehalt für Dalmatiner: Dieser Hund ist ein Dalmatiner mit diagnostizierten Harnsteinen. Purinreiche Lebensmittel sind extrem gefährlich! Folgende Lebensmittel haben hohen Puringehalt und müssen als "schadet" oder "giftig" eingestuft werden: Fleisch (Rind, Schwein, Wild, Lamm), Innereien (Leber, Niere, Herz), Geflügel mit Haut, fetter Fisch (Sardinen, Hering, Makrele, Forelle, Lachs), Hefe, Hülsenfrüchte (Linsen, Erbsen, Bohnen), Spinat, Spargel. Nur sehr purinarmes Fleisch wie Hühnerbrust ohne Haut in kleinen Mengen kann als "nicht_optimal" gelten. Im Zweifel immer strenger bewerten!
+Purinreiche Lebensmittel sind IMMER mindestens "schadet", oft "giftig":
+- Alle Fleischsorten (Rind, Schwein, Wild, Lamm, Ente, Gans) → "schadet" oder "giftig"
+- Innereien (Leber, Niere, Herz, Lunge, Pansen) → "giftig"
+- Geflügel mit Haut → "schadet"
+- Fetter Fisch (Sardinen, Hering, Makrele, Forelle, Lachs, Thunfisch, Anchovis) → "schadet" oder "giftig"
+- Meeresfrüchte (Muscheln, Garnelen, Krabben) → "schadet"
+- Hefe und Hefeprodukte → "schadet"
+- Hülsenfrüchte (Linsen, Erbsen, Bohnen, Kichererbsen, Soja) → "schadet"
+- Spinat, Spargel, Blumenkohl, Pilze → "nicht_optimal" bis "schadet"
+- Proteinreiche Lebensmittel generell → mindestens "nicht_optimal"
+
+Nur sehr purinarmes Fleisch wie Hühnerbrust ohne Haut in sehr kleinen Mengen kann als "nicht_optimal" gelten. Im Zweifel IMMER strenger bewerten!
+
+Bei der Begründung IMMER den Purin-/Proteingehalt erwähnen, wenn relevant.
+
+Weitere Regeln:
+- "giftig": Lebensmittel die für Hunde giftig/toxisch sind (z.B. Schokolade, Weintrauben, Rosinen, Zwiebeln, Knoblauch, Xylit, Macadamia-Nüsse, Avocado) ODER extrem purinreich
+- "schadet": Lebensmittel die gesundheitliche Probleme verursachen können (fettiges, gewürztes, roher Teig, Alkohol) ODER purinreich/proteinreich
+- "nicht_optimal": Nicht ideal aber in kleinen Mengen ok (Milchprodukte, süßes Obst, Brot) ODER leicht erhöhter Puringehalt
+- "ok": Unbedenklich UND purinarm (z.B. Karotten, Reis, Äpfel ohne Kerne, Gurke, Kartoffel)
 
 Antworte AUSSCHLIESSLICH mit dem JSON-Objekt, kein anderer Text.`
           },
