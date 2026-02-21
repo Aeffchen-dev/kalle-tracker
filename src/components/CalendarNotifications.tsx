@@ -33,9 +33,10 @@ const getCalDismissKey = (uid: string, dtstart: string) => `${DISMISSED_CAL_KEY}
 
 interface CalendarNotificationsProps {
   onCalendarEventTap?: (eventDate: string) => void;
+  onEventSaved?: () => void;
 }
 
-const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalendarEventTap }) => {
+const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalendarEventTap, onEventSaved }) => {
   const [events, setEvents] = useState<ICalEvent[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [checking, setChecking] = useState<Set<string>>(new Set());
@@ -103,7 +104,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' 
       : evt.summary.toLowerCase().includes('krallen') ? 'krallen' 
       : 'parasiten';
-    saveEvent(eventType);
+    saveEvent(eventType).then(() => onEventSaved?.());
 
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
