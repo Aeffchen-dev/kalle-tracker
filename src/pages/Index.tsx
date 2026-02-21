@@ -17,6 +17,7 @@ import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
+import CalendarNotifications from '@/components/CalendarNotifications';
 import dogInCar from '@/assets/dog-in-car.png';
 
 const weatherCodeToEmoji = (code: number): string => {
@@ -373,6 +374,13 @@ const Index = () => {
           </button>
         </div>
         
+        {/* Calendar event notifications */}
+        {showCard && (
+          <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
+            <CalendarNotifications />
+          </div>
+        )}
+
         {/* Anomaly alerts - only show if there are alerts */}
         {anomalies.length > 0 && showCard && (
           <div className={`w-full animate-fade-in-up`} style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
