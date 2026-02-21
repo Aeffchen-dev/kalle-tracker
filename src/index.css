@@ -227,11 +227,11 @@ html {
   background-color: #e8e2db;
 }
 
-html.overlay-brown {
-  background-color: #3d2b1f !important;
-}
-
-html.overlay-brown body {
+html.overlay-brown,
+html.overlay-brown body,
+html.overlay-brown #dalmatian-spots,
+html.overlay-brown #root,
+html.overlay-brown #static-loader {
   background-color: #3d2b1f !important;
 }
 
