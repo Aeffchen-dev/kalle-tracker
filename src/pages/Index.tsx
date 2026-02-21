@@ -497,7 +497,7 @@ const Index = () => {
       )}
 
       {/* Event sheet opens on top */}
-      <EventSheet
+      {!showTagesplan && <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
@@ -506,7 +506,7 @@ const Index = () => {
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
-      />
+      />}
 
       {/* Tagesplan overlay */}
       <TagesplanOverlay 
@@ -515,7 +515,7 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      <Drawer open={showWeather} onOpenChange={setShowWeather}>
+      <Drawer open={showWeather && !showTagesplan} onOpenChange={setShowWeather}>
         <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
@@ -611,11 +611,11 @@ const Index = () => {
       </Drawer>
 
       {/* Gassi settings sheet */}
-      <GassiSettingsSheet 
+      {!showTagesplan && <GassiSettingsSheet 
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
-      />
+      />}
     </div>
   );
 };
