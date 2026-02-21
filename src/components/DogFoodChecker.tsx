@@ -131,17 +131,10 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
-        <h2 className="flex items-center gap-2 text-[14px] text-white mb-1">
-          <span className="info-emoji">🐶</span>
-          <span>Darf Kalle das essen?</span>
-        </h2>
-        <p className="text-[12px] text-white/40 mb-4 leading-relaxed">
-          Kalle hat Harnsteine und muss besonders aufpassen, was er isst. Falsches Futter kann zu neuen Steinen führen und eine Operation nötig machen. Hier kannst du prüfen, ob ein Lebensmittel für ihn geeignet ist.
-        </p>
-
-        <div className="overflow-hidden" style={{ borderRadius: '99px', background: 'rgba(255,255,255,0.04)' }}>
+        <div className="overflow-hidden mb-3" style={{ borderRadius: '99px', background: 'rgba(255,255,255,0.04)' }}>
           <div className="flex items-center">
             <div className="flex items-center gap-2 pl-4 flex-1 min-w-0">
+              <span className="text-[18px] shrink-0">🐶</span>
               <span className="text-[13px] text-white shrink-0">Kann ich</span>
               <div
                 className="flex-1 min-w-0 bg-white/[0.03] rounded-none px-3 py-2 self-stretch flex items-center cursor-text"
@@ -182,6 +175,10 @@ const DogFoodChecker = () => {
             </button>
           </div>
         </div>
+
+        <p className="text-[12px] text-white/40 leading-relaxed">
+          Kalle hat Harnsteine – du musst aufpassen, was du ihm gibst. Falsches Futter kann neue Steine verursachen und eine OP nötig machen.
+        </p>
 
         {result && config && (
           <div className="mt-3">
