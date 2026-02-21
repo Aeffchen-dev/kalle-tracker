@@ -166,9 +166,12 @@ const DogFoodChecker = () => {
           </button>
         </div>
 
-        <p className="text-[12px] text-white/40 leading-relaxed">
-          Kalle hat Harnsteine – du musst aufpassen, was du ihm gibst. Falsches Futter kann neue Steine verursachen und eine OP nötig machen.
-        </p>
+        <div className="flex items-start gap-2">
+          <span className="text-[14px] shrink-0 mt-0.5">🐶</span>
+          <p className="text-[12px] text-white/40 leading-relaxed text-justify">
+            Kalle hat Harnsteine – du musst aufpassen, was du ihm gibst. Falsches Futter kann neue Steine verursachen und eine OP nötig machen.
+          </p>
+        </div>
 
         {result && config && (
           <div className="mt-3">
