@@ -881,8 +881,159 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
             </div>
 
+            {/* Puberty / Development Phases Section */}
+            {(() => {
+              const settings = getCachedSettings();
+              const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
+              const ageInMonths = differenceInMonths(new Date(), birthday);
 
-            {/* Training Section */}
+              const pubertyPhases = [
+                {
+                  label: '0–3M',
+                  title: 'Prägeperiode',
+                  minAge: 0,
+                  maxAge: 3,
+                  characteristics: 'Kalle lernt die Welt kennen. Alles ist neu und aufregend – jetzt werden die Grundlagen für sein ganzes Leben gelegt.',
+                  needs: [
+                    'Viele positive Erfahrungen mit Menschen, Tieren, Geräuschen und Umgebungen sammeln',
+                    'Sanfte Gewöhnung an Alltagssituationen (Auto, Stadt, andere Hunde)',
+                    'Kurze Trainingseinheiten (max. 5 Min), viel Schlaf (18-20 Std)',
+                    'Bindung aufbauen durch gemeinsame Erlebnisse',
+                  ],
+                },
+                {
+                  label: '3–6M',
+                  title: 'Sozialisierungsphase',
+                  minAge: 3,
+                  maxAge: 6,
+                  characteristics: 'Kalle wird mutiger und testet Grenzen. Er lernt soziale Regeln und wie man mit anderen Hunden umgeht.',
+                  needs: [
+                    'Kontrollierter Kontakt mit gut sozialisierten Hunden',
+                    'Konsequente aber liebevolle Grenzen setzen',
+                    'Grundkommandos festigen (Sitz, Platz, Hier)',
+                    'Beißhemmung trainieren – Spielabbruch bei zu festem Beißen',
+                  ],
+                },
+                {
+                  label: '6–8M',
+                  title: 'Flegelphase',
+                  minAge: 6,
+                  maxAge: 8,
+                  characteristics: 'Kalle wird „taub" – er hört plötzlich schlechter und testet, was passiert, wenn er nicht reagiert. Das ist völlig normal!',
+                  needs: [
+                    'Geduld, Geduld, Geduld – nicht persönlich nehmen',
+                    'Rückruf an der Schleppleine sichern',
+                    'Bekannte Übungen wiederholen statt Neues zu lernen',
+                    'Mehr Belohnungen als sonst – die Motivation sinkt temporär',
+                  ],
+                },
+                {
+                  label: '8–12M',
+                  title: 'Pubertät',
+                  minAge: 8,
+                  maxAge: 12,
+                  characteristics: 'Hormonelle Veränderungen machen Kalle unberechenbar. Er kann ängstlicher oder aufgeregter reagieren als gewohnt.',
+                  needs: [
+                    'Stresslevel beobachten und Überforderung vermeiden',
+                    'Routine beibehalten – Struktur gibt Sicherheit',
+                    'Keine neuen stressigen Situationen erzwingen',
+                    'Ruhephasen aktiv einplanen und belohnen',
+                  ],
+                },
+                {
+                  label: '12–18M',
+                  title: 'Zweite Angstphase',
+                  minAge: 12,
+                  maxAge: 18,
+                  characteristics: 'Kalle kann plötzlich Angst vor Dingen haben, die vorher kein Problem waren. Diese Phase geht vorbei!',
+                  needs: [
+                    'Ängste ernst nehmen, aber nicht verstärken',
+                    'Positive Erfahrungen schaffen, ohne zu drängen',
+                    'Sicherheit geben durch Ruhe und Gelassenheit',
+                    'Bei Unsicherheit: Abstand vergrößern, nicht zwingen',
+                  ],
+                },
+                {
+                  label: '18–24M',
+                  title: 'Reifephase',
+                  minAge: 18,
+                  maxAge: 24,
+                  characteristics: 'Kalle wird erwachsen! Sein Charakter festigt sich und das Training zahlt sich aus.',
+                  needs: [
+                    'Gelerntes weiter festigen und im Alltag anwenden',
+                    'Neue Herausforderungen bieten (Hundesport, Nasenarbeit)',
+                    'Soziale Kontakte pflegen',
+                    'Übergänge zu mehr Freiheit langsam gestalten',
+                  ],
+                },
+              ];
+
+              const currentPhaseIndex = pubertyPhases.findIndex(p => ageInMonths >= p.minAge && ageInMonths < p.maxAge);
+              const displayIndex = selectedPubertyPhase !== null ? selectedPubertyPhase : (currentPhaseIndex >= 0 ? currentPhaseIndex : 0);
+              const phase = pubertyPhases[displayIndex];
+              const isCurrentPhase = displayIndex === currentPhaseIndex;
+
+              return (
+                <div className="mb-8">
+                  <div className="glass-card rounded-lg p-4">
+                    <h3 className="text-[13px] text-white/90 mb-3">🐾 Entwicklung</h3>
+
+                    {/* Progress track */}
+                    <div className="flex rounded-full overflow-hidden h-[6px] mb-3">
+                      {pubertyPhases.map((p, i) => {
+                        const isAchieved = i <= currentPhaseIndex;
+                        const isCurrent = i === currentPhaseIndex;
+                        return (
+                          <div
+                            key={i}
+                            className={`flex-1 ${i > 0 ? 'border-l border-black/30' : ''} ${isAchieved ? 'bg-white' : 'bg-white/20'} ${isCurrent ? 'rounded-r-full' : ''}`}
+                          />
+                        );
+                      })}
+                    </div>
+
+                    {/* Age labels as buttons */}
+                    <div className="flex mb-4">
+                      {pubertyPhases.map((p, i) => {
+                        const isPast = i < currentPhaseIndex;
+                        const isSelected = i === displayIndex;
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedPubertyPhase(i)}
+                            className={`flex-1 text-[10px] py-1 rounded transition-colors ${isSelected ? 'bg-white/20 text-white' : isPast ? 'text-white/50' : 'text-white/20'}`}
+                          >
+                            {p.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Phase content */}
+                    <div>
+                      <h4 className="text-[14px] text-white mb-2">{phase.title}</h4>
+
+                      {/* Characteristics */}
+                      <p className="text-[12px] text-white/60 mb-4">{phase.characteristics}</p>
+
+                      {/* Needs as bullet points */}
+                      <div className="text-[12px] text-white/60">
+                        <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
+                        <ul className="mt-2 space-y-1">
+                          {phase.needs.map((need, i) => (
+                            <li key={i} className="flex gap-2">
+                              <span className="text-white/30">•</span>
+                              <span>{need}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {(() => {
               const settings = getCachedSettings();
               const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
