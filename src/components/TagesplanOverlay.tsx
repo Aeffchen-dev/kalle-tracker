@@ -335,12 +335,30 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     }
   }, [isOpen, animationPhase]);
 
-  // Keep html background brown while modal is open
+  // Keep html+body background brown while modal is open (iOS browser bar)
   useEffect(() => {
     if (isOpen) {
-      document.documentElement.style.backgroundColor = '#3d2b1f';
+      const brown = '#3d2b1f';
+      document.documentElement.style.backgroundColor = brown;
+      document.body.style.backgroundColor = brown;
+      // Set theme-color meta for iOS browser chrome
+      let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+      const hadMeta = !!meta;
+      const prevColor = meta?.content || '';
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'theme-color';
+        document.head.appendChild(meta);
+      }
+      meta.content = brown;
       return () => {
         document.documentElement.style.backgroundColor = '';
+        document.body.style.backgroundColor = '';
+        if (hadMeta) {
+          meta!.content = prevColor;
+        } else {
+          meta!.remove();
+        }
       };
     }
   }, [isOpen]);
@@ -427,16 +445,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
 
   const handleClose = () => {
-    // Start animation immediately
     setAnimationPhase('dots-collapsing');
-      document.documentElement.style.backgroundColor = '';
+    document.documentElement.style.backgroundColor = '';
+    document.body.style.backgroundColor = '';
+    const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    if (meta) meta.remove();
 
-    // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
       onClose();
     });
     
-    // Hide SVG after animation completes
     setTimeout(() => {
       setAnimationPhase('idle');
     }, 300);
