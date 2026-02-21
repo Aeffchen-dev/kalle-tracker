@@ -449,7 +449,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   if (animationPhase === 'idle') return null;
 
   return (
-    <div className="fixed z-40 pointer-events-none" style={{ top: '-100px', left: 0, right: 0, bottom: '-100px' }}>
+    <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Animated spots using SVG with SMIL animation for sharp scaling */}
       <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
         {[
@@ -538,7 +538,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="absolute left-0 right-0 pointer-events-auto" style={{ top: '100px', bottom: '100px' }}>
+        <div className="absolute inset-0 pointer-events-auto">
           {/* Header - floating over scroll content */}
           <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
