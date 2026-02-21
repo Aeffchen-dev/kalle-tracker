@@ -949,9 +949,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               ];
 
               const ageGroup = trainingsByAge.find(g => ageInMonths < g.maxAge) || trainingsByAge[trainingsByAge.length - 1];
-              // Pick a random trick based on current date (changes daily)
-              const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-              const trick = ageGroup.tricks[dayIndex % ageGroup.tricks.length];
+              // Pick a random trick on each reload
+              const trick = ageGroup.tricks[Math.floor(Math.random() * ageGroup.tricks.length)];
 
               return (
                 <div className="mb-8">
