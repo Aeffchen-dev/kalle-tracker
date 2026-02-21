@@ -540,9 +540,9 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="pointer-events-auto bg-spot" style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '100dvh' }}>
+        <div className="pointer-events-auto bg-spot" style={{ position: 'fixed', top: '-50vh', left: 0, right: 0, bottom: '-50vh' }}>
           {/* Header - floating over scroll content */}
-          <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
+          <header className="fixed top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
             <button onClick={handleClose} className="text-white p-1">
               <X size={20} />
@@ -550,7 +550,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content - fills entire dynamic viewport */}
-          <div className="absolute top-0 left-0 right-0 bottom-0 overflow-y-auto overflow-x-hidden px-4 pt-14" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+          <div className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pt-14" style={{ height: '100dvh', paddingBottom: 'env(safe-area-inset-bottom)' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
