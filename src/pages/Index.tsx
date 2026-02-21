@@ -76,6 +76,7 @@ const Index = () => {
   const [showCard, setShowCard] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showTagesplan, setShowTagesplan] = useState(false);
+  const [tagesplanScrollDate, setTagesplanScrollDate] = useState<string | null>(null);
   const [showGassiSettings, setShowGassiSettings] = useState(false);
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
@@ -415,7 +416,7 @@ const Index = () => {
         {/* Calendar event notifications */}
         {showCard && (
           <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            <CalendarNotifications onCalendarEventTap={() => setShowTagesplan(true)} />
+            <CalendarNotifications onCalendarEventTap={(date) => { setTagesplanScrollDate(date); setShowTagesplan(true); }} />
           </div>
         )}
 
@@ -464,7 +465,8 @@ const Index = () => {
       {/* Tagesplan overlay */}
       <TagesplanOverlay 
         isOpen={showTagesplan} 
-        onClose={() => setShowTagesplan(false)} 
+        onClose={() => { setShowTagesplan(false); setTagesplanScrollDate(null); }}
+        scrollToDate={tagesplanScrollDate}
       />
 
       {/* Weather forecast drawer */}

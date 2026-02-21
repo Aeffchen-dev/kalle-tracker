@@ -128,9 +128,10 @@ const weekSchedule: DaySchedule[] = [
 interface TagesplanOverlayProps {
   isOpen: boolean;
   onClose: () => void;
+  scrollToDate?: string | null;
 }
 
-const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
+const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
@@ -426,6 +427,14 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     }
   };
 
+  // Scroll Wochenplan to target date card after overlay opens
+  useEffect(() => {
+    if (animationPhase === 'visible' && todayColRef.current && wochenplanScrollRef.current) {
+      setTimeout(() => {
+        todayColRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+      }, 300);
+    }
+  }, [animationPhase]);
 
   const handleClose = () => {
     // Start animation immediately
@@ -1103,11 +1112,20 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     };
                     
                     // Card width: calc((100vw - 32px - 2*8px) / 2.5) ≈ 40vw
+                    const scrollTarget = scrollToDate ? (() => {
+                      const target = new Date(scrollToDate);
+                      target.setHours(0, 0, 0, 0);
+                      const diffMs = target.getTime() - rangeStart.getTime();
+                      const targetIdx = Math.round(diffMs / (24 * 60 * 60 * 1000));
+                      return targetIdx >= 0 && targetIdx < TOTAL_DAYS ? targetIdx : null;
+                    })() : null;
+                    const isScrollTarget = scrollTarget !== null ? idx === scrollTarget : isToday;
+
                     return (
                       <div
                         key={idx}
                         id={isToday ? 'wochenplan-today' : undefined}
-                        ref={isToday ? todayColRef : undefined}
+                        ref={isScrollTarget ? todayColRef : undefined}
                         className="shrink-0 rounded-[14px] overflow-hidden bg-black"
                         style={{ width: 'var(--card-w)' }}
                       >
