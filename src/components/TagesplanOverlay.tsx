@@ -1015,7 +1015,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Hausapotheke Section */}
             <div className="mb-8">
               <div className="glass-card rounded-lg p-4">
-                <h3 className="text-[13px] text-white/90 mb-4">Hausapotheke</h3>
+                <h3 className="text-[13px] text-white/90 mb-2">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
                     const isActive = activeMedicineId === med.id;
