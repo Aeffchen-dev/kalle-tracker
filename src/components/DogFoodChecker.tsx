@@ -159,17 +159,17 @@ const DogFoodChecker = () => {
                 )}
               </div>
             </div>
-            <span className="text-[13px] text-white/60 shrink-0">essen?</span>
+            <span className="text-[13px] text-white/60 shrink-0 pr-4">essen?</span>
           </div>
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 rounded-r-lg bg-black active:scale-95 transition-transform flex items-center justify-center w-[46px]"
+            className="shrink-0 rounded-r-lg bg-white active:scale-95 transition-transform flex items-center justify-center w-[46px]"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Search size={18} className="text-white" />
+              <Search size={18} className="text-black" />
             )}
           </button>
         </div>
