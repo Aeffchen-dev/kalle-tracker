@@ -8,7 +8,7 @@ import { saveEvent } from '@/lib/events';
 const DEBUG_SHOW_ALL = false;
 const DEBUG_TODAY: Date | null = null;
 
-const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur'];
+const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur', 'Krallen schneiden'];
 
 // Strip trailing emojis from summary text
 const stripTrailingEmojis = (text: string): string =>
@@ -20,6 +20,7 @@ const isMedicalEvent = (summary: string): boolean =>
 const getMedicalEmoji = (summary: string): string => {
   if (summary.toLowerCase().includes('wurmkur')) return '🪱';
   if (summary.toLowerCase().includes('parasiten')) return '🦟';
+  if (summary.toLowerCase().includes('krallen')) return '✂️';
   return '💊';
 };
 
@@ -98,9 +99,11 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     if (checking.has(evt.uid)) return;
     setChecking(prev => new Set([...prev, evt.uid]));
 
-    // Save medical event to backend
-    const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' : 'parasiten';
-    saveEvent(eventType as any);
+    // Save medical event to backend (only wurmkur/parasiten are tracked as events)
+    if (!evt.summary.toLowerCase().includes('krallen')) {
+      const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' : 'parasiten';
+      saveEvent(eventType as any);
+    }
 
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
