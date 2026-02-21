@@ -333,9 +333,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         setAnimationPhase('visible');
       }, 1100);
       // Recolor html (status bar + bottom bar) when content becomes visible
-      setTimeout(() => {
-        document.documentElement.style.backgroundColor = '#3d2b1f';
-      }, 1100);
+      document.documentElement.style.backgroundColor = '#3d2b1f';
     }
   }, [isOpen, animationPhase]);
 
