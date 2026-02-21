@@ -515,7 +515,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
               viewBox="-50 -50 100 100"
             >
               <g transform={`rotate(${spot.rotate})`}>
-                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
+                <path d={blobPaths[spot.seed % 4]} fill="#3d2b1f">
                   <animateTransform
                     attributeName="transform"
                     type="scale"
