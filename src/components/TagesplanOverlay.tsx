@@ -1258,7 +1258,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     
                     // Build walk slots
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean; isFutureEstimate?: boolean };
                     const slots: SlotItem[] = [];
                     
                     {
@@ -1324,12 +1324,45 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           }));
                           
                           if (isToday) {
-                            // For today: completely replace estimates with real entries
-                            const estimateIndices = slots.map((s, i) => s.isEstimate ? i : -1).filter(i => i >= 0);
-                            for (let i = estimateIndices.length - 1; i >= 0; i--) {
-                              slots.splice(estimateIndices[i], 1);
+                            // For today: 1:1 matching with ±2h window, remove matched estimates
+                            // Keep unmatched future estimates with lighter opacity
+                            const currentHour = new Date().getHours() + new Date().getMinutes() / 60;
+                            const usedEstimates = new Set<number>();
+                            const usedReals = new Set<number>();
+                            
+                            for (let ei = 0; ei < slots.length; ei++) {
+                              if (!slots[ei].isEstimate) continue;
+                              let bestRi = -1;
+                              let bestDist = Infinity;
+                              for (let ri = 0; ri < realSlots.length; ri++) {
+                                if (usedReals.has(ri)) continue;
+                                const dist = Math.abs(realSlots[ri].avgHour - slots[ei].avgHour);
+                                if (dist <= 2 && dist < bestDist) {
+                                  bestDist = dist;
+                                  bestRi = ri;
+                                }
+                              }
+                              if (bestRi >= 0) {
+                                usedEstimates.add(ei);
+                                usedReals.add(bestRi);
+                              }
                             }
-                            slots.push(...realSlots);
+                            
+                            // Mark remaining future estimates, remove matched ones
+                            const kept: SlotItem[] = [];
+                            for (let i = 0; i < slots.length; i++) {
+                              if (usedEstimates.has(i)) continue; // drop matched estimates
+                              if (slots[i].isEstimate && slots[i].avgHour > currentHour) {
+                                kept.push({ ...slots[i], isFutureEstimate: true });
+                              } else if (slots[i].isEstimate) {
+                                // Past unmatched estimate on today — skip it
+                                continue;
+                              } else {
+                                kept.push(slots[i]);
+                              }
+                            }
+                            slots.length = 0;
+                            slots.push(...kept, ...realSlots);
                           } else {
                             // For other days: 1:1 matching — replace nearest estimate within ±2h
                             const usedEstimates = new Set<number>();
@@ -1436,7 +1469,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 <div key={i}>
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
                                    {slot.isWalk && (
-                                    <div className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
+                                    <div className={`p-2 bg-white/[0.06] rounded-lg overflow-hidden ${slot.isFutureEstimate ? 'opacity-30' : ''}`}>
                                       <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
                                         <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
