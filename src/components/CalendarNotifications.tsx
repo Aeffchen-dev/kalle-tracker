@@ -99,11 +99,11 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     if (checking.has(evt.uid)) return;
     setChecking(prev => new Set([...prev, evt.uid]));
 
-    // Save medical event to backend (only wurmkur/parasiten are tracked as events)
-    if (!evt.summary.toLowerCase().includes('krallen')) {
-      const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' : 'parasiten';
-      saveEvent(eventType as any);
-    }
+    // Save medical event to backend
+    const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' 
+      : evt.summary.toLowerCase().includes('krallen') ? 'krallen' 
+      : 'parasiten';
+    saveEvent(eventType as any);
 
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
