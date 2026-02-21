@@ -26,8 +26,9 @@ const getMedicalEmoji = (summary: string): string => {
 const DISMISSED_KEY = 'kalle_dismissed_medical_';
 const DISMISSED_CAL_KEY = 'kalle_dismissed_cal_';
 
-const getDismissKey = (uid: string, date: string) => `${DISMISSED_KEY}${uid}_${date}`;
-const getCalDismissKey = (uid: string, date: string) => `${DISMISSED_CAL_KEY}${uid}_${date}`;
+// Use event start time as part of key so each occurrence is unique
+const getDismissKey = (uid: string, dtstart: string) => `${DISMISSED_KEY}${uid}_${dtstart}`;
+const getCalDismissKey = (uid: string, dtstart: string) => `${DISMISSED_CAL_KEY}${uid}_${dtstart}`;
 
 interface CalendarNotificationsProps {
   onCalendarEventTap?: (eventDate: string) => void;
@@ -61,11 +62,10 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
 
       // In debug mode, don't load dismissed state so all notifications remain visible
       if (!DEBUG_SHOW_ALL) {
-        const todayStr = format(today, 'yyyy-MM-dd');
         const dismissedSet = new Set<string>();
         todayEvents.forEach(evt => {
-          const medKey = getDismissKey(evt.uid, todayStr);
-          const calKey = getCalDismissKey(evt.uid, todayStr);
+          const medKey = getDismissKey(evt.uid, evt.dtstart);
+          const calKey = getCalDismissKey(evt.uid, evt.dtstart);
           if (localStorage.getItem(medKey) || localStorage.getItem(calKey)) {
             dismissedSet.add(evt.uid);
           }
@@ -105,8 +105,8 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
       setTimeout(() => {
-        const todayStr = format(DEBUG_TODAY || new Date(), 'yyyy-MM-dd');
-        localStorage.setItem(getDismissKey(evt.uid, todayStr), '1');
+        const matchedEvt = events.find(e => e.uid === evt.uid);
+        localStorage.setItem(getDismissKey(evt.uid, matchedEvt?.dtstart || evt.dtstart || ''), '1');
         setDismissed(prev => new Set([...prev, evt.uid]));
         setChecking(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
         setExiting(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
@@ -118,11 +118,10 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     setExiting(prev => new Set([...prev, evt.uid]));
     setActiveId(null);
     setTimeout(() => {
-      const todayStr = format(DEBUG_TODAY || new Date(), 'yyyy-MM-dd');
       if (isMedicalEvent(evt.summary)) {
-        localStorage.setItem(getDismissKey(evt.uid, todayStr), '1');
+        localStorage.setItem(getDismissKey(evt.uid, evt.dtstart), '1');
       } else {
-        localStorage.setItem(getCalDismissKey(evt.uid, todayStr), '1');
+        localStorage.setItem(getCalDismissKey(evt.uid, evt.dtstart), '1');
       }
       setDismissed(prev => new Set([...prev, evt.uid]));
       setExiting(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
