@@ -811,7 +811,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               href={snack.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-white/40 hover:text-white transition-colors p-1 flex-shrink-0"
+                              className="text-white/40 p-1 flex-shrink-0"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <ExternalLink size={14} />
