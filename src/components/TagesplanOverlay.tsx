@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
+import DogFoodChecker from '@/components/DogFoodChecker';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
 import { differenceInMonths, format, getDay, getHours } from 'date-fns';
@@ -660,6 +661,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
             ))}
+
+            {/* Dog Food Checker */}
+            <DogFoodChecker />
 
             {/* Emergency Section */}
             <div className="mb-8">
