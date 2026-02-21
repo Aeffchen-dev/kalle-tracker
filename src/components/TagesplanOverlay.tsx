@@ -1118,7 +1118,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           
                           // Remove estimated slots that overlap with real ones (within 1.5h)
                           const filtered = slots.filter(est => {
-                            return !realSlots.some(real => Math.abs(real.avgHour - est.avgHour) <= 1.5);
+                            return !realSlots.some(real => Math.abs(real.avgHour - est.avgHour) <= 4);
                           });
                           
                           // Merge: keep non-overlapping estimates + all real slots
