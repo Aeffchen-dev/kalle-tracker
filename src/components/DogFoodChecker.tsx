@@ -49,7 +49,7 @@ const DogFoodChecker = () => {
       } else {
         timer = setTimeout(() => {
           setIsTyping(false);
-        }, 2500);
+        }, 1000);
       }
     } else {
       if (charIndexRef.current > 0) {
@@ -144,12 +144,13 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 self-stretch rounded-r-lg bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center px-3"
+            className="shrink-0 self-stretch rounded-r-lg bg-black hover:bg-black/80 active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center px-3 -my-0 -mr-0"
+            style={{ marginTop: '-12px', marginBottom: '-12px', marginRight: '0', paddingTop: '12px', paddingBottom: '12px' }}
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Search size={18} className="text-white/60" />
+              <Search size={18} className="text-white" />
             )}
           </button>
         </div>
