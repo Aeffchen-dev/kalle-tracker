@@ -171,7 +171,7 @@ const DogFoodChecker = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onKeyDown={handleKeyDown}
-              className="w-full min-w-0 bg-transparent text-[13px] leading-none text-white outline-none text-center transition-all duration-150 p-0 m-0"
+              className="w-full min-w-0 bg-transparent text-[13px] leading-none text-white outline-none text-center transition-all duration-150 p-0 m-0 relative -top-[2px]"
               style={{ caretColor: 'white', lineHeight: '1' }}
               placeholder=""
             />
