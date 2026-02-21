@@ -339,14 +339,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (animationPhase === 'visible') {
       const brown = '#3d2b1f';
-      // CSS class for !important override
       document.documentElement.classList.add('overlay-brown');
-      // Also set inline styles as fallback
       document.documentElement.style.setProperty('background-color', brown, 'important');
       document.body.style.setProperty('background-color', brown, 'important');
-      // Set theme-color meta for iOS browser chrome
       const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
       if (meta) meta.content = brown;
+      // Force iOS Safari repaint
+      requestAnimationFrame(() => {
+        document.documentElement.style.transform = 'translateZ(0)';
+        requestAnimationFrame(() => {
+          document.documentElement.style.transform = '';
+        });
+      });
     }
   }, [animationPhase]);
 
