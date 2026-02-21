@@ -332,17 +332,18 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       setTimeout(() => {
         setAnimationPhase('visible');
       }, 1100);
-      // Recolor html (status bar + bottom bar) when content becomes visible
-      document.documentElement.style.backgroundColor = '#3d2b1f';
     }
   }, [isOpen, animationPhase]);
 
-  // Reset when fully closed
+  // Keep html background brown while modal is open
   useEffect(() => {
-    if (animationPhase === 'idle' && !isOpen) {
-      document.documentElement.style.backgroundColor = '';
+    if (isOpen) {
+      document.documentElement.style.backgroundColor = '#3d2b1f';
+      return () => {
+        document.documentElement.style.backgroundColor = '';
+      };
     }
-  }, [animationPhase, isOpen]);
+  }, [isOpen]);
 
   // Focus input when editing starts
   useEffect(() => {
@@ -540,7 +541,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pt-14" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}>
+          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pt-14" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 66px)' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
