@@ -164,7 +164,7 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] mr-1 cursor-pointer"
+            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] cursor-pointer"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
