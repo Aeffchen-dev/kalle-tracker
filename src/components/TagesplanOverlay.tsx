@@ -338,9 +338,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Set brown background only AFTER dot animation completes (animationPhase === 'visible')
   useEffect(() => {
     if (animationPhase === 'visible') {
-      const brown = '#3d2b1f';
-      document.documentElement.style.backgroundColor = brown;
-      document.body.style.backgroundColor = brown;
+      document.documentElement.classList.add('overlay-brown');
       // Set theme-color meta for iOS browser chrome
       let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
       if (!meta) {
@@ -348,7 +346,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         meta.name = 'theme-color';
         document.head.appendChild(meta);
       }
-      meta.content = brown;
+      meta.content = '#3d2b1f';
     }
   }, [animationPhase]);
 
@@ -435,6 +433,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
   const handleClose = () => {
     setAnimationPhase('dots-collapsing');
+    document.documentElement.classList.remove('overlay-brown');
     document.documentElement.style.backgroundColor = '';
     document.body.style.backgroundColor = '';
     const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;

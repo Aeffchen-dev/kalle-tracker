@@ -227,6 +227,14 @@ html {
   background-color: #e8e2db;
 }
 
+html.overlay-brown {
+  background-color: #3d2b1f !important;
+}
+
+html.overlay-brown body {
+  background-color: #3d2b1f !important;
+}
+
 body {
   max-width: 100vw;
 }
