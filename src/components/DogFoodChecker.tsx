@@ -131,49 +131,39 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
-        <div className="overflow-hidden mb-3" style={{ borderRadius: '99px', background: 'rgba(255,255,255,0.04)' }}>
-          <div className="flex items-center">
-            <div className="flex items-center gap-2 pl-4 flex-1 min-w-0">
-              <span className="text-[18px] shrink-0">🐶</span>
-              <span className="text-[13px] text-white shrink-0">Kann ich</span>
-              <div
-                className="flex-1 min-w-0 bg-white/[0.03] rounded-none px-3 py-2 self-stretch flex items-center cursor-text"
-                onClick={() => inputRef.current?.focus()}
-              >
-                <div className="relative w-full">
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => { setQuery(e.target.value); setResult(null); }}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
-                    onKeyDown={handleKeyDown}
-                    className="bg-transparent text-[13px] text-white w-full outline-none placeholder-transparent text-center"
-                    style={{ caretColor: 'white' }}
-                  />
-                  {!query && (
-                    <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
-                      {placeholderText}
-                      <span className="animate-pulse ml-[1px]">|</span>
-                    </span>
-                  )}
-                </div>
-              </div>
-              <span className="text-[13px] text-white shrink-0 pr-3">essen?</span>
-            </div>
-            <button
-              onClick={checkFood}
-              disabled={loading || !query.trim()}
-              className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] cursor-pointer"
-            >
-              {loading ? (
-                <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <Search size={18} className="text-white" />
-              )}
-            </button>
-          </div>
+        <div className="flex items-center gap-2 mb-3 border border-white/10 bg-white/[0.04] overflow-hidden" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px' }}>
+          <span className="text-[18px] shrink-0">🐶</span>
+          <span className="text-[13px] text-white/50 shrink-0">Kann ich</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => { setQuery(e.target.value); setResult(null); }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
+            style={{ caretColor: 'white' }}
+            placeholder=""
+          />
+          {!query && !isFocused && (
+            <span className="absolute left-1/2 -translate-x-1/2 text-[13px] text-white/25 pointer-events-none flex items-center">
+              {placeholderText}
+              <span className="animate-pulse ml-[1px]">|</span>
+            </span>
+          )}
+          <span className="text-[13px] text-white/50 shrink-0">essen?</span>
+          <button
+            onClick={checkFood}
+            disabled={loading || !query.trim()}
+            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[36px] h-[36px] cursor-pointer"
+          >
+            {loading ? (
+              <div className="w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Search size={16} className="text-white/60" />
+            )}
+          </button>
         </div>
 
         <p className="text-[12px] text-white/40 leading-relaxed">
