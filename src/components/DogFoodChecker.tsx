@@ -201,15 +201,13 @@ const DogFoodChecker = () => {
         </div>
 
         {result && config ? (
-          <div className="mt-3">
-            <div className={`${config.bg} rounded-lg p-3`}>
+          <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[16px]">{config.emoji}</span>
-                <span className={`text-[13px] font-medium ${config.color}`}>{config.label}</span>
+                <span className="text-[13px] font-medium text-white/80">{config.label}</span>
               </div>
-              <p className="text-[12px] text-white/60">{result.reason}</p>
+              <p className="text-[12px] text-white/40">{result.reason}</p>
             </div>
-          </div>
         ) : (
           <p className="text-[12px] text-white/40 leading-relaxed">
             Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
