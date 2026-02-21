@@ -133,7 +133,7 @@ const DogFoodChecker = () => {
     if (measureRef.current) {
       const displayText = query || placeholderText || '';
       measureRef.current.textContent = displayText || ' ';
-      setInputWidth(measureRef.current.offsetWidth + 32);
+      setInputWidth(Math.max(48, measureRef.current.offsetWidth + 32));
     }
   }, [query, placeholderText]);
 
