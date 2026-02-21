@@ -339,10 +339,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   useEffect(() => {
     if (isOpen) {
       document.documentElement.style.backgroundColor = '#3d2b1f';
-      document.body.style.backgroundColor = '#3d2b1f';
       return () => {
         document.documentElement.style.backgroundColor = '';
-        document.body.style.backgroundColor = '';
       };
     }
   }, [isOpen]);
@@ -432,7 +430,6 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
       document.documentElement.style.backgroundColor = '';
-      document.body.style.backgroundColor = '';
 
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
