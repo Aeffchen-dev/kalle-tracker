@@ -1402,7 +1402,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     
                     // Build walk slots
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean; isFutureEstimate?: boolean; exactTime?: string };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; hasPipi: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean; isFutureEstimate?: boolean; exactTime?: string };
                     const slots: SlotItem[] = [];
                     
                     {
@@ -1416,20 +1416,21 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
                         ].sort((a, b) => a.hour - b.hour);
                         
-                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                        const clusters: { hours: number[]; hasPoop: boolean; hasPipi: boolean }[] = [];
                         for (const evt of allEvents) {
                           const last = clusters[clusters.length - 1];
                           if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
                             last.hours.push(evt.hour);
                             if (evt.isPoop) last.hasPoop = true;
+                            if (!evt.isPoop) last.hasPipi = true;
                           } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop, hasPipi: !evt.isPoop });
                           }
                         }
                         
                         for (const c of clusters) {
                           const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                          slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [], isEstimate: true });
+                          slots.push({ avgHour, hasPoop: c.hasPoop, hasPipi: c.hasPipi, isWalk: true, icalEvents: [], isEstimate: true });
                         }
                       }
                       
@@ -1458,6 +1459,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           const realSlots: SlotItem[] = dayEvents.map(evt => ({
                             avgHour: evt.hour,
                             hasPoop: evt.isPoop,
+                            hasPipi: !evt.isPoop,
                             isWalk: true,
                             icalEvents: [],
                             isEstimate: false,
@@ -1554,7 +1556,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         }
                         slots[nearest].icalEvents.push(icalItem);
                       } else {
-                        slots.push({ avgHour: hour, hasPoop: false, isWalk: false, icalEvents: [icalItem] });
+                        slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem] });
                       }
                     }
                     
@@ -1613,8 +1615,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                     <div className={`p-2 bg-white/[0.06] rounded-lg overflow-hidden ${slot.isFutureEstimate ? 'opacity-30' : ''}`}>
                                       <div className="flex items-center overflow-hidden">
                                         <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        <span className="text-[14px] shrink-0">{slot.hasPoop && slot.hasPipi ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop && slot.hasPipi ? 'Pipi + Stuhlgang' : slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
                                     </div>
                                    )}
