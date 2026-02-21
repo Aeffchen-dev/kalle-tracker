@@ -130,12 +130,13 @@ const DogFoodChecker = () => {
 
   // Measure text width for input sizing
   useEffect(() => {
-    if (measureRef.current) {
-      const displayText = query || placeholderText || '';
-      measureRef.current.textContent = displayText || ' ';
+    if (measureRef.current && query) {
+      measureRef.current.textContent = query;
       setInputWidth(Math.max(48, measureRef.current.offsetWidth + 32));
+    } else if (!query) {
+      setInputWidth(48);
     }
-  }, [query, placeholderText]);
+  }, [query]);
 
   const config = result ? STATUS_CONFIG[result.status] : null;
 
