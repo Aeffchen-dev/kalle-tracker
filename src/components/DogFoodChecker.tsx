@@ -118,12 +118,13 @@ const DogFoodChecker = () => {
           <span className="text-[18px]">🐶</span>
           <span className="text-[13px] text-white/80">Kann ich das essen?</span>
         </div>
-        {/* Search bar */}
+        {/* Search bar: Kann ich [input] essen? */}
         <div className="px-3 pb-3">
           <div
-            className="flex items-center gap-2 bg-white/[0.12] rounded-full px-1 pl-4 py-1 cursor-text"
+            className="flex items-center gap-2 bg-white/[0.12] rounded-full px-1 py-1 cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
+            <span className="text-[13px] text-white/60 shrink-0 pl-3">Kann ich</span>
             <div className="relative flex-1 min-w-0">
               <input
                 ref={inputRef}
@@ -143,10 +144,11 @@ const DogFoodChecker = () => {
                 </span>
               )}
             </div>
+            <span className="text-[13px] text-white/60 shrink-0">essen?</span>
             <button
               onClick={(e) => { e.stopPropagation(); checkFood(); }}
               disabled={loading || !query.trim()}
-              className="p-2 rounded-full bg-white/20 hover:bg-white/30 active:scale-95 transition-all disabled:opacity-20 shrink-0"
+              className="p-2 rounded-full bg-black hover:bg-black/80 active:scale-95 transition-all disabled:opacity-30 shrink-0"
             >
               {loading ? (
                 <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
