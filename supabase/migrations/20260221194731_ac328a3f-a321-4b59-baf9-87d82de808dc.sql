@@ -1,0 +1,1 @@
+CREATE POLICY "Allow public update on medicines" ON public.medicines FOR UPDATE USING (true);
