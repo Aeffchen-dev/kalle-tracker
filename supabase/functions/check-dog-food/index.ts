@@ -61,7 +61,7 @@ Purinreiche Lebensmittel sind IMMER mindestens "schadet", oft "giftig":
 
 Nur sehr purinarmes Fleisch wie Hühnerbrust ohne Haut in sehr kleinen Mengen kann als "nicht_optimal" gelten. Im Zweifel IMMER strenger bewerten!
 
-Bei der Begründung IMMER den Purin-/Proteingehalt erwähnen, wenn relevant.
+WICHTIG FÜR DIE BEGRÜNDUNG: Die "reason" MUSS IMMER mit dem Purin- und/oder Proteingehalt BEGINNEN, wenn das Lebensmittel Purine oder nennenswerte Proteine enthält. Erst DANACH dürfen andere Aspekte wie Laktose, Fett, Gewürze etc. erwähnt werden. Beispiel: "Käse enthält Proteine, die bei Harnsteinen problematisch sind. Zudem kann Laktose Verdauungsprobleme verursachen." NIEMALS Laktose, Fett oder andere Faktoren VOR dem Purin-/Proteingehalt nennen!
 
 Weitere Regeln:
 - "giftig": Lebensmittel die für Hunde giftig/toxisch sind (z.B. Schokolade, Weintrauben, Rosinen, Zwiebeln, Knoblauch, Xylit, Macadamia-Nüsse, Avocado) ODER extrem purinreich
