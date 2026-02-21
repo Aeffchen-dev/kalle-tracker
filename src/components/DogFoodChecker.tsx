@@ -130,7 +130,7 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-8" ref={containerRef}>
-      <div className="glass-card rounded-l-lg rounded-r-full overflow-hidden">
+      <div className="glass-card rounded-full overflow-hidden">
           <div className="flex items-center">
             <div className="flex items-center gap-2 pl-4 py-2.5 flex-1 min-w-0">
             <span className="text-[18px] shrink-0">🐶</span>
