@@ -344,13 +344,12 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       document.body.style.setProperty('background-color', brown, 'important');
       const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
       if (meta) meta.content = brown;
-      // Force iOS Safari repaint
-      requestAnimationFrame(() => {
-        document.documentElement.style.transform = 'translateZ(0)';
-        requestAnimationFrame(() => {
-          document.documentElement.style.transform = '';
-        });
-      });
+      // Force iOS Safari repaint via display toggle + reflow
+      const html = document.documentElement;
+      html.style.display = 'none';
+      // eslint-disable-next-line no-unused-expressions
+      html.offsetHeight;
+      html.style.display = '';
     }
   }, [animationPhase]);
 
