@@ -181,7 +181,7 @@ const DogFoodChecker = () => {
               <span className="animate-pulse ml-[1px]">|</span>
             </span>
           )}
-          <span className="text-[13px] text-white shrink-0">essen?</span>
+          <span className="text-[13px] text-white shrink-0 -ml-1">essen?</span>
           </div>
           <div className="ml-auto">
           <button
