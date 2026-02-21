@@ -130,51 +130,61 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-8" ref={containerRef}>
-      <div className="glass-card overflow-hidden pr-0" style={{ borderRadius: '99px' }}>
+      <div className="glass-card rounded-lg p-4">
+        <h2 className="flex items-center gap-2 text-[14px] text-white mb-1">
+          <span className="info-emoji">🐶</span>
+          <span>Darf Kalle das essen?</span>
+        </h2>
+        <p className="text-[12px] text-white/40 mb-4 leading-relaxed">
+          Kalle hat Harnsteine und muss besonders aufpassen, was er isst. Falsches Futter kann zu neuen Steinen führen und eine Operation nötig machen. Hier kannst du prüfen, ob ein Lebensmittel für ihn geeignet ist.
+        </p>
+
+        <div className="overflow-hidden" style={{ borderRadius: '99px', background: 'rgba(255,255,255,0.04)' }}>
           <div className="flex items-center">
             <div className="flex items-center gap-2 pl-4 flex-1 min-w-0">
-            <span className="text-[18px] shrink-0">🐶</span>
-            <span className="text-[13px] text-white shrink-0">Kann ich</span>
-            <div
-              className="flex-1 min-w-0 bg-white/[0.03] rounded-none px-3 py-2 self-stretch flex items-center cursor-text"
-              onClick={() => inputRef.current?.focus()}
-            >
-              <div className="relative">
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => { setQuery(e.target.value); setResult(null); }}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  onKeyDown={handleKeyDown}
-                  className="bg-transparent text-[13px] text-white w-full outline-none placeholder-transparent text-center"
-                  style={{ caretColor: 'white' }}
-                />
-                {!query && (
-                  <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
-                    {placeholderText}
-                    <span className="animate-pulse ml-[1px]">|</span>
-                  </span>
-                )}
+              <span className="text-[13px] text-white shrink-0">Kann ich</span>
+              <div
+                className="flex-1 min-w-0 bg-white/[0.03] rounded-none px-3 py-2 self-stretch flex items-center cursor-text"
+                onClick={() => inputRef.current?.focus()}
+              >
+                <div className="relative w-full">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => { setQuery(e.target.value); setResult(null); }}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    onKeyDown={handleKeyDown}
+                    className="bg-transparent text-[13px] text-white w-full outline-none placeholder-transparent text-center"
+                    style={{ caretColor: 'white' }}
+                  />
+                  {!query && (
+                    <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
+                      {placeholderText}
+                      <span className="animate-pulse ml-[1px]">|</span>
+                    </span>
+                  )}
+                </div>
               </div>
+              <span className="text-[13px] text-white shrink-0 pr-3">essen?</span>
             </div>
-            <span className="text-[13px] text-white shrink-0 pr-3">essen?</span>
+            <button
+              onClick={checkFood}
+              disabled={loading || !query.trim()}
+              className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] cursor-pointer"
+            >
+              {loading ? (
+                <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Search size={18} className="text-white" />
+              )}
+            </button>
           </div>
-          <button
-            onClick={checkFood}
-            disabled={loading || !query.trim()}
-            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[42px] h-[42px] cursor-pointer"
-          >
-            {loading ? (
-              <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <Search size={18} className="text-white" />
-            )}
-          </button>
         </div>
+
         {result && config && (
-          <div className="px-3 pb-3">
+          <div className="mt-3">
             <div className={`${config.bg} rounded-lg p-3`}>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[16px]">{config.emoji}</span>
