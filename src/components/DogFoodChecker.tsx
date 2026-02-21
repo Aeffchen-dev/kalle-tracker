@@ -113,8 +113,7 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8">
       <div className="glass-card rounded-lg overflow-hidden">
-        {/* Search row: 🐶 Kann ich [search bar] essen? [button] */}
-        <div className="flex items-center gap-2 p-3">
+        <div className="flex items-center gap-2 px-3 py-3">
           <span className="text-[18px] shrink-0">🐶</span>
           <span className="text-[13px] text-white/60 shrink-0">Kann ich</span>
           <div
@@ -145,19 +144,17 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="p-2 rounded-full bg-black active:scale-95 transition-transform disabled:opacity-30 shrink-0"
+            className="shrink-0 active:scale-95 transition-transform disabled:opacity-30"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Search size={16} className="text-white" />
+              <Search size={18} className="text-white/60" />
             )}
           </button>
         </div>
-
-        {/* Result */}
         {result && config && (
-          <div className={`px-3 pb-3`}>
+          <div className="px-3 pb-3">
             <div className={`${config.bg} rounded-lg p-3`}>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[16px]">{config.emoji}</span>
