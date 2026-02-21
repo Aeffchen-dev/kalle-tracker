@@ -1099,6 +1099,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           .map(e => ({ hour: new Date(e.time).getHours() + new Date(e.time).getMinutes() / 60, isPoop: e.type === 'stuhlgang' }))
                           .sort((a, b) => a.hour - b.hour);
                         
+                        
                         if (dayEvents.length > 0) {
                           // Cluster real events within 30-minute windows
                           const realClusters: { hours: number[]; hasPoop: boolean }[] = [];
