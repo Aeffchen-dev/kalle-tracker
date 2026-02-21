@@ -1199,6 +1199,14 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             typeStr = 'Stuhlgang';
             valueStr = '-';
             break;
+          case 'wurmkur':
+            typeStr = 'Wurmkur';
+            valueStr = '-';
+            break;
+          case 'parasiten':
+            typeStr = 'Parasiten Tablette';
+            valueStr = '-';
+            break;
           default:
             typeStr = event.type;
             valueStr = '-';
