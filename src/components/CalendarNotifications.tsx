@@ -3,6 +3,9 @@ import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 import { format } from 'date-fns';
 import { Check } from 'lucide-react';
 
+// DEBUG: Override "today" for testing – set to null to use real date
+const DEBUG_TODAY: Date | null = new Date('2026-03-02T10:00:00');
+
 const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur'];
 
 const isMedicalEvent = (summary: string): boolean =>
@@ -21,7 +24,7 @@ const CalendarNotifications: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       const allEvents = await fetchICalEvents();
-      const today = new Date();
+      const today = DEBUG_TODAY || new Date();
       const todayEvents = getICalEventsForDate(allEvents, today);
       setEvents(todayEvents);
 
