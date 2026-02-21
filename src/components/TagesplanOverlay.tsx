@@ -778,7 +778,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     return (
                       <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center gap-3 py-3 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center gap-3 py-2 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleSnackClick(snack.id)}
                           onTouchStart={() => handleSnackLongPressStart(snack.id)}
                           onTouchMove={handleSnackLongPressMove}
@@ -822,298 +822,65 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       </div>
                     );
                   })}
-                </div>
-
-                {/* Add snack form */}
-                {showAddSnack ? (
-                  <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
-                    <input
-                      type="url"
-                      placeholder="Link einfügen"
-                      value={newSnackLink}
-                      onChange={(e) => setNewSnackLink(e.target.value)}
-                      onBlur={handleSnackLinkBlur}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                      autoFocus
-                    />
-                    {isFetchingMeta && (
-                      <span className="text-[10px] text-white/40">Lade Infos...</span>
-                    )}
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      value={newSnackName}
-                      onChange={(e) => setNewSnackName(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Shop (z.B. zooplus)"
-                      value={newSnackShop}
-                      onChange={(e) => setNewSnackShop(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleAddSnack}
-                        className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
-                      >
-                        Speichern
-                      </button>
-                      <button
-                        onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
-                        className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
-                      >
-                        Abbrechen
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setShowAddSnack(true)}
-                    className="pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
-                  >
-                    <Plus size={14} />
-                    <span>Snack hinzufügen</span>
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Emergency Section */}
-            <div className="mb-8">
-              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
-              
-              {/* Tierarztpraxis Sonnenallee */}
-              <div className="glass-card rounded-lg p-4 mb-2">
-                <a 
-                  href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
-                >
-                  <span>Tierarztpraxis Sonnenallee</span>
-                  <ExternalLink size={14} className="text-white/60" />
-                </a>
-                <a 
-                  href="tel:+49306814455"
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
-                >
-                  <Phone size={14} className="text-white/60" />
-                  <span>Anrufen</span>
-                </a>
-              </div>
-
-              {/* Tierklinik Bärenwiese */}
-              <div className="glass-card rounded-lg p-4">
-                <a 
-                  href="https://tierarzt-baerenwiese.de/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
-                >
-                  <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
-                  <ExternalLink size={14} className="text-white/60" />
-                </a>
-                <a 
-                  href="tel:+493023362627"
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors mb-3"
-                >
-                  <Phone size={14} className="text-white/60" />
-                  <span>Anrufen</span>
-                </a>
-                <a 
-                  href="http://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
-                  onClick={(e) => {
-                    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                    if (!isIOS) {
-                      e.preventDefault();
-                      window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
-                    }
-                  }}
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
-                >
-                  <MapPin size={14} className="text-white/60" />
-                  <span>Wegbeschreibung</span>
-                </a>
-                <div className="flex items-start justify-between mt-2 ml-6">
-                  <a 
-                    href="http://maps.apple.com/?q=Uhlandstraße+151,+10719+Berlin"
-                    onClick={(e) => {
-                      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                      if (!isIOS) {
-                        e.preventDefault();
-                        window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
-                      }
-                    }}
-                    className="text-[12px] text-white/60 hover:text-white transition-colors"
-                  >
-                    Uhlandstraße 151<br />
-                    10719 Berlin
-                  </a>
-                  <button
-                    onClick={copyAddress}
-                    className="p-1 text-white/60 hover:text-white transition-colors"
-                    title="Adresse kopieren"
-                  >
-                    {addressCopied ? <Check size={14} /> : <Copy size={14} />}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Puberty Phase - only shown during puberty (6-30 months) */}
-            {(() => {
-              const settings = getCachedSettings();
-              const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
-              const now = new Date();
-              const ageInMonths = differenceInMonths(now, birthday);
-              if (ageInMonths < 6 || ageInMonths > 30) return null;
-              
-              const phases = [
-                { min: 6, max: 8, name: 'Vorpubertät', characteristics: 'In dieser Phase beginnen die ersten hormonellen Veränderungen. Kalle wird merklich neugieriger, zeigt erste Anzeichen von Selbstständigkeit und testet vorsichtig seine Grenzen aus. Er könnte anfangen, bekannte Regeln in Frage zu stellen und sich von vertrauten Personen etwas mehr zu lösen.', needs: ['Sichere Umgebung zum Erkunden bieten', 'Positive Verstärkung bei jedem Erfolg', 'Sanfte, aber klare Konsequenz', 'Neue Situationen behutsam einführen'] },
-                { min: 8, max: 12, name: 'Frühe Pubertät', characteristics: 'Kalle zeigt möglicherweise erste Unsicherheiten und Trotzverhalten. Selektives Hören wird häufiger – Kommandos, die vorher gut saßen, werden plötzlich ignoriert. Erste Rangordnungstests mit anderen Hunden und auch gegenüber den Bezugspersonen können auftreten.', needs: ['Klare, verlässliche Regeln aufstellen', 'Geduld – er testet nicht aus Bosheit', 'Viel Lob für gewünschtes Verhalten', 'Kurze, motivierende Trainingseinheiten'] },
-                { min: 12, max: 18, name: 'Hochphase', characteristics: 'Das ist die intensivste Phase der Pubertät. Kalle kann unberechenbar auf Reize reagieren, die ihn vorher nicht gestört haben. Bekannte Kommandos werden scheinbar „vergessen", die Impulskontrolle ist eingeschränkt und Umweltreize wie andere Hunde, Geräusche oder Wild können extrem ablenkend wirken.', needs: ['Maximale Konsequenz, dabei ruhig bleiben', 'Trainingseinheiten kurz und erfolgreich halten', 'Tägliche Routine unbedingt beibehalten', 'Keine neuen, überfordernden Situationen', 'Rückschritte sind normal – nicht stressen'] },
-                { min: 18, max: 24, name: 'Späte Pubertät', characteristics: 'Kalle wird langsam ruhiger und ausgeglichener. Das in den Monaten zuvor Gelernte festigt sich wieder und wird zuverlässiger abrufbar. Die erwachsene Persönlichkeit beginnt sich herauszubilden – man kann erste Züge seines endgültigen Charakters erkennen.', needs: ['Weiterhin konsequent bleiben', 'Training vertiefen und anspruchsvoller gestalten', 'Schrittweise mehr Freiheiten gewähren', 'Wachsende Zuverlässigkeit belohnen'] },
-                { min: 24, max: 30, name: 'Junghund-Stabilisierung', characteristics: 'Die letzte Reifephase: Kalle findet sein inneres Gleichgewicht. Sein Verhalten und Charakter stabilisieren sich zunehmend. Reaktionen werden vorhersehbarer, die Bindung zu seinen Bezugspersonen vertieft sich und er zeigt immer mehr Anzeichen eines erwachsenen, souveränen Hundes.', needs: ['Vertrauen weiter stärken', 'Routine festigen', 'Neue Herausforderungen anbieten', 'Die Beziehung genießen – das Schwierigste liegt hinter euch!'] },
-              ];
-              
-              const currentPhaseIndex = phases.findIndex(p => ageInMonths >= p.min && ageInMonths < p.max);
-              const displayIndex = selectedPubertyPhase !== null ? selectedPubertyPhase : (currentPhaseIndex >= 0 ? currentPhaseIndex : phases.length - 1);
-              const phase = phases[displayIndex];
-              const isCurrentPhase = displayIndex === currentPhaseIndex;
-
-              return (
-                <div className="mb-8">
-                  <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
-                  <div 
-                    className="glass-card rounded-lg overflow-hidden"
-                  >
-                    {/* Header with phase name and progress */}
-                    <div className="p-4 pb-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-[12px] text-white">{phase.name}</span>
-                        <span className="text-[12px] text-white/60">{phase.min}–{phase.max} Monate</span>
-                      </div>
-                      
-                      {/* Clickable progress bar */}
-                      <div className="relative mb-4">
-                        <div className="flex h-2 rounded-full overflow-hidden bg-white/10">
-                          {phases.map((p, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                              className={`flex-1 relative z-10 transition-colors ${
-                                i <= currentPhaseIndex ? 'bg-white' : 'bg-transparent'
-                              } ${i === currentPhaseIndex ? 'rounded-r-full' : ''} ${i !== 0 && i <= currentPhaseIndex ? 'border-l border-white/15' : ''}`}
-                            />
-                          ))}
-                        </div>
-                        {/* Phase labels */}
-                        <div className="flex mt-1.5 gap-1">
-                          {phases.map((p, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setSelectedPubertyPhase(i === currentPhaseIndex && selectedPubertyPhase === null ? null : i === selectedPubertyPhase ? null : i)}
-                              className={`flex-1 text-[9px] text-center py-1 rounded-full transition-colors ${
-                                i === displayIndex ? 'bg-white/20 text-white' :
-                                i <= currentPhaseIndex ? 'text-white/50 hover:bg-white/10' : 'text-white/20 hover:bg-white/10'
-                              }`}
-                            >
-                              {`${p.min}–${p.max}M`}
-                            </button>
-                          ))}
-                        </div>
+                  {/* Add snack row */}
+                  {showAddSnack ? (
+                    <div className="py-2 flex flex-col gap-2">
+                      <input
+                        type="url"
+                        placeholder="Link einfügen"
+                        value={newSnackLink}
+                        onChange={(e) => setNewSnackLink(e.target.value)}
+                        onBlur={handleSnackLinkBlur}
+                        className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                        autoFocus
+                      />
+                      {isFetchingMeta && (
+                        <span className="text-[10px] text-white/40">Lade Infos...</span>
+                      )}
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        value={newSnackName}
+                        onChange={(e) => setNewSnackName(e.target.value)}
+                        className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Shop (z.B. zooplus)"
+                        value={newSnackShop}
+                        onChange={(e) => setNewSnackShop(e.target.value)}
+                        className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleAddSnack}
+                          className="flex-1 bg-white/20 text-white text-[12px] py-2 rounded hover:bg-white/30 transition-colors"
+                        >
+                          Speichern
+                        </button>
+                        <button
+                          onClick={() => { setShowAddSnack(false); setNewSnackName(''); setNewSnackShop(''); setNewSnackLink(''); }}
+                          className="text-white/40 text-[12px] px-3 py-2 hover:text-white/60 transition-colors"
+                        >
+                          Abbrechen
+                        </button>
                       </div>
                     </div>
-                    
-                    {/* Swipeable content area */}
+                  ) : (
                     <div
-                      className="relative overflow-hidden"
-                      onTouchStart={(e) => {
-                        const el = e.currentTarget as any;
-                        el._swipeStartX = e.touches[0].clientX;
-                        el._swipeDeltaX = 0;
-                      }}
-                      onTouchMove={(e) => {
-                        const el = e.currentTarget as any;
-                        if (el._swipeStartX === undefined) return;
-                        const deltaX = e.touches[0].clientX - el._swipeStartX;
-                        el._swipeDeltaX = deltaX;
-                        const contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
-                        if (contentEl) {
-                          contentEl.style.transform = `translateX(${deltaX * 0.5}px)`;
-                        }
-                      }}
-                      onTouchEnd={(e) => {
-                        const el = e.currentTarget as any;
-                        const deltaX = el._swipeDeltaX || 0;
-                        const contentEl = e.currentTarget.querySelector('[data-phase-content]') as HTMLElement;
-                        
-                        const threshold = 60;
-                        let nextIdx = displayIndex;
-                        if (deltaX < -threshold) {
-                          nextIdx = Math.min(displayIndex + 1, phases.length - 1);
-                        } else if (deltaX > threshold) {
-                          nextIdx = Math.max(displayIndex - 1, 0);
-                        }
-                        
-                        if (nextIdx !== displayIndex && contentEl) {
-                          // Slide out in swipe direction
-                          const direction = deltaX < 0 ? -1 : 1;
-                          contentEl.style.transition = 'transform 0.15s ease-out';
-                          contentEl.style.transform = `translateX(${direction * 300}px)`;
-                          setTimeout(() => {
-                            setSelectedPubertyPhase(nextIdx === currentPhaseIndex ? null : nextIdx);
-                            if (contentEl) {
-                              // Reset instantly off-screen on opposite side, then slide in
-                              contentEl.style.transition = 'none';
-                              contentEl.style.transform = `translateX(${-direction * 300}px)`;
-                              requestAnimationFrame(() => {
-                                contentEl.style.transition = 'transform 0.15s ease-out';
-                                contentEl.style.transform = 'translateX(0)';
-                              });
-                            }
-                          }, 150);
-                        } else if (contentEl) {
-                          contentEl.style.transition = 'transform 0.15s ease-out';
-                          contentEl.style.transform = 'translateX(0)';
-                        }
-                        
-                        setTimeout(() => {
-                          if (contentEl) contentEl.style.transition = '';
-                        }, 400);
-                        
-                        el._swipeStartX = undefined;
-                        el._swipeDeltaX = 0;
-                      }}
+                      onClick={() => setShowAddSnack(true)}
+                      className="flex items-center gap-3 py-2 cursor-pointer"
                     >
-                      <div data-phase-content className="px-4 pb-4" style={{ willChange: 'transform' }}>
-                        {!isCurrentPhase && (
-                          <p className="text-[12px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
-                        )}
-                        
-                        {/* Characteristics */}
-                        <p className="text-[12px] text-white/60 mb-4">{phase.characteristics}</p>
-                        
-                        {/* Needs as bullet points */}
-                        <div className="text-[12px] text-white/60">
-                          <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
-                          <ul className="mt-2 space-y-1">
-                            {phase.needs.map((need, i) => (
-                              <li key={i} className="flex gap-2">
-                                <span className="text-white/30">•</span>
-                                <span>{need}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
                       </div>
+                      <span className="text-[12px] text-white/40">Link hinzufügen</span>
                     </div>
-                  </div>
+                  )}
                 </div>
-              );
-            })()}
+              </div>
+            </div>
+
 
             {/* Training Section */}
             {(() => {
