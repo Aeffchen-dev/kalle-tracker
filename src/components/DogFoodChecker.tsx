@@ -136,7 +136,7 @@ const DogFoodChecker = () => {
             <span className="text-[18px] shrink-0">🐶</span>
             <span className="text-[13px] text-white shrink-0">Kann ich</span>
             <div
-              className="flex-1 min-w-0 bg-white/[0.06] rounded-sm px-3 py-1 cursor-text"
+              className="flex-1 min-w-0 bg-white/[0.06] rounded-none px-3 self-stretch flex items-center cursor-text"
               onClick={() => inputRef.current?.focus()}
             >
               <div className="relative">
