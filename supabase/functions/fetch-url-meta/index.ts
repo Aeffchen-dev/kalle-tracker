@@ -1,0 +1,78 @@
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { url } = await req.json();
+    if (!url) {
+      return new Response(JSON.stringify({ error: 'URL required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    let formattedUrl = url.trim();
+    if (!formattedUrl.startsWith('http')) formattedUrl = `https://${formattedUrl}`;
+
+    const response = await fetch(formattedUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; MetaFetcher/1.0)',
+        'Accept': 'text/html',
+      },
+    });
+
+    const html = await response.text();
+
+    // Extract OG title or <title>
+    const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)?.[1]
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i)?.[1]
+      || html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]
+      || '';
+
+    // Extract OG image
+    const ogImage = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)?.[1]
+      || '';
+
+    // Extract OG site name or derive from hostname
+    const ogSiteName = html.match(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i)?.[1]
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i)?.[1]
+      || '';
+
+    let shop = ogSiteName;
+    if (!shop) {
+      try {
+        const hostname = new URL(formattedUrl).hostname.replace(/^www\./, '');
+        // Capitalize first letter of domain name (before TLD)
+        const parts = hostname.split('.');
+        shop = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+      } catch { /* ignore */ }
+    }
+
+    // Clean up title - remove shop name suffix if present
+    let name = ogTitle.trim();
+    if (shop && name.endsWith(` - ${shop}`)) {
+      name = name.replace(` - ${shop}`, '');
+    }
+    if (shop && name.endsWith(` | ${shop}`)) {
+      name = name.replace(` | ${shop}`, '');
+    }
+
+    return new Response(
+      JSON.stringify({ name, shop, image: ogImage }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  } catch (error) {
+    console.error('Error fetching URL metadata:', error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to fetch metadata' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+    );
+  }
+});
