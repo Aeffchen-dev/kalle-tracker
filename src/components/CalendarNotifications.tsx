@@ -186,9 +186,9 @@ const CalendarNotifications: React.FC = () => {
               style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
             >
               {/* Left emoji */}
-              <span className="text-[20px] shrink-0">
-                {medical ? getMedicalEmoji(evt.summary) : '📅'}
-              </span>
+              {!medical && (
+                <span className="text-[20px] shrink-0">📅</span>
+              )}
 
               {/* Content */}
               <div className="flex-1 min-w-0">
@@ -196,13 +196,17 @@ const CalendarNotifications: React.FC = () => {
                   <span className="text-[14px] text-black truncate">
                     {evt.summary}
                   </span>
-                  <span className="text-[11px] text-black/50 flex-shrink-0">
-                    Heute
-                  </span>
+                  {!medical && (
+                    <span className="text-[11px] text-black/50 flex-shrink-0">
+                      Heute
+                    </span>
+                  )}
                 </div>
-                <p className="text-[14px] text-black/70 truncate">
-                  {getTimeLabel(evt)}
-                </p>
+                {!medical && (
+                  <p className="text-[14px] text-black/70 truncate">
+                    {getTimeLabel(evt)}
+                  </p>
+                )}
               </div>
 
               {/* Medical: checkmark button */}
@@ -211,7 +215,7 @@ const CalendarNotifications: React.FC = () => {
                   onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
                   className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-1 flex items-center justify-center overflow-hidden"
                   style={{
-                    border: '2px solid black',
+                    border: '1px solid black',
                     backgroundColor: isChecked ? 'black' : 'transparent',
                     transition: 'background-color 0.3s ease',
                   }}
