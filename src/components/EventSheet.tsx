@@ -149,7 +149,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
         <DrawerHeader className="pb-4">
           <DrawerTitle className="text-center text-[14px] text-white">Eintrag hinzufügen</DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 pb-4 space-y-4 overflow-hidden">
+        <div className="px-4 space-y-4 overflow-hidden" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => toggleType('pipi')}
