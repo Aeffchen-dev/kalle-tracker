@@ -113,14 +113,17 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8">
       <div className="glass-card rounded-lg overflow-hidden">
-        {/* Search bar */}
-        <div
-          className="flex items-center gap-3 p-3 cursor-text"
-          onClick={() => inputRef.current?.focus()}
-        >
-          <span className="text-[16px] shrink-0">🐶</span>
-          <div className="flex-1 flex items-center gap-1 min-w-0">
-            <span className="text-[13px] text-white/80 shrink-0">Kann ich</span>
+        {/* Label */}
+        <div className="px-3 pt-3 pb-1">
+          <span className="text-[13px] text-white/80">🐶 Kann ich das essen?</span>
+        </div>
+        {/* Search input */}
+        <div className="px-3 pb-3">
+          <div
+            className="flex items-center gap-2 bg-white/[0.08] rounded-lg px-3 py-2.5 cursor-text"
+            onClick={() => inputRef.current?.focus()}
+          >
+            <Search size={16} className="text-white/30 shrink-0" />
             <div className="relative flex-1 min-w-0">
               <input
                 ref={inputRef}
@@ -134,25 +137,26 @@ const DogFoodChecker = () => {
                 style={{ caretColor: 'white' }}
               />
               {!query && (
-                <span className="absolute inset-0 text-[13px] text-white/40 pointer-events-none flex items-center">
+                <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center">
                   {placeholderText}
                   <span className="animate-pulse ml-[1px]">|</span>
                 </span>
               )}
             </div>
-            <span className="text-[13px] text-white/80 shrink-0">essen?</span>
-          </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); checkFood(); }}
-            disabled={loading || !query.trim()}
-            className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors disabled:opacity-30"
-          >
-            {loading ? (
-              <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <Search size={16} className="text-white/70" />
+            {query.trim() && (
+              <button
+                onClick={(e) => { e.stopPropagation(); checkFood(); }}
+                disabled={loading}
+                className="text-[12px] text-white/60 hover:text-white transition-colors disabled:opacity-30 shrink-0"
+              >
+                {loading ? (
+                  <div className="w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  'Prüfen'
+                )}
+              </button>
             )}
-          </button>
+          </div>
         </div>
 
         {/* Result */}
