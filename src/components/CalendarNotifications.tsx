@@ -202,52 +202,52 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
               onClick={() => handleCardClick(key, evt)}
               style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
             >
-              {/* Left emoji */}
-              <span className="text-[20px] shrink-0">
-                {medical ? getMedicalEmoji(evt.summary) : '📅'}
-              </span>
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <span className="text-[14px] text-black truncate">
-                    {evt.summary}
+              {medical ? (
+                <>
+                  {/* Medical: emoji + checkmark only */}
+                  <span className="text-[20px] shrink-0">
+                    {getMedicalEmoji(evt.summary)}
                   </span>
-                  {!medical && (
-                    <span className="text-[11px] text-black/50 flex-shrink-0">
-                      Heute
-                    </span>
-                  )}
-                </div>
-                {!medical && (
-                  <p className="text-[14px] text-black/70 truncate">
-                    {getTimeLabel(evt)}
-                  </p>
-                )}
-              </div>
-
-              {/* Medical: checkmark button */}
-              {medical && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
-                  className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-1 flex items-center justify-center overflow-hidden"
-                  style={{
-                    border: '2px solid black',
-                    backgroundColor: isChecked ? 'black' : 'transparent',
-                    transition: 'background-color 0.3s ease',
-                  }}
-                >
-                  <Check
-                    className="w-[14px] h-[14px]"
+                  <div className="flex-1" />
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
+                    className="relative w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center overflow-hidden"
                     style={{
-                      color: 'white',
-                      opacity: isChecked ? 1 : 0,
-                      transform: isChecked ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-45deg)',
-                      transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      border: '1.5px solid black',
+                      backgroundColor: isChecked ? 'black' : 'transparent',
+                      transition: 'background-color 0.3s ease',
                     }}
-                    strokeWidth={3}
-                  />
-                </button>
+                  >
+                    <Check
+                      className="w-[14px] h-[14px]"
+                      style={{
+                        color: 'white',
+                        opacity: isChecked ? 1 : 0,
+                        transform: isChecked ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-45deg)',
+                        transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      }}
+                      strokeWidth={3}
+                    />
+                  </button>
+                </>
+              ) : (
+                <>
+                  {/* Calendar: emoji + content */}
+                  <span className="text-[20px] shrink-0">📅</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="text-[14px] text-black truncate">
+                        {evt.summary}
+                      </span>
+                      <span className="text-[11px] text-black/50 flex-shrink-0">
+                        Heute
+                      </span>
+                    </div>
+                    <p className="text-[14px] text-black/70 truncate">
+                      {getTimeLabel(evt)}
+                    </p>
+                  </div>
+                </>
               )}
             </div>
 
