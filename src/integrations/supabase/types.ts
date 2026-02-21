@@ -101,6 +101,33 @@ export type Database = {
         }
         Relationships: []
       }
+      snacks: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          link: string | null
+          name: string
+          shop_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          name: string
+          shop_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          name?: string
+          shop_name?: string | null
+        }
+        Relationships: []
+      }
       tagesplan: {
         Row: {
           id: string
