@@ -47,6 +47,33 @@ export type Database = {
         }
         Relationships: []
       }
+      medicines: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          link: string | null
+          name: string
+          shop_name: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          name: string
+          shop_name?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          name?: string
+          shop_name?: string | null
+        }
+        Relationships: []
+      }
       planned_walks: {
         Row: {
           created_at: string
