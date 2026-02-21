@@ -158,7 +158,7 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/20" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.6)' }}>
+        <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/20" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.3)' }}>
           <div className="flex items-center gap-2 flex-1">
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-white/90 shrink-0">Darf Kalle</span>
@@ -189,7 +189,7 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 rounded-full bg-white/20 border border-white/30 active:scale-95 transition-all flex items-center justify-center w-[36px] h-[36px] cursor-pointer"
+            className="shrink-0 rounded-full bg-black border border-black active:scale-95 transition-all flex items-center justify-center w-[36px] h-[36px] cursor-pointer shadow-md"
           >
             {loading ? (
               <div className="w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
