@@ -797,7 +797,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               <span className="text-[14px]">🦴</span>
                             </div>
                           )}
-                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{snack.name}</span>
+                          <span className="text-[12px] text-white/40 truncate min-w-0 flex-1">{snack.name}</span>
                           <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
                           {snack.link && (
                             <a
