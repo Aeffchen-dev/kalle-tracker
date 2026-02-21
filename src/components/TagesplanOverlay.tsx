@@ -931,7 +931,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </div>
 
             {/* Emergency Section */}
-            <div className="mb-8">
+            <div className="mb-2">
               <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
@@ -1014,7 +1014,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Hausapotheke Section */}
             <div className="mb-8">
-              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">💊</span> <span>Hausapotheke</span></h2>
               <div className="glass-card rounded-lg p-4">
                 <h3 className="text-[13px] text-white/90 mb-4">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
