@@ -1120,14 +1120,34 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             isEstimate: false,
                           }));
                           
-                          // Remove estimated slots that overlap with real ones (within 1.5h)
-                          const filtered = slots.filter(est => {
-                            return !realSlots.some(real => Math.abs(real.avgHour - est.avgHour) <= 4);
-                          });
+                          // Match each real slot to the nearest estimate (within ±2h) — 1:1 replacement
+                          const usedEstimates = new Set<number>();
+                          const usedReals = new Set<number>();
                           
-                          // Merge: keep non-overlapping estimates + all real slots
+                          // For each estimate, find the closest real slot
+                          for (let ei = 0; ei < slots.length; ei++) {
+                            if (!slots[ei].isEstimate) continue;
+                            let bestRi = -1;
+                            let bestDist = Infinity;
+                            for (let ri = 0; ri < realSlots.length; ri++) {
+                              if (usedReals.has(ri)) continue;
+                              const dist = Math.abs(realSlots[ri].avgHour - slots[ei].avgHour);
+                              if (dist <= 2 && dist < bestDist) {
+                                bestDist = dist;
+                                bestRi = ri;
+                              }
+                            }
+                            if (bestRi >= 0) {
+                              usedEstimates.add(ei);
+                              usedReals.add(bestRi);
+                            }
+                          }
+                          
+                          // Keep unmatched estimates, drop matched ones, add all real slots
+                          const kept = slots.filter((_, i) => !usedEstimates.has(i));
+                          const extraReals = realSlots.filter((_, i) => !usedReals.has(i));
                           slots.length = 0;
-                          slots.push(...filtered, ...realSlots);
+                          slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
                           slots.sort((a, b) => a.avgHour - b.avgHour);
                         }
                       }
