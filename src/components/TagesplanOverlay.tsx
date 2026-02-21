@@ -1087,22 +1087,22 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         }
                       }
                       
-                      // For today: replace estimated slots with real entries where they overlap
-                      if (isToday) {
-                        const todayStart = new Date(dayDate);
-                        todayStart.setHours(0, 0, 0, 0);
-                        const todayEnd = new Date(dayDate);
-                        todayEnd.setHours(23, 59, 59, 999);
+                      // Replace estimated slots with real entries for any day that has logged data
+                      {
+                        const dayStart = new Date(dayDate);
+                        dayStart.setHours(0, 0, 0, 0);
+                        const dayEnd = new Date(dayDate);
+                        dayEnd.setHours(23, 59, 59, 999);
                         
-                        const todayEvents = appEvents
-                          .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= todayStart && new Date(e.time) <= todayEnd)
+                        const dayEvents = appEvents
+                          .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= dayStart && new Date(e.time) <= dayEnd)
                           .map(e => ({ hour: new Date(e.time).getHours() + new Date(e.time).getMinutes() / 60, isPoop: e.type === 'stuhlgang' }))
                           .sort((a, b) => a.hour - b.hour);
                         
-                        if (todayEvents.length > 0) {
+                        if (dayEvents.length > 0) {
                           // Cluster real events within 30-minute windows
                           const realClusters: { hours: number[]; hasPoop: boolean }[] = [];
-                          for (const evt of todayEvents) {
+                          for (const evt of dayEvents) {
                             const last = realClusters[realClusters.length - 1];
                             if (last && evt.hour - last.hours[last.hours.length - 1] <= 0.5) {
                               last.hours.push(evt.hour);
