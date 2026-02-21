@@ -12,6 +12,12 @@ const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur'];
 const isMedicalEvent = (summary: string): boolean =>
   MEDICAL_KEYWORDS.some(kw => summary.toLowerCase().includes(kw.toLowerCase()));
 
+const getMedicalEmoji = (summary: string): string => {
+  if (summary.toLowerCase().includes('wurmkur')) return '🪱';
+  if (summary.toLowerCase().includes('parasiten')) return '🦟';
+  return '💊';
+};
+
 const DISMISSED_KEY = 'kalle_dismissed_medical_';
 
 const getDismissKey = (uid: string, date: string) => `${DISMISSED_KEY}${uid}_${date}`;
@@ -26,13 +32,11 @@ const CalendarNotifications: React.FC = () => {
     const load = async () => {
       const allEvents = await fetchICalEvents();
       const today = DEBUG_TODAY || new Date();
-      // In debug mode, show all events; otherwise filter to today
       const todayEvents = DEBUG_SHOW_ALL
         ? allEvents.filter((e, i, arr) => arr.findIndex(x => x.summary === e.summary) === i)
         : getICalEventsForDate(allEvents, today);
       setEvents(todayEvents);
 
-      // Load dismissed medical events from localStorage
       const todayStr = format(today, 'yyyy-MM-dd');
       const dismissedSet = new Set<string>();
       todayEvents.forEach(evt => {
@@ -48,11 +52,9 @@ const CalendarNotifications: React.FC = () => {
     load();
   }, []);
 
-  // Filter: skip "hat Kalle" ownership events, skip dismissed medical
   const visibleEvents = events.filter(evt => {
     if (/hat\s+Kalle/i.test(evt.summary)) return false;
     if (isMedicalEvent(evt.summary) && dismissed.has(evt.uid)) return false;
-    if (exiting.has(evt.uid)) return true; // keep during exit animation
     return true;
   });
 
@@ -62,22 +64,29 @@ const CalendarNotifications: React.FC = () => {
     if (checking.has(evt.uid)) return;
     setChecking(prev => new Set([...prev, evt.uid]));
 
-    // After fill animation (400ms), start exit
+    // After check animation, start exit
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
-      // After exit animation (400ms), dismiss
       setTimeout(() => {
-        const todayStr = format(new Date(), 'yyyy-MM-dd');
+        const todayStr = format(DEBUG_TODAY || new Date(), 'yyyy-MM-dd');
         localStorage.setItem(getDismissKey(evt.uid, todayStr), '1');
         setDismissed(prev => new Set([...prev, evt.uid]));
         setChecking(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
         setExiting(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
-      }, 400);
+      }, 600);
     }, 600);
   };
 
+  const getTimeLabel = (evt: ICalEvent): string => {
+    const d = new Date(evt.dtstart);
+    const h = d.getHours();
+    const m = d.getMinutes();
+    if (h === 0 && m === 0) return 'Ganztägig';
+    return `${h}:${m.toString().padStart(2, '0')} Uhr`;
+  };
+
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full space-y-2">
       {visibleEvents.map(evt => {
         const medical = isMedicalEvent(evt.summary);
         const isChecked = checking.has(evt.uid);
@@ -86,43 +95,54 @@ const CalendarNotifications: React.FC = () => {
         return (
           <div
             key={`${evt.uid}-${evt.dtstart}`}
-            className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 px-4 py-3 flex items-center justify-between transition-all duration-400 ${isExitingEvt ? 'opacity-0 scale-95' : 'animate-fade-in-up opacity-100'}`}
+            className={`relative flex w-full items-stretch overflow-hidden rounded-[16px] transition-all duration-500 ${isExitingEvt ? 'opacity-0 scale-95 max-h-0' : 'opacity-100 max-h-[200px] animate-fade-in-up'}`}
             style={{ animationFillMode: 'backwards' }}
           >
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] text-black truncate">{evt.summary}</p>
-              {!medical && evt.dtstart && (
-                <p className="text-[12px] text-black/50">
-                  {(() => {
-                    const d = new Date(evt.dtstart);
-                    const h = d.getHours();
-                    const m = d.getMinutes();
-                    if (h === 0 && m === 0) return 'Ganztägig';
-                    return `${h}:${m.toString().padStart(2, '0')} Uhr`;
-                  })()}
+            <div className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1">
+              {/* Left emoji */}
+              <span className="text-[20px] shrink-0">
+                {medical ? getMedicalEmoji(evt.summary) : '📅'}
+              </span>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="text-[14px] text-black truncate">
+                    {evt.summary}
+                  </span>
+                  <span className="text-[11px] text-black/50 flex-shrink-0">
+                    Heute
+                  </span>
+                </div>
+                <p className="text-[14px] text-black/70 truncate">
+                  {getTimeLabel(evt)}
                 </p>
+              </div>
+
+              {/* Medical: checkmark button */}
+              {medical && (
+                <button
+                  onClick={() => handleCheck(evt)}
+                  className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-1 flex items-center justify-center overflow-hidden"
+                  style={{
+                    border: '2px solid black',
+                    backgroundColor: isChecked ? 'black' : 'transparent',
+                    transition: 'background-color 0.3s ease',
+                  }}
+                >
+                  <Check
+                    className="w-[14px] h-[14px]"
+                    style={{
+                      color: 'white',
+                      opacity: isChecked ? 1 : 0,
+                      transform: isChecked ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-45deg)',
+                      transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                    }}
+                    strokeWidth={3}
+                  />
+                </button>
               )}
             </div>
-            {medical && (
-              <button
-                onClick={() => handleCheck(evt)}
-                className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-3 flex items-center justify-center transition-all duration-300"
-                style={{
-                  border: '2px solid black',
-                  backgroundColor: isChecked ? 'black' : 'transparent',
-                }}
-              >
-                <Check
-                  className="w-[14px] h-[14px] transition-all duration-300"
-                  style={{
-                    color: 'white',
-                    opacity: isChecked ? 1 : 0,
-                    transform: isChecked ? 'scale(1)' : 'scale(0.3)',
-                  }}
-                  strokeWidth={3}
-                />
-              </button>
-            )}
           </div>
         );
       })}
