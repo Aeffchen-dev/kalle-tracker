@@ -1052,39 +1052,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     
                     // Build walk slots
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean };
                     const slots: SlotItem[] = [];
                     
-                    if (isToday) {
-                      // For today: use actual logged events instead of estimates
-                      const todayStart = new Date(dayDate);
-                      todayStart.setHours(0, 0, 0, 0);
-                      const todayEnd = new Date(dayDate);
-                      todayEnd.setHours(23, 59, 59, 999);
-                      
-                      const todayEvents = appEvents
-                        .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= todayStart && new Date(e.time) <= todayEnd)
-                        .map(e => ({ hour: new Date(e.time).getHours() + new Date(e.time).getMinutes() / 60, isPoop: e.type === 'stuhlgang' }))
-                        .sort((a, b) => a.hour - b.hour);
-                      
-                      // Cluster within 30-minute windows
-                      const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                      for (const evt of todayEvents) {
-                        const last = clusters[clusters.length - 1];
-                        if (last && evt.hour - last.hours[last.hours.length - 1] <= 0.5) {
-                          last.hours.push(evt.hour);
-                          if (evt.isPoop) last.hasPoop = true;
-                        } else {
-                          clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
-                        }
-                      }
-                      
-                      for (const c of clusters) {
-                        const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                        slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
-                      }
-                    } else {
-                      // For other days: use averaged estimates
+                    {
+                      // Start with averaged estimates for all days
                       const monBasedDay = (jsDay + 6) % 7;
                       const data = avgGassiByDay.get(monBasedDay);
                       
@@ -1107,7 +1079,52 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         
                         for (const c of clusters) {
                           const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                          slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
+                          slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [], isEstimate: true });
+                        }
+                      }
+                      
+                      // For today: replace estimated slots with real entries where they overlap
+                      if (isToday) {
+                        const todayStart = new Date(dayDate);
+                        todayStart.setHours(0, 0, 0, 0);
+                        const todayEnd = new Date(dayDate);
+                        todayEnd.setHours(23, 59, 59, 999);
+                        
+                        const todayEvents = appEvents
+                          .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= todayStart && new Date(e.time) <= todayEnd)
+                          .map(e => ({ hour: new Date(e.time).getHours() + new Date(e.time).getMinutes() / 60, isPoop: e.type === 'stuhlgang' }))
+                          .sort((a, b) => a.hour - b.hour);
+                        
+                        if (todayEvents.length > 0) {
+                          // Cluster real events within 30-minute windows
+                          const realClusters: { hours: number[]; hasPoop: boolean }[] = [];
+                          for (const evt of todayEvents) {
+                            const last = realClusters[realClusters.length - 1];
+                            if (last && evt.hour - last.hours[last.hours.length - 1] <= 0.5) {
+                              last.hours.push(evt.hour);
+                              if (evt.isPoop) last.hasPoop = true;
+                            } else {
+                              realClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                            }
+                          }
+                          
+                          const realSlots: SlotItem[] = realClusters.map(c => ({
+                            avgHour: c.hours.reduce((a, b) => a + b, 0) / c.hours.length,
+                            hasPoop: c.hasPoop,
+                            isWalk: true,
+                            icalEvents: [],
+                            isEstimate: false,
+                          }));
+                          
+                          // Remove estimated slots that overlap with real ones (within 1.5h)
+                          const filtered = slots.filter(est => {
+                            return !realSlots.some(real => Math.abs(real.avgHour - est.avgHour) <= 1.5);
+                          });
+                          
+                          // Merge: keep non-overlapping estimates + all real slots
+                          slots.length = 0;
+                          slots.push(...filtered, ...realSlots);
+                          slots.sort((a, b) => a.avgHour - b.avgHour);
                         }
                       }
                     }
