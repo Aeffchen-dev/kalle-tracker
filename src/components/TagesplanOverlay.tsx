@@ -666,6 +666,30 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Dog Food Checker */}
             <DogFoodChecker />
 
+            {/* Snacks Section */}
+            <div className="mb-8">
+              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🦴</span> <span>Kalles Snacks</span></h2>
+              <div className="glass-card rounded-lg p-4 flex flex-col gap-2">
+                {[
+                  { name: 'Stayz', link: 'https://zooplus.onelink.me/yg8Z/w5lhg0qf' },
+                  { name: 'Urinary Snacks', link: 'https://zooplus.onelink.me/yg8Z/eayl3i89' },
+                  { name: 'Apfel Streifen', link: 'https://www.futterfreund.de/sanadog-veggie-streifen-apfel-100g' },
+                  { name: 'Knabbersticks Karotte', link: 'https://www.dm.de/applink/dein-bestes-hundeleckerli-knabbersticks-mit-karotte-naturverliebt-vegan-p4066447297850.html?appPageType=productdetails&appProductId=1589925&wt_mc=app.dm.pdsteilen.laufend' },
+                ].map((snack, i) => (
+                  <a
+                    key={i}
+                    href={snack.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between text-[12px] text-white/60 hover:text-white transition-colors"
+                  >
+                    <span>{snack.name}</span>
+                    <ExternalLink size={14} className="flex-shrink-0 ml-2" />
+                  </a>
+                ))}
+              </div>
+            </div>
+
             {/* Emergency Section */}
             <div className="mb-8">
               <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
