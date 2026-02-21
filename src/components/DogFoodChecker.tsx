@@ -59,7 +59,7 @@ const DogFoodChecker = () => {
         measureRef.current.textContent = food;
         maxW = Math.max(maxW, measureRef.current.offsetWidth);
       }
-      const w = maxW + 16;
+      const w = maxW + 4;
       setMinInputWidth(w);
       setInputWidth(w);
     }
@@ -147,7 +147,7 @@ const DogFoodChecker = () => {
   useEffect(() => {
     if (measureRef.current && query) {
       measureRef.current.textContent = query;
-      setInputWidth(Math.max(minInputWidth, measureRef.current.offsetWidth + 16));
+      setInputWidth(Math.max(minInputWidth, measureRef.current.offsetWidth + 4));
     } else if (!query) {
       setInputWidth(minInputWidth);
     }
