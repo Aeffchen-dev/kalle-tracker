@@ -116,7 +116,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange} snapPoints={[0.95]}>
-      <DrawerContent className="bg-black border-black flex flex-col max-h-[95dvh] lg:max-w-[80vw] lg:mx-auto">
+      <DrawerContent className="bg-spot border-spot flex flex-col max-h-[95dvh] lg:max-w-[80vw] lg:mx-auto">
         <DrawerHeader className="pb-4 flex-shrink-0 cursor-pointer" onClick={() => onOpenChange(false)}>
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
@@ -182,7 +182,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                       const minute = i % 2 === 0 ? '00' : '30';
                       const value = hour + (i % 2 === 0 ? 0 : 0.5);
                       return (
-                        <option key={i} value={value} className="bg-black text-white">
+                        <option key={i} value={value} className="bg-spot text-white">
                           {hour.toString().padStart(2, '0')}:{minute}
                         </option>
                       );
@@ -199,7 +199,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                       const minute = i % 2 === 0 ? '00' : '30';
                       const value = hour + (i % 2 === 0 ? 0 : 0.5);
                       return (
-                        <option key={i} value={value} className="bg-black text-white">
+                        <option key={i} value={value} className="bg-spot text-white">
                           {hour.toString().padStart(2, '0')}:{minute}
                         </option>
                       );
@@ -249,9 +249,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     onChange={(e) => handleBirthdayPartChange(e.target.value ? parseInt(e.target.value) : null, birthdayMonth, birthdayYear)}
                     className="bg-transparent text-white/70 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                   >
-                    <option value="" className="bg-black text-white">TT</option>
+                    <option value="" className="bg-spot text-white">TT</option>
                     {Array.from({ length: daysInSelectedMonth }, (_, i) => i + 1).map((d) => (
-                      <option key={d} value={d} className="bg-black text-white">
+                      <option key={d} value={d} className="bg-spot text-white">
                         {d.toString().padStart(2, '0')}
                       </option>
                     ))}
@@ -271,9 +271,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     }}
                     className="bg-transparent text-white/70 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                   >
-                    <option value="" className="bg-black text-white">MM</option>
+                    <option value="" className="bg-spot text-white">MM</option>
                     {months.map((m) => (
-                      <option key={m.value} value={m.value} className="bg-black text-white">
+                      <option key={m.value} value={m.value} className="bg-spot text-white">
                         {m.label}
                       </option>
                     ))}
@@ -293,9 +293,9 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
                     }}
                     className="bg-transparent text-white/70 text-[14px] text-center border-none outline-none cursor-pointer w-auto appearance-none"
                   >
-                    <option value="" className="bg-black text-white">JJJJ</option>
+                    <option value="" className="bg-spot text-white">JJJJ</option>
                     {years.map((y) => (
-                      <option key={y} value={y} className="bg-black text-white">
+                      <option key={y} value={y} className="bg-spot text-white">
                         {y}
                       </option>
                     ))}

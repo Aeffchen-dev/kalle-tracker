@@ -92,7 +92,7 @@ function Calendar({
       className="relative"
     >
       {isYearPickerOpen && showYearPicker && (
-        <div className="absolute inset-0 bg-black z-10 p-3 overflow-y-auto">
+        <div className="absolute inset-0 bg-spot z-10 p-3 overflow-y-auto">
           <div className="text-center text-sm font-medium mb-3 text-white">Jahr auswählen</div>
           <div className="grid grid-cols-3 gap-2">
             {years.map((year) => (
