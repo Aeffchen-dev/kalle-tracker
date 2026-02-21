@@ -200,11 +200,7 @@ const DogFoodChecker = () => {
           </div>
         </div>
 
-        <p className="text-[12px] text-white/40 leading-relaxed">
-          Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
-        </p>
-
-        {result && config && (
+        {result && config ? (
           <div className="mt-3">
             <div className={`${config.bg} rounded-lg p-3`}>
               <div className="flex items-center gap-2 mb-1">
@@ -214,6 +210,10 @@ const DogFoodChecker = () => {
               <p className="text-[12px] text-white/60">{result.reason}</p>
             </div>
           </div>
+        ) : (
+          <p className="text-[12px] text-white/40 leading-relaxed">
+            Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
+          </p>
         )}
       </div>
     </div>
