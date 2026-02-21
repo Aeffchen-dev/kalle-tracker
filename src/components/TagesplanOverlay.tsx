@@ -842,7 +842,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newSnackLink}
                         onChange={(e) => setNewSnackLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddSnackFromUrl(); if (e.key === 'Escape') { setShowAddSnack(false); setNewSnackLink(''); } }}
-                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30"
+                        className="flex-1 min-w-0 bg-white/10 text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
                         autoFocus
                       />
                       <button
