@@ -20,7 +20,7 @@ const isMedicalEvent = (summary: string): boolean =>
 const getMedicalEmoji = (summary: string): string => {
   if (summary.toLowerCase().includes('wurmkur')) return '🪱';
   if (summary.toLowerCase().includes('parasiten')) return '🦟';
-  if (summary.toLowerCase().includes('krallen')) return '✂️';
+  if (summary.toLowerCase().includes('krallen')) return '💅';
   return '💊';
 };
 

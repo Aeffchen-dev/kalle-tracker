@@ -492,7 +492,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                           onMouseLeave={handleLongPressEnd}
                         >
                           <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
-                            <span className="shrink-0">{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '✂️' : '🏋️'}</span>
+                            <span className="shrink-0">{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
                             <span className="truncate">
                               {event.type === 'pipi' && 'Pipi'}
                               {event.type === 'stuhlgang' && 'Stuhlgang'}
