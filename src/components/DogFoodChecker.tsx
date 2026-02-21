@@ -31,6 +31,7 @@ const DogFoodChecker = () => {
   const [result, setResult] = useState<FoodResult | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [tick, setTick] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const charIndexRef = useRef(0);
@@ -57,12 +58,14 @@ const DogFoodChecker = () => {
     if (isTyping) {
       if (charIndexRef.current <= currentFood.length) {
         timer = setTimeout(() => {
-          setPlaceholderText(currentFood.slice(0, charIndexRef.current));
           charIndexRef.current++;
+          setPlaceholderText(currentFood.slice(0, charIndexRef.current));
+          setTick(t => t + 1);
         }, 80);
       } else {
         timer = setTimeout(() => {
           setIsTyping(false);
+          setTick(t => t + 1);
         }, 2000);
       }
     } else {
@@ -70,17 +73,18 @@ const DogFoodChecker = () => {
         timer = setTimeout(() => {
           charIndexRef.current--;
           setPlaceholderText(currentFood.slice(0, charIndexRef.current));
+          setTick(t => t + 1);
         }, 35);
       } else {
-        charIndexRef.current = 0;
         setPlaceholderText('');
         setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_FOODS.length);
         setIsTyping(true);
+        setTick(t => t + 1);
       }
     }
 
     return () => clearTimeout(timer);
-  }, [placeholderText, isTyping, placeholderIndex, isFocused, query, isVisible]);
+  }, [tick, isVisible, isFocused, query]);
 
   const checkFood = async () => {
     const trimmed = query.trim();
