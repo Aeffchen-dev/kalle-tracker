@@ -204,11 +204,13 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
             >
               {medical ? (
                 <>
-                  {/* Medical: emoji + checkmark only */}
+                  {/* Medical: emoji + text + checkmark */}
                   <span className="text-[20px] shrink-0">
                     {getMedicalEmoji(evt.summary)}
                   </span>
-                  <div className="flex-1" />
+                  <span className="text-[14px] text-black truncate flex-1 min-w-0">
+                    {evt.summary}
+                  </span>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
                     className="relative w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center overflow-hidden"
