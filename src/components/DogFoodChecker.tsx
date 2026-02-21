@@ -30,12 +30,26 @@ const DogFoodChecker = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<FoodResult | null>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const charIndexRef = useRef(0);
 
-  // Typing animation, cycle every ~4s
+  // IntersectionObserver to start animation when visible
   useEffect(() => {
-    if (isFocused || query) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Typing animation - runs endlessly when visible
+  useEffect(() => {
+    if (!isVisible || isFocused || query) return;
 
     const currentFood = PLACEHOLDER_FOODS[placeholderIndex];
     let timer: ReturnType<typeof setTimeout>;
@@ -66,7 +80,7 @@ const DogFoodChecker = () => {
     }
 
     return () => clearTimeout(timer);
-  }, [placeholderText, isTyping, placeholderIndex, isFocused, query]);
+  }, [placeholderText, isTyping, placeholderIndex, isFocused, query, isVisible]);
 
   const checkFood = async () => {
     const trimmed = query.trim();
@@ -111,41 +125,42 @@ const DogFoodChecker = () => {
   const config = result ? STATUS_CONFIG[result.status] : null;
 
   return (
-    <div className="mb-8">
+    <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg overflow-hidden">
-        <div className="flex items-center gap-2 pl-3 py-3">
-          <span className="text-[18px] shrink-0">🐶</span>
-          <span className="text-[13px] text-white/60 shrink-0">Kann ich</span>
-          <div
-            className="flex-1 min-w-0 bg-white/[0.12] rounded-full px-3 py-2 cursor-text"
-            onClick={() => inputRef.current?.focus()}
-          >
-            <div className="relative">
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => { setQuery(e.target.value); setResult(null); }}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                onKeyDown={handleKeyDown}
-                className="bg-transparent text-[13px] text-white w-full outline-none placeholder-transparent text-center"
-                style={{ caretColor: 'white' }}
-              />
-              {!query && (
-              <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
-                  {placeholderText}
-                  <span className="animate-pulse ml-[1px]">|</span>
-                </span>
-              )}
+        <div className="flex items-stretch">
+          <div className="flex items-center gap-2 pl-3 py-3 flex-1 min-w-0">
+            <span className="text-[18px] shrink-0">🐶</span>
+            <span className="text-[13px] text-white/60 shrink-0">Kann ich</span>
+            <div
+              className="flex-1 min-w-0 bg-white/[0.12] rounded-full px-3 py-2 cursor-text"
+              onClick={() => inputRef.current?.focus()}
+            >
+              <div className="relative">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => { setQuery(e.target.value); setResult(null); }}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  onKeyDown={handleKeyDown}
+                  className="bg-transparent text-[13px] text-white w-full outline-none placeholder-transparent text-center"
+                  style={{ caretColor: 'white' }}
+                />
+                {!query && (
+                  <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
+                    {placeholderText}
+                    <span className="animate-pulse ml-[1px]">|</span>
+                  </span>
+                )}
+              </div>
             </div>
+            <span className="text-[13px] text-white/60 shrink-0">essen?</span>
           </div>
-          <span className="text-[13px] text-white/60 shrink-0 pr-1">essen?</span>
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 self-stretch aspect-square rounded-r-lg bg-black active:scale-95 transition-transform disabled:opacity-100 flex items-center justify-center"
-            style={{ marginTop: '-12px', marginBottom: '-12px', marginRight: '0', paddingTop: '12px', paddingBottom: '12px' }}
+            className="shrink-0 rounded-r-lg bg-black active:scale-95 transition-transform flex items-center justify-center aspect-square"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
