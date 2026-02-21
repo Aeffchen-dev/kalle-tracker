@@ -36,9 +36,36 @@ Deno.serve(async (req) => {
       || '';
 
     // Extract OG image
-    const ogImage = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
+    let ogImage = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
       || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)?.[1]
       || '';
+
+    const isGeneric = (url: string) => !url || /logo/i.test(url) || url.endsWith('.svg') || url.endsWith('.ico');
+
+    if (isGeneric(ogImage)) {
+      // Try twitter:image
+      const twitterImage = html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
+        || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i)?.[1]
+        || '';
+      if (twitterImage && !isGeneric(twitterImage)) {
+        ogImage = twitterImage;
+      }
+    }
+
+    if (isGeneric(ogImage)) {
+      // Try JSON-LD structured data image, then product img elements
+      const productImg = html.match(/"image"\s*:\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i)?.[1]
+        || html.match(/"image"\s*:\s*\[\s*"(https?:\/\/[^"]+\.(jpg|jpeg|png|webp)[^"]*)"/i)?.[1]
+        || html.match(/<img[^>]+class=["'][^"']*product[^"']*["'][^>]+src=["']([^"']+)["']/i)?.[1]
+        || html.match(/<img[^>]+src=["']([^"']+)["'][^>]+class=["'][^"']*product[^"']*["']/i)?.[1]
+        || '';
+      if (productImg) {
+        ogImage = productImg;
+      }
+    }
+
+    // Clear if still generic
+    if (isGeneric(ogImage)) ogImage = '';
 
     // Extract OG site name or derive from hostname
     const ogSiteName = html.match(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i)?.[1]
