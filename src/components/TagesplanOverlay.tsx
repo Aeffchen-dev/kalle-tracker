@@ -772,13 +772,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div className="glass-card rounded-lg p-4">
                 <h3 className="text-[13px] text-white/90 mb-2">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
-                  {snacks.map((snack) => {
+                  {snacks.map((snack, index) => {
                     const isActive = activeSnackId === snack.id;
+                    const isFirst = index === 0;
+                    const isLast = index === snacks.length - 1;
 
                     return (
                       <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center gap-3 py-1.5 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : isLast ? 'pt-1.5' : 'py-1.5'} cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleSnackClick(snack.id)}
                           onTouchStart={() => handleSnackLongPressStart(snack.id)}
                           onTouchMove={handleSnackLongPressMove}
