@@ -334,7 +334,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       }, 1100);
       // Recolor body (status bar + bottom bar) after dot transition completes
       setTimeout(() => {
-        document.body.style.backgroundColor = '#3d2b1f';
+        document.documentElement.style.backgroundColor = '#3d2b1f';
       }, 1400);
     }
   }, [isOpen, animationPhase]);
@@ -342,7 +342,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   // Reset when fully closed
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
-      document.body.style.backgroundColor = '';
+      document.documentElement.style.backgroundColor = '';
     }
   }, [animationPhase, isOpen]);
 
@@ -430,8 +430,8 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   const handleClose = () => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
-    document.body.style.backgroundColor = '';
-    
+      document.documentElement.style.backgroundColor = '';
+
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
       onClose();
