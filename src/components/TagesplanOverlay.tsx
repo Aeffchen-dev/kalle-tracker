@@ -335,33 +335,22 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     }
   }, [isOpen, animationPhase]);
 
-  // Keep html+body background brown while modal is open (iOS browser bar)
+  // Set brown background only AFTER dot animation completes (animationPhase === 'visible')
   useEffect(() => {
-    if (isOpen) {
+    if (animationPhase === 'visible') {
       const brown = '#3d2b1f';
       document.documentElement.style.backgroundColor = brown;
       document.body.style.backgroundColor = brown;
       // Set theme-color meta for iOS browser chrome
       let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-      const hadMeta = !!meta;
-      const prevColor = meta?.content || '';
       if (!meta) {
         meta = document.createElement('meta');
         meta.name = 'theme-color';
         document.head.appendChild(meta);
       }
       meta.content = brown;
-      return () => {
-        document.documentElement.style.backgroundColor = '';
-        document.body.style.backgroundColor = '';
-        if (hadMeta) {
-          meta!.content = prevColor;
-        } else {
-          meta!.remove();
-        }
-      };
     }
-  }, [isOpen]);
+  }, [animationPhase]);
 
   // Focus input when editing starts
   useEffect(() => {
@@ -449,7 +438,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
     document.documentElement.style.backgroundColor = '';
     document.body.style.backgroundColor = '';
     const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-    if (meta) meta.remove();
+    if (meta) meta.content = '#000000'; // Reset to black (matches html bg in CSS)
 
     requestAnimationFrame(() => {
       onClose();
