@@ -466,7 +466,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     return (
                       <div key={`ical-${i}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
                         <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
-                          <span className="shrink-0">📅</span>
+                          <span className="shrink-0">🗓️</span>
                           <span className="truncate">{evt.summary}</span>
                         </span>
                         <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
