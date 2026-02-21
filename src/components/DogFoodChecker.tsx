@@ -58,6 +58,8 @@ const DogFoodChecker = () => {
           setPlaceholderText(currentFood.slice(0, charIndexRef.current));
         }, 35);
       } else {
+        charIndexRef.current = 0;
+        setPlaceholderText('');
         setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_FOODS.length);
         setIsTyping(true);
       }
@@ -111,7 +113,7 @@ const DogFoodChecker = () => {
   return (
     <div className="mb-8">
       <div className="glass-card rounded-lg overflow-hidden">
-        <div className="flex items-center gap-2 px-3 py-3">
+        <div className="flex items-center gap-2 pl-3 py-3">
           <span className="text-[18px] shrink-0">🐶</span>
           <span className="text-[13px] text-white/60 shrink-0">Kann ich</span>
           <div
@@ -138,11 +140,11 @@ const DogFoodChecker = () => {
               )}
             </div>
           </div>
-          <span className="text-[13px] text-white/60 shrink-0">essen?</span>
+          <span className="text-[13px] text-white/60 shrink-0 pr-1">essen?</span>
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 active:scale-95 transition-transform disabled:opacity-30"
+            className="shrink-0 self-stretch rounded-r-lg bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center px-3"
           >
             {loading ? (
               <div className="w-[16px] h-[16px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
