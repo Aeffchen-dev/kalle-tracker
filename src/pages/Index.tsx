@@ -425,7 +425,7 @@ const Index = () => {
               Wettervorhersage
             </h2>
           </div>
-          <div className="pl-2 pr-4 pb-4 overflow-y-auto flex flex-col gap-2">
+          <div className="pl-2 pr-4 pb-20 overflow-y-auto flex flex-col gap-2">
             <div className="flex flex-col gap-2">
             {forecast.filter(day => new Date(day.date + 'T00:00:00') >= new Date(format(new Date(), 'yyyy-MM-dd') + 'T00:00:00')).slice(0, 7).map((day) => {
                const date = new Date(day.date + 'T00:00:00');
