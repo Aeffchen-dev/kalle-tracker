@@ -810,7 +810,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             href={ingredient.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/40 hover:text-white transition-colors flex-shrink-0 flex items-center justify-center w-[48px] h-[48px] -m-3 ml-0"
+                            className="text-white/40 hover:text-white transition-colors flex-shrink-0 flex items-center justify-center w-[48px] h-[48px] -m-3 ml-0 -mr-[11px]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <ExternalLink size={14} />
