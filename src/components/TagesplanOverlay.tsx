@@ -778,7 +778,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     return (
                       <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center gap-3 py-2 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center gap-3 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleSnackClick(snack.id)}
                           onTouchStart={() => handleSnackLongPressStart(snack.id)}
                           onTouchMove={handleSnackLongPressMove}
@@ -869,7 +869,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   ) : (
                     <div
                       onClick={() => setShowAddSnack(true)}
-                      className="flex items-center gap-3 py-2 cursor-pointer"
+                      className="flex items-center gap-3 cursor-pointer"
                     >
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                         <Plus size={14} className="text-white/40" />
