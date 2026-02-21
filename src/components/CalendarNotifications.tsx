@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 import { format } from 'date-fns';
 import { Check } from 'lucide-react';
@@ -19,14 +19,25 @@ const getMedicalEmoji = (summary: string): string => {
 };
 
 const DISMISSED_KEY = 'kalle_dismissed_medical_';
+const DISMISSED_CAL_KEY = 'kalle_dismissed_cal_';
 
 const getDismissKey = (uid: string, date: string) => `${DISMISSED_KEY}${uid}_${date}`;
+const getCalDismissKey = (uid: string, date: string) => `${DISMISSED_CAL_KEY}${uid}_${date}`;
 
 const CalendarNotifications: React.FC = () => {
   const [events, setEvents] = useState<ICalEvent[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [checking, setChecking] = useState<Set<string>>(new Set());
   const [exiting, setExiting] = useState<Set<string>>(new Set());
+  
+  // Swipe state
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [swipingId, setSwipingId] = useState<string | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const startXRef = useRef(0);
+  const startYRef = useRef(0);
+  const isHorizontalSwipe = useRef(false);
+  const swipeDecided = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -40,11 +51,10 @@ const CalendarNotifications: React.FC = () => {
       const todayStr = format(today, 'yyyy-MM-dd');
       const dismissedSet = new Set<string>();
       todayEvents.forEach(evt => {
-        if (isMedicalEvent(evt.summary)) {
-          const key = getDismissKey(evt.uid, todayStr);
-          if (localStorage.getItem(key)) {
-            dismissedSet.add(evt.uid);
-          }
+        const medKey = getDismissKey(evt.uid, todayStr);
+        const calKey = getCalDismissKey(evt.uid, todayStr);
+        if (localStorage.getItem(medKey) || localStorage.getItem(calKey)) {
+          dismissedSet.add(evt.uid);
         }
       });
       setDismissed(dismissedSet);
@@ -54,17 +64,18 @@ const CalendarNotifications: React.FC = () => {
 
   const visibleEvents = events.filter(evt => {
     if (/hat\s+Kalle/i.test(evt.summary)) return false;
-    if (isMedicalEvent(evt.summary) && dismissed.has(evt.uid)) return false;
+    if (dismissed.has(evt.uid)) return false;
     return true;
   });
 
   if (visibleEvents.length === 0) return null;
 
+  const getEvtKey = (evt: ICalEvent) => `${evt.uid}-${evt.dtstart}`;
+
   const handleCheck = (evt: ICalEvent) => {
     if (checking.has(evt.uid)) return;
     setChecking(prev => new Set([...prev, evt.uid]));
 
-    // After check animation, start exit
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
       setTimeout(() => {
@@ -75,6 +86,70 @@ const CalendarNotifications: React.FC = () => {
         setExiting(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
       }, 600);
     }, 600);
+  };
+
+  const handleSwipeDelete = (evt: ICalEvent) => {
+    setExiting(prev => new Set([...prev, evt.uid]));
+    setActiveId(null);
+    setTimeout(() => {
+      const todayStr = format(DEBUG_TODAY || new Date(), 'yyyy-MM-dd');
+      if (isMedicalEvent(evt.summary)) {
+        localStorage.setItem(getDismissKey(evt.uid, todayStr), '1');
+      } else {
+        localStorage.setItem(getCalDismissKey(evt.uid, todayStr), '1');
+      }
+      setDismissed(prev => new Set([...prev, evt.uid]));
+      setExiting(prev => { const n = new Set(prev); n.delete(evt.uid); return n; });
+    }, 400);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent, id: string) => {
+    startXRef.current = e.touches[0].clientX;
+    startYRef.current = e.touches[0].clientY;
+    setSwipingId(id);
+    isHorizontalSwipe.current = false;
+    swipeDecided.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!swipingId) return;
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = startXRef.current - currentX;
+    const diffY = Math.abs(currentY - startYRef.current);
+
+    if (!swipeDecided.current && (Math.abs(diffX) > 10 || diffY > 10)) {
+      swipeDecided.current = true;
+      isHorizontalSwipe.current = Math.abs(diffX) > diffY;
+    }
+
+    if (isHorizontalSwipe.current) {
+      const isCurrentlyOpen = activeId === swipingId;
+      let newOffset;
+      if (isCurrentlyOpen) {
+        newOffset = Math.max(0, Math.min(82 - (-diffX), 90));
+      } else {
+        newOffset = Math.max(0, Math.min(diffX, 90));
+      }
+      setSwipeOffset(newOffset);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!swipingId) return;
+    if (swipeOffset >= 50) {
+      setActiveId(swipingId);
+    } else {
+      setActiveId(null);
+    }
+    setSwipingId(null);
+    setSwipeOffset(0);
+  };
+
+  const handleCardClick = (id: string) => {
+    if (activeId === id) {
+      setActiveId(null);
+    }
   };
 
   const getTimeLabel = (evt: ICalEvent): string => {
@@ -91,14 +166,25 @@ const CalendarNotifications: React.FC = () => {
         const medical = isMedicalEvent(evt.summary);
         const isChecked = checking.has(evt.uid);
         const isExitingEvt = exiting.has(evt.uid);
+        const key = getEvtKey(evt);
+        const isSwiping = swipingId === key;
+        const isOpen = activeId === key;
+        const showDelete = isSwiping ? swipeOffset : (isOpen ? 82 : 0);
 
         return (
           <div
-            key={`${evt.uid}-${evt.dtstart}`}
-            className={`relative flex w-full items-stretch overflow-hidden rounded-[16px] transition-all duration-500 ${isExitingEvt ? 'opacity-0 scale-95 max-h-0' : 'opacity-100 max-h-[200px] animate-fade-in-up'}`}
+            key={key}
+            className={`relative flex w-full items-stretch overflow-hidden rounded-[16px] gap-1 transition-all duration-500 ${isExitingEvt ? 'opacity-0 scale-95 max-h-0' : 'opacity-100 max-h-[200px] animate-fade-in-up'}`}
             style={{ animationFillMode: 'backwards' }}
+            onTouchStart={(e) => handleTouchStart(e, key)}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <div className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1">
+            <div
+              className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
+              onClick={() => handleCardClick(key)}
+              style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
+            >
               {/* Left emoji */}
               <span className="text-[20px] shrink-0">
                 {medical ? getMedicalEmoji(evt.summary) : '📅'}
@@ -122,7 +208,7 @@ const CalendarNotifications: React.FC = () => {
               {/* Medical: checkmark button */}
               {medical && (
                 <button
-                  onClick={() => handleCheck(evt)}
+                  onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
                   className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-1 flex items-center justify-center overflow-hidden"
                   style={{
                     border: '2px solid black',
@@ -143,6 +229,20 @@ const CalendarNotifications: React.FC = () => {
                 </button>
               )}
             </div>
+
+            {/* Swipe delete button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); handleSwipeDelete(evt); }}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px] overflow-hidden self-stretch"
+              style={{
+                width: showDelete > 0 ? `${showDelete}px` : 0,
+                minWidth: showDelete > 0 ? `${showDelete}px` : 0,
+                transition: isSwiping ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+              }}
+            >
+              <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
+            </button>
           </div>
         );
       })}
