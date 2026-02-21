@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus, Trash2 } from 'lucide-react';
+import { X, Phone, MapPin, ExternalLink, Copy, Check, Plus } from 'lucide-react';
 import DogFoodChecker from '@/components/DogFoodChecker';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -148,8 +148,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
-  const [snackSwipe, setSnackSwipe] = useState<{ id: string; startX: number; offsetX: number } | null>(null);
+  const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
+  const snackLongPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const snackLongPressTriggered = useRef<boolean>(false);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
+  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
 
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -194,8 +197,67 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   };
 
   const handleDeleteSnack = async (id: string) => {
+    setSnackDeleting(id);
     await (supabase.from('snacks') as any).delete().eq('id', id);
+    setActiveSnackId(null);
     loadSnacks();
+  };
+
+  // Snack long-press handlers (same pattern as CalendarView events)
+  const handleSnackLongPressStart = (id: string) => {
+    snackLongPressTriggered.current = false;
+    snackLongPressTimer.current = setTimeout(() => {
+      snackLongPressTriggered.current = true;
+      if (activeSnackId === id) {
+        setActiveSnackId(null);
+      } else {
+        setActiveSnackId(id);
+        if ('vibrate' in navigator) navigator.vibrate(10);
+      }
+    }, 500);
+  };
+
+  const handleSnackLongPressEnd = () => {
+    if (snackLongPressTimer.current) {
+      clearTimeout(snackLongPressTimer.current);
+      snackLongPressTimer.current = null;
+    }
+  };
+
+  const handleSnackLongPressMove = () => {
+    if (snackLongPressTimer.current) {
+      clearTimeout(snackLongPressTimer.current);
+      snackLongPressTimer.current = null;
+    }
+  };
+
+  const handleSnackClick = (id: string) => {
+    if (snackLongPressTriggered.current) {
+      snackLongPressTriggered.current = false;
+      return;
+    }
+    // Single click toggles delete button off
+    if (activeSnackId === id) {
+      setActiveSnackId(null);
+    }
+  };
+
+  // Auto-fetch metadata from URL
+  const handleSnackLinkBlur = async () => {
+    const url = newSnackLink.trim();
+    if (!url || newSnackName.trim()) return; // Don't overwrite existing name
+    try {
+      setIsFetchingMeta(true);
+      const { data, error } = await supabase.functions.invoke('fetch-url-meta', { body: { url } });
+      if (!error && data) {
+        if (data.name && !newSnackName.trim()) setNewSnackName(data.name);
+        if (data.shop && !newSnackShop.trim()) setNewSnackShop(data.shop);
+      }
+    } catch (e) {
+      console.error('Failed to fetch URL metadata:', e);
+    } finally {
+      setIsFetchingMeta(false);
+    }
   };
 
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
@@ -710,39 +772,20 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div className="glass-card rounded-lg p-4">
                 <div className="flex flex-col gap-3">
                   {snacks.map((snack) => {
-                    const isSwipingThis = snackSwipe?.id === snack.id;
-                    const offset = isSwipingThis ? snackSwipe.offsetX : 0;
-                    const showDelete = offset < -60;
+                    const isActive = activeSnackId === snack.id;
 
                     return (
-                      <div
-                        key={snack.id}
-                        className="relative overflow-hidden rounded"
-                        onTouchStart={(e) => {
-                          setSnackSwipe({ id: snack.id, startX: e.touches[0].clientX, offsetX: 0 });
-                        }}
-                        onTouchMove={(e) => {
-                          if (!isSwipingThis) return;
-                          const diff = e.touches[0].clientX - snackSwipe.startX;
-                          if (diff < 0) setSnackSwipe({ ...snackSwipe, offsetX: Math.max(diff, -100) });
-                        }}
-                        onTouchEnd={() => {
-                          if (isSwipingThis && showDelete) {
-                            setSnackDeleting(snack.id);
-                            handleDeleteSnack(snack.id);
-                          }
-                          setSnackSwipe(null);
-                        }}
-                      >
-                        {/* Delete background */}
-                        <div className="absolute inset-0 bg-red-500/80 flex items-center justify-end pr-4 rounded">
-                          <Trash2 size={16} className="text-white" />
-                        </div>
-
-                        {/* Snack row */}
+                      <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden rounded-lg">
                         <div
-                          className="flex items-center gap-3 relative bg-white/5 rounded transition-transform"
-                          style={{ transform: `translateX(${offset}px)` }}
+                          className={`flex items-center gap-3 p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          onClick={() => handleSnackClick(snack.id)}
+                          onTouchStart={() => handleSnackLongPressStart(snack.id)}
+                          onTouchMove={handleSnackLongPressMove}
+                          onTouchEnd={handleSnackLongPressEnd}
+                          onMouseDown={() => handleSnackLongPressStart(snack.id)}
+                          onMouseMove={handleSnackLongPressMove}
+                          onMouseUp={handleSnackLongPressEnd}
+                          onMouseLeave={handleSnackLongPressEnd}
                         >
                           {snack.image_url ? (
                             <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
@@ -767,6 +810,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </a>
                           )}
                         </div>
+                        <button
+                          onClick={() => handleDeleteSnack(snack.id)}
+                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                        >
+                          Löschen
+                        </button>
                       </div>
                     );
                   })}
@@ -776,25 +825,29 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 {showAddSnack ? (
                   <div className="mt-3 pt-3 border-t border-white/10 flex flex-col gap-2">
                     <input
+                      type="url"
+                      placeholder="Link einfügen"
+                      value={newSnackLink}
+                      onChange={(e) => setNewSnackLink(e.target.value)}
+                      onBlur={handleSnackLinkBlur}
+                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
+                      autoFocus
+                    />
+                    {isFetchingMeta && (
+                      <span className="text-[10px] text-white/40">Lade Infos...</span>
+                    )}
+                    <input
                       type="text"
                       placeholder="Name"
                       value={newSnackName}
                       onChange={(e) => setNewSnackName(e.target.value)}
                       className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                      autoFocus
                     />
                     <input
                       type="text"
                       placeholder="Shop (z.B. zooplus)"
                       value={newSnackShop}
                       onChange={(e) => setNewSnackShop(e.target.value)}
-                      className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Link (optional)"
-                      value={newSnackLink}
-                      onChange={(e) => setNewSnackLink(e.target.value)}
                       className="bg-white/10 text-white text-[12px] px-3 py-2 rounded border border-white/20 outline-none placeholder:text-white/30"
                     />
                     <div className="flex gap-2">
