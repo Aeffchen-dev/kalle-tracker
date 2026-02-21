@@ -125,11 +125,6 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     setSwipingId(id);
     isHorizontalSwipe.current = false;
     swipeDecided.current = false;
-
-    // Close previously open card when starting to swipe a different one
-    if (activeId && activeId !== id) {
-      setActiveId(null);
-    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -159,8 +154,11 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   const handleTouchEnd = () => {
     if (!swipingId) return;
     if (swipeOffset >= 50) {
+      // Setting activeId to the new card simultaneously closes the old one
+      // Both animate with the same 150ms ease-linear transition
       setActiveId(swipingId);
-    } else {
+    } else if (swipingId === activeId) {
+      // Only close if swiping the currently open card back
       setActiveId(null);
     }
     setSwipingId(null);
