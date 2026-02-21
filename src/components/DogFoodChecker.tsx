@@ -12,6 +12,7 @@ type FoodStatus = 'ok' | 'nicht_optimal' | 'schadet' | 'giftig';
 
 interface FoodResult {
   status: FoodStatus;
+  purin?: 'niedrig' | 'mittel' | 'hoch';
   reason: string;
 }
 
@@ -205,6 +206,15 @@ const DogFoodChecker = () => {
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[16px]">{config.emoji}</span>
                 <span className="text-[13px] font-medium text-white/80">{config.label}</span>
+                {result.purin && (
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ml-auto ${
+                    result.purin === 'niedrig' ? 'bg-green-500/20 text-green-400' :
+                    result.purin === 'mittel' ? 'bg-yellow-500/20 text-yellow-400' :
+                    'bg-red-500/20 text-red-400'
+                  }`}>
+                    Purin: {result.purin}
+                  </span>
+                )}
               </div>
               <p className="text-[12px] text-white/40">{result.reason}</p>
             </div>

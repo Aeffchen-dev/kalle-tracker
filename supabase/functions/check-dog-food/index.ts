@@ -42,8 +42,14 @@ serve(async (req) => {
 Antworte NUR mit einem JSON-Objekt in diesem Format:
 {
   "status": "ok" | "nicht_optimal" | "schadet" | "giftig",
+  "purin": "niedrig" | "mittel" | "hoch",
   "reason": "Kurze Begründung auf Deutsch, max 2 Sätze"
 }
+
+"purin" gibt den Puringehalt des Lebensmittels an:
+- "niedrig": Purinarm, unbedenklich (z.B. Reis, Karotten, Äpfel, Gurke)
+- "mittel": Leicht erhöhter Puringehalt, in kleinen Mengen ok (z.B. Hühnerbrust, Spinat, Blumenkohl)
+- "hoch": Purinreich, gefährlich für Dalmatiner mit Harnsteinen (z.B. Innereien, Hülsenfrüchte, fetter Fisch, Hefe)
 
 OBERSTE PRIORITÄT - PURIN- UND PROTEINGEHALT:
 Dieser Hund ist ein Dalmatiner mit diagnostizierten Harnsteinen (Uratsteine). Die WICHTIGSTE Bewertungsgrundlage ist IMMER der Purin- und Proteingehalt eines Lebensmittels. Jedes Lebensmittel muss ZUERST auf seinen Puringehalt und dann auf seinen Proteingehalt geprüft werden, BEVOR andere Faktoren berücksichtigt werden.
