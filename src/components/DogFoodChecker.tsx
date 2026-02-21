@@ -132,6 +132,7 @@ const DogFoodChecker = () => {
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3 border border-white/10 overflow-hidden relative" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.15)' }}>
+          <div className="flex items-center gap-2 flex-1">
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-white shrink-0">Darf Kalle</span>
           <input
@@ -153,6 +154,8 @@ const DogFoodChecker = () => {
             </span>
           )}
           <span className="text-[13px] text-white shrink-0">essen?</span>
+          </div>
+          <div className="ml-auto">
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
@@ -164,6 +167,7 @@ const DogFoodChecker = () => {
               <Search size={16} className="text-white" />
             )}
           </button>
+          </div>
         </div>
 
         <p className="text-[12px] text-white/40 leading-relaxed">
