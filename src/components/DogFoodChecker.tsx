@@ -18,8 +18,8 @@ interface FoodResult {
 const STATUS_CONFIG: Record<FoodStatus, { emoji: string; label: string; color: string; bg: string }> = {
   ok: { emoji: '✅', label: 'Kein Problem', color: 'text-green-400', bg: 'bg-green-500/20' },
   nicht_optimal: { emoji: '⚠️', label: 'Nicht optimal', color: 'text-yellow-400', bg: 'bg-yellow-500/20' },
-  schadet: { emoji: '❌', label: 'Das schadet mir', color: 'text-orange-400', bg: 'bg-orange-500/20' },
-  giftig: { emoji: '☠️', label: 'Das ist für mich giftig!', color: 'text-red-400', bg: 'bg-red-500/20' },
+  schadet: { emoji: '❌', label: 'Das schadet Kalle', color: 'text-orange-400', bg: 'bg-orange-500/20' },
+  giftig: { emoji: '☠️', label: 'Das ist giftig!', color: 'text-red-400', bg: 'bg-red-500/20' },
 };
 
 const DogFoodChecker = () => {
