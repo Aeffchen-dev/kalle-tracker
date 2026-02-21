@@ -165,8 +165,9 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
 
   const handleTouchEnd = () => {
     if (!swipingId) return;
+    const hadOpenSwipe = !!activeId;
     // Only suppress subsequent onClick if a swipe was actually open/closing
-    if (activeId || swipeOffset >= 50) {
+    if (hadOpenSwipe || swipeOffset >= 50) {
       justTouchedRef.current = true;
       setTimeout(() => { justTouchedRef.current = false; }, 50);
     }
@@ -174,6 +175,10 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     if (swipeOffset >= 50) {
       setActiveId(swipingId);
     } else if (swipingId === activeId) {
+      // Closing own swipe
+      setActiveId(null);
+    } else if (hadOpenSwipe) {
+      // Tapped a different card while another was open — close the open one
       setActiveId(null);
     }
     setClosingId(null);
