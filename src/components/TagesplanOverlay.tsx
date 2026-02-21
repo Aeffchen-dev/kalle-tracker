@@ -427,14 +427,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     }
   };
 
-  // Scroll Wochenplan to target date card after overlay opens
+  // Scroll Wochenplan to target date card after overlay opens (only when triggered from a notification)
   useEffect(() => {
-    if (animationPhase === 'visible' && todayColRef.current && wochenplanScrollRef.current) {
+    if (animationPhase === 'visible' && scrollToDate && todayColRef.current && wochenplanScrollRef.current) {
       setTimeout(() => {
         todayColRef.current?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
       }, 300);
     }
-  }, [animationPhase]);
+  }, [animationPhase, scrollToDate]);
 
   const handleClose = () => {
     // Start animation immediately
