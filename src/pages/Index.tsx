@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { MoreHorizontal, Check } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import rainIcon from '@/assets/rain-umbrella.png';
 import knittedHat from '@/assets/winter-clothes-icon.png';
 import umbrellaIcon from '@/assets/rain-umbrella-icon.png';
@@ -17,7 +17,6 @@ import { detectAnomalies, Anomaly } from '@/lib/anomalyDetection';
 import { getSettings, getCachedSettings, CountdownMode } from '@/lib/settings';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
 import { initializeNotifications, scheduleWalkReminder, cancelWalkReminders, showNotification } from '@/lib/notifications';
-import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 import dogInCar from '@/assets/dog-in-car.png';
 
 const weatherCodeToEmoji = (code: number): string => {
@@ -85,8 +84,7 @@ const Index = () => {
   const [currentWeatherCode, setCurrentWeatherCode] = useState<number | null>(null);
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
-  const [medicalAlerts, setMedicalAlerts] = useState<{ id: string; summary: string; timeStr: string; checked: boolean }[]>([]);
-  const calendarNotifiedRef = useRef(false);
+
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
     const staticLoader = document.getElementById('static-loader');
@@ -190,18 +188,6 @@ const Index = () => {
     setAnomalies(prev => prev.filter(a => a.id !== id));
   };
 
-  const handleMedicalCheck = (id: string) => {
-    setMedicalAlerts(prev => prev.map(a => a.id === id ? { ...a, checked: true } : a));
-    const today = format(new Date(), 'yyyy-MM-dd');
-    const key = 'medicalDismissed_' + today;
-    const dismissed = JSON.parse(localStorage.getItem(key) || '[]') as string[];
-    dismissed.push(id);
-    localStorage.setItem(key, JSON.stringify(dismissed));
-    setTimeout(() => {
-      setMedicalAlerts(prev => prev.filter(a => a.id !== id));
-    }, 600);
-  };
-
   // Loading animation sequence (min 1s loading after image loads)
   useEffect(() => {
     if (!imageLoaded) return;
@@ -299,65 +285,6 @@ const Index = () => {
     };
   }, []);
 
-  // Fetch iCal events and show notifications for today
-  useEffect(() => {
-    if (calendarNotifiedRef.current) return;
-    calendarNotifiedRef.current = true;
-    
-    fetchICalEvents().then(events => {
-      const today = new Date();
-      const todayEvents = getICalEventsForDate(events, today).filter(e => !e.summary?.match(/hat\s+Kalle/i));
-      
-      if (todayEvents.length === 0) return;
-      
-      const NOTIFIED_KEY = 'calendarNotified_' + format(today, 'yyyy-MM-dd');
-      const alreadyNotified = localStorage.getItem(NOTIFIED_KEY);
-      
-      // Check for Parasiten Tablette / Wurmkur events
-      const MEDICAL_DISMISSED_KEY = 'medicalDismissed_' + format(today, 'yyyy-MM-dd');
-      const dismissed = JSON.parse(localStorage.getItem(MEDICAL_DISMISSED_KEY) || '[]') as string[];
-      
-      const medicalEvents = todayEvents.filter(e => {
-        const s = (e.summary || '').toLowerCase();
-        return (s.includes('parasiten') || s.includes('tablette') || s.includes('wurmkur')) && !dismissed.includes(e.uid);
-      });
-      
-      if (medicalEvents.length > 0) {
-        setMedicalAlerts(medicalEvents.map(e => ({
-          id: e.uid,
-          summary: e.summary || '',
-          timeStr: format(new Date(e.dtstart), 'HH:mm'),
-          checked: false,
-        })));
-      }
-      
-      // Show web notification for all today's events (once per day)
-      if (!alreadyNotified && 'Notification' in window && Notification.permission === 'granted') {
-        const nonMedical = todayEvents.filter(e => {
-          const s = (e.summary || '').toLowerCase();
-          return !s.includes('parasiten') && !s.includes('tablette') && !s.includes('wurmkur');
-        });
-        for (const evt of nonMedical) {
-          const dt = new Date(evt.dtstart);
-          new Notification(`📅 ${evt.summary}`, {
-            body: `Heute um ${format(dt, 'HH:mm')} Uhr`,
-            icon: '/favicon.png',
-            tag: `cal-${evt.uid}`,
-          });
-        }
-        // Parasiten/Wurmkur get persistent notifications
-        for (const evt of medicalEvents) {
-          new Notification(`💊 ${evt.summary}`, {
-            body: `Heute fällig`,
-            icon: '/favicon.png',
-            tag: `med-${evt.uid}`,
-            requireInteraction: true,
-          });
-        }
-        localStorage.setItem(NOTIFIED_KEY, 'true');
-      }
-    }).catch(console.error);
-  }, []);
   // Timer interval - runs every second
   useEffect(() => {
     const interval = setInterval(() => {
@@ -456,30 +383,6 @@ const Index = () => {
             />
           </div>
         )}
-        
-        {/* Medical alerts (Parasiten Tablette / Wurmkur) */}
-        {medicalAlerts.length > 0 && showCard && (
-          <div className="w-full animate-fade-in-up space-y-2" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            {medicalAlerts.map(alert => (
-              <div 
-                key={alert.id}
-                className={`flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] transition-all duration-500 ${alert.checked ? 'opacity-0 scale-95' : 'opacity-100'}`}
-              >
-                <span className="text-[20px]">💊</span>
-                <div className="flex-1 min-w-0">
-                  <span className="text-[14px] text-black">{alert.summary}</span>
-                  <p className="text-[14px] text-black/70">Heute fällig</p>
-                </div>
-                <button
-                  onClick={() => handleMedicalCheck(alert.id)}
-                  className={`w-[28px] h-[28px] rounded-full border-2 border-black flex items-center justify-center shrink-0 transition-all duration-300 ${alert.checked ? 'bg-black' : 'bg-transparent'}`}
-                >
-                  {alert.checked && <Check size={16} className="text-white" />}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
@@ -497,7 +400,7 @@ const Index = () => {
       )}
 
       {/* Event sheet opens on top */}
-      {!showTagesplan && <EventSheet
+      <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
@@ -506,7 +409,7 @@ const Index = () => {
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
-      />}
+      />
 
       {/* Tagesplan overlay */}
       <TagesplanOverlay 
@@ -515,7 +418,7 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      <Drawer open={showWeather && !showTagesplan} onOpenChange={setShowWeather}>
+      <Drawer open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent className="bg-black rounded-t-[24px] border-0 max-h-[95dvh] z-[60] lg:max-w-[80vw] lg:mx-auto">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
@@ -611,11 +514,11 @@ const Index = () => {
       </Drawer>
 
       {/* Gassi settings sheet */}
-      {!showTagesplan && <GassiSettingsSheet 
+      <GassiSettingsSheet 
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
-      />}
+      />
     </div>
   );
 };

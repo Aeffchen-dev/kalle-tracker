@@ -332,26 +332,19 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
       setTimeout(() => {
         setAnimationPhase('visible');
       }, 1100);
+      // Recolor body (status bar + bottom bar) after dot transition completes
+      setTimeout(() => {
+        document.body.style.backgroundColor = '#3d2b1f';
+      }, 1400);
     }
   }, [isOpen, animationPhase]);
 
-  // Set brown background only AFTER dot animation completes (animationPhase === 'visible')
+  // Reset when fully closed
   useEffect(() => {
-    if (animationPhase === 'visible') {
-      const brown = '#3d2b1f';
-      document.documentElement.classList.add('overlay-brown');
-      document.documentElement.style.setProperty('background-color', brown, 'important');
-      document.body.style.setProperty('background-color', brown, 'important');
-      const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-      if (meta) meta.content = brown;
-      // Force iOS Safari repaint via display toggle + reflow
-      const html = document.documentElement;
-      html.style.display = 'none';
-      // eslint-disable-next-line no-unused-expressions
-      html.offsetHeight;
-      html.style.display = '';
+    if (animationPhase === 'idle' && !isOpen) {
+      document.body.style.backgroundColor = '';
     }
-  }, [animationPhase]);
+  }, [animationPhase, isOpen]);
 
   // Focus input when editing starts
   useEffect(() => {
@@ -435,17 +428,16 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
 
   const handleClose = () => {
+    // Start animation immediately
     setAnimationPhase('dots-collapsing');
-    document.documentElement.classList.remove('overlay-brown');
-    document.documentElement.style.removeProperty('background-color');
-    document.body.style.removeProperty('background-color');
-    const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
-    if (meta) meta.content = '#e8e2db'; // Reset to beige (matches app background)
-
+    document.body.style.backgroundColor = '';
+    
+    // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
       onClose();
     });
     
+    // Hide SVG after animation completes
     setTimeout(() => {
       setAnimationPhase('idle');
     }, 300);
@@ -454,7 +446,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
   if (animationPhase === 'idle') return null;
 
   return (
-    <div className="fixed inset-0 z-[60] pointer-events-none">
+    <div className="fixed inset-0 z-40 pointer-events-none">
       {/* Animated spots using SVG with SMIL animation for sharp scaling */}
       <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
         {[
@@ -536,21 +528,24 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         })}
       </div>
 
-      
+      {/* Solid brown background - hide instantly on close */}
+      {animationPhase === 'visible' && (
+        <div className="absolute inset-0 bg-spot pointer-events-auto" />
+      )}
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="pointer-events-auto bg-spot" style={{ position: 'fixed', top: '-50vh', left: 0, right: 0, bottom: '-50vh', zIndex: 60 }}>
+        <div className="absolute inset-0 pointer-events-auto">
           {/* Header - floating over scroll content */}
-          <header className="fixed top-0 left-0 right-0 p-4 pb-8 flex justify-between items-start" style={{ zIndex: 61, background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
+          <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
             <button onClick={handleClose} className="text-white p-1">
               <X size={20} />
             </button>
           </header>
 
-          {/* Scrollable content - visible behind floating browser bar */}
-          <div className="fixed top-0 left-0 right-0 bottom-0 overflow-y-auto overflow-x-hidden px-4 pt-14" style={{ zIndex: 60, paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}>
+          {/* Scrollable content - fills entire viewport */}
+          <div className="absolute inset-0 overflow-y-auto overflow-x-hidden px-4 pb-4 pt-14">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
@@ -1050,55 +1045,29 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     const monBasedDay = (jsDay + 6) % 7;
                     const data = avgGassiByDay.get(monBasedDay);
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isActual?: boolean };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
                     const slots: SlotItem[] = [];
                     
-                    // For today: use actual logged events instead of estimates
-                    if (isToday) {
-                      const todayStart = new Date(dayDate);
-                      todayStart.setHours(0, 0, 0, 0);
-                      const todayEnd = new Date(dayDate);
-                      todayEnd.setHours(23, 59, 59, 999);
+                    if (data) {
+                      const allEvents: { hour: number; isPoop: boolean }[] = [
+                        ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                        ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                      ].sort((a, b) => a.hour - b.hour);
                       
-                      const todayEvents = appEvents.filter(e => {
-                        const t = new Date(e.time);
-                        return (e.type === 'pipi' || e.type === 'stuhlgang') && t >= todayStart && t <= todayEnd;
-                      }).sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
-                      
-                      // Cluster nearby events (within 30 min)
-                      for (const evt of todayEvents) {
-                        const t = new Date(evt.time);
-                        const hour = t.getHours() + t.getMinutes() / 60;
-                        const last = slots[slots.length - 1];
-                        if (last && last.isActual && Math.abs(hour - last.avgHour) <= 0.5) {
-                          // Merge into existing cluster
-                          if (evt.type === 'stuhlgang') last.hasPoop = true;
+                      const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                      for (const evt of allEvents) {
+                        const last = clusters[clusters.length - 1];
+                        if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                          last.hours.push(evt.hour);
+                          if (evt.isPoop) last.hasPoop = true;
                         } else {
-                          slots.push({ avgHour: hour, hasPoop: evt.type === 'stuhlgang', isWalk: true, icalEvents: [], isActual: true });
+                          clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
                         }
                       }
-                    } else {
-                      if (data) {
-                        const allEvents: { hour: number; isPoop: boolean }[] = [
-                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                        ].sort((a, b) => a.hour - b.hour);
-                        
-                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                        for (const evt of allEvents) {
-                          const last = clusters[clusters.length - 1];
-                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                            last.hours.push(evt.hour);
-                            if (evt.isPoop) last.hasPoop = true;
-                          } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
-                          }
-                        }
-                        
-                        for (const c of clusters) {
-                          const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                          slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
-                        }
+                      
+                      for (const c of clusters) {
+                        const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                        slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
                       }
                     }
                     

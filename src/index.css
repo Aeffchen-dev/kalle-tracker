@@ -222,19 +222,7 @@
 }
 
 /* Prevent horizontal scroll on page */
-html {
-  max-width: 100vw;
-  background-color: #e8e2db;
-}
-
-html.overlay-brown,
-html.overlay-brown body,
-html.overlay-brown #dalmatian-spots,
-html.overlay-brown #root,
-html.overlay-brown #static-loader {
-  background-color: #3d2b1f !important;
-}
-
-body {
+html, body {
+  overflow-x: hidden;
   max-width: 100vw;
 }
