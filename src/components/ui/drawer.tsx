@@ -34,10 +34,11 @@ const DrawerContent = React.forwardRef<
         "fixed inset-x-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
         className,
       )}
-      style={{ bottom: 0, paddingBottom: 'env(safe-area-inset-bottom)' }}
+      style={{ bottom: 0 }}
       {...props}
     >
       {children}
+      <div className="w-full bg-black shrink-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 50px)' }} />
     </DrawerPrimitive.Content>
   </DrawerPortal>
 ));
