@@ -848,7 +848,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       <button
                         onClick={handleAddSnackFromUrl}
                         disabled={isFetchingMeta || !newSnackLink.trim()}
-                        className="text-[10px] text-white/40 hover:text-white/60 transition-colors flex-shrink-0 disabled:opacity-30"
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
