@@ -9,6 +9,10 @@ const DEBUG_TODAY: Date | null = new Date('2026-03-02T10:00:00');
 
 const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur'];
 
+// Strip trailing emojis from summary text
+const stripTrailingEmojis = (text: string): string =>
+  text.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{2B50}\u{2B55}\u{231A}-\u{23F3}\u{2934}-\u{2935}\u{25AA}-\u{25FE}\u{2190}-\u{21FF}\u{2702}-\u{27B0}\u{2060}]+$/gu, '').trim();
+
 const isMedicalEvent = (summary: string): boolean =>
   MEDICAL_KEYWORDS.some(kw => summary.toLowerCase().includes(kw.toLowerCase()));
 
@@ -209,7 +213,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
                     {getMedicalEmoji(evt.summary)}
                   </span>
                   <span className="text-[14px] text-black truncate flex-1 min-w-0">
-                    {evt.summary}
+                    {stripTrailingEmojis(evt.summary)}
                   </span>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
