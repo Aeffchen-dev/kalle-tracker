@@ -123,10 +123,6 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     startXRef.current = e.touches[0].clientX;
     startYRef.current = e.touches[0].clientY;
     setSwipingId(id);
-    // Close any other open item immediately (triggers 150ms close transition)
-    if (activeId && activeId !== id) {
-      setActiveId(null);
-    }
     isHorizontalSwipe.current = false;
     swipeDecided.current = false;
   };
