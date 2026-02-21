@@ -17,9 +17,10 @@ type SnapPoint = number | string;
 interface CalendarViewProps {
   eventSheetOpen?: boolean;
   initialShowTrends?: boolean;
+  initialScrollToChart?: 'weight' | 'ph' | null;
 }
 
-const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false }: CalendarViewProps) => {
+const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initialScrollToChart = null }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
@@ -427,7 +428,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false }: Cal
         >
           {showTrends ? (
             <div data-vaul-no-drag>
-              <TrendAnalysis events={events} />
+              <TrendAnalysis events={events} scrollToChart={initialScrollToChart} />
             </div>
           ) : (
             <div 

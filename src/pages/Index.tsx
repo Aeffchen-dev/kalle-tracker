@@ -70,6 +70,7 @@ const Index = () => {
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
   const [openCalendarWithTrends, setOpenCalendarWithTrends] = useState(false);
+  const [scrollToChart, setScrollToChart] = useState<'weight' | 'ph' | null>(null);
   
   const [imageLoaded, setImageLoaded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -329,7 +330,7 @@ const Index = () => {
   // Reset trends flag after calendar remounts
   useEffect(() => {
     if (openCalendarWithTrends) {
-      const t = setTimeout(() => setOpenCalendarWithTrends(false), 500);
+      const t = setTimeout(() => { setOpenCalendarWithTrends(false); setScrollToChart(null); }, 500);
       return () => clearTimeout(t);
     }
   }, [openCalendarWithTrends]);
@@ -427,8 +428,9 @@ const Index = () => {
               anomalies={anomalies} 
               onDismiss={handleDismissAnomaly}
               onGassiSettingsTap={() => setShowGassiSettings(true)}
-              onTrendsTap={() => {
+              onTrendsTap={(chart) => {
                 setOpenCalendarWithTrends(true);
+                setScrollToChart(chart);
                 setCalendarKey(k => k + 1);
               }}
             />
@@ -437,7 +439,7 @@ const Index = () => {
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
-      {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} initialShowTrends={openCalendarWithTrends} />}
+      {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} initialShowTrends={openCalendarWithTrends} initialScrollToChart={scrollToChart} />}
 
       {/* Dog animation */}
       {showDogAnimation && (

@@ -7,7 +7,7 @@ interface AnomalyAlertsProps {
   anomalies: Anomaly[];
   onDismiss?: (id: string) => void;
   onGassiSettingsTap?: () => void;
-  onTrendsTap?: () => void;
+  onTrendsTap?: (chart: 'weight' | 'ph') => void;
   compact?: boolean;
 }
 
@@ -102,9 +102,13 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
       onGassiSettingsTap();
       return;
     }
-    // Weight/pH alerts open trends
-    if ((type === 'weight_deviation' || type === 'ph_deviation') && onTrendsTap) {
-      onTrendsTap();
+    // Weight/pH alerts open trends at specific chart
+    if (type === 'weight_deviation' && onTrendsTap) {
+      onTrendsTap('weight');
+      return;
+    }
+    if (type === 'ph_deviation' && onTrendsTap) {
+      onTrendsTap('ph');
       return;
     }
   };
