@@ -156,7 +156,7 @@ const DogFoodChecker = () => {
   const config = result ? STATUS_CONFIG[result.status] : null;
 
   return (
-    <div className="mb-8" ref={containerRef}>
+    <div className="mb-2" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.08)]" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.10)' }}>
           <div className="flex items-center gap-2 flex-1">
