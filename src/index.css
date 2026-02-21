@@ -223,12 +223,10 @@
 
 /* Prevent horizontal scroll on page */
 html {
-  overflow-x: hidden;
   max-width: 100vw;
   background-color: #e8e2db;
 }
 
 body {
-  overflow-x: hidden;
   max-width: 100vw;
 }
