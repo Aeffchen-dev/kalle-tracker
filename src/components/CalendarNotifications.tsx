@@ -68,8 +68,13 @@ const CalendarNotifications: React.FC = () => {
     return true;
   });
 
-  // Sort newest first
-  visibleEvents.sort((a, b) => new Date(b.dtstart).getTime() - new Date(a.dtstart).getTime());
+  // Sort: medical first, then newest first
+  visibleEvents.sort((a, b) => {
+    const aMed = isMedicalEvent(a.summary) ? 0 : 1;
+    const bMed = isMedicalEvent(b.summary) ? 0 : 1;
+    if (aMed !== bMed) return aMed - bMed;
+    return new Date(b.dtstart).getTime() - new Date(a.dtstart).getTime();
+  });
 
   if (visibleEvents.length === 0) return null;
 
@@ -189,9 +194,9 @@ const CalendarNotifications: React.FC = () => {
               style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
             >
               {/* Left emoji */}
-              {!medical && (
-                <span className="text-[20px] shrink-0">📅</span>
-              )}
+              <span className="text-[20px] shrink-0">
+                {medical ? getMedicalEmoji(evt.summary) : '📅'}
+              </span>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
@@ -218,7 +223,7 @@ const CalendarNotifications: React.FC = () => {
                   onClick={(e) => { e.stopPropagation(); handleCheck(evt); }}
                   className="relative w-[28px] h-[28px] rounded-full shrink-0 ml-1 flex items-center justify-center overflow-hidden"
                   style={{
-                    border: '1px solid black',
+                    border: '2px solid black',
                     backgroundColor: isChecked ? 'black' : 'transparent',
                     transition: 'background-color 0.3s ease',
                   }}
