@@ -82,13 +82,23 @@ Deno.serve(async (req) => {
       } catch { /* ignore */ }
     }
 
-    // Clean up title - remove shop name suffix if present
+    // Clean up title - remove shop name suffix if present (case-insensitive)
     let name = ogTitle.trim();
-    if (shop && name.endsWith(` - ${shop}`)) {
-      name = name.replace(` - ${shop}`, '');
-    }
-    if (shop && name.endsWith(` | ${shop}`)) {
-      name = name.replace(` | ${shop}`, '');
+    // Remove common separator patterns with shop name or site name
+    const separators = [' - ', ' | ', ' – ', ' — '];
+    for (const sep of separators) {
+      const idx = name.lastIndexOf(sep);
+      if (idx > 0) {
+        const suffix = name.substring(idx + sep.length).trim();
+        // Remove if suffix matches shop name (case-insensitive) or og:site_name
+        if (
+          (shop && suffix.toLowerCase().replace(/[-_]/g, ' ') === shop.toLowerCase().replace(/[-_]/g, ' ')) ||
+          (ogSiteName && suffix.toLowerCase() === ogSiteName.toLowerCase())
+        ) {
+          name = name.substring(0, idx).trim();
+          break;
+        }
+      }
     }
 
     return new Response(
