@@ -778,7 +778,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     return (
                       <div key={snack.id} className="relative flex w-full items-stretch overflow-hidden">
                         <div
-                          className={`flex items-center gap-3 py-3 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          className={`flex items-center gap-3 py-1.5 cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                           onClick={() => handleSnackClick(snack.id)}
                           onTouchStart={() => handleSnackLongPressStart(snack.id)}
                           onTouchMove={handleSnackLongPressMove}
@@ -795,10 +795,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               <span className="text-[14px]">🦴</span>
                             </div>
                           )}
-                          <div className="flex flex-col min-w-0 flex-1">
+                          <div className="flex items-center min-w-0 flex-1">
                             <span className="text-[12px] text-white/80 truncate">{snack.name}</span>
                             {snack.shop_name && (
-                              <span className="text-[10px] text-white/40">{snack.shop_name}</span>
+                              <span className="text-[10px] text-white/40 ml-auto pl-2 flex-shrink-0">{snack.shop_name}</span>
                             )}
                           </div>
                           {snack.link && (
@@ -869,13 +869,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     </div>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => setShowAddSnack(true)}
-                    className="pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
-                  >
-                    <Plus size={14} />
-                    <span>Snack hinzufügen</span>
-                  </button>
+                  <div className="border-t border-white/10">
+                    <button
+                      onClick={() => setShowAddSnack(true)}
+                      className="flex items-center gap-3 py-1.5 w-full text-left hover:opacity-80 transition-opacity"
+                    >
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <span className="text-[12px] text-white/40">Snack hinzufügen</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
