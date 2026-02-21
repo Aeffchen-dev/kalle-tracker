@@ -153,9 +153,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
   // Load iCal events and app events
   useEffect(() => {
+    if (!isOpen) return;
     fetchICalEvents().then(setIcalEvents).catch(console.error);
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
-  }, []);
+  }, [isOpen]);
 
   // Compute average gassi times, grouped by weekday vs weekend
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
