@@ -34,7 +34,9 @@ const DogFoodChecker = () => {
   const [tick, setTick] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLSpanElement>(null);
   const charIndexRef = useRef(0);
+  const [inputWidth, setInputWidth] = useState(48);
 
   // IntersectionObserver to start animation when visible
   useEffect(() => {
@@ -126,6 +128,15 @@ const DogFoodChecker = () => {
     if (e.key === 'Enter') checkFood();
   };
 
+  // Measure text width for input sizing
+  useEffect(() => {
+    if (measureRef.current) {
+      const displayText = query || placeholderText || '';
+      measureRef.current.textContent = displayText || ' ';
+      setInputWidth(measureRef.current.offsetWidth + 32);
+    }
+  }, [query, placeholderText]);
+
   const config = result ? STATUS_CONFIG[result.status] : null;
 
   return (
@@ -143,10 +154,11 @@ const DogFoodChecker = () => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
-            className="w-24 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
-            style={{ caretColor: 'white' }}
+            className="min-w-0 bg-transparent text-[13px] text-white outline-none text-center transition-all duration-150"
+            style={{ caretColor: 'white', width: `${inputWidth}px` }}
             placeholder=""
           />
+          <span ref={measureRef} className="absolute invisible whitespace-pre text-[13px]" style={{ pointerEvents: 'none' }} />
           {!query && !isFocused && (
             <span className="absolute left-1/2 -translate-x-1/2 text-[13px] text-white/25 pointer-events-none flex items-center">
               {placeholderText}
