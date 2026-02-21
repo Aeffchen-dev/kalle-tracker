@@ -798,7 +798,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           onMouseLeave={handleSnackLongPressEnd}
                         >
                           {snack.image_url ? (
-                            <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                            <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
                           ) : (
                             <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                               <span className="text-[14px]">🦴</span>
@@ -842,7 +842,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newSnackLink}
                         onChange={(e) => setNewSnackLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddSnackFromUrl(); if (e.key === 'Escape') { setShowAddSnack(false); setNewSnackLink(''); } }}
-                        className="flex-1 min-w-0 bg-white/10 text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
                         autoFocus
                       />
                       <button
