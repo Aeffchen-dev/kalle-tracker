@@ -25,48 +25,19 @@ const STATUS_CONFIG: Record<FoodStatus, { emoji: string; label: string; color: s
 const DogFoodChecker = () => {
   const [query, setQuery] = useState('');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [placeholderText, setPlaceholderText] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<FoodResult | null>(null);
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const charIndexRef = useRef(0);
 
-  // Animated placeholder typing effect
+  // Cycle placeholder every 2 seconds
   useEffect(() => {
-    if (isFocused || query) return; // Stop animation when focused or has input
-
-    const currentFood = PLACEHOLDER_FOODS[placeholderIndex];
-    let timer: ReturnType<typeof setTimeout>;
-
-    if (isTyping) {
-      if (charIndexRef.current <= currentFood.length) {
-        timer = setTimeout(() => {
-          setPlaceholderText(currentFood.slice(0, charIndexRef.current));
-          charIndexRef.current++;
-        }, 80 + Math.random() * 40);
-      } else {
-        // Pause at full word
-        timer = setTimeout(() => {
-          setIsTyping(false);
-        }, 1500);
-      }
-    } else {
-      if (charIndexRef.current > 0) {
-        timer = setTimeout(() => {
-          charIndexRef.current--;
-          setPlaceholderText(currentFood.slice(0, charIndexRef.current));
-        }, 40);
-      } else {
-        // Move to next word
-        setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_FOODS.length);
-        setIsTyping(true);
-      }
-    }
-
-    return () => clearTimeout(timer);
-  }, [placeholderText, isTyping, placeholderIndex, isFocused, query]);
+    if (isFocused || query) return;
+    const timer = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % PLACEHOLDER_FOODS.length);
+    }, 2000);
+    return () => clearInterval(timer);
+  }, [isFocused, query]);
 
   const checkFood = async () => {
     const trimmed = query.trim();
@@ -133,9 +104,8 @@ const DogFoodChecker = () => {
                 style={{ caretColor: 'white' }}
               />
               {!query && (
-                <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center">
-                  {placeholderText}
-                  <span className="animate-pulse ml-[1px]">|</span>
+              <span className="absolute inset-0 text-[13px] text-white/30 pointer-events-none flex items-center justify-center transition-opacity">
+                  {PLACEHOLDER_FOODS[placeholderIndex]}
                 </span>
               )}
             </div>
