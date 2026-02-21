@@ -45,11 +45,11 @@ const DogFoodChecker = () => {
         timer = setTimeout(() => {
           setPlaceholderText(currentFood.slice(0, charIndexRef.current));
           charIndexRef.current++;
-        }, 70);
+        }, 80);
       } else {
         timer = setTimeout(() => {
           setIsTyping(false);
-        }, 1000);
+        }, 2000);
       }
     } else {
       if (charIndexRef.current > 0) {
@@ -144,7 +144,7 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 self-stretch rounded-r-lg bg-black hover:bg-black/80 active:scale-95 transition-all disabled:opacity-30 flex items-center justify-center px-3 -my-0 -mr-0"
+            className="shrink-0 self-stretch aspect-square rounded-r-lg bg-black active:scale-95 transition-transform disabled:opacity-100 flex items-center justify-center"
             style={{ marginTop: '-12px', marginBottom: '-12px', marginRight: '0', paddingTop: '12px', paddingBottom: '12px' }}
           >
             {loading ? (
