@@ -158,7 +158,37 @@ const Index = () => {
     calculateTimeDisplay();
     // Detect anomalies
     const detected = detectAnomalies(result.events);
-    const filteredAnomalies = detected.filter(a => !dismissedAnomalies.has(a.id));
+    
+    // DEBUG: Add mock anomalies for testing all types
+    const debugAnomalies: Anomaly[] = [
+      {
+        id: 'debug_gassi',
+        type: 'upcoming_break',
+        severity: 'info',
+        title: 'Bald Gassi-Zeit',
+        description: 'Nächster Spaziergang um ca. 15:30 Uhr',
+        timestamp: new Date(),
+      },
+      {
+        id: 'debug_weight',
+        type: 'weight_deviation',
+        severity: 'warning',
+        title: 'Untergewicht',
+        description: 'Aktuell 30,4kg (Ideal: 32,0kg, -5%)',
+        timestamp: new Date(),
+      },
+      {
+        id: 'debug_ph',
+        type: 'ph_deviation',
+        severity: 'alert',
+        title: 'pH-Wert zu niedrig',
+        description: 'Letzter Wert: 6,2 (Normal: 6,5-7,2)',
+        timestamp: new Date(),
+      },
+    ];
+    const allAnomalies = [...debugAnomalies, ...detected];
+    
+    const filteredAnomalies = allAnomalies.filter(a => !dismissedAnomalies.has(a.id));
     setAnomalies(filteredAnomalies);
     
     // Schedule native notifications for walk reminders
