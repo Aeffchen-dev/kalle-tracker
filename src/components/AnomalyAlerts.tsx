@@ -7,6 +7,7 @@ interface AnomalyAlertsProps {
   anomalies: Anomaly[];
   onDismiss?: (id: string) => void;
   onGassiSettingsTap?: () => void;
+  onTrendsTap?: () => void;
   compact?: boolean;
 }
 
@@ -26,7 +27,7 @@ const getEmoji = (type: Anomaly['type']): string => {
   }
 };
 
-const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact = false }: AnomalyAlertsProps) => {
+const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrendsTap, compact = false }: AnomalyAlertsProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -91,14 +92,20 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, compact 
   };
 
   const handleCardClick = (id: string, type: Anomaly['type']) => {
-    // If it's a gassi alert, open settings
+    // If delete is shown, clicking card closes it
+    if (activeId === id) {
+      setActiveId(null);
+      return;
+    }
+    // Gassi alert opens settings
     if (type === 'upcoming_break' && onGassiSettingsTap) {
       onGassiSettingsTap();
       return;
     }
-    // If delete is shown, clicking card closes it
-    if (activeId === id) {
-      setActiveId(null);
+    // Weight/pH alerts open trends
+    if ((type === 'weight_deviation' || type === 'ph_deviation') && onTrendsTap) {
+      onTrendsTap();
+      return;
     }
   };
 

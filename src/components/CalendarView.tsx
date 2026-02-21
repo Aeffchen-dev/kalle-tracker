@@ -16,16 +16,17 @@ type SnapPoint = number | string;
 
 interface CalendarViewProps {
   eventSheetOpen?: boolean;
+  initialShowTrends?: boolean;
 }
 
-const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
+const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false }: CalendarViewProps) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
-  const [snap, setSnap] = useState<SnapPoint | null>(0.2);
-  const [showTrends, setShowTrends] = useState(false);
+  const [snap, setSnap] = useState<SnapPoint | null>(initialShowTrends ? 0.9 : 0.2);
+  const [showTrends, setShowTrends] = useState(initialShowTrends);
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);

@@ -69,6 +69,7 @@ const Index = () => {
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
+  const [openCalendarWithTrends, setOpenCalendarWithTrends] = useState(false);
   
   const [imageLoaded, setImageLoaded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -324,9 +325,16 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Reset trends flag after calendar remounts
+  useEffect(() => {
+    if (openCalendarWithTrends) {
+      const t = setTimeout(() => setOpenCalendarWithTrends(false), 500);
+      return () => clearTimeout(t);
+    }
+  }, [openCalendarWithTrends]);
+
   return (
     <div className="min-h-dvh flex flex-col bg-transparent relative pb-[env(safe-area-inset-bottom)]">
-      
 
       {/* Header */}
       <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
@@ -407,7 +415,7 @@ const Index = () => {
         {/* Calendar event notifications */}
         {showCard && (
           <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            <CalendarNotifications />
+            <CalendarNotifications onCalendarEventTap={() => setShowTagesplan(true)} />
           </div>
         )}
 
@@ -418,13 +426,17 @@ const Index = () => {
               anomalies={anomalies} 
               onDismiss={handleDismissAnomaly}
               onGassiSettingsTap={() => setShowGassiSettings(true)}
+              onTrendsTap={() => {
+                setOpenCalendarWithTrends(true);
+                setCalendarKey(k => k + 1);
+              }}
             />
           </div>
         )}
       </main>
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
-      {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} />}
+      {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} initialShowTrends={openCalendarWithTrends} />}
 
       {/* Dog animation */}
       {showDogAnimation && (

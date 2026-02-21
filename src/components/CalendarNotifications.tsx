@@ -24,7 +24,11 @@ const DISMISSED_CAL_KEY = 'kalle_dismissed_cal_';
 const getDismissKey = (uid: string, date: string) => `${DISMISSED_KEY}${uid}_${date}`;
 const getCalDismissKey = (uid: string, date: string) => `${DISMISSED_CAL_KEY}${uid}_${date}`;
 
-const CalendarNotifications: React.FC = () => {
+interface CalendarNotificationsProps {
+  onCalendarEventTap?: () => void;
+}
+
+const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalendarEventTap }) => {
   const [events, setEvents] = useState<ICalEvent[]>([]);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [checking, setChecking] = useState<Set<string>>(new Set());
@@ -154,9 +158,14 @@ const CalendarNotifications: React.FC = () => {
     setSwipeOffset(0);
   };
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = (id: string, evt: ICalEvent) => {
     if (activeId === id) {
       setActiveId(null);
+      return;
+    }
+    // Non-medical calendar events open Wochenplan
+    if (!isMedicalEvent(evt.summary) && onCalendarEventTap) {
+      onCalendarEventTap();
     }
   };
 
@@ -190,7 +199,7 @@ const CalendarNotifications: React.FC = () => {
           >
             <div
               className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
-              onClick={() => handleCardClick(key)}
+              onClick={() => handleCardClick(key, evt)}
               style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
             >
               {/* Left emoji */}
