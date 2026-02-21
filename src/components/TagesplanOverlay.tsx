@@ -770,7 +770,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Snacks Section */}
             <div className="mb-8">
               <div className="glass-card rounded-lg p-4">
-                <h3 className="text-white text-[16px] font-medium mb-3">Snacks</h3>
+                <h3 className="text-white text-[16px] font-medium mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {snacks.map((snack) => {
                     const isActive = activeSnackId === snack.id;
@@ -871,7 +871,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 ) : (
                   <button
                     onClick={() => setShowAddSnack(true)}
-                    className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
+                    className="pt-3 border-t border-white/10 flex items-center gap-2 text-[12px] text-white/40 hover:text-white/60 transition-colors w-full"
                   >
                     <Plus size={14} />
                     <span>Snack hinzufügen</span>
