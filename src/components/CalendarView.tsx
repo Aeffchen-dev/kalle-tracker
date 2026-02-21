@@ -417,7 +417,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
             flexGrow: 1, 
             flexShrink: 1, 
             flexBasis: '100%',
-            paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
+            paddingBottom: '16px',
             touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
           }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
