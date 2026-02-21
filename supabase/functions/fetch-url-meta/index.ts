@@ -3,6 +3,20 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Decode HTML entities (e.g. &amp; &uuml; &#246; &#x00FC;)
+const decodeHtmlEntities = (text: string): string => {
+  const namedEntities: Record<string, string> = {
+    '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'",
+    '&auml;': 'ä', '&ouml;': 'ö', '&uuml;': 'ü', '&Auml;': 'Ä', '&Ouml;': 'Ö', '&Uuml;': 'Ü', '&szlig;': 'ß',
+    '&nbsp;': ' ', '&ndash;': '–', '&mdash;': '—', '&laquo;': '«', '&raquo;': '»',
+    '&euro;': '€', '&copy;': '©', '&reg;': '®', '&trade;': '™',
+  };
+  return text
+    .replace(/&\w+;/g, (m) => namedEntities[m] ?? m)
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -72,7 +86,7 @@ Deno.serve(async (req) => {
       || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i)?.[1]
       || '';
 
-    let shop = ogSiteName;
+    let shop = decodeHtmlEntities(ogSiteName);
     if (!shop) {
       try {
         const hostname = new URL(formattedUrl).hostname.replace(/^www\./, '');
@@ -83,7 +97,7 @@ Deno.serve(async (req) => {
     }
 
     // Clean up title - remove shop name suffix if present (case-insensitive)
-    let name = ogTitle.trim();
+    let name = decodeHtmlEntities(ogTitle.trim());
     // Remove common separator patterns with shop name or site name
     const separators = [' - ', ' | ', ' – ', ' — '];
     for (const sep of separators) {
