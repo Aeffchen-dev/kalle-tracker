@@ -142,7 +142,7 @@ const DogFoodChecker = () => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onKeyDown={handleKeyDown}
-            className="flex-1 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
+            className="w-24 min-w-0 bg-transparent text-[13px] text-white outline-none text-center"
             style={{ caretColor: 'white' }}
             placeholder=""
           />
@@ -156,12 +156,12 @@ const DogFoodChecker = () => {
           <button
             onClick={checkFood}
             disabled={loading || !query.trim()}
-            className="shrink-0 rounded-full bg-white/15 hover:bg-white/25 active:scale-95 transition-all flex items-center justify-center w-[36px] h-[36px] cursor-pointer"
+            className="shrink-0 rounded-full bg-white active:scale-95 transition-all flex items-center justify-center w-[36px] h-[36px] cursor-pointer"
           >
             {loading ? (
               <div className="w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
-              <Search size={16} className="text-white/60" />
+              <Search size={16} className="text-[#3d2b1f]" />
             )}
           </button>
         </div>
