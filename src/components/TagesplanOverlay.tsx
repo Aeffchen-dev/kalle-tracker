@@ -1258,7 +1258,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     
                     // Build walk slots
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean; isFutureEstimate?: boolean };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isEstimate?: boolean; isFutureEstimate?: boolean; exactTime?: string };
                     const slots: SlotItem[] = [];
                     
                     {
@@ -1298,20 +1298,27 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         
                         const dayEvents = appEvents
                           .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= dayStart && new Date(e.time) <= dayEnd)
-                          .map(e => ({ hour: new Date(e.time).getHours() + new Date(e.time).getMinutes() / 60, isPoop: e.type === 'stuhlgang' }))
+                          .map(e => {
+                            const d = new Date(e.time);
+                            return {
+                              hour: d.getHours() + d.getMinutes() / 60,
+                              isPoop: e.type === 'stuhlgang',
+                              timeStr: `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')}`,
+                            };
+                          })
                           .sort((a, b) => a.hour - b.hour);
                         
                         
                         if (dayEvents.length > 0) {
                           // Cluster real events within 30-minute windows
-                          const realClusters: { hours: number[]; hasPoop: boolean }[] = [];
+                          const realClusters: { hours: number[]; hasPoop: boolean; firstTimeStr: string }[] = [];
                           for (const evt of dayEvents) {
                             const last = realClusters[realClusters.length - 1];
                             if (last && evt.hour - last.hours[last.hours.length - 1] <= 0.5) {
                               last.hours.push(evt.hour);
                               if (evt.isPoop) last.hasPoop = true;
                             } else {
-                              realClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                              realClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop, firstTimeStr: evt.timeStr });
                             }
                           }
                           
@@ -1321,6 +1328,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             isWalk: true,
                             icalEvents: [],
                             isEstimate: false,
+                            exactTime: c.firstTimeStr,
                           }));
                           
                           if (isToday) {
@@ -1471,7 +1479,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.isWalk && (
                                     <div className={`p-2 bg-white/[0.06] rounded-lg overflow-hidden ${slot.isFutureEstimate ? 'opacity-30' : ''}`}>
                                       <div className="flex items-center overflow-hidden">
-                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{formatTime(slot.avgHour)} Uhr</span>
+                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
                                         <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
                                         <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                                       </div>
