@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 import { format } from 'date-fns';
 import { Check } from 'lucide-react';
+import { saveEvent } from '@/lib/events';
 
 // DEBUG: Set to true to show ALL events regardless of date
 const DEBUG_SHOW_ALL = true;
@@ -92,6 +93,10 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   const handleCheck = (evt: ICalEvent) => {
     if (checking.has(evt.uid)) return;
     setChecking(prev => new Set([...prev, evt.uid]));
+
+    // Save medical event to backend
+    const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' : 'parasiten';
+    saveEvent(eventType as any);
 
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));

@@ -1,6 +1,6 @@
 import { supabaseClient as supabase } from "@/lib/supabaseClient";
 
-export type EventType = 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht';
+export type EventType = 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht' | 'wurmkur' | 'parasiten';
 
 export interface Event {
   id: string;
