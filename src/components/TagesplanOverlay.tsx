@@ -1613,11 +1613,26 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                   {/* Walk entry - matches CalendarView bottom sheet style */}
                                    {slot.isWalk && (
                                     <div className={`p-2 bg-white/[0.06] rounded-lg overflow-hidden ${slot.isFutureEstimate ? 'opacity-30' : ''}`}>
-                                      <div className="flex items-center overflow-hidden">
-                                        <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
-                                        <span className="text-[14px] shrink-0">{slot.hasPoop && slot.hasPipi ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
-                                        <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop && slot.hasPipi ? 'Pipi + Stuhlgang' : slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
-                                      </div>
+                                      {slot.hasPoop && slot.hasPipi ? (
+                                        <div className="space-y-1">
+                                          <div className="flex items-center overflow-hidden">
+                                            <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
+                                            <span className="text-[14px] shrink-0">💦</span>
+                                            <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">Pipi</span>
+                                          </div>
+                                          <div className="flex items-center overflow-hidden">
+                                            <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
+                                            <span className="text-[14px] shrink-0">💩</span>
+                                            <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">Stuhlgang</span>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center overflow-hidden">
+                                          <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{slot.exactTime || formatTime(slot.avgHour)} Uhr</span>
+                                          <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>
+                                          <span className="text-[12px] text-white/70 ml-2 truncate hidden md:inline">{slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                                        </div>
+                                      )}
                                     </div>
                                    )}
                                    {/* iCal events */}
