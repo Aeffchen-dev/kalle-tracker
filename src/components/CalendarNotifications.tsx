@@ -29,7 +29,7 @@ const getDismissKey = (uid: string, date: string) => `${DISMISSED_KEY}${uid}_${d
 const getCalDismissKey = (uid: string, date: string) => `${DISMISSED_CAL_KEY}${uid}_${date}`;
 
 interface CalendarNotificationsProps {
-  onCalendarEventTap?: () => void;
+  onCalendarEventTap?: (eventDate: string) => void;
 }
 
 const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalendarEventTap }) => {
@@ -167,9 +167,9 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
       setActiveId(null);
       return;
     }
-    // Non-medical calendar events open Wochenplan
+    // Non-medical calendar events open Wochenplan at event date
     if (!isMedicalEvent(evt.summary) && onCalendarEventTap) {
-      onCalendarEventTap();
+      onCalendarEventTap(evt.dtstart);
     }
   };
 
