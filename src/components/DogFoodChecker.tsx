@@ -130,13 +130,13 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-8" ref={containerRef}>
-      <div className="glass-card rounded-full overflow-hidden">
+      <div className="glass-card rounded-2xl overflow-hidden">
           <div className="flex items-center">
             <div className="flex items-center gap-2 pl-4 flex-1 min-w-0">
             <span className="text-[18px] shrink-0">🐶</span>
             <span className="text-[13px] text-white shrink-0">Kann ich</span>
             <div
-              className="flex-1 min-w-0 bg-white/[0.06] rounded-full px-3 py-2 self-stretch flex items-center cursor-text my-1"
+              className="flex-1 min-w-0 bg-white/[0.03] rounded-full px-3 py-2 self-stretch flex items-center cursor-text my-1"
               onClick={() => inputRef.current?.focus()}
             >
               <div className="relative">
