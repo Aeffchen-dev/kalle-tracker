@@ -59,16 +59,19 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
         : getICalEventsForDate(allEvents, today);
       setEvents(todayEvents);
 
-      const todayStr = format(today, 'yyyy-MM-dd');
-      const dismissedSet = new Set<string>();
-      todayEvents.forEach(evt => {
-        const medKey = getDismissKey(evt.uid, todayStr);
-        const calKey = getCalDismissKey(evt.uid, todayStr);
-        if (localStorage.getItem(medKey) || localStorage.getItem(calKey)) {
-          dismissedSet.add(evt.uid);
-        }
-      });
-      setDismissed(dismissedSet);
+      // In debug mode, don't load dismissed state so all notifications remain visible
+      if (!DEBUG_SHOW_ALL) {
+        const todayStr = format(today, 'yyyy-MM-dd');
+        const dismissedSet = new Set<string>();
+        todayEvents.forEach(evt => {
+          const medKey = getDismissKey(evt.uid, todayStr);
+          const calKey = getCalDismissKey(evt.uid, todayStr);
+          if (localStorage.getItem(medKey) || localStorage.getItem(calKey)) {
+            dismissedSet.add(evt.uid);
+          }
+        });
+        setDismissed(dismissedSet);
+      }
     };
     load();
   }, []);
