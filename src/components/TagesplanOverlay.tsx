@@ -160,6 +160,16 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [showAddSnack, setShowAddSnack] = useState(false);
   const [newSnackLink, setNewSnackLink] = useState('');
 
+  // Medicines (Hausapotheke) state - mirrors snacks pattern
+  const [medicines, setMedicines] = useState<{ id: string; name: string; shop_name: string | null; link: string | null; image_url: string | null }[]>([]);
+  const [showAddMedicine, setShowAddMedicine] = useState(false);
+  const [newMedicineLink, setNewMedicineLink] = useState('');
+  const [isFetchingMedicineMeta, setIsFetchingMedicineMeta] = useState(false);
+  const [activeMedicineId, setActiveMedicineId] = useState<string | null>(null);
+  const medicineLongPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const medicineLongPressTriggered = useRef<boolean>(false);
+  const [medicineDeleting, setMedicineDeleting] = useState<string | null>(null);
+
   // Load iCal events and app events
   useEffect(() => {
     if (!isOpen) return;
@@ -173,10 +183,62 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (data) setSnacks(data as typeof snacks);
   };
 
+  // Load medicines from DB
+  const loadMedicines = async () => {
+    const { data } = await (supabase.from('medicines') as any).select('*').order('created_at');
+    if (data) setMedicines(data as typeof medicines);
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     loadSnacks();
+    loadMedicines();
   }, [isOpen]);
+
+  const handleAddMedicineFromUrl = async () => {
+    const url = newMedicineLink.trim();
+    if (!url) return;
+    setIsFetchingMedicineMeta(true);
+    try {
+      let name = '';
+      let shop = '';
+      let image = '';
+      try {
+        const { data, error } = await supabase.functions.invoke('fetch-url-meta', { body: { url } });
+        if (!error && data) { name = data.name || ''; shop = data.shop || ''; image = data.image || ''; }
+      } catch (e) { console.error('Failed to fetch URL metadata:', e); }
+      if (!name) {
+        try { const hostname = new URL(url.startsWith('http') ? url : `https://${url}`).hostname.replace(/^www\./, ''); name = hostname; } catch { name = url; }
+      }
+      const { error: insertError } = await (supabase.from('medicines') as any).insert({
+        name, shop_name: shop || null, link: url.startsWith('http') ? url : `https://${url}`, image_url: image || null,
+      });
+      if (!insertError) { setNewMedicineLink(''); setShowAddMedicine(false); loadMedicines(); }
+    } finally { setIsFetchingMedicineMeta(false); }
+  };
+
+  const handleDeleteMedicine = async (id: string) => {
+    setMedicineDeleting(id);
+    await (supabase.from('medicines') as any).delete().eq('id', id);
+    setActiveMedicineId(null);
+    loadMedicines();
+  };
+
+  const handleMedicineLongPressStart = (id: string) => {
+    medicineLongPressTriggered.current = false;
+    medicineLongPressTimer.current = setTimeout(() => {
+      medicineLongPressTriggered.current = true;
+      if (activeMedicineId === id) { setActiveMedicineId(null); } else { setActiveMedicineId(id); if ('vibrate' in navigator) navigator.vibrate(10); }
+    }, 500);
+  };
+
+  const handleMedicineLongPressEnd = () => { if (medicineLongPressTimer.current) { clearTimeout(medicineLongPressTimer.current); medicineLongPressTimer.current = null; } };
+  const handleMedicineLongPressMove = () => { if (medicineLongPressTimer.current) { clearTimeout(medicineLongPressTimer.current); medicineLongPressTimer.current = null; } };
+
+  const handleMedicineClick = (id: string) => {
+    if (medicineLongPressTriggered.current) { medicineLongPressTriggered.current = false; return; }
+    if (activeMedicineId === id) { setActiveMedicineId(null); }
+  };
 
   const handleAddSnackFromUrl = async () => {
     const url = newSnackLink.trim();
@@ -950,7 +1012,100 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
             </div>
 
-            {/* Puberty Phase - only shown during puberty (6-30 months) */}
+            {/* Hausapotheke Section */}
+            <div className="mb-8">
+              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">💊</span> <span>Hausapotheke</span></h2>
+              <div className="glass-card rounded-lg p-4">
+                <h3 className="text-[13px] text-white/90 mb-4">Hausapotheke</h3>
+                <div className="flex flex-col divide-y divide-white/10">
+                  {medicines.map((med, index) => {
+                    const isActive = activeMedicineId === med.id;
+                    const isFirst = index === 0;
+
+                    return (
+                      <div key={med.id} className="relative flex w-full items-stretch overflow-hidden">
+                        <div
+                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                          onClick={() => handleMedicineClick(med.id)}
+                          onTouchStart={() => handleMedicineLongPressStart(med.id)}
+                          onTouchMove={handleMedicineLongPressMove}
+                          onTouchEnd={handleMedicineLongPressEnd}
+                          onMouseDown={() => handleMedicineLongPressStart(med.id)}
+                          onMouseMove={handleMedicineLongPressMove}
+                          onMouseUp={handleMedicineLongPressEnd}
+                          onMouseLeave={handleMedicineLongPressEnd}
+                        >
+                          {med.image_url ? (
+                            <img src={med.image_url} alt={med.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
+                          ) : (
+                            <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[14px]">💊</span>
+                            </div>
+                          )}
+                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{med.shop_name || ''}</span>
+                          {med.link && (
+                            <a
+                              href={med.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white/40 p-1 flex-shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleDeleteMedicine(med.id)}
+                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                        >
+                          Löschen
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add medicine inline */}
+                <div className="border-t border-white/10">
+                  {showAddMedicine ? (
+                    <div className="flex items-center gap-2 pt-1.5">
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="Link einfügen"
+                        value={newMedicineLink}
+                        onChange={(e) => setNewMedicineLink(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddMedicineFromUrl(); if (e.key === 'Escape') { setShowAddMedicine(false); setNewMedicineLink(''); } }}
+                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleAddMedicineFromUrl}
+                        disabled={isFetchingMedicineMeta || !newMedicineLink.trim()}
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                      >
+                        {isFetchingMedicineMeta ? 'Laden...' : 'Hinzufügen'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowAddMedicine(true)}
+                      className="flex items-center gap-3 pt-1.5 w-full text-left hover:opacity-80 transition-opacity"
+                    >
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <span className="text-[12px] text-white/40">Medikament hinzufügen</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {(() => {
               const settings = getCachedSettings();
               const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
