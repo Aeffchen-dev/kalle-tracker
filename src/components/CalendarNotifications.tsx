@@ -40,6 +40,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   
   // Swipe state
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [closingId, setClosingId] = useState<string | null>(null);
   const [swipingId, setSwipingId] = useState<string | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const startXRef = useRef(0);
@@ -125,6 +126,11 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     setSwipingId(id);
     isHorizontalSwipe.current = false;
     swipeDecided.current = false;
+
+    // If another card is open and we're swiping a different one, mark it as closing
+    if (activeId && activeId !== id) {
+      setClosingId(activeId);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -154,13 +160,11 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   const handleTouchEnd = () => {
     if (!swipingId) return;
     if (swipeOffset >= 50) {
-      // Setting activeId to the new card simultaneously closes the old one
-      // Both animate with the same 150ms ease-linear transition
       setActiveId(swipingId);
     } else if (swipingId === activeId) {
-      // Only close if swiping the currently open card back
       setActiveId(null);
     }
+    setClosingId(null);
     setSwipingId(null);
     setSwipeOffset(0);
   };
@@ -192,8 +196,15 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
         const isExitingEvt = exiting.has(evt.uid);
         const key = getEvtKey(evt);
         const isSwiping = swipingId === key;
+        const isClosing = closingId === key;
         const isOpen = activeId === key;
-        const showDelete = isSwiping ? swipeOffset : (isOpen ? 82 : 0);
+        // Closing card mirrors the opening card's offset: as new opens (0→82), old closes (82→0)
+        const showDelete = isSwiping
+          ? swipeOffset
+          : isClosing
+            ? Math.max(0, 82 - swipeOffset)
+            : (isOpen ? 82 : 0);
+        const isTracking = isSwiping || isClosing;
 
         return (
           <div
@@ -207,7 +218,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
             <div
               className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
               onClick={() => handleCardClick(key, evt)}
-              style={{ transition: isSwiping ? 'none' : 'all 150ms ease-linear' }}
+              style={{ transition: isTracking ? 'none' : 'all 150ms ease-linear' }}
             >
               {medical ? (
                 <>
@@ -268,7 +279,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
               style={{
                 width: showDelete > 0 ? `${showDelete}px` : 0,
                 minWidth: showDelete > 0 ? `${showDelete}px` : 0,
-                transition: isSwiping ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+                transition: isTracking ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
               }}
             >
               <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
