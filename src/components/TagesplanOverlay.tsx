@@ -148,6 +148,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
+  const [snackSwipe, setSnackSwipe] = useState<{ id: string; startX: number; offsetX: number } | null>(null);
+  const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
+
   const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
   const [weekOffset, setWeekOffset] = useState(0);
   const [snacks, setSnacks] = useState<{ id: string; name: string; shop_name: string | null; link: string | null; image_url: string | null }[]>([]);
@@ -706,36 +709,67 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <div className="mb-8">
               <div className="glass-card rounded-lg p-4">
                 <div className="flex flex-col gap-3">
-                  {snacks.map((snack) => (
-                    <div key={snack.id} className="flex items-center gap-3">
-                      {snack.image_url ? (
-                        <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
-                      ) : (
-                        <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                          <span className="text-[14px]">🦴</span>
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        {snack.link ? (
-                          <a href={snack.link} target="_blank" rel="noopener noreferrer" className="text-[12px] text-white/80 hover:text-white transition-colors flex items-center gap-1.5">
-                            <span className="truncate">{snack.name}</span>
-                            <ExternalLink size={12} className="text-white/40 flex-shrink-0" />
-                          </a>
-                        ) : (
-                          <span className="text-[12px] text-white/80 truncate block">{snack.name}</span>
-                        )}
-                        {snack.shop_name && (
-                          <span className="text-[10px] text-white/40">{snack.shop_name}</span>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => handleDeleteSnack(snack.id)}
-                        className="text-white/20 hover:text-white/60 transition-colors p-1 flex-shrink-0"
+                  {snacks.map((snack) => {
+                    const isSwipingThis = snackSwipe?.id === snack.id;
+                    const offset = isSwipingThis ? snackSwipe.offsetX : 0;
+                    const showDelete = offset < -60;
+
+                    return (
+                      <div
+                        key={snack.id}
+                        className="relative overflow-hidden rounded"
+                        onTouchStart={(e) => {
+                          setSnackSwipe({ id: snack.id, startX: e.touches[0].clientX, offsetX: 0 });
+                        }}
+                        onTouchMove={(e) => {
+                          if (!isSwipingThis) return;
+                          const diff = e.touches[0].clientX - snackSwipe.startX;
+                          if (diff < 0) setSnackSwipe({ ...snackSwipe, offsetX: Math.max(diff, -100) });
+                        }}
+                        onTouchEnd={() => {
+                          if (isSwipingThis && showDelete) {
+                            setSnackDeleting(snack.id);
+                            handleDeleteSnack(snack.id);
+                          }
+                          setSnackSwipe(null);
+                        }}
                       >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  ))}
+                        {/* Delete background */}
+                        <div className="absolute inset-0 bg-red-500/80 flex items-center justify-end pr-4 rounded">
+                          <Trash2 size={16} className="text-white" />
+                        </div>
+
+                        {/* Snack row */}
+                        <div
+                          className="flex items-center gap-3 relative bg-white/5 rounded transition-transform"
+                          style={{ transform: `translateX(${offset}px)` }}
+                        >
+                          {snack.image_url ? (
+                            <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <span className="text-[14px]">🦴</span>
+                            </div>
+                          )}
+                          <span className="text-[12px] text-white/80 flex-1 min-w-0 truncate">{snack.name}</span>
+                          {snack.shop_name && (
+                            <span className="text-[10px] text-white/40 flex-shrink-0 mr-4">{snack.shop_name}</span>
+                          )}
+                          {snack.link && (
+                            <a
+                              href={snack.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white/40 hover:text-white transition-colors p-1 flex-shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Add snack form */}
