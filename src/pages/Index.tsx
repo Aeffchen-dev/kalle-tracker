@@ -81,7 +81,12 @@ const Index = () => {
   const [showGassiSettings, setShowGassiSettings] = useState(false);
   const eventsRef = useRef<Event[]>([]);
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
-  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(new Set());
+  const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem('dismissedAnomalies');
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const [weatherEmoji, setWeatherEmoji] = useState('🌡️');
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
@@ -218,7 +223,11 @@ const Index = () => {
   };
 
   const handleDismissAnomaly = (id: string) => {
-    setDismissedAnomalies(prev => new Set([...prev, id]));
+    setDismissedAnomalies(prev => {
+      const next = new Set([...prev, id]);
+      localStorage.setItem('dismissedAnomalies', JSON.stringify([...next]));
+      return next;
+    });
     setAnomalies(prev => prev.filter(a => a.id !== id));
   };
 
