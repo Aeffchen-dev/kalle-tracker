@@ -162,7 +162,7 @@ const DogFoodChecker = () => {
           <div className="flex items-center gap-2 flex-1">
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-black shrink-0">Darf Kalle</span>
-          <div className="relative ml-4" style={{ width: `${inputWidth}px` }}>
+          <div className="relative" style={{ width: `${inputWidth}px` }}>
             <input
               ref={inputRef}
               type="text"
