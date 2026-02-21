@@ -159,7 +159,7 @@ const DogFoodChecker = () => {
     <div className="mb-8" ref={containerRef}>
       <div className="glass-card rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.08)]" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.10)' }}>
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-2 flex-1 relative -top-[4px]">
           <span className="text-[16px] shrink-0">🐶</span>
           <span className="text-[13px] text-white/90 shrink-0">Darf Kalle</span>
           <div className="relative" style={{ width: `${inputWidth}px` }}>
