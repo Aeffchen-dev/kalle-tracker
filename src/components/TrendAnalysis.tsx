@@ -1207,6 +1207,10 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             typeStr = 'Parasiten Tablette';
             valueStr = '-';
             break;
+          case 'krallen':
+            typeStr = 'Krallen schneiden';
+            valueStr = '-';
+            break;
           default:
             typeStr = event.type;
             valueStr = '-';

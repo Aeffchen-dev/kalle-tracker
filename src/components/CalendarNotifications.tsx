@@ -5,7 +5,7 @@ import { Check } from 'lucide-react';
 import { saveEvent } from '@/lib/events';
 
 // DEBUG: Set to true to show ALL events regardless of date
-const DEBUG_SHOW_ALL = false;
+const DEBUG_SHOW_ALL = true;
 const DEBUG_TODAY: Date | null = null;
 
 const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur', 'Krallen schneiden'];
@@ -103,7 +103,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
     const eventType = evt.summary.toLowerCase().includes('wurmkur') ? 'wurmkur' 
       : evt.summary.toLowerCase().includes('krallen') ? 'krallen' 
       : 'parasiten';
-    saveEvent(eventType as any);
+    saveEvent(eventType);
 
     setTimeout(() => {
       setExiting(prev => new Set([...prev, evt.uid]));
