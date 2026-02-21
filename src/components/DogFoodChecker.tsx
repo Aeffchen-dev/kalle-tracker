@@ -161,7 +161,7 @@ const DogFoodChecker = () => {
         <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.08)]" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.10)' }}>
           <div className="flex items-center gap-2 flex-1">
           <span className="text-[16px] shrink-0">🐶</span>
-          <span className="text-[13px] text-white/90 shrink-0">Darf Kalle</span>
+          <span className="text-[13px] leading-none text-white/90 shrink-0" style={{ lineHeight: '1' }}>Darf Kalle</span>
           <div className="relative" style={{ width: `${inputWidth}px` }}>
             <input
               ref={inputRef}
@@ -171,19 +171,19 @@ const DogFoodChecker = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               onKeyDown={handleKeyDown}
-              className="w-full min-w-0 bg-transparent text-[13px] text-white outline-none text-center transition-all duration-150"
-              style={{ caretColor: 'white' }}
+              className="w-full min-w-0 bg-transparent text-[13px] leading-none text-white outline-none text-center transition-all duration-150 p-0 m-0"
+              style={{ caretColor: 'white', lineHeight: '1' }}
               placeholder=""
             />
             {!query && !isFocused && (
-              <span className="absolute inset-0 flex items-center justify-center text-[13px] text-white/30 pointer-events-none">
+              <span className="absolute inset-0 flex items-center justify-center text-[13px] leading-none text-white/30 pointer-events-none">
                 {placeholderText}
                 <span className="animate-pulse ml-[1px]">|</span>
               </span>
             )}
           </div>
-          <span ref={measureRef} className="absolute invisible whitespace-pre text-[13px]" style={{ pointerEvents: 'none' }} />
-          <span className="text-[13px] text-white/90 shrink-0 -ml-1">essen?</span>
+          <span ref={measureRef} className="absolute invisible whitespace-pre text-[13px] leading-none" style={{ pointerEvents: 'none' }} />
+          <span className="text-[13px] leading-none text-white/90 shrink-0 -ml-1" style={{ lineHeight: '1' }}>essen?</span>
           </div>
           <div className="ml-auto">
           <button
