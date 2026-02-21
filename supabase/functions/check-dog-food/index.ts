@@ -51,7 +51,7 @@ Regeln:
 - "nicht_optimal": Lebensmittel die nicht ideal sind aber in kleinen Mengen ok (z.B. Milchprodukte bei Laktoseintoleranz, sehr süßes Obst, Brot)
 - "ok": Lebensmittel die unbedenklich für Hunde sind (z.B. Karotten, Reis, Hühnchen gekocht, Äpfel ohne Kerne)
 
-Berücksichtige auch den Puringehalt - hoher Puringehalt ist für Dalmatiner besonders problematisch wegen ihrer genetischen Veranlagung zu Harnsteinen. Innereien, bestimmte Fischsorten und Hefe haben hohen Puringehalt und sollten als "nicht_optimal" oder "schadet" eingestuft werden.
+WICHTIG - Puringehalt für Dalmatiner: Dieser Hund ist ein Dalmatiner mit diagnostizierten Harnsteinen. Purinreiche Lebensmittel sind extrem gefährlich! Folgende Lebensmittel haben hohen Puringehalt und müssen als "schadet" oder "giftig" eingestuft werden: Fleisch (Rind, Schwein, Wild, Lamm), Innereien (Leber, Niere, Herz), Geflügel mit Haut, fetter Fisch (Sardinen, Hering, Makrele, Forelle, Lachs), Hefe, Hülsenfrüchte (Linsen, Erbsen, Bohnen), Spinat, Spargel. Nur sehr purinarmes Fleisch wie Hühnerbrust ohne Haut in kleinen Mengen kann als "nicht_optimal" gelten. Im Zweifel immer strenger bewerten!
 
 Antworte AUSSCHLIESSLICH mit dem JSON-Objekt, kein anderer Text.`
           },
