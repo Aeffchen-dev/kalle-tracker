@@ -133,7 +133,7 @@ const DogFoodChecker = () => {
       <div className="glass-card rounded-lg p-4">
         <div className="flex items-center gap-2 mb-3 border border-white/10 bg-white/[0.04] overflow-hidden" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px' }}>
           <span className="text-[18px] shrink-0">🐶</span>
-          <span className="text-[13px] text-white/50 shrink-0">Kann ich</span>
+          <span className="text-[13px] text-white/50 shrink-0">Darf Kalle</span>
           <input
             ref={inputRef}
             type="text"
