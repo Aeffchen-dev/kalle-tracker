@@ -11,6 +11,7 @@ import { getCachedSettings } from '@/lib/settings';
 
 interface TrendAnalysisProps {
   events: Event[];
+  scrollToChart?: 'weight' | 'ph' | null;
 }
 
 // Helper to format numbers with German comma separator
@@ -742,9 +743,21 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
 GrowthCurveChart.displayName = 'GrowthCurveChart';
 
-const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
+const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   const chartsRef = useRef<HTMLDivElement>(null);
+  const weightChartRef = useRef<HTMLDivElement>(null);
+  const phChartRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to specific chart on mount
+  useEffect(() => {
+    if (!scrollToChart) return;
+    const ref = scrollToChart === 'weight' ? weightChartRef : phChartRef;
+    const t = setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400);
+    return () => clearTimeout(t);
+  }, [scrollToChart]);
   const [isExporting, setIsExporting] = useState(false);
   
   const weightData = useMemo((): WeightChartData[] => {
@@ -1298,7 +1311,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
       <div ref={chartsRef} className="!mt-6">
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
-          <div className="mb-8 relative">
+          <div ref={weightChartRef} className="mb-8 relative">
             <h3 className="text-[13px] text-white font-medium mb-3">Wachstumskurve</h3>
             <GrowthCurveChart events={events} />
           </div>
@@ -1307,7 +1320,7 @@ const TrendAnalysis = memo(({ events }: TrendAnalysisProps) => {
             <h3 className="text-[13px] text-white font-medium mb-3">Gewichtsverlauf</h3>
             <WeightChart data={weightData} width={width} />
           </div>
-          <div className="pt-16 -mt-16" data-vaul-no-drag>
+          <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
             <h3 className="text-[13px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
             <PhChart data={phData} width={width} />
           </div>
