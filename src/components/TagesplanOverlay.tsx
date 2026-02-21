@@ -1310,25 +1310,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         
                         
                         if (dayEvents.length > 0) {
-                          // Cluster real events within 30-minute windows
-                          const realClusters: { hours: number[]; hasPoop: boolean; firstTimeStr: string }[] = [];
-                          for (const evt of dayEvents) {
-                            const last = realClusters[realClusters.length - 1];
-                            if (last && evt.hour - last.hours[last.hours.length - 1] <= 0.5) {
-                              last.hours.push(evt.hour);
-                              if (evt.isPoop) last.hasPoop = true;
-                            } else {
-                              realClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop, firstTimeStr: evt.timeStr });
-                            }
-                          }
-                          
-                          const realSlots: SlotItem[] = realClusters.map(c => ({
-                            avgHour: c.hours.reduce((a, b) => a + b, 0) / c.hours.length,
-                            hasPoop: c.hasPoop,
+                          // Create individual slots for each real event (no clustering)
+                          const realSlots: SlotItem[] = dayEvents.map(evt => ({
+                            avgHour: evt.hour,
+                            hasPoop: evt.isPoop,
                             isWalk: true,
                             icalEvents: [],
                             isEstimate: false,
-                            exactTime: c.firstTimeStr,
+                            exactTime: evt.timeStr,
                           }));
                           
                           if (isToday) {
