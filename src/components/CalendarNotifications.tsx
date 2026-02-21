@@ -266,7 +266,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
               ) : (
                 <>
                   {/* Calendar: emoji + content */}
-                  <span className="text-[20px] shrink-0">📅</span>
+                  <span className="text-[20px] shrink-0">🗓️</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <span className="text-[14px] text-black truncate">

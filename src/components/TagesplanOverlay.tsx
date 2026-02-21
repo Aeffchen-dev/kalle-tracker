@@ -972,7 +972,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
             <div className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
-                <h2 className="flex items-center gap-2 text-[14px] text-white"><span>📅</span> <span>Wochenplan</span></h2>
+                <h2 className="flex items-center gap-2 text-[14px] text-white"><span>🗓️</span> <span>Wochenplan</span></h2>
               </div>
               
               {!dataLoaded ? (
@@ -1168,7 +1168,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                          <div>
                                             <div className="flex items-center">
                                               <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
-                                              <span className="text-[14px] shrink-0 ml-2">📅</span>
+                                              <span className="text-[14px] shrink-0 ml-2">🗓️</span>
                                             </div>
                                             <div className="text-[12px] text-white/70 mt-0.5">{evt.summary}</div>
                                           </div>
