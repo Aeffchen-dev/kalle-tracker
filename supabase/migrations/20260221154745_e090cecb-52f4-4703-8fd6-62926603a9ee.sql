@@ -1,0 +1,2 @@
+ALTER TABLE public.events DROP CONSTRAINT events_type_check;
+ALTER TABLE public.events ADD CONSTRAINT events_type_check CHECK (type = ANY (ARRAY['pipi'::text, 'stuhlgang'::text, 'phwert'::text, 'gewicht'::text, 'wurmkur'::text, 'parasiten'::text, 'krallen'::text]));
