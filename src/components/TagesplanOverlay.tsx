@@ -1042,29 +1042,55 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
                     const monBasedDay = (jsDay + 6) % 7;
                     const data = avgGassiByDay.get(monBasedDay);
                     type ICalItem = { summary: string; timeStr: string };
-                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[] };
+                    type SlotItem = { avgHour: number; hasPoop: boolean; isWalk: boolean; icalEvents: ICalItem[]; isActual?: boolean };
                     const slots: SlotItem[] = [];
                     
-                    if (data) {
-                      const allEvents: { hour: number; isPoop: boolean }[] = [
-                        ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                        ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                      ].sort((a, b) => a.hour - b.hour);
+                    // For today: use actual logged events instead of estimates
+                    if (isToday) {
+                      const todayStart = new Date(dayDate);
+                      todayStart.setHours(0, 0, 0, 0);
+                      const todayEnd = new Date(dayDate);
+                      todayEnd.setHours(23, 59, 59, 999);
                       
-                      const clusters: { hours: number[]; hasPoop: boolean }[] = [];
-                      for (const evt of allEvents) {
-                        const last = clusters[clusters.length - 1];
-                        if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                          last.hours.push(evt.hour);
-                          if (evt.isPoop) last.hasPoop = true;
+                      const todayEvents = appEvents.filter(e => {
+                        const t = new Date(e.time);
+                        return (e.type === 'pipi' || e.type === 'stuhlgang') && t >= todayStart && t <= todayEnd;
+                      }).sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+                      
+                      // Cluster nearby events (within 30 min)
+                      for (const evt of todayEvents) {
+                        const t = new Date(evt.time);
+                        const hour = t.getHours() + t.getMinutes() / 60;
+                        const last = slots[slots.length - 1];
+                        if (last && last.isActual && Math.abs(hour - last.avgHour) <= 0.5) {
+                          // Merge into existing cluster
+                          if (evt.type === 'stuhlgang') last.hasPoop = true;
                         } else {
-                          clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                          slots.push({ avgHour: hour, hasPoop: evt.type === 'stuhlgang', isWalk: true, icalEvents: [], isActual: true });
                         }
                       }
-                      
-                      for (const c of clusters) {
-                        const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                        slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
+                    } else {
+                      if (data) {
+                        const allEvents: { hour: number; isPoop: boolean }[] = [
+                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
+                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
+                        ].sort((a, b) => a.hour - b.hour);
+                        
+                        const clusters: { hours: number[]; hasPoop: boolean }[] = [];
+                        for (const evt of allEvents) {
+                          const last = clusters[clusters.length - 1];
+                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+                            last.hours.push(evt.hour);
+                            if (evt.isPoop) last.hasPoop = true;
+                          } else {
+                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+                          }
+                        }
+                        
+                        for (const c of clusters) {
+                          const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+                          slots.push({ avgHour, hasPoop: c.hasPoop, isWalk: true, icalEvents: [] });
+                        }
                       }
                     }
                     
