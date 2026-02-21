@@ -1067,7 +1067,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
 
                 {/* Add medicine inline */}
-                <div className="border-t border-white/10">
+                <div className={medicines.length > 0 ? "border-t border-white/10" : ""}>
                   {showAddMedicine ? (
                     <div className="flex items-center gap-2 pt-1.5">
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
