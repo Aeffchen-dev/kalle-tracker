@@ -528,14 +528,11 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
         })}
       </div>
 
-      {/* Solid brown background - hide instantly on close */}
-      {animationPhase === 'visible' && (
-        <div className="fixed inset-0 bg-spot pointer-events-auto" style={{ bottom: '-50px' }} />
-      )}
+      
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="absolute inset-0 pointer-events-auto">
+        <div className="absolute inset-0 pointer-events-auto bg-spot" style={{ bottom: '-50px', paddingBottom: '50px' }}>
           {/* Header - floating over scroll content */}
           <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
