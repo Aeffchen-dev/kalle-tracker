@@ -175,7 +175,8 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
   };
 
   const handleCardClick = (id: string, evt: ICalEvent) => {
-    if (activeId === id) {
+    // If any swipe is open, close it first — require a second tap for the action
+    if (activeId) {
       setActiveId(null);
       return;
     }
