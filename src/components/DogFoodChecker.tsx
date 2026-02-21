@@ -163,7 +163,7 @@ const DogFoodChecker = () => {
                 <span className="text-[16px]">{config.emoji}</span>
                 <span className={`text-[13px] font-medium ${config.color}`}>{config.label}</span>
               </div>
-              <p className="text-[12px] text-white/60 ml-[26px]">{result.reason}</p>
+              <p className="text-[12px] text-white/60">{result.reason}</p>
             </div>
           </div>
         )}
