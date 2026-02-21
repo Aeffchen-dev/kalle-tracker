@@ -537,7 +537,7 @@ const TagesplanOverlay = ({ isOpen, onClose }: TagesplanOverlayProps) => {
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="fixed top-0 left-0 right-0 pointer-events-auto bg-spot" style={{ bottom: 'calc(-1 * env(safe-area-inset-bottom, 50px) - 50px)' }}>
+        <div className="pointer-events-auto bg-spot" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: '-100px', minHeight: 'calc(100% + 100px)' }}>
           {/* Header - floating over scroll content */}
           <header className="absolute top-0 left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
             <h1 className="text-[14px] uppercase text-white">Info</h1>
