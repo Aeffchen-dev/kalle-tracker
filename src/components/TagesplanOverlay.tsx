@@ -1455,15 +1455,25 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         
                         
                         if (dayEvents.length > 0) {
-                          // Create individual slots for each real event (no clustering)
-                          const realSlots: SlotItem[] = dayEvents.map(evt => ({
-                            avgHour: evt.hour,
-                            hasPoop: evt.isPoop,
-                            hasPipi: !evt.isPoop,
+                          // Cluster real events by same timeStr
+                          const timeGroups = new Map<string, { hour: number; hasPoop: boolean; hasPipi: boolean }>();
+                          for (const evt of dayEvents) {
+                            const existing = timeGroups.get(evt.timeStr);
+                            if (existing) {
+                              if (evt.isPoop) existing.hasPoop = true;
+                              else existing.hasPipi = true;
+                            } else {
+                              timeGroups.set(evt.timeStr, { hour: evt.hour, hasPoop: evt.isPoop, hasPipi: !evt.isPoop });
+                            }
+                          }
+                          const realSlots: SlotItem[] = Array.from(timeGroups.entries()).map(([timeStr, g]) => ({
+                            avgHour: g.hour,
+                            hasPoop: g.hasPoop,
+                            hasPipi: g.hasPipi,
                             isWalk: true,
                             icalEvents: [],
                             isEstimate: false,
-                            exactTime: evt.timeStr,
+                            exactTime: timeStr,
                           }));
                           
                           if (isToday) {
