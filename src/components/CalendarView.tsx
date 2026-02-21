@@ -475,57 +475,135 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       </div>
                     );
                   })}
-                  {filteredEvents.map((event) => {
-                    const isActive = activeEventId === event.id;
-                    return (
-                      <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
-                        <div
-                          className={`flex items-center justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                          onClick={() => handleItemClick(event.id)}
-                          onContextMenu={(e) => handleContextMenu(e, event.id)}
-                          onTouchStart={() => handleLongPressStart(event.id)}
-                          onTouchMove={handleLongPressMove}
-                          onTouchEnd={handleLongPressEnd}
-                          onMouseDown={() => handleLongPressStart(event.id)}
-                          onMouseMove={handleLongPressMove}
-                          onMouseUp={handleLongPressEnd}
-                          onMouseLeave={handleLongPressEnd}
-                        >
-                          <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
-                            <span className="shrink-0">{event.type === 'pipi' ? '💦' : event.type === 'stuhlgang' ? '💩' : event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
-                            <span className="truncate">
-                              {event.type === 'pipi' && 'Pipi'}
-                              {event.type === 'stuhlgang' && 'Stuhlgang'}
-                              {event.type === 'wurmkur' && 'Wurmkur'}
-                              {event.type === 'parasiten' && 'Parasiten Tablette'}
-                              {event.type === 'krallen' && 'Krallen schneiden'}
-                              {event.type === 'gewicht' && (
-                                <>
-                                  Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-'}</span>
-                                </>
-                              )}
-                              {event.type === 'phwert' && (
-                                <>
-                                  pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
-                                </>
-                              )}
+                  {(() => {
+                    // Group pipi/stuhlgang events by same minute, keep others separate
+                    type GroupedEntry = { events: typeof filteredEvents; timeKey: string };
+                    const groups: GroupedEntry[] = [];
+                    const usedIndices = new Set<number>();
+                    
+                    for (let i = 0; i < filteredEvents.length; i++) {
+                      if (usedIndices.has(i)) continue;
+                      const ev = filteredEvents[i];
+                      const evTime = format(new Date(ev.time), 'HH:mm');
+                      
+                      if (ev.type === 'pipi' || ev.type === 'stuhlgang') {
+                        const group = [ev];
+                        for (let j = i + 1; j < filteredEvents.length; j++) {
+                          if (usedIndices.has(j)) continue;
+                          const ev2 = filteredEvents[j];
+                          if ((ev2.type === 'pipi' || ev2.type === 'stuhlgang') && format(new Date(ev2.time), 'HH:mm') === evTime) {
+                            group.push(ev2);
+                            usedIndices.add(j);
+                          }
+                        }
+                        usedIndices.add(i);
+                        groups.push({ events: group, timeKey: evTime });
+                      } else {
+                        usedIndices.add(i);
+                        groups.push({ events: [ev], timeKey: evTime });
+                      }
+                    }
+                    
+                    return groups.map((group, gi) => {
+                      const isPipiGroup = group.events.every(e => e.type === 'pipi' || e.type === 'stuhlgang');
+                      const firstEvent = group.events[0];
+                      
+                      if (isPipiGroup && group.events.length > 0) {
+                        // Grouped pipi/stuhlgang box
+                        const isActive = group.events.some(e => activeEventId === e.id);
+                        return (
+                          <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
+                            <div
+                              className={`flex items-start justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                              onClick={() => handleItemClick(firstEvent.id)}
+                              onContextMenu={(e) => handleContextMenu(e, firstEvent.id)}
+                              onTouchStart={() => handleLongPressStart(firstEvent.id)}
+                              onTouchMove={handleLongPressMove}
+                              onTouchEnd={handleLongPressEnd}
+                              onMouseDown={() => handleLongPressStart(firstEvent.id)}
+                              onMouseMove={handleLongPressMove}
+                              onMouseUp={handleLongPressEnd}
+                              onMouseLeave={handleLongPressEnd}
+                            >
+                              <div className="flex items-start gap-0 overflow-hidden">
+                                <span className="text-[14px] text-white whitespace-nowrap shrink-0 mr-2 flex items-center gap-1.5 mt-[1px]">
+                                  {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                                  {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
+                                  {group.timeKey} Uhr
+                                </span>
+                                <div className="flex flex-col gap-0.5">
+                                  {group.events.map((ev, ei) => (
+                                    <span key={ei} className="flex items-center gap-1.5">
+                                      <span className="text-[14px] shrink-0">{ev.type === 'pipi' ? '💦' : '💩'}</span>
+                                      <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                group.events.forEach(e => handleDelete(e.id));
+                              }}
+                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                            >
+                              Löschen
+                            </button>
+                          </div>
+                        );
+                      }
+                      
+                      // Non-grouped event (original style)
+                      const event = firstEvent;
+                      const isActive = activeEventId === event.id;
+                      return (
+                        <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
+                          <div
+                            className={`flex items-center justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                            onClick={() => handleItemClick(event.id)}
+                            onContextMenu={(e) => handleContextMenu(e, event.id)}
+                            onTouchStart={() => handleLongPressStart(event.id)}
+                            onTouchMove={handleLongPressMove}
+                            onTouchEnd={handleLongPressEnd}
+                            onMouseDown={() => handleLongPressStart(event.id)}
+                            onMouseMove={handleLongPressMove}
+                            onMouseUp={handleLongPressEnd}
+                            onMouseLeave={handleLongPressEnd}
+                          >
+                            <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
+                              <span className="shrink-0">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
+                              <span className="truncate">
+                                {event.type === 'wurmkur' && 'Wurmkur'}
+                                {event.type === 'parasiten' && 'Parasiten Tablette'}
+                                {event.type === 'krallen' && 'Krallen schneiden'}
+                                {event.type === 'gewicht' && (
+                                  <>
+                                    Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-'}</span>
+                                  </>
+                                )}
+                                {event.type === 'phwert' && (
+                                  <>
+                                    pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
+                                  </>
+                                )}
+                              </span>
                             </span>
-                          </span>
-                          <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
-                            {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
-                            {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
-                            {format(new Date(event.time), 'HH:mm')} Uhr
-                          </span>
+                            <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                              {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                              {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
+                              {format(new Date(event.time), 'HH:mm')} Uhr
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => handleDelete(event.id)}
+                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                          >
+                            Löschen
+                          </button>
                         </div>
-                        <button
-                          onClick={() => handleDelete(event.id)}
-                          className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
-                        >
-                          Löschen
-                        </button>
-                      </div>
-                    );
-                  })}
+                      );
+                    });
+                  })()}
                   {/* Who has Kalle - only show when there are other entries */}
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
                     <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
