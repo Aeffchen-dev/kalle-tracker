@@ -168,7 +168,7 @@ const DogFoodChecker = () => {
         <div className="flex items-start gap-2">
           <span className="text-[14px] shrink-0 mt-0.5">🐶</span>
           <p className="text-[12px] text-white/40 leading-relaxed text-justify">
-            Kalle hat Harnsteine – du musst aufpassen, was du ihm gibst. Falsches Futter kann neue Steine verursachen und eine OP nötig machen.
+            Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
           </p>
         </div>
 
