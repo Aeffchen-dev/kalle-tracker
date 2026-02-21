@@ -3,7 +3,8 @@ import { fetchICalEvents, getICalEventsForDate, ICalEvent } from '@/lib/ical';
 import { format } from 'date-fns';
 import { Check } from 'lucide-react';
 
-// DEBUG: Override "today" for testing – set to null to use real date
+// DEBUG: Set to true to show ALL events regardless of date
+const DEBUG_SHOW_ALL = true;
 const DEBUG_TODAY: Date | null = new Date('2026-03-02T10:00:00');
 
 const MEDICAL_KEYWORDS = ['Parasiten Tablette', 'Wurmkur'];
@@ -25,7 +26,10 @@ const CalendarNotifications: React.FC = () => {
     const load = async () => {
       const allEvents = await fetchICalEvents();
       const today = DEBUG_TODAY || new Date();
-      const todayEvents = getICalEventsForDate(allEvents, today);
+      // In debug mode, show all events; otherwise filter to today
+      const todayEvents = DEBUG_SHOW_ALL
+        ? allEvents.filter((e, i, arr) => arr.findIndex(x => x.summary === e.summary) === i)
+        : getICalEventsForDate(allEvents, today);
       setEvents(todayEvents);
 
       // Load dismissed medical events from localStorage
