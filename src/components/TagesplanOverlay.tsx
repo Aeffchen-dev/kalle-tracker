@@ -1032,7 +1032,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </div>
                           )}
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
-                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px]">{med.shop_name || ''}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px] truncate">{med.shop_name || ''}</span>
                           {med.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
