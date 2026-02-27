@@ -351,11 +351,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       const isWeekend = jsDay === 0 || jsDay === 6;
       const sorted = events.sort((a, b) => a.hour - b.hour);
       
-      // Cluster events within 1.5h
+      // Cluster events within 4h windows
       const dayClusters: { hours: number[]; hasPoop: boolean }[] = [];
       for (const evt of sorted) {
         const last = dayClusters[dayClusters.length - 1];
-        if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+        if (last && evt.hour - last.hours[last.hours.length - 1] <= 4) {
           last.hours.push(evt.hour);
           if (evt.isPoop) last.hasPoop = true;
         } else {
@@ -376,7 +376,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       for (const c of sorted) {
         const last = buckets[buckets.length - 1];
         const lastAvg = last ? last.hours.reduce((a, b) => a + b, 0) / last.hours.length : -99;
-        if (last && Math.abs(c.avgHour - lastAvg) <= 1.5) {
+        if (last && Math.abs(c.avgHour - lastAvg) <= 4) {
           last.hours.push(c.avgHour);
           last.totalCount++;
           if (c.hasPoop) last.poopCount++;
