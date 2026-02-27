@@ -1569,7 +1569,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const summaryLower = (e.summary || '').toLowerCase();
                       const medicalKey = Object.keys(medicalIcalPatterns).find(k => summaryLower.includes(k));
                       if (medicalKey) {
-                        medicalIcalEvents.push({ summary: e.summary || '', timeStr: '', isMedicalIcal: true, medicalEmoji: medicalIcalPatterns[medicalKey] });
+                        medicalIcalEvents.push({ summary: (e.summary || '').replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F]+$/u, '').trim(), timeStr: '', isMedicalIcal: true, medicalEmoji: medicalIcalPatterns[medicalKey] });
                         continue;
                       }
                       const dt = new Date(e.dtstart);
