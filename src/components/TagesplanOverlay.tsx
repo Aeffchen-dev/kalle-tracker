@@ -1442,7 +1442,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
                   <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative">
-                    <PlacesMap places={places.filter(p => p.latitude && p.longitude).map(p => ({ latitude: p.latitude!, longitude: p.longitude!, name: p.name }))} />
+                    <PlacesMap places={places.filter(p => p.latitude && p.longitude).map(p => ({ latitude: p.latitude!, longitude: p.longitude!, name: p.name, link: p.link }))} />
                   </div>
                 )}
                 <div className="flex flex-col divide-y divide-white/10">

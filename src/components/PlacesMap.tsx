@@ -6,6 +6,7 @@ interface Place {
   latitude: number;
   longitude: number;
   name: string;
+  link?: string | null;
 }
 
 export function PlacesMap({ places }: { places: Place[] }) {
@@ -41,9 +42,12 @@ export function PlacesMap({ places }: { places: Place[] }) {
       iconAnchor: [6, 6],
     });
 
-    const markers = places.map(p =>
-      L.marker([p.latitude, p.longitude], { icon }).addTo(map)
-    );
+    const markers = places.map(p => {
+      const marker = L.marker([p.latitude, p.longitude], { icon }).addTo(map);
+      const url = p.link || `https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`;
+      marker.on('click', () => window.open(url, '_blank'));
+      return marker;
+    });
 
     if (places.length === 1) {
       map.setView([places[0].latitude, places[0].longitude], 14);
