@@ -525,12 +525,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                               onMouseUp={handleLongPressEnd}
                               onMouseLeave={handleLongPressEnd}
                             >
-                              <div className="flex items-start gap-0 overflow-hidden">
-                                <span className="text-[14px] text-white whitespace-nowrap shrink-0 mr-2 flex items-center gap-1.5 mt-[1px]">
-                                  {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
-                                  {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
-                                  {group.timeKey} Uhr
-                                </span>
+                              <div className="flex items-start justify-between w-full overflow-hidden">
                                 <div className="flex flex-col gap-0.5">
                                   {group.events.map((ev, ei) => (
                                     <span key={ei} className="flex items-center gap-1.5">
@@ -539,6 +534,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                     </span>
                                   ))}
                                 </div>
+                                <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                                  {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                                  {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
+                                  {group.timeKey} Uhr
+                                </span>
                               </div>
                             </div>
                             <button
