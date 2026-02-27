@@ -596,7 +596,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                 )}
                                 {event.type === 'phwert' && (
                                   <>
-                                    pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-red-500' : 'text-white'}>{event.ph_value || '-'}</span>
+                                    pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.ph_value || '-'}</span>
                                   </>
                                 )}
                               </span>
