@@ -1469,10 +1469,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const markers = pts.map(p => `${p.latitude},${p.longitude}`).join('%7C');
                       return (
                         <iframe
-                          src={`https://maps.google.com/maps?q=${pts[0].latitude},${pts[0].longitude}&t=k&z=${zoom}&ll=${centerLat},${centerLng}&output=embed`}
+                          src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d${pts.length === 1 ? '5000' : Math.max(50000, Math.max(maxLat - minLat, maxLng - minLng) * 111000 * 2.5).toFixed(0)}!2d${centerLng}!3d${centerLat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sde`}
                           className="w-full h-full border-0"
                           loading="lazy"
                           allowFullScreen
+                          referrerPolicy="no-referrer-when-downgrade"
+                          style={{ touchAction: 'pan-x pan-y' }}
                         />
                       );
                     })()}
