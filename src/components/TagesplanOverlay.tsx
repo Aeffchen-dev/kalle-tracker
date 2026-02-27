@@ -1479,8 +1479,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           }));
                           
                           if (isToday) {
-                            // For today: 1:1 matching with ±2h window, remove matched estimates
-                            // Keep unmatched future estimates with lighter opacity
                             const currentHour = new Date().getHours() + new Date().getMinutes() / 60;
                             const usedEstimates = new Set<number>();
                             const usedReals = new Set<number>();
@@ -1503,15 +1501,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               }
                             }
                             
-                            // Mark remaining future estimates, remove matched ones
                             const kept: SlotItem[] = [];
                             for (let i = 0; i < slots.length; i++) {
-                              if (usedEstimates.has(i)) continue; // drop matched estimates
+                              if (usedEstimates.has(i)) continue;
                               if (slots[i].isEstimate && slots[i].avgHour > currentHour) {
                                 kept.push({ ...slots[i], isFutureEstimate: true });
                               } else if (slots[i].isEstimate) {
-                                // Past unmatched estimate on today — skip it
-                                continue;
+                                continue; // Past unmatched estimate on today — skip
                               } else {
                                 kept.push(slots[i]);
                               }
@@ -1519,7 +1515,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             slots.length = 0;
                             slots.push(...kept, ...realSlots);
                           } else {
-                            // For other days: 1:1 matching — replace nearest estimate within ±2h
                             const usedEstimates = new Set<number>();
                             const usedReals = new Set<number>();
                             
@@ -1547,6 +1542,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
                           }
                           slots.sort((a, b) => a.avgHour - b.avgHour);
+                        } else if (isToday) {
+                          // No real events but it's today — remove past estimates
+                          const currentHour = new Date().getHours() + new Date().getMinutes() / 60;
+                          const kept: SlotItem[] = [];
+                          for (const slot of slots) {
+                            if (slot.isEstimate && slot.avgHour <= currentHour) continue;
+                            if (slot.isEstimate) kept.push({ ...slot, isFutureEstimate: true });
+                            else kept.push(slot);
+                          }
+                          slots.length = 0;
+                          slots.push(...kept);
                         }
                       }
                     }
