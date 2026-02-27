@@ -1441,6 +1441,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         const dayEnd = new Date(dayDate);
                         dayEnd.setHours(23, 59, 59, 999);
                         
+                        
+                        
                         const dayEvents = appEvents
                           .filter(e => (e.type === 'pipi' || e.type === 'stuhlgang') && new Date(e.time) >= dayStart && new Date(e.time) <= dayEnd)
                           .map(e => {
@@ -1549,6 +1551,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       }
                     }
                     
+                    // Collect medical events for this day
+                    const medicalTypes = ['wurmkur', 'parasiten', 'krallen'];
+                    const medicalEmojis: Record<string, string> = { wurmkur: '🪱', parasiten: '🦟', krallen: '💅' };
+                    const medicalLabels: Record<string, string> = { wurmkur: 'Wurmkur', parasiten: 'Parasiten Tablette', krallen: 'Krallen schneiden' };
+                    const dayDateStart2 = new Date(dayDate); dayDateStart2.setHours(0, 0, 0, 0);
+                    const dayDateEnd2 = new Date(dayDate); dayDateEnd2.setHours(23, 59, 59, 999);
+                    const dayMedicalEvents = appEvents
+                      .filter(e => medicalTypes.includes(e.type) && new Date(e.time) >= dayDateStart2 && new Date(e.time) <= dayDateEnd2);
+
                     // Attach iCal events to nearest slot or standalone
                     const evts = weekIcalEvents.get(idx) || [];
                     for (const e of evts) {
@@ -1614,7 +1625,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         
                         {/* Entries */}
                         <div className="px-2.5 pb-2.5">
-                          {slots.length === 0 ? (
+                          {(slots.length === 0 && dayMedicalEvents.length === 0) ? (
                             <div className="text-white/15 text-[11px] py-2 text-center">–</div>
                           ) : (
                             <div className="space-y-1.5">
@@ -1642,20 +1653,27 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                       </div>
                                     </div>
                                    )}
-                                   {/* iCal events */}
+                                   {/* iCal events - same row style */}
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div>
-                                            <div className="flex items-center">
-                                              <span className="text-[12px] text-white/70">{evt.timeStr} Uhr</span>
-                                              <span className="text-[14px] shrink-0 ml-2">🗓️</span>
-                                            </div>
-                                            <div className="text-[12px] text-white/70 mt-0.5">{evt.summary}</div>
-                                          </div>
-                                        </div>
+                                         <div className="flex items-center overflow-hidden">
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[14px] shrink-0">🗓️</span>
+                                           <span className="text-[12px] text-white/70 ml-1.5 truncate">{evt.summary}</span>
+                                         </div>
+                                       </div>
                                      </div>
                                    ))}
+                                </div>
+                                ))}
+                              {/* Medical events - last, no time, emoji first */}
+                              {dayMedicalEvents.map((mev, mi) => (
+                                <div key={`med-${mi}`} className="p-2 bg-white/[0.06] rounded-lg overflow-hidden">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[14px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
+                                    <span className="text-[12px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
+                                  </div>
                                 </div>
                               ))}
                             </div>
