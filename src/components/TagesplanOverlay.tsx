@@ -1653,9 +1653,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.icalEvents.filter(evt => !evt.isMedicalIcal).map((evt, j) => (
                                       <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                         <div className="p-2 bg-white/[0.06] rounded-lg">
-                                          <div className="flex items-start gap-1.5 overflow-hidden">
-                                            <span className="text-[11px] text-white/50 shrink-0 mt-[2px]">{evt.timeStr}</span>
-                                            <span className="text-[14px] shrink-0 mt-[-1px]">🗓️</span>
+                                          <div className="flex flex-col gap-0.5">
+                                            <div className="flex items-center gap-1.5">
+                                              <span className="text-[11px] text-white/50 shrink-0">{evt.timeStr}</span>
+                                              <span className="text-[14px] shrink-0">🗓️</span>
+                                            </div>
                                             <span className="text-[12px] text-white/70 break-words min-w-0">{evt.summary}</span>
                                           </div>
                                         </div>
