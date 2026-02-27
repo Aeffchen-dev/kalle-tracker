@@ -459,28 +459,25 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       </span>
                     </div>
                   )}
-                  {/* iCal calendar events - exclude "hat Kalle" entries */}
-                  {filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).map((evt, i) => {
-                    const time = new Date(evt.dtstart);
-                    const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
-                    return (
-                      <div key={`ical-${i}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
-                        <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
-                          <span className="shrink-0">🗓️</span>
-                          <span className="truncate">{evt.summary}</span>
-                        </span>
-                        <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                          {timeStr} Uhr
-                        </span>
-                      </div>
-                    );
-                  })}
                   {(() => {
-                    // Group pipi/stuhlgang events by same minute, keep others separate
-                    type GroupedEntry = { events: typeof filteredEvents; timeKey: string };
-                    const groups: GroupedEntry[] = [];
-                    const usedIndices = new Set<number>();
+                    // Merge app events and iCal events into a unified sorted list
+                    const displayIcalEvents = filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || ''));
                     
+                    // Group pipi/stuhlgang events by same minute, keep others separate
+                    type GroupedEntry = { events: typeof filteredEvents; timeKey: string; sortTime: number; kind: 'app' };
+                    type ICalEntry = { icalEvt: typeof displayIcalEvents[0]; timeKey: string; sortTime: number; kind: 'ical' };
+                    type UnifiedEntry = GroupedEntry | ICalEntry;
+                    const entries: UnifiedEntry[] = [];
+                    
+                    // Add iCal events
+                    for (const evt of displayIcalEvents) {
+                      const time = new Date(evt.dtstart);
+                      const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+                      entries.push({ icalEvt: evt, timeKey: timeStr, sortTime: time.getTime(), kind: 'ical' });
+                    }
+                    
+                    // Group and add app events
+                    const usedIndices = new Set<number>();
                     for (let i = 0; i < filteredEvents.length; i++) {
                       if (usedIndices.has(i)) continue;
                       const ev = filteredEvents[i];
@@ -497,19 +494,36 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                           }
                         }
                         usedIndices.add(i);
-                        groups.push({ events: group, timeKey: evTime });
+                        entries.push({ events: group, timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
                       } else {
                         usedIndices.add(i);
-                        groups.push({ events: [ev], timeKey: evTime });
+                        entries.push({ events: [ev], timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
                       }
                     }
                     
-                    return groups.map((group, gi) => {
+                    // Sort all entries newest first
+                    entries.sort((a, b) => b.sortTime - a.sortTime);
+                    
+                    return entries.map((entry, gi) => {
+                      if (entry.kind === 'ical') {
+                        return (
+                          <div key={`ical-${gi}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
+                            <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
+                              <span className="shrink-0">🗓️</span>
+                              <span className="truncate">{entry.icalEvt.summary}</span>
+                            </span>
+                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                              {entry.timeKey} Uhr
+                            </span>
+                          </div>
+                        );
+                      }
+                      
+                      const group = entry;
                       const isPipiGroup = group.events.every(e => e.type === 'pipi' || e.type === 'stuhlgang');
                       const firstEvent = group.events[0];
                       
                       if (isPipiGroup && group.events.length > 0) {
-                        // Grouped pipi/stuhlgang box
                         const isActive = group.events.some(e => activeEventId === e.id);
                         return (
                           <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
@@ -553,7 +567,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         );
                       }
                       
-                      // Non-grouped event (original style)
                       const event = firstEvent;
                       const isActive = activeEventId === event.id;
                       return (
