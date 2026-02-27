@@ -28,10 +28,16 @@ export function PlacesMap({ places }: { places: Place[] }) {
     });
     mapInstanceRef.current = map;
 
-    // Satellite tiles from Esri
+    // Satellite tiles
     L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       { maxZoom: 18 }
+    ).addTo(map);
+
+    // City/road labels overlay
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 18, pane: 'overlayPane' }
     ).addTo(map);
 
     // Custom small red marker
@@ -44,12 +50,6 @@ export function PlacesMap({ places }: { places: Place[] }) {
 
     const markers = places.map(p => {
       const marker = L.marker([p.latitude, p.longitude], { icon }).addTo(map);
-      marker.bindTooltip(p.name, {
-        permanent: true,
-        direction: 'top',
-        offset: [0, -8],
-        className: 'places-map-label',
-      });
       const url = p.link || `https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`;
       marker.on('click', () => window.open(url, '_blank'));
       return marker;
