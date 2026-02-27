@@ -1633,21 +1633,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const hour = dt.getHours() + dt.getMinutes() / 60;
                       const icalItem: ICalItem = { summary: e.summary || '', timeStr: format(dt, 'HH:mm') };
                       
-                      if (slots.length > 0) {
-                        let nearest = 0;
-                        let minDist = Math.abs(slots[0].avgHour - hour);
-                        for (let s = 1; s < slots.length; s++) {
-                          const dist = Math.abs(slots[s].avgHour - hour);
-                          if (dist < minDist) { nearest = s; minDist = dist; }
-                        }
-                        if (minDist <= 2) {
-                          slots[nearest].icalEvents.push(icalItem);
-                        } else {
-                          slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem], isEstimate: false });
-                        }
-                      } else {
-                        slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem] });
-                      }
+                      // Always create a standalone slot for iCal events so they sort by their actual start time
+                      slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem], isEstimate: false });
                     }
                     
                     // Sort all slots by time
