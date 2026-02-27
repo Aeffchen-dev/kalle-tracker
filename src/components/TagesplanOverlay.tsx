@@ -175,6 +175,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [activeMedicineId, setActiveMedicineId] = useState<string | null>(null);
   const [medicineDeleting, setMedicineDeleting] = useState<string | null>(null);
 
+  // Places (Orte) state
+  const [places, setPlaces] = useState<{ id: string; name: string; city: string | null; latitude: number | null; longitude: number | null; link: string | null }[]>([]);
+  const [showAddPlace, setShowAddPlace] = useState(false);
+  const [newPlaceLink, setNewPlaceLink] = useState('');
+  const [isFetchingPlaceMeta, setIsFetchingPlaceMeta] = useState(false);
+  const [activePlaceId, setActivePlaceId] = useState<string | null>(null);
+
   // Load iCal events and app events
   useEffect(() => {
     if (!isOpen) return;
@@ -194,10 +201,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (data) setMedicines(data as typeof medicines);
   };
 
+  // Load places from DB
+  const loadPlaces = async () => {
+    const { data } = await (supabase.from('places') as any).select('*').order('created_at');
+    if (data) setPlaces(data as typeof places);
+  };
+
   useEffect(() => {
     if (!isOpen) return;
     loadSnacks();
     loadMedicines();
+    loadPlaces();
   }, [isOpen]);
 
   const handleAddMedicineFromUrl = async () => {
@@ -239,6 +253,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     // Close any other open swipe
     if (activeSnackId && activeSnackId !== id) setActiveSnackId(null);
     if (activeMedicineId && activeMedicineId !== id) setActiveMedicineId(null);
+    if (activePlaceId && activePlaceId !== id) setActivePlaceId(null);
   };
 
   const handleItemTouchMove = (e: React.TouchEvent) => {
@@ -250,21 +265,23 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       swipeIsHorizontal.current = Math.abs(dx) > dy;
     }
     if (swipeIsHorizontal.current) {
-      const isOpen = activeSnackId === swipingItemId || activeMedicineId === swipingItemId;
+      const isOpen = activeSnackId === swipingItemId || activeMedicineId === swipingItemId || activePlaceId === swipingItemId;
       const offset = isOpen ? Math.max(0, Math.min(82 - (-dx), 90)) : Math.max(0, Math.min(dx, 90));
       setSwipeItemOffset(offset);
     }
   };
 
-  const handleItemTouchEnd = (type: 'snack' | 'medicine') => {
+  const handleItemTouchEnd = (type: 'snack' | 'medicine' | 'place') => {
     if (!swipingItemId) return;
-    const isOpen = (type === 'snack' ? activeSnackId : activeMedicineId) === swipingItemId;
+    const isOpen = (type === 'snack' ? activeSnackId : type === 'medicine' ? activeMedicineId : activePlaceId) === swipingItemId;
     if (swipeItemOffset >= 50) {
       if (type === 'snack') setActiveSnackId(swipingItemId);
-      else setActiveMedicineId(swipingItemId);
+      else if (type === 'medicine') setActiveMedicineId(swipingItemId);
+      else setActivePlaceId(swipingItemId);
     } else if (isOpen) {
       if (type === 'snack') setActiveSnackId(null);
-      else setActiveMedicineId(null);
+      else if (type === 'medicine') setActiveMedicineId(null);
+      else setActivePlaceId(null);
     }
     if (swipeIsHorizontal.current || isOpen) {
       swipeJustEnded.current = true;
@@ -274,12 +291,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     setSwipeItemOffset(0);
   };
 
-  const handleItemClick = (item: { id: string; link: string | null }, type: 'snack' | 'medicine') => {
+  const handleItemClick = (item: { id: string; link: string | null }, type: 'snack' | 'medicine' | 'place') => {
     if (swipeJustEnded.current) return;
-    const activeId = type === 'snack' ? activeSnackId : activeMedicineId;
+    const activeId = type === 'snack' ? activeSnackId : type === 'medicine' ? activeMedicineId : activePlaceId;
     if (activeId) {
       if (type === 'snack') setActiveSnackId(null);
-      else setActiveMedicineId(null);
+      else if (type === 'medicine') setActiveMedicineId(null);
+      else setActivePlaceId(null);
       return;
     }
     if (item.link) window.open(item.link, '_blank', 'noopener,noreferrer');
@@ -292,9 +310,16 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     loadSnacks();
   };
 
-  const handleSwipeDelete = (id: string, type: 'snack' | 'medicine') => {
+  const handleDeletePlace = async (id: string) => {
+    await (supabase.from('places') as any).delete().eq('id', id);
+    setActivePlaceId(null);
+    loadPlaces();
+  };
+
+  const handleSwipeDelete = (id: string, type: 'snack' | 'medicine' | 'place') => {
     if (type === 'snack') handleDeleteSnack(id);
-    else handleDeleteMedicine(id);
+    else if (type === 'medicine') handleDeleteMedicine(id);
+    else handleDeletePlace(id);
   };
 
   const handleAddSnackFromUrl = async () => {
@@ -439,6 +464,35 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     return idx >= 0 && idx < TOTAL_DAYS ? idx : -1;
   }, [rangeStart]);
   const currentHour = useMemo(() => new Date().getHours(), []);
+
+  const handleAddPlaceFromUrl = async () => {
+    const url = newPlaceLink.trim();
+    if (!url) return;
+    setIsFetchingPlaceMeta(true);
+    try {
+      const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+      const supabaseKey = (import.meta as any).env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const resp = await fetch(`${supabaseUrl}/functions/v1/parse-google-maps`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${supabaseKey}`, 'apikey': supabaseKey },
+        body: JSON.stringify({ url }),
+      });
+      const data = await resp.json();
+      const name = data.name || url;
+      const city = data.city || null;
+      const latitude = data.latitude || null;
+      const longitude = data.longitude || null;
+      const link = url.startsWith('http') ? url : `https://${url}`;
+      await (supabase.from('places') as any).insert({ name, city, latitude, longitude, link });
+      setNewPlaceLink('');
+      setShowAddPlace(false);
+      loadPlaces();
+    } catch (e) {
+      console.error('Error adding place:', e);
+    } finally {
+      setIsFetchingPlaceMeta(false);
+    }
+  };
 
 
 
@@ -1378,6 +1432,118 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               );
             })()}
+
+            {/* Orte Section */}
+            <div className="mb-8">
+              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
+              <div className="glass-card rounded-lg p-4">
+                {/* Map with pins */}
+                {places.filter(p => p.latitude && p.longitude).length > 0 && (
+                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[140px] relative">
+                    {(() => {
+                      const pts = places.filter(p => p.latitude && p.longitude);
+                      const lats = pts.map(p => p.latitude!);
+                      const lngs = pts.map(p => p.longitude!);
+                      const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+                      const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+                      const zoom = pts.length === 1 ? 15 : 13;
+                      // Use free staticmap.org
+                      const markers = pts.map(p => `${p.latitude},${p.longitude},red-pushpin`).join('|');
+                      const src = `https://staticmap.org/?center=${centerLat},${centerLng}&zoom=${zoom}&size=800x280&maptype=mapnik&markers=${markers}`;
+                      return (
+                        <img
+                          src={src}
+                          alt="Karte"
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      );
+                    })()}
+                  </div>
+                )}
+                <div className="flex flex-col divide-y divide-white/10">
+                  {places.map((place, index) => {
+                    const isActive = activePlaceId === place.id;
+                    const isFirst = index === 0;
+                    return (
+                      <div
+                        key={place.id}
+                        className="relative flex w-full items-stretch overflow-hidden gap-1"
+                        onTouchStart={(e) => handleItemTouchStart(e, place.id)}
+                        onTouchMove={handleItemTouchMove}
+                        onTouchEnd={() => handleItemTouchEnd('place')}
+                      >
+                        <div
+                          className={`flex items-center gap-3 ${isFirst ? 'pb-1.5' : 'py-1.5'} cursor-pointer select-none min-w-0 flex-1`}
+                          onClick={() => handleItemClick(place, 'place')}
+                          style={{ transition: swipingItemId === place.id ? 'none' : 'all 150ms ease-linear' }}
+                        >
+                          <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <MapPin size={14} className="text-white/60" />
+                          </div>
+                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{place.name}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
+                          {place.link && (
+                            <span className="text-white/40 p-1 flex-shrink-0">
+                              <ExternalLink size={14} />
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleSwipeDelete(place.id, 'place'); }}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                          style={{
+                            width: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            minWidth: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            transition: swipingItemId === place.id ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+                          }}
+                        >
+                          <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add place inline */}
+                <div className={places.length > 0 ? "border-t border-white/10" : ""}>
+                  {showAddPlace ? (
+                    <div className="flex items-center gap-2 pt-1.5">
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <input
+                        type="url"
+                        placeholder="Google Maps Link einfügen"
+                        value={newPlaceLink}
+                        onChange={(e) => setNewPlaceLink(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleAddPlaceFromUrl(); if (e.key === 'Escape') { setShowAddPlace(false); setNewPlaceLink(''); } }}
+                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleAddPlaceFromUrl}
+                        disabled={isFetchingPlaceMeta || !newPlaceLink.trim()}
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                      >
+                        {isFetchingPlaceMeta ? 'Laden...' : 'Hinzufügen'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setShowAddPlace(true)}
+                      className="flex items-center gap-3 pt-1.5 w-full text-left hover:opacity-80 transition-opacity"
+                    >
+                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <Plus size={14} className="text-white/40" />
+                      </div>
+                      <span className="text-[12px] text-white/40">Ort hinzufügen</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
 
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}

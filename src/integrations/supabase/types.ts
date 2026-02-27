@@ -74,6 +74,36 @@ export type Database = {
         }
         Relationships: []
       }
+      places: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          link: string | null
+          longitude: number | null
+          name: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          link?: string | null
+          longitude?: number | null
+          name: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          link?: string | null
+          longitude?: number | null
+          name?: string
+        }
+        Relationships: []
+      }
       planned_walks: {
         Row: {
           created_at: string
