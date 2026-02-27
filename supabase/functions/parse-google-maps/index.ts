@@ -31,9 +31,9 @@ Deno.serve(async (req) => {
     let city = '';
     let latitude: number | null = null;
     let longitude: number | null = null;
+    let image_url: string | null = null;
 
     // Try to extract from URL patterns
-    // Pattern: /place/Place+Name/@lat,lng
     const placeMatch = finalUrl.match(/\/place\/([^/@]+)/);
     if (placeMatch) {
       name = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ');
@@ -65,25 +65,45 @@ Deno.serve(async (req) => {
       });
       const html = await response.text();
 
-      // Extract og:title which usually has "Place Name - Google Maps"
+      // Extract og:title
       const ogTitle = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)?.[1]
         || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i)?.[1]
         || html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]
         || '';
 
       if (ogTitle) {
-        // Clean up "Place Name - Google Maps" pattern
         let cleanTitle = ogTitle.replace(/\s*[-–—]\s*Google\s*(Maps|Карты|地图)?/i, '').trim();
-        // If title has address info like "Place, Street, City", extract name and city
-        if (cleanTitle && !name) {
-          name = cleanTitle;
-        } else if (cleanTitle && name) {
-          // Use the richer title if available
+        if (cleanTitle) {
           name = cleanTitle;
         }
       }
 
-      // Try to extract coords from page content if not found in URL
+      // Extract og:image for place photo
+      const ogImage = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
+        || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)?.[1];
+      
+      if (ogImage && !ogImage.includes('maps_results_logo') && !ogImage.includes('google_favicon')) {
+        image_url = ogImage;
+      }
+
+      // Also try twitter:image
+      if (!image_url) {
+        const twitterImage = html.match(/<meta[^>]+(?:name|property)=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)?.[1]
+          || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:name|property)=["']twitter:image["']/i)?.[1];
+        if (twitterImage && !twitterImage.includes('maps_results_logo')) {
+          image_url = twitterImage;
+        }
+      }
+
+      // Try extracting from lh3.googleusercontent.com images in the page (Google Maps place photos)
+      if (!image_url) {
+        const gPhotoMatch = html.match(/https:\/\/lh[35]\.googleusercontent\.com\/[^"'\s]+(?:=w\d+-h\d+[^"'\s]*)/);
+        if (gPhotoMatch) {
+          image_url = gPhotoMatch[0];
+        }
+      }
+
+      // Extract coords from page content if not found in URL
       if (!latitude) {
         const pageCoordMatch = html.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
         if (pageCoordMatch) {
@@ -92,7 +112,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Try to extract from JSON-LD or embedded data
+      // Try JSON-LD
       if (!latitude) {
         const latMatch = html.match(/"latitude"\s*:\s*(-?\d+\.\d+)/);
         const lngMatch = html.match(/"longitude"\s*:\s*(-?\d+\.\d+)/);
@@ -105,28 +125,23 @@ Deno.serve(async (req) => {
       console.error('Error fetching Google Maps page:', e);
     }
 
-    // Extract city from name if it contains commas (e.g. "Place Name, Street, 12345 City")
+    // Extract city from name if it contains commas
     if (name && name.includes(',')) {
       const parts = name.split(',').map(p => p.trim());
       if (parts.length >= 2) {
-        // Name is first part, city is last meaningful part
         const placeName = parts[0];
-        // Find city: usually last part, may have postal code
         let cityPart = parts[parts.length - 1];
-        // Remove country if it's the last part (e.g. "Germany", "Deutschland")
         if (cityPart.match(/^(Germany|Deutschland|Allemagne|Austria|Österreich|Switzerland|Schweiz)$/i)) {
           cityPart = parts.length >= 3 ? parts[parts.length - 2] : '';
         }
-        // Remove postal code prefix
         cityPart = cityPart.replace(/^\d{4,5}\s*/, '').trim();
-        
         name = placeName;
         city = cityPart;
       }
     }
 
     return new Response(
-      JSON.stringify({ name, city, latitude, longitude }),
+      JSON.stringify({ name, city, latitude, longitude, image_url }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (error) {
