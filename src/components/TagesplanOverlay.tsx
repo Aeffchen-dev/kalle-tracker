@@ -1440,7 +1440,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div className="glass-card rounded-lg p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
-                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[160px] relative">
+                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {(() => {
                       const pts = places.filter(p => p.latitude && p.longitude);
                       const lats = pts.map(p => p.latitude!);
@@ -1451,7 +1451,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const maxLng = Math.max(...lngs);
                       const centerLat = (minLat + maxLat) / 2;
                       const centerLng = (minLng + maxLng) / 2;
-                      // Calculate zoom to fit all points
                       let zoom = 15;
                       if (pts.length > 1) {
                         const latSpan = maxLat - minLat;
@@ -1465,16 +1464,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         else if (maxSpan > 0.02) zoom = 13;
                         else zoom = 14;
                       }
-                      // Build markers query: pipe-separated lat,lng pairs
                       const markers = pts.map(p => `${p.latitude},${p.longitude}`).join('%7C');
                       return (
                         <iframe
-                          src={`https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d${pts.length === 1 ? '5000' : Math.max(50000, Math.max(maxLat - minLat, maxLng - minLng) * 111000 * 2.5).toFixed(0)}!2d${centerLng}!3d${centerLat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2sde`}
-                          className="w-full h-full border-0"
+                          src={`https://maps.google.com/maps?q=${pts[0].latitude},${pts[0].longitude}&t=k&z=${zoom}&ll=${centerLat},${centerLng}&output=embed&markers=${markers}`}
+                          className="w-full border-0"
+                          style={{ height: '200px', minHeight: '200px', touchAction: 'manipulation' }}
                           loading="lazy"
                           allowFullScreen
-                          referrerPolicy="no-referrer-when-downgrade"
-                          style={{ touchAction: 'pan-x pan-y' }}
+                          sandbox="allow-scripts allow-same-origin allow-popups"
                         />
                       );
                     })()}
