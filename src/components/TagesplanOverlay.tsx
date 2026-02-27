@@ -1440,23 +1440,20 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div className="glass-card rounded-lg p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
-                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[140px] relative">
+                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[160px] relative">
                     {(() => {
                       const pts = places.filter(p => p.latitude && p.longitude);
                       const lats = pts.map(p => p.latitude!);
                       const lngs = pts.map(p => p.longitude!);
-                      const minLat = Math.min(...lats) - 0.01;
-                      const maxLat = Math.max(...lats) + 0.01;
-                      const minLng = Math.min(...lngs) - 0.02;
-                      const maxLng = Math.max(...lngs) + 0.02;
-                      const bbox = `${minLng},${minLat},${maxLng},${maxLat}`;
-                      const markerLayer = pts.map(p => `${p.latitude},${p.longitude},ol-marker`).join('|');
+                      const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+                      const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+                      const zoom = pts.length === 1 ? 15 : 11;
                       return (
                         <iframe
-                          src={`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${pts[0].latitude},${pts[0].longitude}`}
+                          src={`https://maps.google.com/maps?q=${centerLat},${centerLng}&t=k&z=${zoom}&output=embed`}
                           className="w-full h-full border-0"
-                          style={{ filter: 'invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1)', pointerEvents: 'none' }}
                           loading="lazy"
+                          allowFullScreen
                         />
                       );
                     })()}
