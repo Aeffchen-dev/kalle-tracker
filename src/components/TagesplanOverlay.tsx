@@ -1657,10 +1657,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.icalEvents.map((evt, j) => (
                                      <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
                                        <div className="p-2 bg-white/[0.06] rounded-lg">
-                                         <div className="flex items-center overflow-hidden">
-                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px]">{evt.timeStr} Uhr</span>
-                                           <span className="text-[14px] shrink-0">🗓️</span>
-                                           <span className="text-[12px] text-white/70 ml-1.5 truncate">{evt.summary}</span>
+                                         <div className="flex items-start overflow-hidden">
+                                           <span className="text-[12px] text-white/70 shrink-0 w-[70px] mt-[1px]">{evt.timeStr} Uhr</span>
+                                           <span className="text-[14px] shrink-0 mt-[-1px]">🗓️</span>
+                                           <span className="text-[12px] text-white/70 ml-1.5 break-words min-w-0">{evt.summary}</span>
                                          </div>
                                        </div>
                                      </div>
