@@ -1464,12 +1464,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         else if (maxSpan > 0.02) zoom = 13;
                         else zoom = 14;
                       }
-                      const mapQuery = pts.length === 1 
-                        ? `${pts[0].latitude},${pts[0].longitude}`
-                        : pts.map(p => `${p.latitude},${p.longitude}`).join('/');
-                      const mapUrl = pts.length === 1
-                        ? `https://maps.google.com/maps?q=${pts[0].latitude},${pts[0].longitude}&t=k&z=${zoom}&output=embed`
-                        : `https://www.google.com/maps/dir/${pts.map(p => `${p.latitude},${p.longitude}`).join('/')}/@${centerLat},${centerLng},${zoom}z/data=!3m1!4b1!4m2!4m1!3e2?entry=ttu&layer=satellite&output=embed`;
+                      const mapQuery = pts.map(p => `${p.latitude},${p.longitude}`).join('|');
+                      const mapUrl = `https://maps.google.com/maps?q=${centerLat},${centerLng}&t=k&z=${zoom}&output=embed`;
                       return (
                         <iframe
                           src={mapUrl}
@@ -1477,7 +1473,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           style={{ height: '200px', minHeight: '200px', touchAction: 'manipulation' }}
                           loading="lazy"
                           allowFullScreen
-                          sandbox="allow-scripts allow-same-origin allow-popups"
                         />
                       );
                     })()}
