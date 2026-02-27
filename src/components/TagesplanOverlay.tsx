@@ -320,13 +320,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   };
 
   // Use 14 days for weekdays, 60 days for weekends (less frequent data)
+  // Per-day clustering to correctly distinguish pipi-only vs pipi+stuhlgang slots
   const avgGassiByDay = useMemo(() => {
     const now = new Date();
     const weekdayCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
     const weekendCutoff = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
     
-    const groups = { weekday: { pipiHours: [] as number[], stuhlgangHours: [] as number[] }, weekend: { pipiHours: [] as number[], stuhlgangHours: [] as number[] } };
-    
+    // Group events by calendar date
+    const byDate = new Map<string, { hour: number; isPoop: boolean }[]>();
     for (const event of appEvents) {
       if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
       const d = new Date(event.time);
@@ -334,16 +335,76 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       const isWeekend = jsDay === 0 || jsDay === 6;
       const cutoff = isWeekend ? weekendCutoff : weekdayCutoff;
       if (d < cutoff) continue;
-      const group = isWeekend ? groups.weekend : groups.weekday;
-      const hour = d.getHours() + d.getMinutes() / 60;
-      if (event.type === 'pipi') group.pipiHours.push(hour);
-      else group.stuhlgangHours.push(hour);
+      const dateKey = d.toISOString().slice(0, 10);
+      if (!byDate.has(dateKey)) byDate.set(dateKey, []);
+      byDate.get(dateKey)!.push({ hour: d.getHours() + d.getMinutes() / 60, isPoop: event.type === 'stuhlgang' });
     }
     
-    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[] }>();
+    // Cluster per day, then aggregate
+    type ClusterInfo = { avgHour: number; hasPoop: boolean };
+    const weekdayClusters: ClusterInfo[] = [];
+    const weekendClusters: ClusterInfo[] = [];
+    
+    for (const [dateKey, events] of byDate) {
+      const d = new Date(dateKey + 'T12:00:00');
+      const jsDay = d.getDay();
+      const isWeekend = jsDay === 0 || jsDay === 6;
+      const sorted = events.sort((a, b) => a.hour - b.hour);
+      
+      // Cluster events within 1.5h
+      const dayClusters: { hours: number[]; hasPoop: boolean }[] = [];
+      for (const evt of sorted) {
+        const last = dayClusters[dayClusters.length - 1];
+        if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
+          last.hours.push(evt.hour);
+          if (evt.isPoop) last.hasPoop = true;
+        } else {
+          dayClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+        }
+      }
+      
+      for (const c of dayClusters) {
+        const avgH = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+        (isWeekend ? weekendClusters : weekdayClusters).push({ avgHour: avgH, hasPoop: c.hasPoop });
+      }
+    }
+    
+    // Merge clusters across days into time slots, tracking poop frequency
+    const mergeIntoBuckets = (clusters: ClusterInfo[]) => {
+      const sorted = clusters.sort((a, b) => a.avgHour - b.avgHour);
+      const buckets: { hours: number[]; poopCount: number; totalCount: number }[] = [];
+      for (const c of sorted) {
+        const last = buckets[buckets.length - 1];
+        const lastAvg = last ? last.hours.reduce((a, b) => a + b, 0) / last.hours.length : -99;
+        if (last && Math.abs(c.avgHour - lastAvg) <= 1.5) {
+          last.hours.push(c.avgHour);
+          last.totalCount++;
+          if (c.hasPoop) last.poopCount++;
+        } else {
+          buckets.push({ hours: [c.avgHour], poopCount: c.hasPoop ? 1 : 0, totalCount: 1 });
+        }
+      }
+      const pipiHours: number[] = [];
+      const stuhlgangHours: number[] = [];
+      const poopFlags: boolean[] = [];
+      for (const b of buckets) {
+        const avg = b.hours.reduce((a, v) => a + v, 0) / b.hours.length;
+        pipiHours.push(avg);
+        // Only mark as stuhlgang if it happens >= 40% of the time in this slot
+        const hasPoop = b.poopCount / b.totalCount >= 0.4;
+        poopFlags.push(hasPoop);
+        if (hasPoop) stuhlgangHours.push(avg);
+      }
+      return { pipiHours, stuhlgangHours, poopFlags };
+    };
+    
+    const weekdayData = mergeIntoBuckets(weekdayClusters);
+    const weekendData = mergeIntoBuckets(weekendClusters);
+    
+    const dayMap = new Map<number, { pipiHours: number[]; stuhlgangHours: number[]; poopFlags: boolean[] }>();
     for (let i = 0; i < 7; i++) {
       const isWeekend = i >= 5;
-      dayMap.set(i, isWeekend ? groups.weekend : groups.weekday);
+      dayMap.set(i, isWeekend ? weekendData : weekdayData);
     }
     
     return dayMap;
@@ -1411,26 +1472,16 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const data = avgGassiByDay.get(monBasedDay);
                       
                       if (data) {
-                        const allEvents: { hour: number; isPoop: boolean }[] = [
-                          ...data.pipiHours.map(h => ({ hour: h, isPoop: false })),
-                          ...data.stuhlgangHours.map(h => ({ hour: h, isPoop: true })),
-                        ].sort((a, b) => a.hour - b.hour);
-                        
-                        const clusters: { hours: number[]; hasPoop: boolean; hasPipi: boolean }[] = [];
-                        for (const evt of allEvents) {
-                          const last = clusters[clusters.length - 1];
-                          if (last && evt.hour - last.hours[last.hours.length - 1] <= 1.5) {
-                            last.hours.push(evt.hour);
-                            if (evt.isPoop) last.hasPoop = true;
-                            if (!evt.isPoop) last.hasPipi = true;
-                          } else {
-                            clusters.push({ hours: [evt.hour], hasPoop: evt.isPoop, hasPipi: !evt.isPoop });
-                          }
-                        }
-                        
-                        for (const c of clusters) {
-                          const avgHour = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
-                          slots.push({ avgHour, hasPoop: c.hasPoop, hasPipi: c.hasPipi, isWalk: true, icalEvents: [], isEstimate: true });
+                        // Use pre-computed buckets with poop frequency flags
+                        for (let bi = 0; bi < data.pipiHours.length; bi++) {
+                          slots.push({
+                            avgHour: data.pipiHours[bi],
+                            hasPoop: data.poopFlags[bi],
+                            hasPipi: true,
+                            isWalk: true,
+                            icalEvents: [],
+                            isEstimate: true,
+                          });
                         }
                       }
                       
