@@ -1,0 +1,1 @@
+ALTER TABLE public.places ADD COLUMN image_url text;

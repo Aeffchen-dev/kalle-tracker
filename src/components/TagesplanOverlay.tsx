@@ -176,7 +176,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [medicineDeleting, setMedicineDeleting] = useState<string | null>(null);
 
   // Places (Orte) state
-  const [places, setPlaces] = useState<{ id: string; name: string; city: string | null; latitude: number | null; longitude: number | null; link: string | null }[]>([]);
+  const [places, setPlaces] = useState<{ id: string; name: string; city: string | null; latitude: number | null; longitude: number | null; link: string | null; image_url: string | null }[]>([]);
   const [showAddPlace, setShowAddPlace] = useState(false);
   const [newPlaceLink, setNewPlaceLink] = useState('');
   const [isFetchingPlaceMeta, setIsFetchingPlaceMeta] = useState(false);
@@ -482,8 +482,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       const city = data.city || null;
       const latitude = data.latitude || null;
       const longitude = data.longitude || null;
+      const image_url = data.image_url || null;
       const link = url.startsWith('http') ? url : `https://${url}`;
-      await (supabase.from('places') as any).insert({ name, city, latitude, longitude, link });
+      await (supabase.from('places') as any).insert({ name, city, latitude, longitude, link, image_url });
       setNewPlaceLink('');
       setShowAddPlace(false);
       loadPlaces();
@@ -1444,18 +1445,18 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       const pts = places.filter(p => p.latitude && p.longitude);
                       const lats = pts.map(p => p.latitude!);
                       const lngs = pts.map(p => p.longitude!);
-                      const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
-                      const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
-                      const zoom = pts.length === 1 ? 15 : 13;
-                      // Use free staticmap.org
-                      const markers = pts.map(p => `${p.latitude},${p.longitude},red-pushpin`).join('|');
-                      const src = `https://staticmap.org/?center=${centerLat},${centerLng}&zoom=${zoom}&size=800x280&maptype=mapnik&markers=${markers}`;
+                      const minLat = Math.min(...lats) - 0.01;
+                      const maxLat = Math.max(...lats) + 0.01;
+                      const minLng = Math.min(...lngs) - 0.02;
+                      const maxLng = Math.max(...lngs) + 0.02;
+                      const bbox = `${minLng},${minLat},${maxLng},${maxLat}`;
+                      const markerLayer = pts.map(p => `${p.latitude},${p.longitude},ol-marker`).join('|');
                       return (
-                        <img
-                          src={src}
-                          alt="Karte"
-                          className="w-full h-full object-cover"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        <iframe
+                          src={`https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${pts[0].latitude},${pts[0].longitude}`}
+                          className="w-full h-full border-0"
+                          style={{ filter: 'invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1)', pointerEvents: 'none' }}
+                          loading="lazy"
                         />
                       );
                     })()}
@@ -1478,9 +1479,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           onClick={() => handleItemClick(place, 'place')}
                           style={{ transition: swipingItemId === place.id ? 'none' : 'all 150ms ease-linear' }}
                         >
-                          <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                            <MapPin size={14} className="text-white/60" />
-                          </div>
+                          {place.image_url ? (
+                            <img src={place.image_url} alt={place.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                              <MapPin size={14} className="text-white/60" />
+                            </div>
+                          )}
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{place.name}</span>
                           <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
                           {place.link && (
