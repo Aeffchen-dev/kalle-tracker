@@ -301,13 +301,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       else setActivePlaceId(null);
       return;
     }
-    if (item.link) {
-      window.open(item.link, '_blank', 'noopener,noreferrer');
-    } else if (type === 'place') {
+    if (type === 'place') {
       const place = places.find(p => p.id === item.id);
       if (place?.latitude && place?.longitude) {
         window.open(`https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`, '_blank');
       }
+    } else if (item.link) {
+      window.open(item.link, '_blank', 'noopener,noreferrer');
     }
   };
 
