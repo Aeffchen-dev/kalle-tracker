@@ -8,6 +8,7 @@ import { de } from 'date-fns/locale';
 import { getCachedSettings } from '@/lib/settings';
 import { getEvents, Event as AppEvent } from '@/lib/events';
 import { fetchICalEvents, getICalEventsForWeek, getICalEventsForRange, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
+import { PlacesMap } from '@/components/PlacesMap';
 
 interface Ingredient {
   quantity: string;
@@ -1440,42 +1441,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div className="glass-card rounded-lg p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
-                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative" style={{ WebkitOverflowScrolling: 'touch' }}>
-                    {(() => {
-                      const pts = places.filter(p => p.latitude && p.longitude);
-                      const lats = pts.map(p => p.latitude!);
-                      const lngs = pts.map(p => p.longitude!);
-                      const minLat = Math.min(...lats);
-                      const maxLat = Math.max(...lats);
-                      const minLng = Math.min(...lngs);
-                      const maxLng = Math.max(...lngs);
-                      const centerLat = (minLat + maxLat) / 2;
-                      const centerLng = (minLng + maxLng) / 2;
-                      let zoom = 15;
-                      if (pts.length > 1) {
-                        const latSpan = maxLat - minLat;
-                        const lngSpan = maxLng - minLng;
-                        const maxSpan = Math.max(latSpan, lngSpan);
-                        if (maxSpan > 1) zoom = 8;
-                        else if (maxSpan > 0.5) zoom = 9;
-                        else if (maxSpan > 0.2) zoom = 10;
-                        else if (maxSpan > 0.1) zoom = 11;
-                        else if (maxSpan > 0.05) zoom = 12;
-                        else if (maxSpan > 0.02) zoom = 13;
-                        else zoom = 14;
-                      }
-                      const mapQuery = pts.map(p => `${p.latitude},${p.longitude}`).join('|');
-                      const mapUrl = `https://maps.google.com/maps?q=${centerLat},${centerLng}&t=k&z=${zoom}&output=embed`;
-                      return (
-                        <iframe
-                          src={mapUrl}
-                          className="w-full border-0"
-                          style={{ height: '200px', minHeight: '200px', touchAction: 'manipulation' }}
-                          loading="lazy"
-                          allowFullScreen
-                        />
-                      );
-                    })()}
+                  <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative">
+                    <PlacesMap places={places.filter(p => p.latitude && p.longitude).map(p => ({ latitude: p.latitude!, longitude: p.longitude!, name: p.name }))} />
                   </div>
                 )}
                 <div className="flex flex-col divide-y divide-white/10">
