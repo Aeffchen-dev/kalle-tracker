@@ -1464,10 +1464,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         else if (maxSpan > 0.02) zoom = 13;
                         else zoom = 14;
                       }
-                      const markers = pts.map(p => `${p.latitude},${p.longitude}`).join('%7C');
+                      const mapQuery = pts.length === 1 
+                        ? `${pts[0].latitude},${pts[0].longitude}`
+                        : pts.map(p => `${p.latitude},${p.longitude}`).join('/');
+                      const mapUrl = pts.length === 1
+                        ? `https://maps.google.com/maps?q=${pts[0].latitude},${pts[0].longitude}&t=k&z=${zoom}&output=embed`
+                        : `https://www.google.com/maps/dir/${pts.map(p => `${p.latitude},${p.longitude}`).join('/')}/@${centerLat},${centerLng},${zoom}z/data=!3m1!4b1!4m2!4m1!3e2?entry=ttu&layer=satellite&output=embed`;
                       return (
                         <iframe
-                          src={`https://maps.google.com/maps?q=${pts[0].latitude},${pts[0].longitude}&t=k&z=${zoom}&ll=${centerLat},${centerLng}&output=embed&markers=${markers}`}
+                          src={mapUrl}
                           className="w-full border-0"
                           style={{ height: '200px', minHeight: '200px', touchAction: 'manipulation' }}
                           loading="lazy"
@@ -1496,7 +1501,20 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           style={{ transition: swipingItemId === place.id ? 'none' : 'all 150ms ease-linear' }}
                         >
                           {place.image_url ? (
-                            <img src={place.image_url} alt={place.name} className="w-8 h-8 rounded object-cover flex-shrink-0" />
+                            <>
+                              <img 
+                                src={place.image_url} 
+                                alt={place.name} 
+                                className="w-8 h-8 rounded object-cover flex-shrink-0"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                  (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden');
+                                }}
+                              />
+                              <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0 hidden">
+                                <MapPin size={14} className="text-white/60" />
+                              </div>
+                            </>
                           ) : (
                             <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                               <MapPin size={14} className="text-white/60" />
