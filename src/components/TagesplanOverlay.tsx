@@ -1640,7 +1640,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           const dist = Math.abs(slots[s].avgHour - hour);
                           if (dist < minDist) { nearest = s; minDist = dist; }
                         }
-                        slots[nearest].icalEvents.push(icalItem);
+                        if (minDist <= 2) {
+                          slots[nearest].icalEvents.push(icalItem);
+                        } else {
+                          slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem], isEstimate: false });
+                        }
                       } else {
                         slots.push({ avgHour: hour, hasPoop: false, hasPipi: false, isWalk: false, icalEvents: [icalItem] });
                       }
