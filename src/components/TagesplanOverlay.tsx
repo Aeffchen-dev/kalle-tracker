@@ -28,7 +28,8 @@ const mealsData: MealData[] = [
     ingredients: [
       { quantity: '103g', name: 'Royal Canine Urinary u/c', link: 'https://www.fressnapf.de/ul/p/royal-canin-veterinary-urinary-uc-14-kg-1155812/' },
       { quantity: '309g', name: 'Wasser' },
-      { quantity: '25g', name: 'Vet-Concept Nudeln mit Gemüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht', link: 'https://www.vet-concept.com/p/fuer-den-hund-nudeln-mit-gemuese' },
+      { quantity: '25g', name: 'Vet-Concept Nudeln mit Gemüse', description: 'Mit heißem Wasser übergießen und 20 Minuten ziehen lassen\n\nkann ersetzt werden durch\n- 180g Nudeln, gekocht\n- 200g Gemüse, gekocht' },
+      { quantity: '83g', name: 'Gemüse gekocht\nz.B. Karotten' },
       { quantity: '6,6g', name: 'Dicalciumphosphat', link: 'https://www.napfcheck-shop.de/produkt/dicalciumphosphat/' },
       { quantity: '3,3g', name: 'Calciumglukonat', link: 'https://www.napfcheck-shop.de/produkt/napfcheck-calciumgluconat-fuer-hunde-und-katzen/' },
       { quantity: '2g', name: 'Kaliumzitrat', link: 'https://www.napfcheck-shop.de/produkt/napfcheck-kaliumcitrat-fuer-hunde-und-katzen/' },
