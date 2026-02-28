@@ -327,9 +327,9 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >
-      <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[80vw] lg:mx-auto">
+      <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[80vw] lg:mx-auto" style={{ marginBottom: '-50px', paddingBottom: 'calc(env(safe-area-inset-bottom) + 50px)' }}>
         <DrawerHeader 
-          className="sticky top-0 z-10 pb-4 cursor-pointer" 
+          className="sticky top-0 z-10 pb-4 pt-4 cursor-pointer" 
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
