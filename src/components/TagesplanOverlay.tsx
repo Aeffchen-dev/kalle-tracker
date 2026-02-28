@@ -641,9 +641,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       inputRef.current.focus();
       inputRef.current.select();
     }
-    if (editingMeal && editingMeal.field !== 'description' && inputRef.current) {
+    if (editingMeal && editingMeal.field === 'quantity' && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
+    }
+    if (editingMeal && (editingMeal.field === 'name' || editingMeal.field === 'description') && textareaRef.current) {
+      textareaRef.current.focus();
     }
     if (editingMeal && editingMeal.field === 'description' && textareaRef.current) {
       textareaRef.current.focus();
@@ -679,7 +682,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (e.key === 'Escape') {
       setEditingMeal(null);
     }
-    if (e.key === 'Enter' && editingMeal?.field !== 'description') {
+    if (e.key === 'Enter' && editingMeal?.field === 'quantity') {
       setEditingMeal(null);
     }
   };
@@ -894,19 +897,19 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         )}
                         <div className="flex-1">
                           {isEditingName ? (
-                            <input
-                              ref={inputRef}
-                              type="text"
+                            <textarea
+                              ref={textareaRef}
                               value={ingredient.name}
                               onChange={(e) => handleMealChange(e.target.value)}
                               onBlur={handleMealBlur}
                               onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none"
+                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none min-h-[32px]"
+                              rows={Math.max(1, ingredient.name.split('\n').length)}
                             />
                           ) : (
                             <div className="flex items-center">
                               <span
-                                className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block"
+                                className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block whitespace-pre-line"
                                 onClick={() => handleMealClick(mealIndex, index, 'name')}
                               >
                                 {ingredient.name}
