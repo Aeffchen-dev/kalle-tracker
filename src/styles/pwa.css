@@ -1,6 +1,6 @@
 /* ── PWA standalone mode ──────────────────────────────────── */
 @media (display-mode: standalone) {
   #root {
-    margin-top: env(safe-area-inset-top, 0px);
+    transform: translateY(env(safe-area-inset-top, 0px));
   }
 }
