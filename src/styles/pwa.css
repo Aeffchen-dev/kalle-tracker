@@ -7,20 +7,20 @@ body {
   min-height: 100dvh;
 }
 
-/* Base: normal browsers */
-.drawer-flush-bottom {
-  bottom: 0 !important;
-  top: auto !important;
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
-}
-
 /* ── Safe-area padding utility (always available) ────────── */
 .safe-area-pad {
   padding-top: env(safe-area-inset-top, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: env(safe-area-inset-left, 0px);
+}
+
+/* Bottom-flush utility for drawers */
+.drawer-flush-bottom {
+  bottom: 0 !important;
+  top: auto !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
 
 /* ── PWA standalone mode (iOS-safe fixed viewport) ───────── */
@@ -35,13 +35,9 @@ body {
 
   body {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     margin: 0;
     overflow: hidden;
-    
   }
 
   #root {
@@ -61,28 +57,18 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Keep drawer pinned while filling home-indicator area */
-  .drawer-flush-bottom {
-    bottom: 0 !important;
-    top: auto !important;
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* Auto safe-area for fixed elements pinned to edges */
+  /* ── Auto safe-area for fixed elements ──────────────────── */
   [class*="fixed"][class*="inset-0"] {
-    padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
-  }
-
-  [class*="fixed"][class*="inset-x-0"],
-  [class*="fixed"][class*="bottom-0"] {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+             env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   }
 
   [class*="fixed"][class*="top-0"] {
     padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  [class*="fixed"][class*="bottom-0"],
+  [class*="fixed"][class*="inset-x-0"] {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
