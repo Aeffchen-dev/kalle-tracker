@@ -666,7 +666,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                           <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
                             <span className="text-[14px] text-white flex items-center gap-1.5">
                               <span className="text-[20px] shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
-                              <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                              <span>{entry.hasPipi && entry.hasPoop ? 'Pipi & Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                             </span>
                             <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
                               {entry.timeKey} Uhr
@@ -700,7 +700,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                   {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
                                     <>
                                       <span className="text-[20px] shrink-0">💦💩</span>
-                                      <span className="text-[14px] text-white truncate">Pipi + Stuhlgang</span>
+                                      <span className="text-[14px] text-white truncate">Pipi & Stuhlgang</span>
                                     </>
                                   ) : group.events.map((ev, ei) => (
                                     <span key={ei} className="flex items-center gap-1.5">
