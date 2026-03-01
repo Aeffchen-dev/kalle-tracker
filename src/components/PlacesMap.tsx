@@ -59,11 +59,23 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
       return marker;
     });
 
-    if (places.length === 1) {
-      map.setView([places[0].latitude, places[0].longitude], 14);
-    } else {
-      const group = L.featureGroup(markers);
+    // Focus on Berlin places only
+    const berlinBounds = L.latLngBounds(
+      [52.33, 13.08], // SW corner of Berlin
+      [52.68, 13.76], // NE corner of Berlin
+    );
+    const berlinPlaces = places.filter(
+      p => p.latitude >= 52.33 && p.latitude <= 52.68 && p.longitude >= 13.08 && p.longitude <= 13.76
+    );
+
+    if (berlinPlaces.length > 1) {
+      const berlinMarkers = berlinPlaces.map(p => L.marker([p.latitude, p.longitude]));
+      const group = L.featureGroup(berlinMarkers);
       map.fitBounds(group.getBounds().pad(0.3));
+    } else if (berlinPlaces.length === 1) {
+      map.setView([berlinPlaces[0].latitude, berlinPlaces[0].longitude], 14);
+    } else {
+      map.fitBounds(berlinBounds);
     }
   }, [places, containerRef]);
 
