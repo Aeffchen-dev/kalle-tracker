@@ -301,7 +301,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
             <button
               onClick={(e) => { e.stopPropagation(); handleSwipeDelete(evt); }}
               onTouchStart={(e) => e.stopPropagation()}
-              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white rounded-[16px] overflow-hidden self-stretch"
+              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[12px] text-white rounded-[16px] overflow-hidden self-stretch"
               style={{
                 width: showDelete > 0 ? `${showDelete}px` : 0,
                 minWidth: showDelete > 0 ? `${showDelete}px` : 0,

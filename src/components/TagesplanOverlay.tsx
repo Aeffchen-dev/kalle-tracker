@@ -1009,7 +1009,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(ingredientKey, 'ingredient'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-destructive flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                          className="flex-shrink-0 bg-destructive flex items-center justify-center text-[12px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === ingredientKey; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === ingredientKey; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1124,7 +1124,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(snack.id, 'snack'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                           className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
+                           className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[12px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1299,7 +1299,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(med.id, 'medicine'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[12px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1633,7 +1633,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(place.id, 'place'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[12px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
