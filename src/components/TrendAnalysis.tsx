@@ -1345,7 +1345,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="w-full h-12 text-[16px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
+          className="w-full h-12 text-[16px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-full"
         >
           <Download className="w-4 h-4 mr-2" />
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
