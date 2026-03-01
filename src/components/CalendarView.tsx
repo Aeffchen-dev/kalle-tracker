@@ -597,7 +597,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     // Group pipi/stuhlgang events by same minute, keep others separate
                     type GroupedEntry = { events: typeof filteredEvents; timeKey: string; sortTime: number; kind: 'app' };
                     type ICalEntry = { icalEvt: typeof displayIcalEvents[0]; timeKey: string; sortTime: number; kind: 'ical' };
-                    type UnifiedEntry = GroupedEntry | ICalEntry;
+                    type PredEntry = { avgHour: number; hasPoop: boolean; hasPipi: boolean; timeKey: string; sortTime: number; kind: 'prediction' };
+                    type UnifiedEntry = GroupedEntry | ICalEntry | PredEntry;
                     const entries: UnifiedEntry[] = [];
                     
                     // Add iCal events
@@ -605,6 +606,16 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       const time = new Date(evt.dtstart);
                       const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
                       entries.push({ icalEvt: evt, timeKey: timeStr, sortTime: time.getTime(), kind: 'ical' });
+                    }
+                    
+                    // Add prediction slots
+                    for (const slot of predictionSlots) {
+                      const hours = Math.floor(slot.avgHour);
+                      const mins = Math.round((slot.avgHour % 1) * 60);
+                      const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
+                      const today = new Date();
+                      today.setHours(hours, mins, 0, 0);
+                      entries.push({ avgHour: slot.avgHour, hasPoop: slot.hasPoop, hasPipi: slot.hasPipi, timeKey: timeStr, sortTime: today.getTime(), kind: 'prediction' });
                     }
                     
                     // Group and add app events
@@ -650,7 +661,22 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         );
                       }
                       
-                      const group = entry;
+                      if (entry.kind === 'prediction') {
+                        return (
+                          <div key={`pred-${gi}`} className="flex items-center justify-between p-3 rounded-lg opacity-60">
+                            <span className="text-[14px] text-white flex items-center gap-1.5">
+                              {entry.hasPipi && <span className="shrink-0">💦</span>}
+                              {entry.hasPoop && <span className="shrink-0">💩</span>}
+                              <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                            </span>
+                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                              ~{entry.timeKey} Uhr
+                            </span>
+                          </div>
+                        );
+                      }
+                      
+                      const group = entry as GroupedEntry;
                       const isPipiGroup = group.events.every(e => e.type === 'pipi' || e.type === 'stuhlgang');
                       const firstEvent = group.events[0];
                       
@@ -764,28 +790,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
                       </span>
                     </div>
-                  )}
-                  {/* Prediction slots for today */}
-                  {predictionSlots.length > 0 && (
-                    <>
-                      {predictionSlots.map((slot, i) => {
-                        const hours = Math.floor(slot.avgHour);
-                        const mins = Math.round((slot.avgHour % 1) * 60);
-                        const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
-                        return (
-                          <div key={`pred-${i}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg opacity-60">
-                            <span className="text-[14px] text-white flex items-center gap-1.5">
-                              {slot.hasPipi && <span className="shrink-0">💦</span>}
-                              {slot.hasPoop && <span className="shrink-0">💩</span>}
-                              <span>{slot.hasPipi && slot.hasPoop ? 'Pipi + Stuhlgang' : slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
-                            </span>
-                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                              ~{timeStr} Uhr
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </>
                   )}
                 </div>
               )}
