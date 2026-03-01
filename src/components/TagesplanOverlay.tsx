@@ -1057,7 +1057,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={() => handleAddIngredient(mealIndex)}
                           disabled={!newIngredientName.trim()}
-                          className="text-[12px] text-white flex-shrink-0 disabled:opacity-30 self-center ml-2"
+                          className="text-[10px] text-white flex-shrink-0 disabled:opacity-30 self-center ml-2"
                         >
                           Hinzufügen
                         </button>
@@ -1114,7 +1114,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </div>
                           )}
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{snack.name}</span>
-                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
                           {snack.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1157,7 +1157,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       <button
                         onClick={handleAddSnackFromUrl}
                         disabled={isFetchingMeta || !newSnackLink.trim()}
-                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
@@ -1289,7 +1289,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </div>
                           )}
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
-                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px] truncate hidden md:inline">{med.shop_name || ''}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px] truncate hidden md:inline">{med.shop_name || ''}</span>
                           {med.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1332,7 +1332,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       <button
                         onClick={handleAddMedicineFromUrl}
                         disabled={isFetchingMedicineMeta || !newMedicineLink.trim()}
-                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingMedicineMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
@@ -1623,7 +1623,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             </div>
                           )}
                           <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{place.name}</span>
-                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
+                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
                           {place.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1666,7 +1666,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       <button
                         onClick={handleAddPlaceFromUrl}
                         disabled={isFetchingPlaceMeta || !newPlaceLink.trim()}
-                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingPlaceMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
