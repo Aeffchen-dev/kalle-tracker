@@ -464,13 +464,19 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const animateToDate = (targetDate: Date) => {
     if (isSameDay(selectedDate, targetDate)) return;
     const direction = targetDate > selectedDate ? -1 : 1;
-    setTransitionActive(true);
-    setSwipeOffset(direction);
-    setTimeout(() => {
-      setSelectedDate(targetDate);
-      setSwipeOffset(0);
-      setTransitionActive(false);
-    }, 300);
+    const seed = direction * 0.02;
+    setSwipeOffset(seed);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTransitionActive(true);
+        setSwipeOffset(direction);
+        setTimeout(() => {
+          setSelectedDate(targetDate);
+          setSwipeOffset(0);
+          setTransitionActive(false);
+        }, 300);
+      });
+    });
   };
 
   const handleDelete = async (eventId: string) => {
@@ -505,17 +511,23 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     const today = new Date();
     if (isSameDay(selectedDate, today)) return;
     const direction = today > selectedDate ? -1 : 1;
-    setTransitionActive(true);
-    setSwipeOffset(direction);
-    setTimeout(() => {
-      setSelectedDate(today);
-      setSwipeOffset(0);
-      setTransitionActive(false);
-      if (sticky) {
-        localStorage.setItem(sticky.dismissKey, new Date().toISOString());
-        loadEvents();
-      }
-    }, 300);
+    const seed = direction * 0.02;
+    setSwipeOffset(seed);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTransitionActive(true);
+        setSwipeOffset(direction);
+        setTimeout(() => {
+          setSelectedDate(today);
+          setSwipeOffset(0);
+          setTransitionActive(false);
+          if (sticky) {
+            localStorage.setItem(sticky.dismissKey, new Date().toISOString());
+            loadEvents();
+          }
+        }, 300);
+      });
+    });
   };
 
   // Haptic feedback helper
