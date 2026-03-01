@@ -1086,7 +1086,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Snacks Section */}
             <div className="mb-8">
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
-                <h3 className="text-[14px] text-white/90 mb-4">Snacks</h3>
+                <h3 className="text-[16px] text-white/90 mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {snacks.map((snack, index) => {
                     const isActive = activeSnackId === snack.id;
@@ -1179,7 +1179,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Emergency Section */}
             <div className="mb-2">
-              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
+              <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4 mb-2">
@@ -1187,7 +1187,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[16px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
                   <ExternalLink size={14} className="text-white/60" />
@@ -1207,7 +1207,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[16px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
                   <ExternalLink size={14} className="text-white/60" />
@@ -1262,7 +1262,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Hausapotheke Section */}
             <div className="mb-8">
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
-                <h3 className="text-[14px] text-white/90 mb-2">Hausapotheke</h3>
+                <h3 className="text-[16px] text-white/90 mb-2">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
                     const isActive = activeMedicineId === med.id;
@@ -1374,7 +1374,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
               return (
                 <div className="mb-8">
-                  <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
+                  <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
                   <div 
                     className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden"
                   >
@@ -1558,7 +1558,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
               return (
                 <div className="mb-8">
-                  <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
+                  <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
                   <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden p-4">
                     <div className="text-white text-[12px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[12px] leading-relaxed mb-3">{trick.description}</div>
@@ -1577,7 +1577,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Orte Section */}
             <div className="mb-8">
-              <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
+              <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
@@ -1690,7 +1690,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
             <div className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
-                <h2 className="flex items-center gap-2 text-[14px] text-white"><span>🗓️</span> <span>Wochenplan</span></h2>
+                <h2 className="flex items-center gap-2 text-[16px] text-white"><span>🗓️</span> <span>Wochenplan</span></h2>
               </div>
               
               {!dataLoaded ? (
