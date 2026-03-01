@@ -583,7 +583,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 <div className="space-y-2 pb-20">
                   {/* Birthday entry */}
                   {isBirthdayToday && birthdayAge > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
+                    <div className="flex items-center justify-between p-3 bg-white/[0.06] backdrop-blur-[12px] rounded-lg border border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                       <span className="text-[16px] text-white flex items-center gap-2">
                         <span>🎉</span>
                         <span>{birthdayAge}. Geburtstag</span>
@@ -649,7 +649,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     return entries.map((entry, gi) => {
                       if (entry.kind === 'ical') {
                         return (
-                          <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
+                          <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] backdrop-blur-[12px] rounded-lg border border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                             <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
                               <span className="text-[16px] shrink-0">🗓️</span>
                               <span className="truncate">{entry.icalEvt.summary}</span>
@@ -684,7 +684,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
                             <div
-                              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.06] backdrop-blur-[12px] rounded-lg border border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                               onClick={() => handleItemClick(firstEvent.id)}
                               onContextMenu={(e) => handleContextMenu(e, firstEvent.id)}
                               onTouchStart={() => handleLongPressStart(firstEvent.id)}
@@ -733,7 +733,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       return (
                         <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                           <div
-                            className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                            className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.06] backdrop-blur-[12px] rounded-lg border border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                             onClick={() => handleItemClick(event.id)}
                             onContextMenu={(e) => handleContextMenu(e, event.id)}
                             onTouchStart={() => handleLongPressStart(event.id)}
@@ -780,7 +780,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   })()}
                   {/* Who has Kalle - only show when there are other entries */}
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
-                    <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
+                    <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] backdrop-blur-[12px] rounded-lg border border-white/10 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                       <span className="text-[14px] text-white flex items-center gap-2">
                         <span className="text-[16px] shrink-0">🐶</span>
                         <span>{kalleOwner.person} hat Kalle</span>
