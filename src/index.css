@@ -282,28 +282,13 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: flush to physical bottom, behind safe areas */
-  [data-vaul-drawer],
-  [data-vaul-drawer-content],
-  [vaul-drawer],
-  [data-vaul-drawer-wrapper],
-  .vaul-drawer,
-  [data-vaul-drawer][data-vaul-drawer-direction='bottom'] {
+  /* Drawers: flush to physical bottom */
+  [data-vaul-drawer] {
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     overflow: visible;
-  }
-
-  [data-vaul-drawer][data-vaul-drawer-direction='bottom'][data-vaul-snap-points='false'] {
-    animation-duration: 0.22s !important;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
-  }
-
-  [data-vaul-drawer][data-vaul-drawer-direction='bottom'][data-vaul-snap-points='true'] {
-    transition-duration: 0.22s !important;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 
 }
