@@ -183,9 +183,9 @@ const Index = () => {
       detected.unshift({
         id: 'connection_error',
         type: 'connection_error',
-        severity: 'warning',
-        title: 'Keine Verbindung',
-        description: 'Backend nicht erreichbar – lokale Daten werden verwendet.',
+        severity: 'alert',
+        title: 'Offline',
+        description: 'Keine Verbindung – es werden lokale Daten angezeigt.',
         timestamp: new Date(),
       });
     }

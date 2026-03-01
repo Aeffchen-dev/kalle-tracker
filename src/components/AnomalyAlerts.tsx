@@ -23,7 +23,7 @@ const getEmoji = (type: Anomaly['type']): string => {
     case 'pattern_change':
       return '📊';
     case 'connection_error':
-      return '📡';
+      return '⚠️';
     default:
       return '💡';
   }
@@ -148,7 +148,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
             onTouchEnd={handleTouchEnd}
           >
             <div
-              className="flex items-center gap-3 p-3 bg-white/20 backdrop-blur-[8px] border border-[#FFFEF5]/40 rounded-[16px] select-none min-w-0 flex-1 cursor-pointer"
+              className={`flex items-center gap-3 p-3 backdrop-blur-[8px] border rounded-[16px] select-none min-w-0 flex-1 cursor-pointer ${anomaly.type === 'connection_error' ? 'bg-[#FF0000]/25 border-[#FF0000]/40' : 'bg-white/20 border-[#FFFEF5]/40'}`}
               onClick={() => handleCardClick(anomaly.id, anomaly.type)}
               style={{ 
                 transition: isSwiping ? 'none' : 'all 150ms ease-linear'
