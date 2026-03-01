@@ -1343,9 +1343,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       className="flex items-center gap-3 pt-1.5 w-full text-left hover:opacity-80 transition-opacity"
                     >
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                        <Plus size={14} className="text-white/40" />
+                        <Plus size={16} className="text-white/40" />
                       </div>
-                      <span className="text-[12px] text-white/40">Medikament hinzufügen</span>
+                      <span className="text-[14px] text-white/40">Medikament hinzufügen</span>
                     </button>
                   )}
                 </div>
