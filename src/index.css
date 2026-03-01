@@ -276,20 +276,20 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: anchor flush to true bottom */
+  /* Drawers: anchor flush to physical device bottom */
   [data-vaul-drawer] {
-    bottom: 0 !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
   }
 
   [data-vaul-drawer-content] {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
-    bottom: 0 !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     overflow: visible;
   }
 
   [data-vaul-overlay] {
-    bottom: 0 !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
   }
 }
