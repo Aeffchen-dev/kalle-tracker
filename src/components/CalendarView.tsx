@@ -112,11 +112,28 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
       )}
       {entries.map((entry, gi) => {
         if (entry.kind === 'ical') {
+          const summary = entry.icalEvt.summary || '';
+          const isMedicalIcal = ['wurmkur', 'parasiten', 'krallen'].some(kw => summary.toLowerCase().includes(kw));
+          const medicalEmoji = summary.toLowerCase().includes('wurmkur') ? '🪱' : summary.toLowerCase().includes('parasiten') ? '🦟' : '💅';
+          
+          if (isMedicalIcal) {
+            return (
+              <div key={`ical-${gi}`} className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                <span className="text-[20px] shrink-0">{medicalEmoji}</span>
+                <span className="text-[14px] text-white truncate flex-1 min-w-0">
+                  {summary.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+$/gu, '').trim()}
+                </span>
+                <div className="w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center border-[1.5px] border-white/60">
+                </div>
+              </div>
+            );
+          }
+          
           return (
             <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
               <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
                 <span className="text-[20px] shrink-0">🗓️</span>
-                <span className="truncate">{entry.icalEvt.summary}</span>
+                <span className="truncate">{summary}</span>
               </span>
               <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
             </div>
