@@ -1187,10 +1187,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center justify-between text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
-                  <ExternalLink size={14} className="text-white/60" />
+                  <ExternalLink size={14} className="text-white/40 flex-shrink-0" />
                 </a>
                 <a 
                   href="tel:+49306814455"
@@ -1207,10 +1207,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center justify-between text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
-                  <ExternalLink size={14} className="text-white/60" />
+                  <ExternalLink size={14} className="text-white/40 flex-shrink-0" />
                 </a>
                 <a 
                   href="tel:+493023362627"
