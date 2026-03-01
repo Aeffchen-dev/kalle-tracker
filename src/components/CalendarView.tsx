@@ -26,6 +26,9 @@ interface CalendarViewProps {
 
 interface StickyMedicalItem {
   dismissKey: string;
+  emoji: string;
+  label: string;
+  time: string;
 }
 
 interface DayPanelProps {
@@ -146,12 +149,13 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                 : summary.toLowerCase().includes('krallen') ? 'krallen' as const
                 : 'parasiten' as const;
               const dismissKey = `${MEDICAL_ICAL_DISMISSED_KEY}${entry.icalEvt.uid}_${entry.icalEvt.dtstart}`;
+              const label = summary.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+$/gu, '').trim();
               
               saveEvent(eventType).then(() => {
                 setTimeout(() => {
                   setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
                   if (isOnDifferentDay) {
-                    onNavigateToToday?.({ dismissKey });
+                    onNavigateToToday?.({ dismissKey, emoji: medicalEmoji, label, time: format(new Date(), 'HH:mm') });
                   } else {
                     localStorage.setItem(dismissKey, new Date().toISOString());
                     onEventSaved?.();
@@ -377,7 +381,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
-  
+  const [stickyItem, setStickyItem] = useState<StickyMedicalItem | null>(null);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -510,6 +514,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const handleNavigateToToday = (sticky?: StickyMedicalItem) => {
     const today = new Date();
     if (isSameDay(selectedDate, today)) return;
+    if (sticky) setStickyItem(sticky);
     const direction = today > selectedDate ? -1 : 1;
     const seed = direction * 0.02;
     setSwipeOffset(seed);
@@ -524,6 +529,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           if (sticky) {
             localStorage.setItem(sticky.dismissKey, new Date().toISOString());
             loadEvents();
+            setStickyItem(null);
           }
         }, 300);
       });
@@ -1019,6 +1025,16 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             
             return (
               <div className="relative min-h-full overflow-hidden">
+                {/* Sticky medical item overlay during slide transition */}
+                {stickyItem && (
+                  <div
+                    className="relative z-50 flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] mb-4"
+                  >
+                    <span className="text-[20px] shrink-0">{stickyItem.emoji}</span>
+                    <span className="text-[14px] text-white truncate flex-1 min-w-0">{stickyItem.label}</span>
+                    <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">{stickyItem.time} Uhr</span>
+                  </div>
+                )}
                 {/* Incoming panel */}
                 {showIncoming && (
                   <div 
@@ -1027,6 +1043,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       transform: `translateX(${incomingTranslateX}%) scale(${incomingScale}) rotate(${incomingRotate}deg)`,
                       transition: transStyle,
                       transformOrigin: p < 0 ? 'right center' : 'left center',
+                      paddingTop: stickyItem ? '60px' : undefined,
                     }}
                   >
                     <DayPanel
