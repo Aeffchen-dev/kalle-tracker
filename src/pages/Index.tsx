@@ -331,7 +331,7 @@ const Index = () => {
     <div className="flex flex-col bg-transparent relative overflow-y-auto overflow-x-hidden overscroll-none">
 
       {/* Header */}
-      <header className={`pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex items-start gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
