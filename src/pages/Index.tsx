@@ -327,6 +327,19 @@ const Index = () => {
     }
   }, [openCalendarWithTrends]);
 
+  // Force iOS PWA layout reflow on mount
+  useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      requestAnimationFrame(() => {
+        const el = document.querySelector('#root > *') as HTMLElement;
+        if (el) {
+          el.scrollTop = 1;
+          el.scrollTop = 0;
+        }
+      });
+    }
+  }, []);
+
   return (
     <div className="flex flex-col bg-transparent relative overflow-y-auto overflow-x-hidden overscroll-none">
 
