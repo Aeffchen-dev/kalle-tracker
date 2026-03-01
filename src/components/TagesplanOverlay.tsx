@@ -160,6 +160,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [showAddIngredient, setShowAddIngredient] = useState(false);
   const [newIngredientQuantity, setNewIngredientQuantity] = useState('');
   const [newIngredientName, setNewIngredientName] = useState('');
+  const [newIngredientLink, setNewIngredientLink] = useState('');
 
   // Swipe state for snacks & medicines
   const [swipingItemId, setSwipingItemId] = useState<string | null>(null);
@@ -362,19 +363,23 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const handleAddIngredient = (mealIndex: number) => {
     const quantity = newIngredientQuantity.trim();
     const name = newIngredientName.trim();
+    const link = newIngredientLink.trim();
     if (!name) return;
     setHasLocalChanges(true);
     setMeals(prev => {
       if (!prev) return prev;
       const newMeals = [...prev];
+      const newIngredient: Ingredient = { quantity: quantity || '', name };
+      if (link) newIngredient.link = link.startsWith('http') ? link : `https://${link}`;
       newMeals[mealIndex] = {
         ...newMeals[mealIndex],
-        ingredients: [...newMeals[mealIndex].ingredients, { quantity: quantity || '', name }],
+        ingredients: [...newMeals[mealIndex].ingredients, newIngredient],
       };
       return newMeals;
     });
     setNewIngredientQuantity('');
     setNewIngredientName('');
+    setNewIngredientLink('');
     setShowAddIngredient(false);
   };
 
@@ -1020,30 +1025,40 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   {/* Add ingredient */}
                   <div className="border-t border-white/[0.06]">
                     {showAddIngredient ? (
-                      <div className="flex items-center gap-2 p-3">
+                      <div className="flex flex-col gap-1.5 p-3">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            placeholder="Menge"
+                            value={newIngredientQuantity}
+                            onChange={(e) => setNewIngredientQuantity(e.target.value)}
+                            className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30"
+                            autoFocus
+                          />
+                          <input
+                            type="text"
+                            placeholder="Zutat"
+                            value={newIngredientName}
+                            onChange={(e) => setNewIngredientName(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
+                            className="flex-1 min-w-0 bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
+                          />
+                          <button
+                            onClick={() => handleAddIngredient(mealIndex)}
+                            disabled={!newIngredientName.trim()}
+                            className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                          >
+                            Hinzufügen
+                          </button>
+                        </div>
                         <input
-                          type="text"
-                          placeholder="Menge"
-                          value={newIngredientQuantity}
-                          onChange={(e) => setNewIngredientQuantity(e.target.value)}
-                          className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none placeholder:text-white/30"
-                          autoFocus
+                          type="url"
+                          placeholder="Link (optional)"
+                          value={newIngredientLink}
+                          onChange={(e) => setNewIngredientLink(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
+                          className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30 ml-0"
                         />
-                        <input
-                          type="text"
-                          placeholder="Zutat"
-                          value={newIngredientName}
-                          onChange={(e) => setNewIngredientName(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); } }}
-                          className="flex-1 min-w-0 bg-white/10 text-white/60 text-[12px] px-1 py-0.5 rounded border border-white/30 outline-none placeholder:text-white/30"
-                        />
-                        <button
-                          onClick={() => handleAddIngredient(mealIndex)}
-                          disabled={!newIngredientName.trim()}
-                          className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
-                        >
-                          Hinzufügen
-                        </button>
                       </div>
                     ) : (
                       <button
