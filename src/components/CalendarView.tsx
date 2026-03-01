@@ -21,12 +21,18 @@ interface CalendarViewProps {
 }
 
 const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initialScrollToChart = null }: CalendarViewProps) => {
+  const isStandalonePwa = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(display-mode: standalone)').matches;
+  }, []);
+  const collapsedSnapPoint = isStandalonePwa ? 0.25 : 0.2;
+
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
-  const [snap, setSnap] = useState<SnapPoint | null>(initialShowTrends ? 0.9 : 0.2);
+  const [snap, setSnap] = useState<SnapPoint | null>(initialShowTrends ? 0.9 : collapsedSnapPoint);
   const [showTrends, setShowTrends] = useState(initialShowTrends);
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
@@ -37,7 +43,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
-    setSnap(snap === 0.2 ? 0.9 : 0.2);
+    setSnap(snap === collapsedSnapPoint ? 0.9 : collapsedSnapPoint);
   };
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -306,7 +312,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   // Handle clicks outside the drawer to snap to default
   const handleOutsideClick = () => {
     if (snap === 0.9) {
-      setSnap(0.2);
+      setSnap(collapsedSnapPoint);
     }
   };
 
@@ -323,7 +329,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
         open={true} 
         dismissible={false}
         modal={false}
-        snapPoints={[0.2, 0.9]}
+        snapPoints={[collapsedSnapPoint, 0.9]}
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
       >

@@ -25,22 +25,32 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed inset-x-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
-        className,
-      )}
-      style={{ bottom: 'env(safe-area-inset-bottom)' }}
-      {...props}
-    >
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+>(({ className, children, style, ...props }, ref) => {
+  const isStandalonePwa =
+    typeof window !== "undefined" && window.matchMedia("(display-mode: standalone)").matches;
+
+  const mergedStyle: React.CSSProperties = {
+    bottom: isStandalonePwa ? 0 : "env(safe-area-inset-bottom)",
+    ...style,
+  };
+
+  return (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed inset-x-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
+          className,
+        )}
+        style={mergedStyle}
+        {...props}
+      >
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  );
+});
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (

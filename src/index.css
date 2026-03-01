@@ -261,12 +261,18 @@ html, body {
   }
 
   /* Drawers: anchor to true bottom, no white gap */
-  [vaul-drawer] {
+  [data-vaul-drawer] {
     bottom: 0 !important;
   }
 
-  /* Info overlay: use full viewport height */
-  .fixed.inset-0 {
+  /* Info overlay: fill full height + safe-area background/content */
+  .pwa-info-overlay-root {
     height: 100dvh !important;
+  }
+
+  .pwa-info-overlay-scroll {
+    min-height: 100dvh;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px) !important;
+    background: hsl(var(--spot-color));
   }
 }
