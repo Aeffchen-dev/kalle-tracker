@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2 } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 
@@ -90,17 +90,9 @@ export function PlacesMap({ places }: { places: Place[] }) {
 
       <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
         <DialogContent
-          className="max-w-none w-screen h-screen p-0 border-none bg-black [&>button]:hidden"
+          className="max-w-none w-screen h-screen p-0 border-none bg-black"
           style={{ borderRadius: 0 }}
         >
-          <button
-            onClick={() => setIsFullscreen(false)}
-            aria-label="Close fullscreen map"
-            className="absolute right-3 z-[1001] w-8 h-8 flex items-center justify-center bg-background/90 text-foreground shadow-lg border border-border"
-            style={{ top: 'calc(env(safe-area-inset-top, 0px) + 12px)', borderRadius: 4 }}
-          >
-            <X size={14} />
-          </button>
           <div ref={fullscreenMapRef} className="w-full h-full" />
           {isFullscreen && <MapContent places={places} containerRef={fullscreenMapRef} />}
         </DialogContent>
