@@ -39,9 +39,9 @@ html, body {
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Standalone iOS: keep drawer visually pinned to physical bottom */
+  /* Standalone iOS: pin drawer to physical bottom with device-safe fallback */
   .drawer-flush-bottom {
-    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    bottom: calc(-1 * max(env(safe-area-inset-bottom, 0px), 8px)) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
   }
 }
