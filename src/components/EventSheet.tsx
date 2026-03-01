@@ -146,7 +146,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
   return (
     <Drawer variant="compact" open={open} onOpenChange={onOpenChange}>
       <DrawerContent variant="compact">
-        <DrawerHeader className="pb-4">
+        <DrawerHeader>
           <DrawerTitle className="text-center text-[16px] text-white">Eintrag hinzufügen</DrawerTitle>
         </DrawerHeader>
         <div className="px-4 space-y-4 overflow-hidden">
