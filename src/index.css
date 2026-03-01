@@ -283,13 +283,13 @@ html, body {
   /* Drawers: flush to physical bottom */
   [data-vaul-drawer],
   [data-vaul-drawer-content] {
-    bottom: 0 !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
-    padding-bottom: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     overflow: visible;
   }
 
   [data-vaul-overlay] {
-    bottom: 0 !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
   }
 }
