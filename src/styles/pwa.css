@@ -1,5 +1,1 @@
-@media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top, 0px);
-  }
-}
+/* PWA – no overrides, viewport-fit=auto handles safe areas */
