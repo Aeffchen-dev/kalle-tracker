@@ -1086,7 +1086,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Snacks Section */}
             <div className="mb-8">
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
-                <h3 className="text-[13px] text-white/90 mb-4">Snacks</h3>
+                <h3 className="text-[14px] text-white/90 mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {snacks.map((snack, index) => {
                     const isActive = activeSnackId === snack.id;
@@ -1262,7 +1262,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Hausapotheke Section */}
             <div className="mb-8">
               <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
-                <h3 className="text-[13px] text-white/90 mb-2">Hausapotheke</h3>
+                <h3 className="text-[14px] text-white/90 mb-2">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
                     const isActive = activeMedicineId === med.id;
@@ -1751,7 +1751,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                   <span>{span.person} hat Kalle</span>
                                 </span>
                                 <span className="flex-1" />
-                                <span className="text-[11px] text-white/40 shrink-0 text-right">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                                <span className="text-[12px] text-white/40 shrink-0 text-right">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
@@ -1975,7 +1975,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
                           <div className="flex items-center gap-6">
-                            <span className="text-[13px] font-medium text-white">
+                            <span className="text-[14px] font-medium text-white">
                               {isToday ? 'Heute' : dayAbbr[jsDay]}
                             </span>
                             <span className="text-white/70 text-[12px]">
@@ -1989,7 +1989,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         {/* Entries */}
                         <div className="px-2.5 pb-2.5">
                           {(slots.length === 0 && dayMedicalEvents.length === 0 && medicalIcalEvents.length === 0) ? (
-                            <div className="text-white/15 text-[11px] py-2 text-center">–</div>
+                            <div className="text-white/15 text-[12px] py-2 text-center">–</div>
                           ) : (
                             <div className="space-y-1.5">
                               {slots.map((slot, i) => (
@@ -1998,7 +1998,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.isWalk && (
                                     <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate && isToday ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
-                                        <span className="text-[11px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
+                                        <span className="text-[12px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
                                         <span className="text-[20px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
                                       </div>
                                     </div>
@@ -2009,7 +2009,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                         <div className="p-3 rounded-lg bg-white/[0.06]">
                                           <div className="flex flex-col gap-0.5">
                                             <div className="flex items-center gap-1.5">
-                                              <span className="text-[11px] text-white/50 shrink-0">{evt.timeStr}</span>
+                                              <span className="text-[12px] text-white/50 shrink-0">{evt.timeStr}</span>
                                               <span className="text-[20px] shrink-0">🗓️</span>
                                             </div>
                                             <span className="text-[12px] text-white/70 break-words min-w-0">{evt.summary}</span>

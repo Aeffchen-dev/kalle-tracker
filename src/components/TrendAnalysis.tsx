@@ -55,7 +55,7 @@ const StatCard = memo(({
   <div className="bg-white/[0.06] rounded-lg p-4">
     <div className="flex items-center gap-2 mb-1">
       <span className="text-lg">{emoji}</span>
-      <span className="text-[11px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
+      <span className="text-[12px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
     </div>
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
@@ -142,7 +142,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
-        <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
+        <p className="text-[12px] text-white/30">Nicht genügend Daten</p>
       </div>
     );
   }
@@ -297,7 +297,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
-        <p className="text-[13px] text-white/30">Nicht genügend Daten</p>
+        <p className="text-[12px] text-white/30">Nicht genügend Daten</p>
       </div>
     );
   }
@@ -1280,7 +1280,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     <div className="pb-11 space-y-2" data-vaul-no-drag>
       {/* Age Display */}
       <div className="w-full bg-white/[0.06] backdrop-blur-sm rounded-lg p-4 flex items-center justify-center">
-        <span className="text-[13px] leading-none">
+        <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
           <span className="text-white">{kalleAge}</span>
           <span className="text-white/60"> alt</span>
@@ -1324,16 +1324,16 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
           <div ref={weightChartRef} className="mb-8 relative">
-            <h3 className="text-[13px] text-white font-medium mb-3">Wachstumskurve</h3>
+            <h3 className="text-[14px] text-white font-medium mb-3">Wachstumskurve</h3>
             <GrowthCurveChart events={events} />
           </div>
           
           <div className="mb-6" data-vaul-no-drag>
-            <h3 className="text-[13px] text-white font-medium mb-3">Gewichtsverlauf</h3>
+            <h3 className="text-[14px] text-white font-medium mb-3">Gewichtsverlauf</h3>
             <WeightChart data={weightData} width={width} />
           </div>
           <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
-            <h3 className="text-[13px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
+            <h3 className="text-[14px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
             <PhChart data={phData} width={width} />
           </div>
         </div>
