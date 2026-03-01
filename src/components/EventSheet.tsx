@@ -314,7 +314,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                 (selectedTypes.has('phwert') && !selectedPh) ||
                 (selectedTypes.has('gewicht') && !weightValue.trim())
               }
-              className="w-full h-12 text-[16px] bg-white text-black hover:bg-white/90 disabled:bg-white disabled:text-black/50 disabled:opacity-100 rounded-full"
+              className="w-full h-12 text-[16px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-full"
             >
               {isSubmitting ? 'Speichern...' : 'Speichern'}
             </Button>
