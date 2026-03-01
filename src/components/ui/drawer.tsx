@@ -89,6 +89,17 @@ const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   DrawerContentProps
 >(({ className, children, variant, style, ...props }, ref) => {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useLayoutEffect(() => {
+    // Reset scroll position on #root when drawer opens to fix iOS PWA offset
+    const root = document.getElementById('root');
+    if (root) {
+      root.scrollTop = 0;
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
   return (
     <DrawerPortal>
       <DrawerOverlay />
