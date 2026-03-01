@@ -748,15 +748,22 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const chartsRef = useRef<HTMLDivElement>(null);
   const weightChartRef = useRef<HTMLDivElement>(null);
   const phChartRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to specific chart on mount
+  // Scroll to specific chart on mount, or to end by default
   useEffect(() => {
-    if (!scrollToChart) return;
-    const ref = scrollToChart === 'weight' ? weightChartRef : phChartRef;
-    const t = setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 400);
-    return () => clearTimeout(t);
+    if (scrollToChart) {
+      const ref = scrollToChart === 'weight' ? weightChartRef : phChartRef;
+      const t = setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+      return () => clearTimeout(t);
+    } else {
+      const t = setTimeout(() => {
+        endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 400);
+      return () => clearTimeout(t);
+    }
   }, [scrollToChart]);
   const [isExporting, setIsExporting] = useState(false);
   
@@ -1351,6 +1358,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
         </Button>
       </div>
+      <div ref={endRef} />
     </div>
   );
 });
