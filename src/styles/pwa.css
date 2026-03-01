@@ -27,7 +27,4 @@ html, body {
     overscroll-behavior: none;
   }
 
-  .pwa-safe-top {
-    padding-top: env(safe-area-inset-top, 0px) !important;
-  }
 }
