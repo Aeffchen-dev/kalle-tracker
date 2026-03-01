@@ -252,9 +252,8 @@ html, body {
 @media (display-mode: standalone) {
   html,
   body {
-    height: calc(100% + env(safe-area-inset-top, 0px));
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+    height: 100dvh;
+    min-height: 100dvh;
     overflow: visible;
     overscroll-behavior: none;
   }
@@ -265,8 +264,13 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
+    height: 100dvh;
     overflow: visible;
-    min-height: calc(100% + env(safe-area-inset-bottom, 0px));
+  }
+
+  #dalmatian-spots,
+  #static-loader {
+    height: 100dvh !important;
   }
 
   /* All fixed full-screen overlays: extend past safe area */
