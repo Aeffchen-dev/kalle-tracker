@@ -272,21 +272,23 @@ html, body {
   .pwa-info-overlay-root,
   .pwa-info-overlay-scroll {
     top: calc(-1 * env(safe-area-inset-top, 0px)) !important;
-    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0 !important;
     padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: 0;
+    overflow: visible;
   }
 
   .pwa-safe-top {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: anchor to true bottom and extend behind home indicator */
+  /* Drawers: anchor to true bottom */
   [data-vaul-drawer] {
     bottom: 0 !important;
   }
 
   [data-vaul-drawer-content] {
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    padding-bottom: 0 !important;
+    overflow: visible;
   }
 }
