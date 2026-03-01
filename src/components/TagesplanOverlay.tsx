@@ -1026,13 +1026,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   <div className="border-t border-white/[0.06]">
                     {showAddIngredient ? (
                       <div className="flex flex-col gap-1.5 p-3">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center">
                           <input
                             type="text"
                             placeholder="Menge"
                             value={newIngredientQuantity}
                             onChange={(e) => setNewIngredientQuantity(e.target.value)}
-                            className="bg-transparent text-white/60 text-[12px] w-[52px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30"
+                            className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
                             autoFocus
                           />
                           <input
@@ -1065,7 +1065,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         onClick={() => setShowAddIngredient(true)}
                         className="flex items-center gap-3 p-3 w-full text-left hover:opacity-80 transition-opacity"
                       >
-                        <Plus size={14} className="text-white/40" />
+                        <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                          <Plus size={14} className="text-white/40" />
+                        </div>
                         <span className="text-[12px] text-white/40">Zutat hinzufügen</span>
                       </button>
                     )}
