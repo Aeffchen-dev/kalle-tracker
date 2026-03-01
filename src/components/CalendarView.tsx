@@ -20,6 +20,228 @@ interface CalendarViewProps {
   initialScrollToChart?: 'weight' | 'ph' | null;
 }
 
+/* ── DayPanel: renders entries for a single day ─────────── */
+
+interface DayPanelProps {
+  date: Date;
+  events: Event[];
+  icalEvents: ICalEvent[];
+  kalleOwner: { person: string; endDate: Date } | null;
+  birthday: Date | null;
+  predictionSlots: { avgHour: number; hasPoop: boolean; hasPipi: boolean }[];
+  activeEventId: string | null;
+  onItemClick: (eventId: string) => void;
+  onContextMenu: (e: React.MouseEvent, eventId: string) => void;
+  onLongPressStart: (eventId: string) => void;
+  onLongPressMove: () => void;
+  onLongPressEnd: () => void;
+  onDelete: (eventId: string) => void;
+}
+
+const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete }: DayPanelProps) => {
+  const isBirthdayToday = birthday
+    ? date.getDate() === birthday.getDate() && date.getMonth() === birthday.getMonth()
+    : false;
+  const birthdayAge = birthday && isBirthdayToday ? differenceInYears(date, birthday) : 0;
+  const displayIcalEvents = dayIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || ''));
+
+  if (dayEvents.length === 0 && !isBirthdayToday && displayIcalEvents.length === 0 && predictionSlots.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-4">
+        <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
+      </div>
+    );
+  }
+
+  // Build unified entry list
+  type GroupedEntry = { events: Event[]; timeKey: string; sortTime: number; kind: 'app' };
+  type ICalEntry = { icalEvt: ICalEvent; timeKey: string; sortTime: number; kind: 'ical' };
+  type PredEntry = { avgHour: number; hasPoop: boolean; hasPipi: boolean; timeKey: string; sortTime: number; kind: 'prediction' };
+  type UnifiedEntry = GroupedEntry | ICalEntry | PredEntry;
+  const entries: UnifiedEntry[] = [];
+
+  for (const evt of displayIcalEvents) {
+    const time = new Date(evt.dtstart);
+    const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
+    entries.push({ icalEvt: evt, timeKey: timeStr, sortTime: time.getTime(), kind: 'ical' });
+  }
+
+  for (const slot of predictionSlots) {
+    const hours = Math.floor(slot.avgHour);
+    const mins = Math.round((slot.avgHour % 1) * 60);
+    const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
+    const d = new Date();
+    d.setHours(hours, mins, 0, 0);
+    entries.push({ avgHour: slot.avgHour, hasPoop: slot.hasPoop, hasPipi: slot.hasPipi, timeKey: timeStr, sortTime: d.getTime(), kind: 'prediction' });
+  }
+
+  const usedIndices = new Set<number>();
+  for (let i = 0; i < dayEvents.length; i++) {
+    if (usedIndices.has(i)) continue;
+    const ev = dayEvents[i];
+    const evTime = format(new Date(ev.time), 'HH:mm');
+    if (ev.type === 'pipi' || ev.type === 'stuhlgang') {
+      const group = [ev];
+      for (let j = i + 1; j < dayEvents.length; j++) {
+        if (usedIndices.has(j)) continue;
+        const ev2 = dayEvents[j];
+        if ((ev2.type === 'pipi' || ev2.type === 'stuhlgang') && format(new Date(ev2.time), 'HH:mm') === evTime) {
+          group.push(ev2);
+          usedIndices.add(j);
+        }
+      }
+      usedIndices.add(i);
+      entries.push({ events: group, timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
+    } else {
+      usedIndices.add(i);
+      entries.push({ events: [ev], timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
+    }
+  }
+
+  entries.sort((a, b) => b.sortTime - a.sortTime);
+
+  return (
+    <div className="space-y-2 pb-20">
+      {isBirthdayToday && birthdayAge > 0 && (
+        <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+          <span className="text-[16px] text-white flex items-center gap-2">
+            <span>🎉</span>
+            <span>{birthdayAge}. Geburtstag</span>
+          </span>
+        </div>
+      )}
+      {entries.map((entry, gi) => {
+        if (entry.kind === 'ical') {
+          return (
+            <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
+                <span className="text-[20px] shrink-0">🗓️</span>
+                <span className="truncate">{entry.icalEvt.summary}</span>
+              </span>
+              <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
+            </div>
+          );
+        }
+        if (entry.kind === 'prediction') {
+          return (
+            <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
+              <span className="text-[14px] text-white flex items-center gap-1.5">
+                <span className="text-[20px] shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
+                <span>{entry.hasPipi && entry.hasPoop ? 'Pipi & Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+              </span>
+              <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
+            </div>
+          );
+        }
+        const group = entry as GroupedEntry;
+        const isPipiGroup = group.events.every(e => e.type === 'pipi' || e.type === 'stuhlgang');
+        const firstEvent = group.events[0];
+        if (isPipiGroup && group.events.length > 0) {
+          const isActive = group.events.some(e => activeEventId === e.id);
+          return (
+            <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
+              <div
+                className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                onClick={() => onItemClick(firstEvent.id)}
+                onContextMenu={(e) => onContextMenu(e, firstEvent.id)}
+                onTouchStart={() => onLongPressStart(firstEvent.id)}
+                onTouchMove={onLongPressMove}
+                onTouchEnd={onLongPressEnd}
+                onMouseDown={() => onLongPressStart(firstEvent.id)}
+                onMouseMove={onLongPressMove}
+                onMouseUp={onLongPressEnd}
+                onMouseLeave={onLongPressEnd}
+              >
+                <div className="flex items-center justify-between w-full overflow-hidden">
+                  <div className="flex items-center gap-1.5">
+                    {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
+                      <>
+                        <span className="text-[20px] shrink-0">💦💩</span>
+                        <span className="text-[14px] text-white truncate">Pipi & Stuhlgang</span>
+                      </>
+                    ) : group.events.map((ev, ei) => (
+                      <span key={ei} className="flex items-center gap-1.5">
+                        <span className="text-[20px] shrink-0">{ev.type === 'pipi' ? '💦' : '💩'}</span>
+                        <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
+                      </span>
+                    ))}
+                  </div>
+                  <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                    {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                    {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
+                    {group.timeKey} Uhr
+                  </span>
+                </div>
+              </div>
+              <button
+                onClick={() => { group.events.forEach(e => onDelete(e.id)); }}
+                className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+              >
+                Löschen
+              </button>
+            </div>
+          );
+        }
+        const event = firstEvent;
+        const isActive = activeEventId === event.id;
+        return (
+          <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
+            <div
+              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+              onClick={() => onItemClick(event.id)}
+              onContextMenu={(e) => onContextMenu(e, event.id)}
+              onTouchStart={() => onLongPressStart(event.id)}
+              onTouchMove={onLongPressMove}
+              onTouchEnd={onLongPressEnd}
+              onMouseDown={() => onLongPressStart(event.id)}
+              onMouseMove={onLongPressMove}
+              onMouseUp={onLongPressEnd}
+              onMouseLeave={onLongPressEnd}
+            >
+              <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
+                <span className="text-[20px] shrink-0">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
+                <span className="truncate">
+                  {event.type === 'wurmkur' && 'Wurmkur'}
+                  {event.type === 'parasiten' && 'Parasiten Tablette'}
+                  {event.type === 'krallen' && 'Krallen schneiden'}
+                  {event.type === 'gewicht' && (
+                    <>Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-'}</span></>
+                  )}
+                  {event.type === 'phwert' && (
+                    <>pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.ph_value || '-'}</span></>
+                  )}
+                </span>
+              </span>
+              <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
+                {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
+                {format(new Date(event.time), 'HH:mm')} Uhr
+              </span>
+            </div>
+            <button
+              onClick={() => onDelete(event.id)}
+              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+            >
+              Löschen
+            </button>
+          </div>
+        );
+      })}
+      {kalleOwner && (dayEvents.length > 0 || dayIcalEvents.length > 0) && (
+        <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+          <span className="text-[14px] text-white flex items-center gap-2">
+            <span className="text-[20px] shrink-0">🐶</span>
+            <span>{kalleOwner.person} hat Kalle</span>
+          </span>
+          <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+            bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initialScrollToChart = null }: CalendarViewProps) => {
   const isStandalonePwa = useMemo(() => {
     if (typeof window === 'undefined') return false;
@@ -29,14 +251,13 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [snap, setSnap] = useState<SnapPoint | null>(initialShowTrends ? 0.9 : collapsedSnapPoint);
   const [showTrends, setShowTrends] = useState(initialShowTrends);
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
+  const [transitionActive, setTransitionActive] = useState(false);
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
@@ -189,9 +410,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     
     // Update visual offset for horizontal swipes
     if (isHorizontalSwipe.current) {
-      // Limit the offset and add resistance at edges
-      const maxOffset = 100;
-      const resistedOffset = diffX * 0.4;
+      const maxOffset = window.innerWidth;
+      const resistedOffset = diffX * 0.6;
       setSwipeOffset(Math.max(-maxOffset, Math.min(maxOffset, resistedOffset)));
     }
     
@@ -205,16 +425,36 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     
     if (isHorizontalSwipe.current && Math.abs(diff) > minSwipeDistance) {
       if (diff > 0 && canGoNext) {
-        // Swipe left - next day (more recent)
-        changeDate('left');
+        // Swipe left - next day: animate to -100%
+        setTransitionActive(true);
+        setSwipeOffset(-window.innerWidth);
+        setTimeout(() => {
+          setSelectedDate(addDays(selectedDate, 1));
+          setSwipeOffset(0);
+          setTransitionActive(false);
+        }, 250);
       } else if (diff < 0 && canGoPrev) {
-        // Swipe right - previous day (older)
-        changeDate('right');
+        // Swipe right - prev day: animate to +100%
+        setTransitionActive(true);
+        setSwipeOffset(window.innerWidth);
+        setTimeout(() => {
+          setSelectedDate(subDays(selectedDate, 1));
+          setSwipeOffset(0);
+          setTransitionActive(false);
+        }, 250);
+      } else {
+        // Snap back
+        setTransitionActive(true);
+        setSwipeOffset(0);
+        setTimeout(() => setTransitionActive(false), 250);
       }
+    } else {
+      // Snap back
+      setTransitionActive(true);
+      setSwipeOffset(0);
+      setTimeout(() => setTransitionActive(false), 250);
     }
     
-    // Reset offset with animation
-    setSwipeOffset(0);
     daySwipeStartX.current = 0;
     daySwipeEndX.current = 0;
   };
@@ -236,19 +476,33 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     setActiveEventId(activeEventId === eventId ? null : eventId);
   };
   
-  const filteredEvents = events.filter(event => {
-    const eventDate = new Date(event.time);
-    return isSameDay(eventDate, selectedDate);
-  }).sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+  const getEventsForDate = useCallback((date: Date) => {
+    return events.filter(event => isSameDay(new Date(event.time), date))
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+  }, [events]);
+
+  const getIcalEventsForDate = useCallback((date: Date) => {
+    return getICalEventsForDate(icalEvents, date)
+      .sort((a, b) => new Date(a.dtstart).getTime() - new Date(b.dtstart).getTime());
+  }, [icalEvents]);
+
+  const getKalleOwnerForDateCb = useCallback((date: Date) => {
+    return getKalleOwnerForDate(icalEvents, date);
+  }, [icalEvents]);
+
+  const filteredEvents = getEventsForDate(selectedDate);
 
   const filteredIcalEvents = useMemo(() => {
-    return getICalEventsForDate(icalEvents, selectedDate)
-      .sort((a, b) => new Date(a.dtstart).getTime() - new Date(b.dtstart).getTime());
-  }, [icalEvents, selectedDate]);
+    return getIcalEventsForDate(selectedDate);
+  }, [getIcalEventsForDate, selectedDate]);
 
   const kalleOwner = useMemo(() => {
-    return getKalleOwnerForDate(icalEvents, selectedDate);
-  }, [icalEvents, selectedDate]);
+    return getKalleOwnerForDateCb(selectedDate);
+  }, [getKalleOwnerForDateCb, selectedDate]);
+
+  // Adjacent dates for carousel
+  const prevDate = subDays(selectedDate, 1);
+  const nextDate = addDays(selectedDate, 1);
 
   // Compute average walk predictions per day-of-week (same logic as Wochenplan)
   const avgGassiByDay = useMemo(() => {
@@ -394,16 +648,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     return () => resizeObserver.disconnect();
   }, [snap, filteredEvents.length, showTrends]);
 
-  const isBirthdayToday = useMemo(() => {
-    if (!birthday) return false;
-    return selectedDate.getDate() === birthday.getDate() && 
-           selectedDate.getMonth() === birthday.getMonth();
-  }, [selectedDate, birthday]);
-
-  const birthdayAge = useMemo(() => {
-    if (!birthday || !isBirthdayToday) return 0;
-    return differenceInYears(selectedDate, birthday);
-  }, [selectedDate, birthday, isBirthdayToday]);
 
   const today = new Date();
   const sevenDaysAgo = subDays(today, 6);
@@ -422,15 +666,18 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     if (direction === 'left' && !canGoNext) return;
     if (direction === 'right' && !canGoPrev) return;
     
-    setSlideDirection(direction);
+    const targetOffset = direction === 'left' ? -window.innerWidth : window.innerWidth;
+    setTransitionActive(true);
+    setSwipeOffset(targetOffset);
     setTimeout(() => {
       if (direction === 'left') {
         setSelectedDate(addDays(selectedDate, 1));
       } else {
         setSelectedDate(subDays(selectedDate, 1));
       }
-      setTimeout(() => setSlideDirection(null), 150);
-    }, 150);
+      setSwipeOffset(0);
+      setTransitionActive(false);
+    }, 250);
   };
 
   // Handle clicks outside the drawer to snap to default
@@ -562,236 +809,70 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
               <TrendAnalysis events={events} scrollToChart={initialScrollToChart} />
             </div>
           ) : (
-            <div 
-              className={`min-h-full ${
-                slideDirection === 'left' ? 'opacity-0 -translate-x-4 transition-all duration-150' : 
-                slideDirection === 'right' ? 'opacity-0 translate-x-4 transition-all duration-150' : 
-                swipeOffset === 0 ? 'opacity-100 translate-x-0 transition-all duration-200' : 'opacity-100'
-              }`}
-              style={{ 
-                transform: swipeOffset !== 0 ? `translateX(${swipeOffset}px)` : undefined,
-                opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
-              }}
-            >
-              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).length === 0 && predictionSlots.length === 0 ? (
-                <div className="flex items-center justify-center py-4">
-                  <p className="text-center text-[16px] text-white/60">
-                    Keine Einträge
-                  </p>
+            <div className="overflow-hidden min-h-full">
+              <div 
+                className="flex min-h-full"
+                style={{ 
+                  width: '300%',
+                  transform: `translateX(calc(-33.333% + ${swipeOffset}px))`,
+                  transition: transitionActive ? 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
+                }}
+              >
+                {/* Previous day panel */}
+                <div className="w-1/3 min-w-0 shrink-0">
+                  <DayPanel
+                    date={prevDate}
+                    events={getEventsForDate(prevDate)}
+                    icalEvents={getIcalEventsForDate(prevDate)}
+                    kalleOwner={getKalleOwnerForDateCb(prevDate)}
+                    birthday={birthday}
+                    predictionSlots={[]}
+                    activeEventId={null}
+                    onItemClick={() => {}}
+                    onContextMenu={() => {}}
+                    onLongPressStart={() => {}}
+                    onLongPressMove={() => {}}
+                    onLongPressEnd={() => {}}
+                    onDelete={() => {}}
+                  />
                 </div>
-              ) : (
-                <div className="space-y-2 pb-20">
-                  {/* Birthday entry */}
-                  {isBirthdayToday && birthdayAge > 0 && (
-                    <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-                      <span className="text-[16px] text-white flex items-center gap-2">
-                        <span>🎉</span>
-                        <span>{birthdayAge}. Geburtstag</span>
-                      </span>
-                    </div>
-                  )}
-                  {(() => {
-                    // Merge app events and iCal events into a unified sorted list
-                    const displayIcalEvents = filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || ''));
-                    
-                    // Group pipi/stuhlgang events by same minute, keep others separate
-                    type GroupedEntry = { events: typeof filteredEvents; timeKey: string; sortTime: number; kind: 'app' };
-                    type ICalEntry = { icalEvt: typeof displayIcalEvents[0]; timeKey: string; sortTime: number; kind: 'ical' };
-                    type PredEntry = { avgHour: number; hasPoop: boolean; hasPipi: boolean; timeKey: string; sortTime: number; kind: 'prediction' };
-                    type UnifiedEntry = GroupedEntry | ICalEntry | PredEntry;
-                    const entries: UnifiedEntry[] = [];
-                    
-                    // Add iCal events
-                    for (const evt of displayIcalEvents) {
-                      const time = new Date(evt.dtstart);
-                      const timeStr = `${time.getHours().toString().padStart(2, '0')}:${time.getMinutes().toString().padStart(2, '0')}`;
-                      entries.push({ icalEvt: evt, timeKey: timeStr, sortTime: time.getTime(), kind: 'ical' });
-                    }
-                    
-                    // Add prediction slots
-                    for (const slot of predictionSlots) {
-                      const hours = Math.floor(slot.avgHour);
-                      const mins = Math.round((slot.avgHour % 1) * 60);
-                      const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
-                      const today = new Date();
-                      today.setHours(hours, mins, 0, 0);
-                      entries.push({ avgHour: slot.avgHour, hasPoop: slot.hasPoop, hasPipi: slot.hasPipi, timeKey: timeStr, sortTime: today.getTime(), kind: 'prediction' });
-                    }
-                    
-                    // Group and add app events
-                    const usedIndices = new Set<number>();
-                    for (let i = 0; i < filteredEvents.length; i++) {
-                      if (usedIndices.has(i)) continue;
-                      const ev = filteredEvents[i];
-                      const evTime = format(new Date(ev.time), 'HH:mm');
-                      
-                      if (ev.type === 'pipi' || ev.type === 'stuhlgang') {
-                        const group = [ev];
-                        for (let j = i + 1; j < filteredEvents.length; j++) {
-                          if (usedIndices.has(j)) continue;
-                          const ev2 = filteredEvents[j];
-                          if ((ev2.type === 'pipi' || ev2.type === 'stuhlgang') && format(new Date(ev2.time), 'HH:mm') === evTime) {
-                            group.push(ev2);
-                            usedIndices.add(j);
-                          }
-                        }
-                        usedIndices.add(i);
-                        entries.push({ events: group, timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
-                      } else {
-                        usedIndices.add(i);
-                        entries.push({ events: [ev], timeKey: evTime, sortTime: new Date(ev.time).getTime(), kind: 'app' });
-                      }
-                    }
-                    
-                    // Sort all entries newest first
-                    entries.sort((a, b) => b.sortTime - a.sortTime);
-                    
-                    return entries.map((entry, gi) => {
-                      if (entry.kind === 'ical') {
-                        return (
-                          <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-                            <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
-                              <span className="text-[20px] shrink-0">🗓️</span>
-                              <span className="truncate">{entry.icalEvt.summary}</span>
-                            </span>
-                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                              {entry.timeKey} Uhr
-                            </span>
-                          </div>
-                        );
-                      }
-                      
-                      if (entry.kind === 'prediction') {
-                        return (
-                          <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
-                            <span className="text-[14px] text-white flex items-center gap-1.5">
-                              <span className="text-[20px] shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
-                              <span>{entry.hasPipi && entry.hasPoop ? 'Pipi & Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
-                            </span>
-                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                              {entry.timeKey} Uhr
-                            </span>
-                          </div>
-                        );
-                      }
-                      
-                      const group = entry as GroupedEntry;
-                      const isPipiGroup = group.events.every(e => e.type === 'pipi' || e.type === 'stuhlgang');
-                      const firstEvent = group.events[0];
-                      
-                      if (isPipiGroup && group.events.length > 0) {
-                        const isActive = group.events.some(e => activeEventId === e.id);
-                        return (
-                          <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
-                            <div
-                              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                              onClick={() => handleItemClick(firstEvent.id)}
-                              onContextMenu={(e) => handleContextMenu(e, firstEvent.id)}
-                              onTouchStart={() => handleLongPressStart(firstEvent.id)}
-                              onTouchMove={handleLongPressMove}
-                              onTouchEnd={handleLongPressEnd}
-                              onMouseDown={() => handleLongPressStart(firstEvent.id)}
-                              onMouseMove={handleLongPressMove}
-                              onMouseUp={handleLongPressEnd}
-                              onMouseLeave={handleLongPressEnd}
-                            >
-                              <div className="flex items-center justify-between w-full overflow-hidden">
-                                <div className="flex items-center gap-1.5">
-                                  {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
-                                    <>
-                                      <span className="text-[20px] shrink-0">💦💩</span>
-                                      <span className="text-[14px] text-white truncate">Pipi & Stuhlgang</span>
-                                    </>
-                                  ) : group.events.map((ev, ei) => (
-                                    <span key={ei} className="flex items-center gap-1.5">
-                                      <span className="text-[20px] shrink-0">{ev.type === 'pipi' ? '💦' : '💩'}</span>
-                                      <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
-                                    </span>
-                                  ))}
-                                </div>
-                                <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
-                                  {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
-                                  {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
-                                  {group.timeKey} Uhr
-                                </span>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => {
-                                group.events.forEach(e => handleDelete(e.id));
-                              }}
-                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
-                            >
-                              Löschen
-                            </button>
-                          </div>
-                        );
-                      }
-                      
-                      const event = firstEvent;
-                      const isActive = activeEventId === event.id;
-                      return (
-                        <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
-                          <div
-                            className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
-                            onClick={() => handleItemClick(event.id)}
-                            onContextMenu={(e) => handleContextMenu(e, event.id)}
-                            onTouchStart={() => handleLongPressStart(event.id)}
-                            onTouchMove={handleLongPressMove}
-                            onTouchEnd={handleLongPressEnd}
-                            onMouseDown={() => handleLongPressStart(event.id)}
-                            onMouseMove={handleLongPressMove}
-                            onMouseUp={handleLongPressEnd}
-                            onMouseLeave={handleLongPressEnd}
-                          >
-                            <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
-                              <span className="text-[20px] shrink-0">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
-                              <span className="truncate">
-                                {event.type === 'wurmkur' && 'Wurmkur'}
-                                {event.type === 'parasiten' && 'Parasiten Tablette'}
-                                {event.type === 'krallen' && 'Krallen schneiden'}
-                                {event.type === 'gewicht' && (
-                                  <>
-                                    Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-'}</span>
-                                  </>
-                                )}
-                                {event.type === 'phwert' && (
-                                  <>
-                                    pH-Wert: <span className={['5,6', '5,9', '6,2', '7,4', '7,7', '8,0'].includes(event.ph_value || '') ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.ph_value || '-'}</span>
-                                  </>
-                                )}
-                              </span>
-                            </span>
-                            <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
-                              {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
-                              {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
-                              {format(new Date(event.time), 'HH:mm')} Uhr
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => handleDelete(event.id)}
-                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
-                          >
-                            Löschen
-                          </button>
-                        </div>
-                      );
-                    });
-                  })()}
-                  {/* Who has Kalle - only show when there are other entries */}
-                  {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
-                    <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-                      <span className="text-[14px] text-white flex items-center gap-2">
-                        <span className="text-[20px] shrink-0">🐶</span>
-                        <span>{kalleOwner.person} hat Kalle</span>
-                      </span>
-                      <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                        bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
-                      </span>
-                    </div>
-                  )}
+                {/* Current day panel */}
+                <div className="w-1/3 min-w-0 shrink-0">
+                  <DayPanel
+                    date={selectedDate}
+                    events={filteredEvents}
+                    icalEvents={filteredIcalEvents}
+                    kalleOwner={kalleOwner}
+                    birthday={birthday}
+                    predictionSlots={predictionSlots}
+                    activeEventId={activeEventId}
+                    onItemClick={handleItemClick}
+                    onContextMenu={handleContextMenu}
+                    onLongPressStart={handleLongPressStart}
+                    onLongPressMove={handleLongPressMove}
+                    onLongPressEnd={handleLongPressEnd}
+                    onDelete={handleDelete}
+                  />
                 </div>
-              )}
+                {/* Next day panel */}
+                <div className="w-1/3 min-w-0 shrink-0">
+                  <DayPanel
+                    date={nextDate}
+                    events={getEventsForDate(nextDate)}
+                    icalEvents={getIcalEventsForDate(nextDate)}
+                    kalleOwner={getKalleOwnerForDateCb(nextDate)}
+                    birthday={birthday}
+                    predictionSlots={[]}
+                    activeEventId={null}
+                    onItemClick={() => {}}
+                    onContextMenu={() => {}}
+                    onLongPressStart={() => {}}
+                    onLongPressMove={() => {}}
+                    onLongPressEnd={() => {}}
+                    onDelete={() => {}}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
