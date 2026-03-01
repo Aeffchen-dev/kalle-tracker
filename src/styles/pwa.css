@@ -62,11 +62,12 @@ body {
 
   /* Keep drawer pinned while filling home-indicator area */
   .drawer-flush-bottom {
-    --drawer-safe-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+    --drawer-safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
     bottom: calc(-1 * var(--drawer-safe-bottom)) !important;
     top: auto !important;
     padding-bottom: calc(var(--drawer-safe-bottom) + 8px) !important;
     margin-bottom: 0 !important;
+    box-shadow: 0 var(--drawer-safe-bottom) 0 0 hsl(var(--primary)) !important;
   }
 
   /* Fixed/absolute elements that touch edges need safe-area */
