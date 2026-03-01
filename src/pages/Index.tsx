@@ -94,16 +94,14 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set html/body background to match current overlay
-  // Note: TagesplanOverlay manages its own brown (#3d2b1f) background transition
-  // Drawers keep beige — only Tagesplan changes the body color
+  // Dynamically set html/body background to beige (home screen default)
+  // TagesplanOverlay manages its own brown (#3d2b1f) background transition
   useEffect(() => {
-    if (showTagesplan) return; // let TagesplanOverlay handle brown bg
     const html = document.documentElement;
     const body = document.body;
     html.style.backgroundColor = '#e8e2db';
     body.style.backgroundColor = '#e8e2db';
-  }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
+  }, [eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
