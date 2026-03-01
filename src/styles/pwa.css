@@ -7,11 +7,13 @@ html, body {
 }
 
 /* ── Drawer flush-bottom utility ─────────────────────────── */
+/* Extends drawer behind home indicator: negative bottom      */
+/* offset + matching internal padding so bg fills the gap.    */
 
 .drawer-flush-bottom {
-  bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+  bottom: 0 !important;
   top: auto !important;
-  padding-bottom: 0 !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   margin-bottom: 0 !important;
 }
 
