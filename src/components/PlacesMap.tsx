@@ -79,9 +79,9 @@ export function PlacesMap({ places }: { places: Place[] }) {
         <div ref={mapRef} className="w-full h-full" />
         <button
           onClick={() => setIsFullscreen(false)}
-          className="absolute top-4 right-4 z-[10000] bg-black/60 backdrop-blur-sm text-white p-2.5 rounded-full shadow-lg"
+          className="absolute bottom-4 right-4 z-[10000] bg-black text-white p-2 rounded-lg shadow-lg"
         >
-          <Minimize2 size={18} />
+          <Minimize2 size={16} />
         </button>
       </div>
     );
@@ -92,7 +92,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
       <div ref={mapRef} className="w-full h-full" />
       <button
         onClick={() => setIsFullscreen(true)}
-        className="absolute top-2 right-2 z-[1000] bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full shadow-lg"
+        className="absolute bottom-2 right-2 z-[1000] bg-black text-white p-1.5 rounded-lg shadow-lg"
       >
         <Maximize2 size={14} />
       </button>
