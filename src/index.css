@@ -295,6 +295,11 @@ html, body {
   /* Drawers: extend past safe area to cover home indicator */
   [data-vaul-drawer] {
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    background: transparent !important;
+  }
+
+  [data-vaul-overlay] {
+    background: transparent !important;
   }
 
   [data-vaul-drawer-content] {
