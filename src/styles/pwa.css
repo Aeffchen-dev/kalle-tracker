@@ -6,14 +6,11 @@ html, body {
   min-height: 100dvh;
 }
 
-/* ── Drawer flush-bottom utility ─────────────────────────── */
-/* Extends drawer behind home indicator: negative bottom      */
-/* offset + matching internal padding so bg fills the gap.    */
-
+/* Base: normal browsers */
 .drawer-flush-bottom {
   bottom: 0 !important;
   top: auto !important;
-  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+  padding-bottom: 0 !important;
   margin-bottom: 0 !important;
 }
 
@@ -40,5 +37,11 @@ html, body {
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Standalone iOS: keep drawer visually pinned to physical bottom */
+  .drawer-flush-bottom {
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   }
 }
