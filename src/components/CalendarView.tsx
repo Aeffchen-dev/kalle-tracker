@@ -463,14 +463,33 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     };
   }, []);
 
+  const animateToDate = (targetDate: Date) => {
+    if (isSameDay(selectedDate, targetDate)) return;
+    const direction = targetDate > selectedDate ? -1 : 1;
+    setTransitionActive(true);
+    setSwipeOffset(direction);
+    setTimeout(() => {
+      setSelectedDate(targetDate);
+      setSwipeOffset(0);
+      setTransitionActive(false);
+    }, 300);
+  };
+
   const handleDelete = async (eventId: string) => {
-    // Find the event to check if it's medical — if so, clear the localStorage dismissal
     const evt = events.find(e => e.id === eventId);
+    let originalDate: Date | null = null;
     if (evt && ['wurmkur', 'parasiten', 'krallen'].includes(evt.type)) {
-      // Clear any matching localStorage dismissal keys so the iCal event reappears
+      // Find the original planned date from dismissal keys before clearing
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
         if (key?.startsWith(MEDICAL_ICAL_DISMISSED_KEY)) {
+          // Extract dtstart from key: kalle_medical_ical_dismissed_{uid}_{dtstart}
+          const parts = key.replace(MEDICAL_ICAL_DISMISSED_KEY, '').split('_');
+          if (parts.length >= 2) {
+            const dtstart = parts.slice(1).join('_');
+            const parsed = new Date(dtstart);
+            if (!isNaN(parsed.getTime())) originalDate = parsed;
+          }
           localStorage.removeItem(key);
         }
       }
@@ -478,10 +497,14 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     await deleteEvent(eventId);
     await loadEvents();
     setActiveEventId(null);
+    // Animate slide to original planned day
+    if (originalDate && !isSameDay(selectedDate, originalDate)) {
+      setTimeout(() => animateToDate(startOfDay(originalDate!)), 100);
+    }
   };
 
   const handleNavigateToToday = () => {
-    setSelectedDate(new Date());
+    animateToDate(new Date());
   };
 
   // Haptic feedback helper
