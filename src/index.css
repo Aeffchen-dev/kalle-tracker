@@ -241,12 +241,14 @@
   line-height: 1;
 }
 
-/* Prevent horizontal scroll on page, but allow vertical overflow behind browser chrome */
+/* Prevent horizontal scroll, extend behind all native UI elements */
 html, body {
   overflow-x: clip;
   overflow-y: visible;
   max-width: 100vw;
   min-height: 100dvh;
+  min-height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
+  padding: env(safe-area-inset-top, 0px) 0 0 0;
 }
 
 /* PWA standalone mode: fill entire physical screen */
