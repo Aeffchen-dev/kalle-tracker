@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -175,6 +176,9 @@ const Index = () => {
   const loadEvents = async () => {
     const result = await getEvents();
     eventsRef.current = result.events;
+    if (result.fromLocal) {
+      toast('Offline-Modus', { description: 'Keine Verbindung zum Backend – lokale Daten werden verwendet.', duration: 4000 });
+    }
     calculateTimeDisplay();
     // Detect anomalies
     const detected = detectAnomalies(result.events);
