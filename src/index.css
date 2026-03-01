@@ -245,15 +245,14 @@ html, body {
 @media (display-mode: standalone) {
   html,
   body {
-    height: 100dvh;
+    height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
-    -webkit-overflow-scrolling: auto;
   }
 
   #root {
-    height: 100dvh;
-    min-height: 100dvh;
+    position: fixed;
+    inset: 0;
     overflow: hidden;
   }
 
