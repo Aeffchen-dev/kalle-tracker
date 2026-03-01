@@ -1,6 +1,6 @@
 /* ── PWA standalone mode ──────────────────────────────────── */
 @media (display-mode: standalone) {
-  body {
-    padding-top: env(safe-area-inset-top, 0px);
+  #root {
+    margin-top: env(safe-area-inset-top, 0px);
   }
 }
