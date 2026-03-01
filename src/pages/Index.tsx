@@ -94,17 +94,13 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set html background to match current overlay/sheet
+  // Dynamically set html/body background to match current overlay/sheet
+  // Note: TagesplanOverlay manages its own brown (#3d2b1f) background transition
   useEffect(() => {
+    if (showTagesplan) return; // let TagesplanOverlay handle brown bg
     const html = document.documentElement;
     const body = document.body;
-    if (showTagesplan && (eventSheetOpen || showWeather || showGassiSettings || showCalendar)) {
-      html.style.backgroundColor = '#3d2b1f';
-      body.style.backgroundColor = '#3d2b1f';
-    } else if (showTagesplan) {
-      html.style.backgroundColor = '#3d2b1f';
-      body.style.backgroundColor = '#3d2b1f';
-    } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
+    if (eventSheetOpen || showWeather || showGassiSettings || showCalendar) {
       html.style.backgroundColor = '#000000';
       body.style.backgroundColor = '#000000';
     } else {
