@@ -278,21 +278,20 @@ html, body {
     /* no extra top padding in standalone – use normal padding from classes */
   }
 
-  /* Drawers: anchor to true bottom */
+  /* Drawers: anchor flush to true bottom */
   [data-vaul-drawer] {
     bottom: 0 !important;
+    top: auto !important;
   }
 
   [data-vaul-drawer-content] {
     padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    bottom: 0 !important;
     overflow: visible;
   }
 
-  /* All modals and drawers: no bottom padding */
-  .fixed.inset-0,
-  [data-vaul-drawer],
-  [data-vaul-drawer-content],
-  [role="dialog"] {
-    padding-bottom: 0 !important;
+  [data-vaul-overlay] {
+    bottom: 0 !important;
   }
 }
