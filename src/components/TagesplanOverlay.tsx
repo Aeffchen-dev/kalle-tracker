@@ -668,15 +668,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
       setAnimationPhase('expanding');
-      // Reveal content after dots have mostly expanded
+      // Reveal content + recolor root/body/html after dots have mostly expanded
       setTimeout(() => {
         setAnimationPhase('visible');
-      }, 1100);
-      // Recolor html root + body after dot transition completes
-      setTimeout(() => {
         document.documentElement.style.backgroundColor = '#3d2b1f';
         document.body.style.backgroundColor = '#3d2b1f';
-      }, 1400);
+      }, 1100);
     }
   }, [isOpen, animationPhase]);
 
