@@ -25,7 +25,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(display-mode: standalone)').matches;
   }, []);
-  const collapsedSnapPoint = isStandalonePwa ? 0.25 : 0.2;
+  const collapsedSnapPoint = isStandalonePwa ? 0.3 : 0.25;
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
