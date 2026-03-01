@@ -30,7 +30,6 @@ body {
     height: 100%;
     margin: 0;
     overflow: hidden;
-    overscroll-behavior: none;
     background-color: #000000;
   }
 
@@ -42,7 +41,7 @@ body {
     bottom: 0;
     margin: 0;
     overflow: hidden;
-    overscroll-behavior: none;
+    
   }
 
   #root {
