@@ -156,7 +156,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black'
-                  : 'bg-white/[0.12] text-white hover:bg-white/[0.18]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/20'
               }`}
             >
               <span>💦</span>
@@ -167,7 +167,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black'
-                  : 'bg-white/[0.12] text-white hover:bg-white/[0.18]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/20'
               }`}
             >
               <span>💩</span>
@@ -178,7 +178,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
                   ? 'bg-white text-black'
-                  : 'bg-white/[0.12] text-white hover:bg-white/[0.18]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/20'
               }`}
             >
               <span>🧪</span>
@@ -189,7 +189,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
                   ? 'bg-white text-black'
-                  : 'bg-white/[0.12] text-white hover:bg-white/[0.18]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/20'
               }`}
             >
               <span>🏋️</span>
