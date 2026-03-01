@@ -402,7 +402,7 @@ const Index = () => {
           >
             <MoreHorizontal className="w-6 h-6 text-black" />
           </button>
-          <p className="text-[16px] mb-2">
+          <p className="text-[14px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
           </p>
           <button 
