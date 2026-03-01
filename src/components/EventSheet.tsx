@@ -156,10 +156,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
+                  : 'bg-white/[0.08] text-white hover:bg-white/[0.12] border border-white/[0.08]'
               }`}
             >
-              <span>💦</span>
+              <span className="text-[20px]">💦</span>
               <span>Pipi</span>
             </button>
             <button
@@ -167,10 +167,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
+                  : 'bg-white/[0.08] text-white hover:bg-white/[0.12] border border-white/[0.08]'
               }`}
             >
-              <span>💩</span>
+              <span className="text-[20px]">💩</span>
               <span>Stuhlgang</span>
             </button>
             <button
@@ -178,10 +178,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
+                  : 'bg-white/[0.08] text-white hover:bg-white/[0.12] border border-white/[0.08]'
               }`}
             >
-              <span>🧪</span>
+              <span className="text-[20px]">🧪</span>
               <span>pH-Wert</span>
             </button>
             <button
@@ -189,10 +189,10 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
+                  : 'bg-white/[0.08] text-white hover:bg-white/[0.12] border border-white/[0.08]'
               }`}
             >
-              <span>🏋️</span>
+              <span className="text-[20px]">🏋️</span>
               <span>Gewicht</span>
             </button>
           </div>
