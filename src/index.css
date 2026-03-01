@@ -258,14 +258,23 @@ html, body {
     overscroll-behavior: none;
   }
 
-  #root,
+  #root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(100dvh + env(safe-area-inset-top, 0px));
+    overflow: visible;
+  }
+
   #dalmatian-spots,
   #static-loader {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: calc(100dvh + env(safe-area-inset-top, 0px)) !important;
+    height: 100dvh !important;
     overflow: visible;
   }
 
