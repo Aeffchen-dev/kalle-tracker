@@ -52,23 +52,23 @@ const StatCard = memo(({
   subtext?: string;
   trend?: 'up' | 'down' | 'neutral';
 }) => (
-  <div className="bg-white/[0.06] rounded-lg p-4">
-    <div className="flex items-center gap-2 mb-1">
-      <span className="text-lg">{emoji}</span>
-      <span className="text-[14px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
+  <div className="bg-white/[0.06] rounded-lg p-3">
+    <div className="flex items-center gap-1.5 mb-0.5">
+      <span className="text-base">{emoji}</span>
+      <span className="text-[11px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
     </div>
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
-        <span className="text-2xl font-semibold text-white">
+        <span className="text-xl font-semibold text-white">
           {value !== null && value !== undefined ? String(value).replace('.', ',') : '-'}
         </span>
-        <span className="text-[14px] text-white/40">{unit}</span>
+        <span className="text-[11px] text-white/40">{unit}</span>
       </div>
-      {trend === 'up' && <TrendingUp size={18} className="text-[#5AD940]" />}
-      {trend === 'down' && <TrendingDown size={18} className="text-[#FF0000]" />}
-      {trend === 'neutral' && <Minus size={18} className="text-white/40" />}
+      {trend === 'up' && <TrendingUp size={16} className="text-[#5AD940]" />}
+      {trend === 'down' && <TrendingDown size={16} className="text-[#FF0000]" />}
+      {trend === 'neutral' && <Minus size={16} className="text-white/40" />}
     </div>
-    {subtext && <p className="text-[12px] text-white/30 mt-1">{subtext}</p>}
+    {subtext && <p className="text-[10px] text-white/30 mt-0.5">{subtext}</p>}
   </div>
 ));
 
