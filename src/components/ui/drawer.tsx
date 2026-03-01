@@ -108,7 +108,7 @@ DrawerContent.displayName = "DrawerContent";
 /* ── Sub-components (unchanged API) ──────────────────────── */
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("grid gap-1.5 px-4 pt-8 pb-4 text-center sm:text-left", className)} {...props} />
+  <div className={cn("grid gap-1.5 px-4 pt-6 pb-6 text-center sm:text-left", className)} {...props} />
 );
 DrawerHeader.displayName = "DrawerHeader";
 
