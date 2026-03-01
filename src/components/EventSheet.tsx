@@ -260,7 +260,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
           <div>
             <label className="flex items-center h-12 bg-white/[0.06] rounded-lg cursor-pointer relative md:justify-center md:gap-[40px]" style={{ width: 'calc(100vw - 32px)' }}>
               {/* Left-aligned calendar icon and date (mobile) / centered with gap (tablet+) */}
-              <div className="absolute left-3 flex items-center gap-2 md:relative md:left-auto">
+              <div className="absolute left-3 flex items-center gap-2 md:static">
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <button
