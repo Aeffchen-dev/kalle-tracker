@@ -62,7 +62,7 @@ const StatCard = memo(({
         <span className="text-2xl font-semibold text-white">
           {value !== null && value !== undefined ? String(value).replace('.', ',') : '-'}
         </span>
-        <span className="text-[14px] text-white/40">{unit}</span>
+        <span className="text-[14px] text-white">{unit}</span>
       </div>
       {trend === 'up' && <TrendingUp size={16} className="text-[#5AD940]" />}
       {trend === 'down' && <TrendingDown size={16} className="text-[#FF0000]" />}
