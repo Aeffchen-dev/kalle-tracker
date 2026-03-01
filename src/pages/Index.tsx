@@ -174,7 +174,6 @@ const Index = () => {
 
   const loadEvents = async () => {
     const result = await getEvents();
-    result.fromLocal = true; // DEBUG: show offline notification permanently
     eventsRef.current = result.events;
     // Detect anomalies
     const detected = detectAnomalies(result.events);
