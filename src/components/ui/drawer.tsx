@@ -26,6 +26,16 @@ const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
 >(({ className, children, style, ...props }, ref) => {
+  const isStandalonePwa =
+    typeof window !== "undefined" && window.matchMedia("(display-mode: standalone)").matches;
+
+  const mergedStyle: React.CSSProperties = {
+    bottom: isStandalonePwa ? 0 : "env(safe-area-inset-bottom)",
+    marginBottom: "-50px",
+    paddingBottom: "calc(env(safe-area-inset-bottom) + 50px)",
+    ...style,
+  };
+
   return (
     <DrawerPortal>
       <DrawerOverlay />
@@ -35,7 +45,7 @@ const DrawerContent = React.forwardRef<
           "fixed inset-x-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
           className,
         )}
-        style={style}
+        style={mergedStyle}
         {...props}
       >
         {children}
