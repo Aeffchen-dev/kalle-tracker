@@ -97,9 +97,9 @@ const Index = () => {
   // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
-    if (showTagesplan && (eventSheetOpen || showWeather || showGassiSettings || showCalendar)) {
-      html.style.backgroundColor = '#3d2b1f'; // brown when sheets open over modal
-    } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
+    if (showTagesplan) {
+      html.style.backgroundColor = '#3d2b1f'; // brown for info overlay (and sheets over it)
+    } else if (eventSheetOpen || showWeather || showGassiSettings || showCalendar) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
       html.style.backgroundColor = '#e8e2db'; // beige (main page)
