@@ -1998,8 +1998,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.isWalk && (
                                     <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate && isToday ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
-                                        <span className="text-[12px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
-                                        <span className="text-[20px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
+                                        <span className="text-[10px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
+                                        <span className="text-[16px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -2009,10 +2009,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                         <div className="p-3 rounded-lg bg-white/[0.06]">
                                           <div className="flex flex-col gap-0.5">
                                             <div className="flex items-center gap-1.5">
-                                              <span className="text-[12px] text-white/50 shrink-0">{evt.timeStr}</span>
-                                              <span className="text-[20px] shrink-0">🗓️</span>
+                                              <span className="text-[10px] text-white/50 shrink-0">{evt.timeStr}</span>
+                                              <span className="text-[16px] shrink-0">🗓️</span>
                                             </div>
-                                            <span className="text-[12px] text-white/70 break-words min-w-0">{evt.summary}</span>
+                                            <span className="text-[10px] text-white/70 break-words min-w-0">{evt.summary}</span>
                                           </div>
                                         </div>
                                       </div>
@@ -2023,8 +2023,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               {dayMedicalEvents.map((mev, mi) => (
                                 <div key={`med-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[20px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
-                                    <span className="text-[12px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
+                                    <span className="text-[16px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
+                                    <span className="text-[10px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
                                   </div>
                                 </div>
                               ))}
@@ -2032,8 +2032,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               {medicalIcalEvents.map((mev, mi) => (
                                 <div key={`medIcal-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[20px] shrink-0">{mev.medicalEmoji}</span>
-                                    <span className="text-[12px] text-white/70 break-words min-w-0">{mev.summary}</span>
+                                    <span className="text-[16px] shrink-0">{mev.medicalEmoji}</span>
+                                    <span className="text-[10px] text-white/70 break-words min-w-0">{mev.summary}</span>
                                   </div>
                                 </div>
                               ))}
