@@ -264,8 +264,6 @@ html, body {
     right: 0;
     bottom: 0;
     overflow: visible;
-    /* Extend background behind safe areas */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .pwa-safe-top {
