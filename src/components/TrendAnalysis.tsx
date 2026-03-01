@@ -55,7 +55,7 @@ const StatCard = memo(({
   <div className="bg-white/[0.06] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3">
     <div className="flex items-center gap-1.5 mb-0.5">
       <span className="text-base">{emoji}</span>
-      <span className="text-[10px] text-white/50 uppercase tracking-wide whitespace-pre-line">{label}</span>
+      <span className="text-[10px] text-white/60 uppercase tracking-wide whitespace-pre-line">{label}</span>
     </div>
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
@@ -66,9 +66,9 @@ const StatCard = memo(({
       </div>
       {trend === 'up' && <TrendingUp size={16} className="text-[#5AD940]" />}
       {trend === 'down' && <TrendingDown size={16} className="text-[#FF0000]" />}
-      {trend === 'neutral' && <Minus size={16} className="text-white/40" />}
+      {trend === 'neutral' && <Minus size={16} className="text-white/60" />}
     </div>
-    {subtext && <p className="text-[14px] text-white/30 mt-0.5">{subtext}</p>}
+    {subtext && <p className="text-[14px] text-white/60 mt-0.5">{subtext}</p>}
   </div>
 ));
 
@@ -142,7 +142,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
-        <p className="text-[14px] text-white/30">Nicht genügend Daten</p>
+        <p className="text-[14px] text-white/60">Nicht genügend Daten</p>
       </div>
     );
   }
@@ -253,7 +253,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       {/* Static Y-Axis */}
       <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 40, height: CHART_HEIGHT - 30, marginTop: 10 }}>
         {Array.from({ length: Math.floor((domainMax - domainMin) / 5) + 1 }, (_, i) => domainMax - i * 5).map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{tick}kg</span>
+          <span key={i} className="text-[9px] text-white/60 leading-none" style={{ fontFamily: FONT_FAMILY }}>{tick}kg</span>
         ))}
       </div>
       {/* Scrollable Chart */}
@@ -297,7 +297,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   if (data.length < 2) {
     return (
       <div className="h-[180px] flex items-center justify-center">
-        <p className="text-[14px] text-white/30">Nicht genügend Daten</p>
+        <p className="text-[14px] text-white/60">Nicht genügend Daten</p>
       </div>
     );
   }
@@ -455,7 +455,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       {/* Static Y-Axis */}
       <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 35, height: CHART_HEIGHT - 45, marginTop: 10 }}>
         {[...yTicks].reverse().map((tick, i) => (
-          <span key={i} className="text-[9px] text-white/40 leading-none" style={{ fontFamily: FONT_FAMILY }}>{formatDecimal(tick)}</span>
+          <span key={i} className="text-[9px] text-white/60 leading-none" style={{ fontFamily: FONT_FAMILY }}>{formatDecimal(tick)}</span>
         ))}
       </div>
       <div 
