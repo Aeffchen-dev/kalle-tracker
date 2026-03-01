@@ -83,7 +83,7 @@ const Index = () => {
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(() => {
     try {
-      const stored = localStorage.getItem('dismissedAnomalies');
+      const stored = sessionStorage.getItem('dismissedAnomalies');
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
@@ -219,7 +219,7 @@ const Index = () => {
   const handleDismissAnomaly = (id: string) => {
     setDismissedAnomalies(prev => {
       const next = new Set([...prev, id]);
-      localStorage.setItem('dismissedAnomalies', JSON.stringify([...next]));
+      sessionStorage.setItem('dismissedAnomalies', JSON.stringify([...next]));
       return next;
     });
     setAnomalies(prev => prev.filter(a => a.id !== id));
