@@ -45,7 +45,6 @@ interface DayPanelProps {
 const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete, onEventSaved, onNavigateToToday }: DayPanelProps) => {
   const [checkingIcal, setCheckingIcal] = useState<Set<string>>(new Set());
   const [completedIcal, setCompletedIcal] = useState<Map<string, string>>(new Map());
-  const [exitingIcal, setExitingIcal] = useState<Set<string>>(new Set());
   const isBirthdayToday = birthday
     ? date.getDate() === birthday.getDate() && date.getMonth() === birthday.getMonth()
     : false;
@@ -133,32 +132,25 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           if (isMedicalIcal) {
             const icalKey = `${entry.icalEvt.uid}-${entry.icalEvt.dtstart}`;
             const isChecking = checkingIcal.has(icalKey);
-            const isExiting = exitingIcal.has(icalKey);
             const today = new Date();
             const isOnDifferentDay = !isSameDay(date, today);
             
             const handleIcalMedicalCheck = () => {
-              if (isChecking || isExiting) return;
+              if (isChecking) return;
               setCheckingIcal(prev => new Set([...prev, icalKey]));
               const eventType = summary.toLowerCase().includes('wurmkur') ? 'wurmkur' as const
                 : summary.toLowerCase().includes('krallen') ? 'krallen' as const
                 : 'parasiten' as const;
               saveEvent(eventType).then(() => {
-                // Persist dismissal so it's hidden from the original planned date
                 const dismissKey = `${MEDICAL_ICAL_DISMISSED_KEY}${entry.icalEvt.uid}_${entry.icalEvt.dtstart}`;
                 localStorage.setItem(dismissKey, new Date().toISOString());
                 
                 setTimeout(() => {
                   setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
-                  // Slide out animation then navigate to today
-                  setExitingIcal(prev => new Set([...prev, icalKey]));
                   onEventSaved?.();
-                  setTimeout(() => {
-                    setExitingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
-                    if (isOnDifferentDay) {
-                      onNavigateToToday?.();
-                    }
-                  }, 500);
+                  if (isOnDifferentDay) {
+                    onNavigateToToday?.();
+                  }
                 }, 600);
               });
             };
@@ -166,7 +158,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
             return (
               <div
                 key={`ical-${gi}`}
-                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-all duration-500 ${isExiting ? 'opacity-0 scale-95 max-h-0 py-0 overflow-hidden' : 'opacity-100 max-h-[200px]'}`}
+                className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none"
                 onClick={handleIcalMedicalCheck}
               >
                 <span className="text-[20px] shrink-0">{medicalEmoji}</span>
