@@ -92,6 +92,10 @@
     @apply border-border;
   }
 
+  html {
+    background-color: #000;
+  }
+
   body {
     @apply text-foreground font-rauschen;
     background-color: #e8e2db;
