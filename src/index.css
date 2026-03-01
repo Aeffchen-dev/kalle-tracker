@@ -267,6 +267,16 @@ html, body {
     overflow: visible;
   }
 
+  /* All fixed full-screen overlays: extend behind safe areas */
+  .fixed.inset-0,
+  .pwa-info-overlay-root,
+  .pwa-info-overlay-scroll {
+    top: calc(-1 * env(safe-area-inset-top, 0px)) !important;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   .pwa-safe-top {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
@@ -278,14 +288,5 @@ html, body {
 
   [data-vaul-drawer-content] {
     padding-bottom: env(safe-area-inset-bottom, 0px) !important;
-  }
-
-  /* Info overlay: fill full height + safe-area background/content */
-  .pwa-info-overlay-root {
-    height: 100dvh !important;
-  }
-
-  .pwa-info-overlay-scroll {
-    min-height: 100dvh;
   }
 }
