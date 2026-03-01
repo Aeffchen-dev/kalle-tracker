@@ -285,7 +285,7 @@ html, body {
   [data-vaul-drawer-content] {
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    padding-bottom: 0 !important;
     overflow: visible;
   }
 
