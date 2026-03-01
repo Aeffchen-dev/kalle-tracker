@@ -97,16 +97,16 @@ const Index = () => {
   // Dynamically set html/body background to match current overlay/sheet
   // Note: TagesplanOverlay manages its own brown (#3d2b1f) background transition
   useEffect(() => {
-    if (showTagesplan) return; // let TagesplanOverlay handle brown bg
     const html = document.documentElement;
     const body = document.body;
     if (eventSheetOpen || showWeather || showGassiSettings || showCalendar) {
       html.style.backgroundColor = '#000000';
       body.style.backgroundColor = '#000000';
-    } else {
+    } else if (!showTagesplan) {
       html.style.backgroundColor = '#e8e2db';
       body.style.backgroundColor = '#e8e2db';
     }
+    // when showTagesplan is true and no sheets open, TagesplanOverlay handles brown bg
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
   // Remove static loader on mount to prevent flicker
