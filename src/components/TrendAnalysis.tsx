@@ -62,7 +62,7 @@ const StatCard = memo(({
         <span className="text-2xl font-semibold text-white">
           {value !== null && value !== undefined ? String(value).replace('.', ',') : '-'}
         </span>
-        <span className="text-[12px] text-white/40">{unit}</span>
+        <span className="text-[14px] text-white/40">{unit}</span>
       </div>
       {trend === 'up' && <TrendingUp size={16} className="text-[#5AD940]" />}
       {trend === 'down' && <TrendingDown size={16} className="text-[#FF0000]" />}
@@ -1280,7 +1280,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     <div className="pb-11 space-y-2" data-vaul-no-drag>
       {/* Age Display */}
       <div className="w-full bg-white/[0.06] backdrop-blur-sm rounded-lg p-4 flex items-center justify-center">
-        <span className="text-[12px] leading-none">
+        <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
           <span className="text-white">{kalleAge}</span>
           <span className="text-white/60"> alt</span>
