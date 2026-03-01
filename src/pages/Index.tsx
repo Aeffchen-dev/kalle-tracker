@@ -94,30 +94,16 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Close all bottom sheets when info modal opens
-  useEffect(() => {
-    if (showTagesplan) {
-      setEventSheetOpen(false);
-      setShowWeather(false);
-      setShowGassiSettings(false);
-      setShowCalendar(false);
-    }
-  }, [showTagesplan]);
-
-  // Dynamically set html + body background to match current overlay/sheet
+  // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
-    const body = document.body;
-    let color: string;
-    if (showTagesplan) {
-      color = '#3d2b1f'; // brown for info overlay
-    } else if (eventSheetOpen || showWeather || showGassiSettings || showCalendar) {
-      color = '#000000'; // black (bottom sheets)
+    if (showTagesplan && (eventSheetOpen || showWeather || showGassiSettings || showCalendar)) {
+      html.style.backgroundColor = '#3d2b1f'; // brown when sheets open over modal
+    } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
+      html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
-      color = '#e8e2db'; // beige (main page)
+      html.style.backgroundColor = '#e8e2db'; // beige (main page)
     }
-    html.style.backgroundColor = color;
-    body.style.backgroundColor = color;
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
   // Remove static loader on mount to prevent flicker
