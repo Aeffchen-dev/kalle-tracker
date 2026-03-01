@@ -282,19 +282,13 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: flush to physical bottom, content fills container */
+  /* Drawers: flush to physical bottom */
   [data-vaul-drawer] {
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     overflow: visible;
-  }
-
-  [data-vaul-drawer] > [data-vaul-drawer-content],
-  [data-vaul-drawer] > * {
-    min-height: 100%;
-    flex: 1;
   }
 
 }
