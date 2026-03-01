@@ -115,8 +115,8 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
   const years = Array.from({ length: 15 }, (_, i) => currentYear - i);
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} snapPoints={[0.95]}>
-      <DrawerContent className="bg-black border-black flex flex-col max-h-[95dvh] lg:max-w-[80vw] lg:mx-auto">
+    <Drawer variant="medium" open={open} onOpenChange={onOpenChange}>
+      <DrawerContent variant="medium">
         <DrawerHeader className="pb-4 flex-shrink-0 cursor-pointer" onClick={() => onOpenChange(false)}>
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
