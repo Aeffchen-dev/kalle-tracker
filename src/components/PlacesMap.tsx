@@ -43,7 +43,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
     // Green circle marker (matches "Eintrag hinzufügen" CTA color)
     const icon = L.divIcon({
       className: '',
-      html: '<div style="width:12px;height:12px;background:#5AD940;border:2px solid white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>',
+      html: '<div style="width:12px;height:12px;background:#5AD940;border:2px solid black;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>',
       iconSize: [12, 12],
       iconAnchor: [6, 6],
     });
