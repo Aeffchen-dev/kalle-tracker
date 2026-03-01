@@ -94,6 +94,16 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
+  // Close all bottom sheets when info modal opens
+  useEffect(() => {
+    if (showTagesplan) {
+      setEventSheetOpen(false);
+      setShowWeather(false);
+      setShowGassiSettings(false);
+      setShowCalendar(false);
+    }
+  }, [showTagesplan]);
+
   // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
