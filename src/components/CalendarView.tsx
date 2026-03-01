@@ -29,6 +29,7 @@ interface StickyMedicalItem {
   emoji: string;
   label: string;
   time: string;
+  eventType: string;
 }
 
 interface DayPanelProps {
@@ -155,7 +156,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                 setTimeout(() => {
                   setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
                   if (isOnDifferentDay) {
-                    onNavigateToToday?.({ dismissKey, emoji: medicalEmoji, label, time: format(new Date(), 'HH:mm') });
+                    onNavigateToToday?.({ dismissKey, emoji: medicalEmoji, label, time: format(new Date(), 'HH:mm'), eventType });
                   } else {
                     localStorage.setItem(dismissKey, new Date().toISOString());
                     onEventSaved?.();
@@ -1045,8 +1046,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   >
                     <DayPanel
                       date={incomingDate}
-                      events={getEventsForDate(incomingDate)}
-                      icalEvents={getIcalEventsForDate(incomingDate)}
+                      events={stickyItem ? getEventsForDate(incomingDate).filter(e => e.type !== stickyItem.eventType) : getEventsForDate(incomingDate)}
+                      icalEvents={stickyItem ? getIcalEventsForDate(incomingDate).filter(e => !e.summary?.toLowerCase().includes(stickyItem.eventType)) : getIcalEventsForDate(incomingDate)}
                       kalleOwner={getKalleOwnerForDateCb(incomingDate)}
                       birthday={birthday}
                       predictionSlots={[]}
@@ -1072,8 +1073,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 >
                   <DayPanel
                     date={selectedDate}
-                    events={filteredEvents}
-                    icalEvents={filteredIcalEvents}
+                    events={stickyItem ? filteredEvents.filter(e => e.type !== stickyItem.eventType) : filteredEvents}
+                    icalEvents={stickyItem ? filteredIcalEvents.filter(e => !e.summary?.toLowerCase().includes(stickyItem.eventType)) : filteredIcalEvents}
                     kalleOwner={kalleOwner}
                     birthday={birthday}
                     predictionSlots={predictionSlots}
