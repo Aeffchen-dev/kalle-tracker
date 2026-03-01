@@ -268,7 +268,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                       className="flex items-center justify-center text-white/70 hover:text-white transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <CalendarIcon size={18} />
+                      <span className="text-[16px]">🗓️</span>
                     </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0 bg-black border-white/20" align="start">
