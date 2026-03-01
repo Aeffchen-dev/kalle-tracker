@@ -58,7 +58,8 @@ body {
   }
 
   /* ── Auto safe-area for fixed elements ──────────────────── */
-  [class*="fixed"][class*="inset-0"] {
+  /* Full-screen overlays (not drawer/sheet overlays) */
+  [class*="fixed"][class*="inset-0"]:not([data-vaul-overlay]):not([data-radix-popper-content-wrapper]):not([class*="bg-transparent"]):not([class*="bg-black/80"]) {
     padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
              env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
   }
@@ -67,8 +68,8 @@ body {
     padding-top: env(safe-area-inset-top, 0px);
   }
 
-  [class*="fixed"][class*="bottom-0"],
-  [class*="fixed"][class*="inset-x-0"] {
+  [class*="fixed"][class*="bottom-0"]:not(.drawer-flush-bottom),
+  [class*="fixed"][class*="inset-x-0"]:not(.drawer-flush-bottom) {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
