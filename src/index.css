@@ -260,9 +260,21 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: anchor to true bottom, no white gap */
+  /* Drawers: extend background below viewport to cover iOS home indicator */
   [data-vaul-drawer] {
     bottom: 0 !important;
+  }
+
+  [data-vaul-drawer-content]::after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -100px;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: inherit;
+    z-index: -1;
   }
 
   /* Info overlay: fill full height + safe-area background/content */
