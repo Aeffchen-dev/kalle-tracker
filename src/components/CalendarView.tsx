@@ -252,20 +252,36 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
         const isMedical = ['wurmkur', 'parasiten', 'krallen'].includes(event.type);
         
         if (isMedical) {
-          // Notification-style: emoji + text + filled checkmark
+          const isActive = activeEventId === event.id;
+          // Notification-style: emoji + text + filled checkmark + swipe to delete (undo)
           return (
-            <div key={event.id} className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-              <span className="text-[20px] shrink-0">{event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : '💅'}</span>
-              <span className="text-[14px] text-white truncate flex-1 min-w-0">
-                {event.type === 'wurmkur' && 'Wurmkur'}
-                {event.type === 'parasiten' && 'Parasiten Tablette'}
-                {event.type === 'krallen' && 'Krallen schneiden'}
-              </span>
+            <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
               <div
-                className="w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center bg-white"
+                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                onTouchStart={() => onLongPressStart(event.id)}
+                onTouchMove={onLongPressMove}
+                onTouchEnd={onLongPressEnd}
+                onMouseDown={() => onLongPressStart(event.id)}
+                onMouseMove={onLongPressMove}
+                onMouseUp={onLongPressEnd}
+                onMouseLeave={onLongPressEnd}
               >
-                <Check className="w-[14px] h-[14px] text-black" strokeWidth={3} />
+                <span className="text-[20px] shrink-0">{event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : '💅'}</span>
+                <span className="text-[14px] text-white truncate flex-1 min-w-0">
+                  {event.type === 'wurmkur' && 'Wurmkur'}
+                  {event.type === 'parasiten' && 'Parasiten Tablette'}
+                  {event.type === 'krallen' && 'Krallen schneiden'}
+                </span>
+                <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">
+                  {format(new Date(event.time), 'HH:mm')} Uhr
+                </span>
               </div>
+              <button
+                onClick={() => onDelete(event.id)}
+                className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+              >
+                Löschen
+              </button>
             </div>
           );
         }
