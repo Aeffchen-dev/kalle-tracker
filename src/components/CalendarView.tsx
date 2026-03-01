@@ -834,17 +834,26 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     if (direction === 'left' && !canGoNext) return;
     if (direction === 'right' && !canGoPrev) return;
     
-    setTransitionActive(true);
-    setSwipeOffset(direction === 'left' ? -1 : 1);
-    setTimeout(() => {
-      if (direction === 'left') {
-        setSelectedDate(addDays(selectedDate, 1));
-      } else {
-        setSelectedDate(subDays(selectedDate, 1));
-      }
-      setSwipeOffset(0);
-      setTransitionActive(false);
-    }, 300);
+    // Step 1: mount incoming panel at its off-screen start position (no transition)
+    const seed = direction === 'left' ? -0.02 : 0.02;
+    setSwipeOffset(seed);
+    
+    // Step 2: next frame – enable transition and animate to full offset
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTransitionActive(true);
+        setSwipeOffset(direction === 'left' ? -1 : 1);
+        setTimeout(() => {
+          if (direction === 'left') {
+            setSelectedDate(addDays(selectedDate, 1));
+          } else {
+            setSelectedDate(subDays(selectedDate, 1));
+          }
+          setSwipeOffset(0);
+          setTransitionActive(false);
+        }, 300);
+      });
+    });
   };
 
   // Handle clicks outside the drawer to snap to default
