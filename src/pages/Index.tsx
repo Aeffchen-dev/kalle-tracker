@@ -97,13 +97,17 @@ const Index = () => {
   // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
+    const body = document.body;
+    let color: string;
     if (showTagesplan) {
-      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
+      color = '#3d2b1f'; // brown (spot-color)
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
-      html.style.backgroundColor = '#000000'; // black (bottom sheets)
+      color = '#000000'; // black (bottom sheets)
     } else {
-      html.style.backgroundColor = '#e8e2db'; // beige (main page)
+      color = '#e8e2db'; // beige (main page)
     }
+    html.style.backgroundColor = color;
+    body.style.backgroundColor = color;
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
   // Remove static loader on mount to prevent flicker
