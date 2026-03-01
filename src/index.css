@@ -268,9 +268,7 @@ html, body {
   }
 
   /* All fixed full-screen overlays: extend behind safe areas */
-  .fixed.inset-0,
-  .pwa-info-overlay-root,
-  .pwa-info-overlay-scroll {
+  .fixed.inset-0 {
     top: calc(-1 * env(safe-area-inset-top, 0px)) !important;
     bottom: 0 !important;
     padding-top: env(safe-area-inset-top, 0px);
