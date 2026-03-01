@@ -93,12 +93,12 @@
   }
 
   html {
-    background-color: #000;
+    background-color: hsl(var(--background));
   }
 
   body {
     @apply text-foreground font-rauschen;
-    background-color: #e8e2db;
+    background-color: hsl(var(--background));
   }
 }
 
