@@ -665,8 +665,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
                             <span className="text-[14px] text-white flex items-center gap-1.5">
-                              {entry.hasPipi && <span className="shrink-0">💦</span>}
-                              {entry.hasPoop && <span className="shrink-0">💩</span>}
+                              <span className="shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
                               <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                             </span>
                             <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
