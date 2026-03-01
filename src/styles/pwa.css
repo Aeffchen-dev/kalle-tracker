@@ -42,14 +42,6 @@ body {
     overscroll-behavior: none;
   }
 
-  body {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-
   #root {
     position: relative;
     width: 100%;
@@ -74,12 +66,6 @@ body {
     top: auto !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
-  }
-
-  /* Fixed elements need safe-area offsets to avoid status bar / home indicator */
-  [class*="fixed"][class*="inset-x-0"][class*="top-0"],
-  [class*="fixed"][class*="top-0"] {
-    padding-top: env(safe-area-inset-top, 0px);
   }
 
   [class*="fixed"][class*="inset-x-0"],
