@@ -114,6 +114,16 @@
   }
 }
 
+.main-with-sheet-offset {
+  padding-bottom: calc(20dvh + 16px);
+}
+
+@media (display-mode: standalone) {
+  .main-with-sheet-offset {
+    padding-bottom: calc(25dvh + 16px);
+  }
+}
+
 /* ── Partials ────────────────────────────────────────────── */
 @import './styles/animations.css';
 @import './styles/components.css';
