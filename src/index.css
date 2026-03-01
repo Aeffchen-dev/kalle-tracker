@@ -298,7 +298,7 @@ html, body {
   }
 
   [data-vaul-drawer-content] {
-    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+    padding-bottom: 0 !important;
     overflow: visible;
   }
 }

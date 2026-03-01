@@ -305,7 +305,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             </label>
           </div>
 
-          <div className="pb-4">
+          <div className="pb-2">
             <Button
               onClick={handleSubmit}
               disabled={
