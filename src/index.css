@@ -270,7 +270,8 @@ html, body {
 
   #dalmatian-spots,
   #static-loader {
-    height: calc(100dvh + env(safe-area-inset-top, 0px)) !important;
+    height: 100dvh !important;
+    top: 0 !important;
   }
 
   /* All fixed full-screen overlays: extend past safe area */
