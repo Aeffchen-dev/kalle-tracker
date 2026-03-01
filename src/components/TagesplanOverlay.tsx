@@ -915,8 +915,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             
             {meals && meals.map((meal, mealIndex) => (
               <div key={mealIndex} className="mb-2">
-                <h2 className="flex items-center gap-2 text-[14px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
-                <p className="text-[12px] text-white/60 mb-4">{meal.title}</p>
+                <h2 className="flex items-center gap-2 text-[16px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
+                <p className="text-[14px] text-white/60 mb-4">{meal.title}</p>
                 <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const ingredientKey = `${mealIndex}-${index}`;
@@ -945,11 +945,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               onChange={(e) => handleMealChange(e.target.value)}
                               onBlur={handleMealBlur}
                               onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
+                              className="bg-white/10 text-white/60 text-[14px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
                           ) : (
                             <span
-                              className="text-[12px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                              className="text-[14px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
                               onClick={() => handleMealClick(mealIndex, index, 'quantity')}
                             >
                               {ingredient.quantity}
@@ -963,13 +963,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 onChange={(e) => handleMealChange(e.target.value)}
                                 onBlur={handleMealBlur}
                                 onKeyDown={handleMealKeyDown}
-                                className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none min-h-[32px]"
+                                className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none min-h-[32px]"
                                 rows={Math.max(1, ingredient.name.split('\n').length)}
                               />
                             ) : (
                               <div className="flex items-center">
                                 <span
-                                  className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block whitespace-pre-line"
+                                  className="text-[14px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block whitespace-pre-line"
                                   onClick={() => handleMealClick(mealIndex, index, 'name')}
                                 >
                                   {ingredient.name}
@@ -983,11 +983,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 onChange={(e) => handleMealChange(e.target.value)}
                                 onBlur={handleMealBlur}
                                 onKeyDown={handleMealKeyDown}
-                                className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
+                                className="bg-white/10 text-white/60 text-[14px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
                               />
                             ) : ingredient.description ? (
                               <p
-                                className="text-[12px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                className="text-[14px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
                                 onClick={() => handleMealClick(mealIndex, index, 'description')}
                               >
                                 {ingredient.description}
@@ -1033,7 +1033,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               placeholder="Menge"
                               value={newIngredientQuantity}
                               onChange={(e) => setNewIngredientQuantity(e.target.value)}
-                              className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
+                              className="bg-transparent text-white/60 text-[14px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
                               autoFocus
                             />
                             <input
@@ -1042,7 +1042,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               value={newIngredientName}
                               onChange={(e) => setNewIngredientName(e.target.value)}
                               onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
-                              className="flex-1 min-w-0 bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
+                              className="flex-1 min-w-0 bg-transparent text-white/60 text-[14px] px-1 py-0.5 outline-none placeholder:text-white/30"
                             />
                           </div>
                           <input
@@ -1051,13 +1051,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             value={newIngredientLink}
                             onChange={(e) => setNewIngredientLink(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
-                            className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
+                            className="bg-transparent text-white/60 text-[14px] px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
                           />
                         </div>
                         <button
                           onClick={() => handleAddIngredient(mealIndex)}
                           disabled={!newIngredientName.trim()}
-                          className="text-[10px] text-white flex-shrink-0 disabled:opacity-30 self-center ml-2"
+                          className="text-[12px] text-white flex-shrink-0 disabled:opacity-30 self-center ml-2"
                         >
                           Hinzufügen
                         </button>
@@ -1072,7 +1072,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             <Plus size={14} className="text-white/40" />
                           </div>
                         </div>
-                        <span className="text-[12px] text-white/40">Zutat hinzufügen</span>
+                        <span className="text-[14px] text-white/40">Zutat hinzufügen</span>
                       </button>
                     )}
                   </div>
@@ -1110,11 +1110,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             <img src={snack.image_url} alt={snack.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
                           ) : (
                             <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[14px]">🦴</span>
+                              <span className="text-[16px]">🦴</span>
                             </div>
                           )}
-                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{snack.name}</span>
-                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
+                          <span className="text-[14px] text-white/80 truncate min-w-0 flex-1">{snack.name}</span>
+                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0">{snack.shop_name || ''}</span>
                           {snack.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1124,7 +1124,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(snack.id, 'snack'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                           className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === snack.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1151,13 +1151,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newSnackLink}
                         onChange={(e) => setNewSnackLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddSnackFromUrl(); if (e.key === 'Escape') { setShowAddSnack(false); setNewSnackLink(''); } }}
-                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
                         autoFocus
                       />
                       <button
                         onClick={handleAddSnackFromUrl}
                         disabled={isFetchingMeta || !newSnackLink.trim()}
-                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
@@ -1170,7 +1170,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                         <Plus size={14} className="text-white/40" />
                       </div>
-                      <span className="text-[12px] text-white/40">Snack hinzufügen</span>
+                      <span className="text-[14px] text-white/40">Snack hinzufügen</span>
                     </button>
                   )}
                 </div>
@@ -1187,14 +1187,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
                   <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+49306814455"
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
                 >
                   <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
@@ -1207,14 +1207,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[12px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
                   <ExternalLink size={14} className="text-white/60" />
                 </a>
                 <a 
                   href="tel:+493023362627"
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors mb-3"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors mb-3"
                 >
                   <Phone size={14} className="text-white/60" />
                   <span>Anrufen</span>
@@ -1228,7 +1228,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                       window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
                     }
                   }}
-                  className="flex items-center gap-2 text-[12px] text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors"
                 >
                   <MapPin size={14} className="text-white/60" />
                   <span>Wegbeschreibung</span>
@@ -1243,7 +1243,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         window.open('https://maps.google.com/?q=Uhlandstraße+151,+10719+Berlin', '_blank');
                       }
                     }}
-                    className="text-[12px] text-white/60 hover:text-white transition-colors"
+                    className="text-[14px] text-white/60 hover:text-white transition-colors"
                   >
                     Uhlandstraße 151<br />
                     10719 Berlin
@@ -1285,11 +1285,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             <img src={med.image_url} alt={med.name} className="w-8 h-8 rounded object-cover flex-shrink-0 bg-white" />
                           ) : (
                             <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                              <span className="text-[14px]">💊</span>
+                              <span className="text-[16px]">💊</span>
                             </div>
                           )}
-                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
-                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px] truncate hidden md:inline">{med.shop_name || ''}</span>
+                          <span className="text-[14px] text-white/80 truncate min-w-0 flex-1">{med.name}</span>
+                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0 -ml-[40px] truncate hidden md:inline">{med.shop_name || ''}</span>
                           {med.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1299,7 +1299,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(med.id, 'medicine'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === med.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1326,13 +1326,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newMedicineLink}
                         onChange={(e) => setNewMedicineLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddMedicineFromUrl(); if (e.key === 'Escape') { setShowAddMedicine(false); setNewMedicineLink(''); } }}
-                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
                         autoFocus
                       />
                       <button
                         onClick={handleAddMedicineFromUrl}
                         disabled={isFetchingMedicineMeta || !newMedicineLink.trim()}
-                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingMedicineMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>
@@ -1622,8 +1622,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               <MapPin size={14} className="text-white/60" />
                             </div>
                           )}
-                          <span className="text-[12px] text-white/80 truncate min-w-0 flex-1">{place.name}</span>
-                          <span className="text-[10px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
+                          <span className="text-[14px] text-white/80 truncate min-w-0 flex-1">{place.name}</span>
+                          <span className="text-[12px] text-white/40 w-[72px] text-left flex-shrink-0">{place.city || ''}</span>
                           {place.link && (
                             <span className="text-white/40 p-1 flex-shrink-0">
                               <ExternalLink size={14} />
@@ -1633,7 +1633,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         <button
                           onClick={(e) => { e.stopPropagation(); handleSwipeDelete(place.id, 'place'); }}
                           onTouchStart={(e) => e.stopPropagation()}
-                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                          className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white overflow-hidden self-stretch"
                           style={{
                             width: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
                             minWidth: (() => { const isSwiping = swipingItemId === place.id; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
@@ -1660,13 +1660,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newPlaceLink}
                         onChange={(e) => setNewPlaceLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddPlaceFromUrl(); if (e.key === 'Escape') { setShowAddPlace(false); setNewPlaceLink(''); } }}
-                        className="flex-1 min-w-0 bg-transparent text-[12px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                        className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
                         autoFocus
                       />
                       <button
                         onClick={handleAddPlaceFromUrl}
                         disabled={isFetchingPlaceMeta || !newPlaceLink.trim()}
-                        className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                        className="text-[12px] text-white flex-shrink-0 disabled:opacity-30"
                       >
                         {isFetchingPlaceMeta ? 'Laden...' : 'Hinzufügen'}
                       </button>

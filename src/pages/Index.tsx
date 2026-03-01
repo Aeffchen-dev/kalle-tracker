@@ -348,14 +348,14 @@ const Index = () => {
         <div className="flex items-start gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[12px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
+            className="text-[16px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[12px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
           >
             <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">🐶</span> <span>Kalle</span></span>
           </button>
           {weatherTemp !== null && (
             <button 
               onClick={() => setShowWeather(true)}
-              className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[12px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
+              className="text-[16px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[4px] px-[12px] md:py-[0.68vw] md:px-[1.7vw] lg:py-[0.5vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
             >
               <span className="flex items-center gap-1.5 md:gap-[0.85vw] lg:gap-[0.7vw]"><span className="text-[20px] md:text-[2.55vw] lg:text-[2vw]">{weatherEmoji}</span> <span>{weatherTemp}°</span>{weatherTemp !== null && weatherTemp > 29 ? <img src={thermometerIcon} alt="heat" className="w-[12px] h-[12px] md:w-[1.4vw] md:h-[1.4vw] lg:w-[1.1vw] lg:h-[1.1vw] -ml-[4px]" /> : weatherTemp !== null && weatherTemp <= 7 ? <img src={knittedHat} alt="cold" className="w-[12px] h-[12px] md:w-[1.4vw] md:h-[1.4vw] lg:w-[1.1vw] lg:h-[1.1vw] -ml-[4px]" /> : currentWeatherCode !== null && isRainCode(currentWeatherCode) && <img src={umbrellaIcon} alt="rain" className="w-[11px] h-[11px] md:w-[1.4vw] md:h-[1.4vw] lg:w-[1.1vw] lg:h-[1.1vw] -ml-[2px]" />}</span>
             </button>
@@ -363,7 +363,7 @@ const Index = () => {
         </div>
         <button 
           onClick={() => setShowTagesplan(true)}
-          className="text-[14px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[10px] px-[17px] md:py-[1vw] md:px-[1.7vw] lg:py-[0.78vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
+          className="text-[16px] md:text-[1.9vw] lg:text-[1.5vw] bg-white/20 backdrop-blur-[8px] text-black border border-[#FFFEF5]/40 rounded-full py-[10px] px-[17px] md:py-[1vw] md:px-[1.7vw] lg:py-[0.78vw] lg:px-[1.4vw] cursor-pointer mt-2 md:mt-[0.85vw] lg:mt-[0.7vw]"
         >
           Info
         </button>
@@ -402,7 +402,7 @@ const Index = () => {
           >
             <MoreHorizontal className="w-6 h-6 text-black" />
           </button>
-          <p className="text-[14px] mb-2">
+          <p className="text-[16px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
           </p>
           <button 
@@ -413,7 +413,7 @@ const Index = () => {
           </button>
           <button
             onClick={() => setEventSheetOpen(true)}
-            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-[#5AD940] text-black flex items-center justify-center"
+            className="mt-4 text-[16px] h-10 px-6 rounded-[999px] bg-[#5AD940] text-black flex items-center justify-center"
           >
             Eintrag hinzufügen
           </button>
@@ -480,7 +480,7 @@ const Index = () => {
       <Drawer variant="compact" open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent variant="compact" className="z-[60]">
           <div className="pt-4 px-4 pb-4">
-            <h2 className="text-white text-[14px] leading-6 font-semibold text-center">
+            <h2 className="text-white text-[16px] leading-6 font-semibold text-center">
               Wettervorhersage
             </h2>
           </div>
@@ -500,34 +500,34 @@ const Index = () => {
                    return (<>
                  <div className={`rounded-lg pl-0 pr-[16px] p-3 bg-white/[0.06] ${hasInfoBox ? 'rounded-b-none' : ''}`}>
                   <div className="flex items-center">
-                    <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[12px] leading-[20px] text-white/50">
+                    <span className="w-[36px] shrink-0 flex items-center justify-center mr-2 text-[14px] leading-[20px] text-white/50">
                       {format(date, 'EEE', { locale: de })}
                     </span>
                     <span className="text-[20px] shrink-0 mr-2 leading-[20px]">{isToday && currentWeatherCode !== null ? weatherCodeToEmoji(currentWeatherCode) : weatherCodeToEmoji(day.weatherCode)}</span>
-                    <span className="text-white text-[14px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
+                    <span className="text-white text-[16px] leading-[20px] w-[118px] shrink-0 truncate">{isToday && currentWeatherCode !== null ? weatherCodeToLabel(currentWeatherCode) : weatherCodeToLabel(day.weatherCode)}</span>
                     <span className="flex-1 flex justify-center shrink-0">
                       {day.precipSum > 0.5 ? (
-                        <span className="text-white/50 text-[14px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} l</span>
-                      ) : <span className="text-white/50 text-[14px] leading-[20px] invisible">— 00%</span>}
+                        <span className="text-white/50 text-[16px] leading-[20px] inline-flex items-center"><img src={rainIcon} alt="rain" className="w-[14px] h-[14px] invert opacity-50 -ml-[4px] mr-[4px] -translate-x-[2px]" />{String(day.precipSum).replace('.', ',')} l</span>
+                      ) : <span className="text-white/50 text-[16px] leading-[20px] invisible">— 00%</span>}
                     </span>
                     <span className="shrink-0 text-right">
                       {isToday && weatherTemp !== null ? (() => {
                         const closerToMax = Math.abs(weatherTemp - day.tempMax) <= Math.abs(weatherTemp - day.tempMin);
                         return closerToMax ? (
                           <>
-                            <span className="text-white text-[14px] leading-[20px]">{weatherTemp}°</span>
-                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                            <span className="text-white text-[16px] leading-[20px]">{weatherTemp}°</span>
+                             <span className="text-white/50 text-[16px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
                           </>
                         ) : (
                           <>
-                            <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                            <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{weatherTemp}°</span>
+                            <span className="text-white text-[16px] leading-[20px]">{day.tempMax}°</span>
+                             <span className="text-white/50 text-[16px] leading-[20px] ml-[8px]">{weatherTemp}°</span>
                           </>
                         );
                       })() : (
                         <>
-                          <span className="text-white text-[14px] leading-[20px]">{day.tempMax}°</span>
-                          <span className="text-white/50 text-[14px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
+                          <span className="text-white text-[16px] leading-[20px]">{day.tempMax}°</span>
+                          <span className="text-white/50 text-[16px] leading-[20px] ml-[8px]">{day.tempMin}°</span>
                         </>
                       )}
                     </span>
@@ -541,7 +541,7 @@ const Index = () => {
                       return (
                         <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${!isLast ? 'rounded-b-none' : ''}`}>
                           <img src={thermometerIcon} alt="heat" className="w-[14px] h-[14px] shrink-0 invert opacity-50" />
-                          <span className="text-white/50 text-[10px] leading-[20px]">Vermeide rausgehen bei Hitze und denk an Wasser</span>
+                          <span className="text-white/50 text-[12px] leading-[20px]">Vermeide rausgehen bei Hitze und denk an Wasser</span>
                         </div>
                       );
                     })()}
@@ -550,14 +550,14 @@ const Index = () => {
                       return (
                         <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${!isLast ? 'rounded-b-none' : ''}`}>
                           <img src={knittedHat} alt="cold" className="w-[14px] h-[14px] shrink-0 invert opacity-50" />
-                          <span className="text-white/50 text-[10px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
+                          <span className="text-white/50 text-[12px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
                         </div>
                       );
                     })()}
                     {hasRain && (
                       <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none`}>
                         <img src={umbrellaIcon} alt="rain" className="w-[12px] h-[12px] shrink-0 invert opacity-50" />
-                        <span className="text-white/50 text-[10px] leading-[20px]">Nimm lieber einen Schirm mit</span>
+                        <span className="text-white/50 text-[12px] leading-[20px]">Nimm lieber einen Schirm mit</span>
                       </div>
                     )}
                   </div>
