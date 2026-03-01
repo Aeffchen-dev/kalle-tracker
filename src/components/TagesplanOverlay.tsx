@@ -1187,7 +1187,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[16px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierarztpraxis Sonnenallee</span>
                   <ExternalLink size={14} className="text-white/60" />
@@ -1207,7 +1207,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[16px] text-white mb-3 hover:text-white/80 transition-colors"
+                  className="flex items-center gap-2 text-[14px] text-white mb-3 hover:text-white/80 transition-colors"
                 >
                   <span>Tierklinik: Tierarztpraxis Bärenwiese</span>
                   <ExternalLink size={14} className="text-white/60" />
@@ -1381,8 +1381,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-[12px] text-white">{phase.name}</span>
-                        <span className="text-[12px] text-white/60">{phase.min}–{phase.max} Monate</span>
+                        <span className="text-[14px] text-white">{phase.name}</span>
+                        <span className="text-[14px] text-white/60">{phase.min}–{phase.max} Monate</span>
                       </div>
                       
                       {/* Clickable progress bar */}
@@ -1479,14 +1479,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     >
                       <div data-phase-content className="px-4 pb-4" style={{ willChange: 'transform' }}>
                         {!isCurrentPhase && (
-                          <p className="text-[12px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
+                          <p className="text-[14px] text-white/30 mb-3 italic">Diese Phase ist {ageInMonths < phase.min ? 'noch nicht erreicht' : 'bereits abgeschlossen'}</p>
                         )}
                         
                         {/* Characteristics */}
-                        <p className="text-[12px] text-white/60 mb-4">{phase.characteristics}</p>
+                        <p className="text-[14px] text-white/60 mb-4">{phase.characteristics}</p>
                         
                         {/* Needs as bullet points */}
-                        <div className="text-[12px] text-white/60">
+                        <div className="text-[14px] text-white/60">
                           <span className="text-white">{isCurrentPhase ? 'Was Kalle jetzt braucht:' : 'Was in dieser Phase wichtig ist:'}</span>
                           <ul className="mt-2 space-y-1">
                             {phase.needs.map((need, i) => (
