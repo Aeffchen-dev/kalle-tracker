@@ -407,7 +407,7 @@ const Index = () => {
           </p>
           <button 
             onClick={() => setEventSheetOpen(true)}
-            className="text-[48px] md:text-[64px] leading-none cursor-pointer tabular-nums"
+            className="text-[40px] md:text-[56px] leading-none cursor-pointer tabular-nums"
           >
             {timeDisplay}
           </button>
