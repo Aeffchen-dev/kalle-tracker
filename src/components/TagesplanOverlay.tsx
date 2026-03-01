@@ -671,8 +671,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       // Reveal content + recolor root/body/html after dots have mostly expanded
       setTimeout(() => {
         setAnimationPhase('visible');
-        document.documentElement.style.backgroundColor = 'hsl(var(--spot-color))';
-        document.body.style.backgroundColor = 'hsl(var(--spot-color))';
+        document.documentElement.style.backgroundColor = '#3d2b1f';
+        document.body.style.backgroundColor = '#3d2b1f';
       }, 1100);
     }
   }, [isOpen, animationPhase]);
@@ -680,8 +680,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   // Reset when fully closed
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
-      document.documentElement.style.backgroundColor = 'hsl(var(--background))';
-      document.body.style.backgroundColor = 'hsl(var(--background))';
+      document.documentElement.style.backgroundColor = '#e8e2db';
+      document.body.style.backgroundColor = '#e8e2db';
     }
   }, [animationPhase, isOpen]);
 
@@ -780,8 +780,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const handleClose = () => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
-    document.documentElement.style.backgroundColor = 'hsl(var(--background))';
-    document.body.style.backgroundColor = 'hsl(var(--background))';
+    document.documentElement.style.backgroundColor = '#e8e2db';
+    document.body.style.backgroundColor = '#e8e2db';
     
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
