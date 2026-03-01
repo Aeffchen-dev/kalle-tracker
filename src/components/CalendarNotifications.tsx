@@ -285,7 +285,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
                       <span className="text-[14px] text-black truncate">
                         {evt.summary}
                       </span>
-                      <span className="text-[11px] text-black/50 flex-shrink-0">
+                      <span className="text-[12px] text-black/50 flex-shrink-0">
                         Heute
                       </span>
                     </div>
