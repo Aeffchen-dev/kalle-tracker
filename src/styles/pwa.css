@@ -1,8 +1,1 @@
-/* ── Viewport defaults ────────────────────────────────────── */
-
-html,
-body {
-  overflow-x: clip;
-  max-width: 100vw;
-  min-height: 100dvh;
-}
+/* PWA styles – intentionally empty */
