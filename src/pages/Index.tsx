@@ -541,7 +541,7 @@ const Index = () => {
                       return (
                         <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${!isLast ? 'rounded-b-none' : ''}`}>
                           <img src={thermometerIcon} alt="heat" className="w-[14px] h-[14px] shrink-0 invert opacity-50" />
-                          <span className="text-white/50 text-[10px] leading-[20px]">Vermeide rausgehen bei Hitze und denk an Wasser</span>
+                          <span className="text-white/50 text-[12px] leading-[20px]">Vermeide rausgehen bei Hitze und denk an Wasser</span>
                         </div>
                       );
                     })()}
@@ -550,14 +550,14 @@ const Index = () => {
                       return (
                         <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none ${!isLast ? 'rounded-b-none' : ''}`}>
                           <img src={knittedHat} alt="cold" className="w-[14px] h-[14px] shrink-0 invert opacity-50" />
-                          <span className="text-white/50 text-[10px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
+                          <span className="text-white/50 text-[12px] leading-[20px]">Unter 7° braucht Kalle eine Jacke</span>
                         </div>
                       );
                     })()}
                     {hasRain && (
                       <div className={`rounded-lg h-[24px] bg-white/[0.09] flex items-center gap-3 px-3 rounded-t-none`}>
                         <img src={umbrellaIcon} alt="rain" className="w-[12px] h-[12px] shrink-0 invert opacity-50" />
-                        <span className="text-white/50 text-[10px] leading-[20px]">Nimm lieber einen Schirm mit</span>
+                        <span className="text-white/50 text-[12px] leading-[20px]">Nimm lieber einen Schirm mit</span>
                       </div>
                     )}
                   </div>

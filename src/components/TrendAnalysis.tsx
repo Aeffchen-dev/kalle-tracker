@@ -68,7 +68,7 @@ const StatCard = memo(({
       {trend === 'down' && <TrendingDown size={18} className="text-[#FF0000]" />}
       {trend === 'neutral' && <Minus size={18} className="text-white/40" />}
     </div>
-    {subtext && <p className="text-[10px] text-white/30 mt-1">{subtext}</p>}
+    {subtext && <p className="text-[12px] text-white/30 mt-1">{subtext}</p>}
   </div>
 ));
 
@@ -719,7 +719,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         opts={{ renderer: 'svg' }}
       />
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[10px] text-white/60 justify-center mt-2">
+      <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
