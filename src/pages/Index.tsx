@@ -83,7 +83,7 @@ const Index = () => {
   const [anomalies, setAnomalies] = useState<Anomaly[]>([]);
   const [dismissedAnomalies, setDismissedAnomalies] = useState<Set<string>>(() => {
     try {
-      const stored = sessionStorage.getItem('dismissedAnomalies');
+      const stored = localStorage.getItem('dismissedAnomalies');
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
@@ -174,6 +174,7 @@ const Index = () => {
 
   const loadEvents = async () => {
     const result = await getEvents();
+    result.fromLocal = true; // DEBUG: show offline notification permanently
     eventsRef.current = result.events;
     // Detect anomalies
     const detected = detectAnomalies(result.events);
@@ -219,7 +220,7 @@ const Index = () => {
   const handleDismissAnomaly = (id: string) => {
     setDismissedAnomalies(prev => {
       const next = new Set([...prev, id]);
-      sessionStorage.setItem('dismissedAnomalies', JSON.stringify([...next]));
+      localStorage.setItem('dismissedAnomalies', JSON.stringify([...next]));
       return next;
     });
     setAnomalies(prev => prev.filter(a => a.id !== id));
