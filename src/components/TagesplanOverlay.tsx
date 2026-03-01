@@ -902,7 +902,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {!dataLoaded && (
               <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
-                <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden">
+                <div className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className={`flex p-3 gap-3 ${i !== 6 ? 'border-b border-white/[0.06]' : ''}`}>
                       <Skeleton className="h-4 w-16 bg-white/10" />
@@ -917,7 +917,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <div key={mealIndex} className="mb-2">
                 <h2 className="flex items-center gap-2 text-[16px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
                 <p className="text-[14px] text-white/60 mb-4">{meal.title}</p>
-                <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden">
+                <div className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
                     const ingredientKey = `${mealIndex}-${index}`;
                     const isActive = activeIngredientKey === ingredientKey;
@@ -1085,7 +1085,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Snacks Section */}
             <div className="mb-8">
-              <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
+              <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {snacks.map((snack, index) => {
@@ -1182,7 +1182,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
-              <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4 mb-2">
+              <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4 mb-2">
                 <a 
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
@@ -1202,7 +1202,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
 
               {/* Tierklinik Bärenwiese */}
-              <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
+              <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <a 
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
@@ -1261,7 +1261,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             {/* Hausapotheke Section */}
             <div className="mb-8">
-              <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
+              <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
@@ -1376,7 +1376,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
                   <div 
-                    className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden"
+                    className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden"
                   >
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
@@ -1559,7 +1559,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               return (
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
-                  <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden p-4">
+                  <div className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
@@ -1578,7 +1578,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Orte Section */}
             <div className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
-              <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
+              <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
                   <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative">

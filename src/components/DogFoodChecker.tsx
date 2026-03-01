@@ -158,7 +158,7 @@ const DogFoodChecker = () => {
 
   return (
     <div className="mb-2" ref={containerRef}>
-      <div className="bg-white/[0.02] rounded-[12px] border border-white/5 p-4">
+      <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
         <div className="flex items-center gap-2 mb-3 overflow-hidden relative border border-white/5 shadow-[inset_0_2px_6px_rgba(0,0,0,0.08)]" style={{ borderRadius: '99px', padding: '4px 4px 4px 14px', background: 'rgba(0,0,0,0.10)' }}>
           <div className="flex items-center gap-2 flex-1">
           <span className="text-[20px] shrink-0">🐶</span>
