@@ -12,13 +12,11 @@
   }
 
   #root {
-    height: 100dvh;
-    min-height: 100dvh;
+    height: 100%;
     box-sizing: border-box;
-    padding-top: constant(safe-area-inset-top);
-    padding-top: env(safe-area-inset-top, 0px);
+    padding-top: var(--sat, 0px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
+    overscroll-behavior-y: none;
   }
 }
