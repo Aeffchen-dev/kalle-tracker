@@ -65,13 +65,15 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
       const group = L.featureGroup(markers);
       map.fitBounds(group.getBounds().pad(0.3));
     }
+  }, [places, containerRef]);
 
+  useEffect(() => {
     return () => {
-      map.remove();
+      mapInstanceRef.current?.remove();
       mapInstanceRef.current = null;
       placesKeyRef.current = '';
     };
-  }, [places, containerRef]);
+  }, []);
 
   return null;
 }
