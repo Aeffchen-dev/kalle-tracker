@@ -649,7 +649,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     return entries.map((entry, gi) => {
                       if (entry.kind === 'ical') {
                         return (
-                          <div key={`ical-${gi}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
+                          <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
                             <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
                               <span className="shrink-0">🗓️</span>
                               <span className="truncate">{entry.icalEvt.summary}</span>
@@ -663,7 +663,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       
                       if (entry.kind === 'prediction') {
                         return (
-                          <div key={`pred-${gi}`} className="flex items-center justify-between p-3 rounded-lg opacity-60">
+                          <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
                             <span className="text-[14px] text-white flex items-center gap-1.5">
                               {entry.hasPipi && <span className="shrink-0">💦</span>}
                               {entry.hasPoop && <span className="shrink-0">💩</span>}
@@ -685,7 +685,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
                             <div
-                              className={`flex items-start justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                              className={`flex items-start justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                               onClick={() => handleItemClick(firstEvent.id)}
                               onContextMenu={(e) => handleContextMenu(e, firstEvent.id)}
                               onTouchStart={() => handleLongPressStart(firstEvent.id)}
@@ -734,7 +734,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       return (
                         <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
                           <div
-                            className={`flex items-center justify-between p-3 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                            className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                             onClick={() => handleItemClick(event.id)}
                             onContextMenu={(e) => handleContextMenu(e, event.id)}
                             onTouchStart={() => handleLongPressStart(event.id)}
@@ -781,7 +781,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   })()}
                   {/* Who has Kalle - only show when there are other entries */}
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
-                    <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
+                    <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
                       <span className="text-[14px] text-white flex items-center gap-2">
                         <span className="shrink-0">🐶</span>
                         <span>{kalleOwner.person} hat Kalle</span>
