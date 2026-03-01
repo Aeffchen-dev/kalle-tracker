@@ -94,6 +94,18 @@ Deno.serve(async (req) => {
       name = decodeURIComponent(placeMatch[1]).replace(/\+/g, ' ');
     }
 
+    // Extract name from ?q= parameter (address-style URLs)
+    if (!name) {
+      const qParam = finalUrl.match(/[?&]q=([^&]+)/);
+      if (qParam) {
+        const decoded = decodeURIComponent(qParam[1]).replace(/\+/g, ' ');
+        // Only use if it's not just coordinates
+        if (!decoded.match(/^-?\d+\.\d+,-?\d+\.\d+$/)) {
+          name = decoded;
+        }
+      }
+    }
+
     // Extract coordinates - multiple patterns
     const coordMatch = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
     if (coordMatch) {
@@ -116,6 +128,23 @@ Deno.serve(async (req) => {
       if (qMatch) {
         latitude = parseFloat(qMatch[1]);
         longitude = parseFloat(qMatch[2]);
+      }
+    }
+
+    // If we have an address name but no coordinates, try geocoding via Nominatim
+    if (!latitude && name) {
+      try {
+        const geoResp = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1`,
+          { headers: { 'User-Agent': 'KalleApp/1.0' } }
+        );
+        const geoData = await geoResp.json();
+        if (geoData && geoData.length > 0) {
+          latitude = parseFloat(geoData[0].lat);
+          longitude = parseFloat(geoData[0].lon);
+        }
+      } catch (e) {
+        console.error('Geocoding failed:', e);
       }
     }
 
