@@ -402,7 +402,7 @@ const Index = () => {
           >
             <MoreHorizontal className="w-6 h-6 text-black" />
           </button>
-          <p className="text-[16px] mb-2">
+          <p className="text-[14px] mb-2">
             {countdownMode === 'count_down' ? 'Kalle muss raus in' : 'Kalle war zuletzt draußen vor'}
           </p>
           <button 
@@ -413,7 +413,7 @@ const Index = () => {
           </button>
           <button
             onClick={() => setEventSheetOpen(true)}
-            className="mt-4 text-[18px] h-11 px-7 rounded-[999px] bg-[#5AD940] text-black flex items-center justify-center"
+            className="mt-4 text-[14px] h-10 px-6 rounded-[999px] bg-[#5AD940] text-black flex items-center justify-center"
           >
             Eintrag hinzufügen
           </button>
