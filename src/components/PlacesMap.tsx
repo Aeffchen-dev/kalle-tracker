@@ -50,7 +50,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
 
     const markers = places.map(p => {
       const marker = L.marker([p.latitude, p.longitude], { icon }).addTo(map);
-      const url = p.link || `https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`;
+      const url = `https://www.google.com/maps/search/?api=1&query=${p.latitude},${p.longitude}`;
       marker.on('click', () => window.open(url, '_blank'));
       return marker;
     });
