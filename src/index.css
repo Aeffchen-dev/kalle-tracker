@@ -239,9 +239,10 @@
   line-height: 1;
 }
 
-/* Prevent horizontal scroll on page */
+/* Prevent horizontal scroll on page, but allow vertical overflow behind browser chrome */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
   max-width: 100vw;
   min-height: 100dvh;
 }
