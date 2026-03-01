@@ -62,12 +62,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     }
   }, [open]);
 
-  // Keep document background black while this drawer is open
-  useEffect(() => {
-    if (!open) return;
-    document.documentElement.style.backgroundColor = 'hsl(0 0% 0%)';
-    document.body.style.backgroundColor = 'hsl(0 0% 0%)';
-  }, [open]);
 
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
     setSelectedTypes(prev => {
