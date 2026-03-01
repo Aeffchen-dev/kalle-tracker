@@ -1999,7 +1999,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                     <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate && isToday ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
                                         <span className="text-[11px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
-                                        {slot.hasPipi && slot.hasPoop ? <span className="text-[14px] shrink-0 relative w-[1.2em] h-[1.2em]"><span className="absolute inset-0 translate-x-[4px]">💦</span><span className="absolute inset-0 z-10">💩</span></span> : <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>}
+                                        {slot.hasPipi && slot.hasPoop ? <span className="text-[14px] shrink-0 relative w-[1.2em] h-[1.2em]"><span className="absolute inset-0 translate-x-[4px] -rotate-90">💦</span><span className="absolute inset-0 z-10">💩</span></span> : <span className="text-[14px] shrink-0">{slot.hasPoop ? '💩' : '💦'}</span>}
                                       </div>
                                     </div>
                                    )}
