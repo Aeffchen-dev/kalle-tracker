@@ -251,7 +251,7 @@ html, body {
 @media (display-mode: standalone) {
   html,
   body {
-    height: calc(100% + env(safe-area-inset-top, 0px));
+    height: 100dvh;
     min-height: 100vh;
     min-height: -webkit-fill-available;
     overflow: visible;
