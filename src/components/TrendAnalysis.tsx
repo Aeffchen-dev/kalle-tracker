@@ -68,7 +68,7 @@ const StatCard = memo(({
       {trend === 'down' && <TrendingDown size={16} className="text-[#FF0000]" />}
       {trend === 'neutral' && <Minus size={16} className="text-white/40" />}
     </div>
-    {subtext && <p className="text-[12px] text-white/30 mt-0.5">{subtext}</p>}
+    {subtext && <p className="text-[14px] text-white/30 mt-0.5">{subtext}</p>}
   </div>
 ));
 
