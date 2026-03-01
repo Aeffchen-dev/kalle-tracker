@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Maximize2, Minimize2 } from 'lucide-react';
 
 interface Place {
   latitude: number;
@@ -12,11 +13,11 @@ interface Place {
 export function PlacesMap({ places }: { places: Place[] }) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current || places.length === 0) return;
 
-    // Clean up previous instance
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
@@ -28,19 +29,16 @@ export function PlacesMap({ places }: { places: Place[] }) {
     });
     mapInstanceRef.current = map;
 
-    // Satellite tiles
     L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       { maxZoom: 18 }
     ).addTo(map);
 
-    // Detailed labels overlay (districts, neighborhoods, streets, POIs)
     L.tileLayer(
       'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',
       { maxZoom: 18, subdomains: 'abcd', pane: 'overlayPane' }
     ).addTo(map);
 
-    // Green circle marker (matches "Eintrag hinzufügen" CTA color)
     const icon = L.divIcon({
       className: '',
       html: '<div style="width:12px;height:12px;background:#5AD940;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>',
@@ -66,7 +64,38 @@ export function PlacesMap({ places }: { places: Place[] }) {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, [places]);
+  }, [places, isFullscreen]);
 
-  return <div ref={mapRef} className="w-full h-full" />;
+  // Invalidate map size after fullscreen transition
+  useEffect(() => {
+    if (mapInstanceRef.current) {
+      setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
+    }
+  }, [isFullscreen]);
+
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 z-[9999] bg-black">
+        <div ref={mapRef} className="w-full h-full" />
+        <button
+          onClick={() => setIsFullscreen(false)}
+          className="absolute top-4 right-4 z-[10000] bg-black/60 backdrop-blur-sm text-white p-2.5 rounded-full shadow-lg"
+        >
+          <Minimize2 size={18} />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <div ref={mapRef} className="w-full h-full" />
+      <button
+        onClick={() => setIsFullscreen(true)}
+        className="absolute top-2 right-2 z-[1000] bg-black/60 backdrop-blur-sm text-white p-1.5 rounded-full shadow-lg"
+      >
+        <Maximize2 size={14} />
+      </button>
+    </div>
+  );
 }
