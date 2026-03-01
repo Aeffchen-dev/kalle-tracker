@@ -271,9 +271,13 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: anchor to true bottom */
+  /* Drawers: anchor to true bottom and extend behind home indicator */
   [data-vaul-drawer] {
     bottom: 0 !important;
+  }
+
+  [data-vaul-drawer-content] {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
   }
 
   /* Info overlay: fill full height + safe-area background/content */
