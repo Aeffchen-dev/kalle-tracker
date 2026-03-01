@@ -72,8 +72,4 @@ body {
   [class*="fixed"][class*="bottom-0"] {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-
-  .home-header-safe {
-    padding-top: calc(12px + env(safe-area-inset-top, 0px)) !important;
-  }
 }
