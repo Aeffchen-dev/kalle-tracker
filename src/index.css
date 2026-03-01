@@ -267,11 +267,9 @@ html, body {
     overflow: visible;
   }
 
-  /* All fixed full-screen overlays: extend behind safe areas */
+  /* All fixed full-screen overlays */
   .fixed.inset-0 {
-    top: calc(-1 * env(safe-area-inset-top, 0px)) !important;
     bottom: 0 !important;
-    padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: 0;
     overflow: visible;
   }
