@@ -20,6 +20,41 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/],
         maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/sywgjwxtuijrdmekxquj\.supabase\.co\/rest\/v1\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 5 },
+              networkTimeoutSeconds: 3,
+            },
+          },
+          {
+            urlPattern: /^https:\/\/api\.open-meteo\.com\/.*/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "weather-cache",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 30 },
+            },
+          },
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "image-cache",
+              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            urlPattern: /\.(?:woff|woff2|ttf|otf)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "font-cache",
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+            },
+          },
+        ],
       },
       manifest: {
         name: "Kalle Tracker",
@@ -30,6 +65,16 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
+        scope: "/",
+        categories: ["lifestyle", "health"],
+        shortcuts: [
+          {
+            name: "Gassi eintragen",
+            short_name: "Gassi",
+            url: "/?action=walk",
+            icons: [{ src: "/favicon.png", sizes: "192x192" }],
+          },
+        ],
         icons: [
           {
             src: "/favicon.png",
