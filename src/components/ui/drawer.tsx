@@ -28,8 +28,8 @@ export const DRAWER_SNAP_POINTS: Record<DrawerVariant, number[] | undefined> = {
 };
 
 const drawerContentVariants = cva(
-  // shared base – safe-area bottom padding for PWA
-  "fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[24px] border-0 bg-black outline-none focus:outline-none focus-visible:outline-none lg:max-w-[80vw] lg:mx-auto pb-[env(safe-area-inset-bottom,0px)]",
+  // shared base – safe-area bottom padding for PWA, shadow-fill prevents background bleed when dragging
+  "fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[24px] border-0 bg-black outline-none focus:outline-none focus-visible:outline-none lg:max-w-[80vw] lg:mx-auto pb-[env(safe-area-inset-bottom,0px)] shadow-[0_100px_0_100px_black]",
   {
     variants: {
       variant: {

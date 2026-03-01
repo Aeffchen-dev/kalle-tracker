@@ -547,8 +547,13 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                               onMouseLeave={handleLongPressEnd}
                             >
                               <div className="flex items-start justify-between w-full overflow-hidden">
-                                <div className="flex flex-col gap-0.5">
-                                  {group.events.map((ev, ei) => (
+                                <div className="flex items-center gap-1.5">
+                                  {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
+                                    <>
+                                      <span className="text-[14px] shrink-0">💦💩</span>
+                                      <span className="text-[14px] text-white truncate">Pipi + Stuhlgang</span>
+                                    </>
+                                  ) : group.events.map((ev, ei) => (
                                     <span key={ei} className="flex items-center gap-1.5">
                                       <span className="text-[14px] shrink-0">{ev.type === 'pipi' ? '💦' : '💩'}</span>
                                       <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
