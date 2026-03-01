@@ -1141,7 +1141,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 {/* Add snack inline */}
                 <div className="border-t border-white/10">
                   {showAddSnack ? (
-                    <div className="flex items-center gap-2 pt-1.5">
+                    <div className="flex items-center gap-3 pt-1.5">
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                         <Plus size={14} className="text-white/40" />
                       </div>
@@ -1151,7 +1151,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newSnackLink}
                         onChange={(e) => setNewSnackLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddSnackFromUrl(); if (e.key === 'Escape') { setShowAddSnack(false); setNewSnackLink(''); } }}
-                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 py-1.5 rounded"
                         autoFocus
                       />
                       <button
@@ -1316,7 +1316,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 {/* Add medicine inline */}
                 <div className={medicines.length > 0 ? "border-t border-white/10" : ""}>
                   {showAddMedicine ? (
-                    <div className="flex items-center gap-2 pt-1.5">
+                    <div className="flex items-center gap-3 pt-1.5">
                       <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
                         <Plus size={14} className="text-white/40" />
                       </div>
@@ -1326,7 +1326,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         value={newMedicineLink}
                         onChange={(e) => setNewMedicineLink(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleAddMedicineFromUrl(); if (e.key === 'Escape') { setShowAddMedicine(false); setNewMedicineLink(''); } }}
-                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 px-3 py-1.5 rounded"
+                         className="flex-1 min-w-0 bg-transparent text-[14px] text-white/80 outline-none placeholder:text-white/30 py-1.5 rounded"
                         autoFocus
                       />
                       <button
