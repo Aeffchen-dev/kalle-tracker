@@ -331,7 +331,7 @@ const Index = () => {
   }, [openCalendarWithTrends]);
 
   return (
-    <div className="min-h-dvh flex flex-col bg-transparent relative overflow-x-hidden overscroll-none pb-4">
+    <div className={`min-h-dvh flex flex-col relative overflow-x-hidden overscroll-none pb-4 ${eventSheetOpen || showWeather || showGassiSettings || showCalendar ? 'bg-black' : 'bg-transparent'}`}>
 
       {/* Header */}
       <header className={`pwa-safe-top pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
