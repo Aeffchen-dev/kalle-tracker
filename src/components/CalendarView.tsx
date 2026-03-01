@@ -257,7 +257,8 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           return (
             <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
               <div
-                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                onClick={() => onItemClick(event.id)}
                 onTouchStart={() => onLongPressStart(event.id)}
                 onTouchMove={onLongPressMove}
                 onTouchEnd={onLongPressEnd}
