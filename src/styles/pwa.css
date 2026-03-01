@@ -9,6 +9,16 @@ html, body {
   padding: env(safe-area-inset-top, 0px) 0 0 0;
 }
 
+/* ── Drawer flush-bottom utility ─────────────────────────── */
+/* Apply .drawer-flush-bottom on any drawer to push it behind the home indicator */
+
+.drawer-flush-bottom {
+  bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+  top: auto !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 /* ── PWA standalone mode: fill entire physical screen ────── */
 
 @media (display-mode: standalone) {
@@ -39,14 +49,5 @@ html, body {
 
   .pwa-safe-top {
     padding-top: env(safe-area-inset-top, 0px) !important;
-  }
-
-  /* Drawers: flush to physical bottom */
-  [data-vaul-drawer] {
-    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
-    top: auto !important;
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
-    overflow: visible;
   }
 }
