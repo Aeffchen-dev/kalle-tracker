@@ -135,18 +135,38 @@ Deno.serve(async (req) => {
 
     // If we have an address name but no coordinates, try geocoding via Nominatim
     if (!latitude && name) {
-      try {
-        const geoResp = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1`,
-          { headers: { 'User-Agent': 'KalleApp/1.0' } }
-        );
-        const geoData = await geoResp.json();
-        if (geoData && geoData.length > 0) {
-          latitude = parseFloat(geoData[0].lat);
-          longitude = parseFloat(geoData[0].lon);
+      const qParam = finalUrl.match(/[?&]q=([^&]+)/);
+      const geocodeQuery = qParam ? decodeURIComponent(qParam[1]).replace(/\+/g, ' ') : name;
+      
+      // Try multiple geocoding queries: full address, then parts
+      const queries = [geocodeQuery];
+      // If query has commas, try street+city (skip place name), then just city+postal
+      const parts = geocodeQuery.split(',').map(p => p.trim());
+      if (parts.length >= 3) {
+        queries.push(parts.slice(1).join(', ')); // street + city without place name
+        queries.push(parts[parts.length - 1]);   // just city
+      }
+      if (parts.length >= 2) {
+        queries.push(parts.slice(0, 2).join(', ')); // first two parts
+      }
+      
+      for (const q of queries) {
+        if (latitude) break;
+        try {
+          console.log('Geocoding attempt:', q);
+          const geoResp = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`,
+            { headers: { 'User-Agent': 'KalleApp/1.0' } }
+          );
+          const geoData = await geoResp.json();
+          if (geoData && geoData.length > 0) {
+            latitude = parseFloat(geoData[0].lat);
+            longitude = parseFloat(geoData[0].lon);
+            console.log('Geocoding success with query:', q, latitude, longitude);
+          }
+        } catch (e) {
+          console.error('Geocoding failed:', e);
         }
-      } catch (e) {
-        console.error('Geocoding failed:', e);
       }
     }
 
