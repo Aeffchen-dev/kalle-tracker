@@ -94,6 +94,18 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
+  // Dynamically set html background to match current overlay/sheet
+  useEffect(() => {
+    const html = document.documentElement;
+    if (showTagesplan) {
+      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
+    } else if (showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
+      html.style.backgroundColor = '#000000'; // black (bottom sheets)
+    } else {
+      html.style.backgroundColor = '#e8e2db'; // beige (main page)
+    }
+  }, [showTagesplan, showWeather, showCalendar, showGassiSettings]);
+
   // Remove static loader on mount to prevent flicker
   useEffect(() => {
     const staticLoader = document.getElementById('static-loader');
