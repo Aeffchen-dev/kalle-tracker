@@ -670,7 +670,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                               <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                             </span>
                             <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-                              ~{entry.timeKey} Uhr
+                              {entry.timeKey} Uhr
                             </span>
                           </div>
                         );
