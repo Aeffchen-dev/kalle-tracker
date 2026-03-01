@@ -258,7 +258,7 @@ html, body {
     min-height: -webkit-fill-available;
     overflow: visible;
     overscroll-behavior: none;
-    padding: 0 0 env(safe-area-inset-bottom, 0px) 0;
+    padding: 0;
   }
 
   #root {
