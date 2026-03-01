@@ -265,6 +265,7 @@ html, body {
     right: 0;
     bottom: 0;
     overflow: visible;
+    min-height: calc(100% + env(safe-area-inset-bottom, 0px));
   }
 
   /* All fixed full-screen overlays */
