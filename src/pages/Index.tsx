@@ -97,12 +97,19 @@ const Index = () => {
   // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
+    const body = document.body;
     if (showTagesplan && (eventSheetOpen || showWeather || showGassiSettings || showCalendar)) {
-      html.style.backgroundColor = '#3d2b1f'; // brown when sheets open over modal
+      html.style.backgroundColor = '#3d2b1f';
+      body.style.backgroundColor = '#3d2b1f';
+    } else if (showTagesplan) {
+      html.style.backgroundColor = '#3d2b1f';
+      body.style.backgroundColor = '#3d2b1f';
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
-      html.style.backgroundColor = '#000000'; // black (bottom sheets)
+      html.style.backgroundColor = '#000000';
+      body.style.backgroundColor = '#000000';
     } else {
-      html.style.backgroundColor = '#e8e2db'; // beige (main page)
+      html.style.backgroundColor = '#e8e2db';
+      body.style.backgroundColor = '#e8e2db';
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
