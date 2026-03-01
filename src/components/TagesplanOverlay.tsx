@@ -1996,7 +1996,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 <div key={i}>
                                    {/* Walk entry - compact single-line */}
                                    {slot.isWalk && (
-                                    <div className={`p-3 rounded-lg overflow-hidden bg-white/[0.06] ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
+                                    <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate && isToday ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
                                         <span className="text-[11px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
                                         {slot.hasPipi && <span className="text-[14px] shrink-0">💦</span>}
