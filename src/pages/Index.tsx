@@ -94,19 +94,15 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set html+body background to match current overlay/sheet
+  // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
-    const body = document.body;
     if (showTagesplan) {
       html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
-      body.style.backgroundColor = '#3d2b1f';
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
-      body.style.backgroundColor = '#000000';
     } else {
       html.style.backgroundColor = '#e8e2db'; // beige (main page)
-      body.style.backgroundColor = '#e8e2db';
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
