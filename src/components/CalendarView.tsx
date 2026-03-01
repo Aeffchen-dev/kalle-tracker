@@ -665,7 +665,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
                             <span className="text-[14px] text-white flex items-center gap-1.5">
-                              {entry.hasPipi && entry.hasPoop ? <span className="shrink-0 relative w-[1.2em] h-[1.2em]"><span className="absolute inset-0 translate-x-[4px] -rotate-90">💦</span><span className="absolute inset-0 z-10">💩</span></span> : <span className="shrink-0">{entry.hasPoop ? '💩' : '💦'}</span>}
+                              <span className="shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
                               <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                             </span>
                             <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
@@ -699,7 +699,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                 <div className="flex items-center gap-1.5">
                                   {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
                                     <>
-                                      <span className="text-[14px] shrink-0 relative w-[1.2em] h-[1.2em]"><span className="absolute inset-0 translate-x-[4px] -rotate-90">💦</span><span className="absolute inset-0 z-10">💩</span></span>
+                                      <span className="text-[14px] shrink-0">💦💩</span>
                                       <span className="text-[14px] text-white truncate">Pipi + Stuhlgang</span>
                                     </>
                                   ) : group.events.map((ev, ei) => (
