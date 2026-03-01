@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { Maximize2, X } from 'lucide-react';
 
 interface Place {
   latitude: number;
@@ -79,9 +79,10 @@ export function PlacesMap({ places }: { places: Place[] }) {
         <div ref={mapRef} className="w-full h-full" />
         <button
           onClick={() => setIsFullscreen(false)}
-          className="absolute bottom-4 right-4 z-[10000] bg-black text-white p-2 rounded-lg shadow-lg"
+          className="absolute top-4 right-4 z-[10000] bg-black text-white flex items-center justify-center shadow-lg"
+          style={{ width: 48, height: 48, borderRadius: 4 }}
         >
-          <Minimize2 size={16} />
+          <X size={24} />
         </button>
       </div>
     );
@@ -92,9 +93,10 @@ export function PlacesMap({ places }: { places: Place[] }) {
       <div ref={mapRef} className="w-full h-full" />
       <button
         onClick={() => setIsFullscreen(true)}
-        className="absolute bottom-2 right-2 z-[1000] bg-black text-white p-1.5 rounded-lg shadow-lg"
+        className="absolute bottom-2 right-2 z-[1000] bg-black text-white flex items-center justify-center shadow-lg"
+        style={{ width: 48, height: 48, borderRadius: 4 }}
       >
-        <Maximize2 size={14} />
+        <Maximize2 size={24} />
       </button>
     </div>
   );
