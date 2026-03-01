@@ -391,7 +391,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const [isContentScrollable, setIsContentScrollable] = useState(false);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const [stickyItem, setStickyItem] = useState<StickyMedicalItem | null>(null);
-  const [stickySettling, setStickySettling] = useState(false);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -518,7 +517,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const handleNavigateToToday = (sticky?: StickyMedicalItem) => {
     if (sticky) {
       setStickyItem(sticky);
-      setStickySettling(false);
     }
     const today = new Date();
     if (isSameDay(selectedDate, today)) return;
@@ -530,14 +528,9 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       setSwipeOffset(0);
       setTransitionActive(false);
       if (sticky) {
-        // Now set dismissal key and refresh events after slide completes
         localStorage.setItem(sticky.dismissKey, new Date().toISOString());
         loadEvents();
-        setStickySettling(true);
-        setTimeout(() => {
-          setStickyItem(null);
-          setStickySettling(false);
-        }, 400);
+        setStickyItem(null);
       }
     }, 300);
   };
@@ -1028,8 +1021,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     className="fixed left-4 right-4 z-50 flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
                     style={{
                       top: stickyItem.top,
-                      transition: stickySettling ? 'opacity 0.4s ease' : 'none',
-                      opacity: stickySettling ? 0 : 1,
                     }}
                   >
                     <span className="text-[20px] shrink-0">{stickyItem.emoji}</span>
@@ -1072,9 +1063,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
                     transition: transStyle,
                     transformOrigin: p < 0 ? 'left center' : 'right center',
-                    // Push content down when sticky item is visible on today's panel
-                    paddingTop: stickySettling ? '60px' : '0px',
-                    ...(stickySettling ? { transition: `${transStyle}, padding-top 0.4s ease` } : {}),
                   }}
                 >
                   <DayPanel
