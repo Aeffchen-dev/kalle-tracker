@@ -102,7 +102,7 @@ const Index = () => {
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
-      html.style.backgroundColor = '#e8e2db'; // beige (main page)
+      html.style.backgroundColor = '#000000'; // black (matches drawer bottom)
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
