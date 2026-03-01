@@ -92,12 +92,12 @@ export function PlacesMap({ places }: { places: Place[] }) {
           className="max-w-none w-screen h-screen p-0 border-none bg-black [&>button]:hidden"
           style={{ borderRadius: 0 }}
         >
-          <div ref={fullscreenMapRef} className="w-full h-full" />
+          <div ref={fullscreenMapRef} className="w-full h-full" style={{ zIndex: 1 }} />
           {isFullscreen && <MapContent places={places} containerRef={fullscreenMapRef} />}
           <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-4 right-4 z-[10000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
-            style={{ borderRadius: 4 }}
+            className="absolute top-4 right-4 bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
+            style={{ borderRadius: 4, zIndex: 10 }}
           >
             <X size={14} />
           </button>
