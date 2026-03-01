@@ -585,7 +585,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   {isBirthdayToday && birthdayAge > 0 && (
                     <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
                       <span className="text-[14px] text-white flex items-center gap-2">
-                        <span className="shrink-0 w-[28px]">🎉</span>
+                        <span className="shrink-0 w-[32px]">🎉</span>
                         <span>{birthdayAge}. Geburtstag</span>
                       </span>
                     </div>
@@ -651,7 +651,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`ical-${gi}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
                             <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
-                              <span className="shrink-0 w-[28px]">🗓️</span>
+                              <span className="shrink-0 w-[32px]">🗓️</span>
                               <span className="truncate">{entry.icalEvt.summary}</span>
                             </span>
                             <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
@@ -665,7 +665,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         return (
                           <div key={`pred-${gi}`} className="flex items-center justify-between p-3 rounded-lg opacity-60">
                             <span className="text-[14px] text-white flex items-center gap-2">
-                              <span className="shrink-0 w-[28px]">
+                              <span className="shrink-0 w-[32px]">
                                 {entry.hasPipi && '💦'}{entry.hasPoop && '💩'}
                               </span>
                               <span>{entry.hasPipi && entry.hasPoop ? 'Pipi + Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
@@ -701,12 +701,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                 <div className="flex items-center gap-2">
                                   {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
                                     <>
-                                      <span className="text-[14px] shrink-0 w-[28px]">💦💩</span>
+                                      <span className="text-[14px] shrink-0 w-[32px]">💦💩</span>
                                       <span className="text-[14px] text-white truncate">Pipi + Stuhlgang</span>
                                     </>
                                   ) : group.events.map((ev, ei) => (
                                     <span key={ei} className="flex items-center gap-2">
-                                      <span className="text-[14px] shrink-0 w-[28px]">{ev.type === 'pipi' ? '💦' : '💩'}</span>
+                                      <span className="text-[14px] shrink-0 w-[32px]">{ev.type === 'pipi' ? '💦' : '💩'}</span>
                                       <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
                                     </span>
                                   ))}
@@ -747,7 +747,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                             onMouseLeave={handleLongPressEnd}
                           >
                             <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
-                              <span className="shrink-0 w-[28px]">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
+                              <span className="shrink-0 w-[32px]">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
                               <span className="truncate">
                                 {event.type === 'wurmkur' && 'Wurmkur'}
                                 {event.type === 'parasiten' && 'Parasiten Tablette'}
@@ -784,7 +784,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
                     <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
                       <span className="text-[14px] text-white flex items-center gap-2">
-                        <span className="shrink-0 w-[28px]">🐶</span>
+                        <span className="shrink-0 w-[32px]">🐶</span>
                         <span>{kalleOwner.person} hat Kalle</span>
                       </span>
                       <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
