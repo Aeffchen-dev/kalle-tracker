@@ -93,12 +93,12 @@
   }
 
   html {
-    background-color: hsl(var(--background));
+    background-color: red !important; /* DEBUG: html root */
   }
 
   body {
     @apply text-foreground font-rauschen;
-    background-color: hsl(var(--background));
+    background-color: blue !important; /* DEBUG: body */
   }
 }
 
