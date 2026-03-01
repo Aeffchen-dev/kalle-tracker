@@ -1,20 +1,14 @@
-/* ── PWA standalone mode ──────────────────────────────────── */
 @media (display-mode: standalone) {
-  html, body {
-    height: 100%;
-    overflow: hidden;
-  }
-
   body {
     position: fixed;
     inset: 0;
     padding-top: env(safe-area-inset-top, 0px);
+    overflow: hidden;
   }
 
   #root {
     height: 100%;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: none;
   }
 }
