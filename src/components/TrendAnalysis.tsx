@@ -750,17 +750,12 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const phChartRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to specific chart on mount, or to end by default
+  // Scroll to specific chart on mount if requested
   useEffect(() => {
     if (scrollToChart) {
       const ref = scrollToChart === 'weight' ? weightChartRef : phChartRef;
       const t = setTimeout(() => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 400);
-      return () => clearTimeout(t);
-    } else {
-      const t = setTimeout(() => {
-        endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }, 400);
       return () => clearTimeout(t);
     }
