@@ -309,7 +309,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="h-10 px-6 min-w-[300px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px]"
+              className="w-full md:w-auto h-10 px-6 md:min-w-[300px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px]"
             >
               {isSubmitting ? 'Speichern...' : 'Speichern'}
             </Button>
