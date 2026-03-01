@@ -94,22 +94,16 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set root background to match current overlay/sheet (including iOS under-bar area)
+  // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
-    const body = document.body;
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-
-    let layerColor = '#e8e2db'; // beige (main page)
     if (showTagesplan) {
-      layerColor = '#3d2b1f'; // brown (info overlay)
+      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
-      layerColor = '#000000'; // black (bottom sheets)
+      html.style.backgroundColor = '#000000'; // black (bottom sheets)
+    } else {
+      html.style.backgroundColor = '#e8e2db'; // beige (main page)
     }
-
-    html.style.backgroundColor = layerColor;
-    body.style.backgroundColor = layerColor;
-    themeColorMeta?.setAttribute('content', layerColor);
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
   // Remove static loader on mount to prevent flicker
@@ -334,7 +328,7 @@ const Index = () => {
   }, [openCalendarWithTrends]);
 
   return (
-    <div className="h-dvh min-h-dvh flex flex-col bg-transparent relative overflow-y-auto overflow-x-hidden overscroll-none">
+    <div className="min-h-dvh flex flex-col bg-transparent relative overflow-y-auto overflow-x-hidden overscroll-none">
 
       {/* Header */}
       <header className={`pwa-safe-top pt-[12px] px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
