@@ -148,7 +148,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
             onTouchEnd={handleTouchEnd}
           >
             <div
-              className={`flex items-center gap-3 p-3 backdrop-blur-[8px] border rounded-[16px] select-none min-w-0 flex-1 cursor-pointer ${anomaly.type === 'connection_error' ? 'bg-[#FF0000]/25 border-[#FF0000]/40' : 'bg-white/20 border-[#FFFEF5]/40'}`}
+              className={`flex items-center gap-3 p-3 backdrop-blur-[8px] border rounded-[16px] select-none min-w-0 flex-1 cursor-pointer ${anomaly.type === 'connection_error' ? 'bg-red-500 border-red-500' : 'bg-white/20 border-[#FFFEF5]/40'}`}
               onClick={() => handleCardClick(anomaly.id, anomaly.type)}
               style={{ 
                 transition: isSwiping ? 'none' : 'all 150ms ease-linear'
@@ -157,14 +157,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
               <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-[14px] text-black truncate">
+                    <span className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white' : 'text-black'}`}>
                     {anomaly.title}
                   </span>
-                  <span className="text-[11px] text-black/50 flex-shrink-0">
+                  <span className={`text-[11px] flex-shrink-0 ${anomaly.type === 'connection_error' ? 'text-white/70' : 'text-black/50'}`}>
                     {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                   </span>
                 </div>
-                <p className="text-[14px] text-black/70 truncate">
+                <p className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white/80' : 'text-black/70'}`}>
                   {anomaly.highlightText ? (
                     <>
                       {anomaly.description.split(anomaly.highlightText)[0]}
