@@ -1996,7 +1996,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 <div key={i}>
                                    {/* Walk entry - compact single-line */}
                                    {slot.isWalk && (
-                                    <div className={`p-2 rounded-lg overflow-hidden info-overlay-card ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
+                                    <div className={`p-3 rounded-lg overflow-hidden bg-white/[0.06] ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
                                         <span className="text-[11px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
                                         {slot.hasPipi && <span className="text-[14px] shrink-0">💦</span>}
@@ -2007,7 +2007,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {/* iCal events - compact */}
                                    {slot.icalEvents.filter(evt => !evt.isMedicalIcal).map((evt, j) => (
                                       <div key={j} className={slot.isWalk ? 'mt-1.5' : ''}>
-                                        <div className="p-2 rounded-lg info-overlay-card">
+                                        <div className="p-3 rounded-lg bg-white/[0.06]">
                                           <div className="flex flex-col gap-0.5">
                                             <div className="flex items-center gap-1.5">
                                               <span className="text-[11px] text-white/50 shrink-0">{evt.timeStr}</span>
@@ -2022,7 +2022,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 ))}
                               {/* Medical events from DB - last, no time, emoji first */}
                               {dayMedicalEvents.map((mev, mi) => (
-                                <div key={`med-${mi}`} className="p-2 rounded-lg overflow-hidden info-overlay-card">
+                                <div key={`med-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-[14px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
                                     <span className="text-[12px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
@@ -2031,7 +2031,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               ))}
                               {/* Medical iCal events - last, no time, emoji first */}
                               {medicalIcalEvents.map((mev, mi) => (
-                                <div key={`medIcal-${mi}`} className="p-2 rounded-lg overflow-hidden info-overlay-card">
+                                <div key={`medIcal-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-[14px] shrink-0">{mev.medicalEmoji}</span>
                                     <span className="text-[12px] text-white/70 break-words min-w-0">{mev.summary}</span>
