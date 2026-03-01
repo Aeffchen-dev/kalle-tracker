@@ -22,6 +22,8 @@ const getEmoji = (type: Anomaly['type']): string => {
       return '🐕';
     case 'pattern_change':
       return '📊';
+    case 'connection_error':
+      return '📡';
     default:
       return '💡';
   }

@@ -4,7 +4,7 @@ import { getCachedSettings } from './settings';
 
 export interface Anomaly {
   id: string;
-  type: 'missed_break' | 'upcoming_break' | 'weight_deviation' | 'ph_deviation' | 'pattern_change';
+  type: 'missed_break' | 'upcoming_break' | 'weight_deviation' | 'ph_deviation' | 'pattern_change' | 'connection_error';
   severity: 'info' | 'warning' | 'alert';
   title: string;
   description: string;

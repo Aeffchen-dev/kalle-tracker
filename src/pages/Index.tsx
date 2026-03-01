@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -176,13 +175,21 @@ const Index = () => {
   const loadEvents = async () => {
     const result = await getEvents();
     eventsRef.current = result.events;
-    if (result.fromLocal) {
-      toast('Offline-Modus', { description: 'Keine Verbindung zum Backend – lokale Daten werden verwendet.', duration: 4000 });
-    }
-    calculateTimeDisplay();
     // Detect anomalies
     const detected = detectAnomalies(result.events);
     
+    // Add offline alert if no backend connection
+    if (result.fromLocal) {
+      detected.unshift({
+        id: 'connection_error',
+        type: 'connection_error',
+        severity: 'warning',
+        title: 'Keine Verbindung',
+        description: 'Backend nicht erreichbar – lokale Daten werden verwendet.',
+        timestamp: new Date(),
+      });
+    }
+
     const filteredAnomalies = detected.filter(a => !dismissedAnomalies.has(a.id));
     setAnomalies(filteredAnomalies);
     
