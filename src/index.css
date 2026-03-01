@@ -243,18 +243,18 @@ html, body {
 
 /* PWA standalone mode: account for native status bar */
 @media (display-mode: standalone) {
-  html {
-    height: 100%;
-  }
-
+  html,
   body {
-    min-height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
   }
 
   #root {
+    height: 100dvh;
     min-height: 100dvh;
+    overflow: hidden;
   }
 
   .pwa-safe-top {
