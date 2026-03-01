@@ -1560,11 +1560,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 <div className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
                   <div className="bg-white/[0.02] rounded-[12px] border border-white/5 overflow-hidden p-4">
-                    <div className="text-white text-[12px] font-medium mb-2">{trick.name}</div>
-                    <div className="text-white/60 text-[12px] leading-relaxed mb-3">{trick.description}</div>
+                    <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
+                    <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
                       {trick.steps.map((step, i) => (
-                        <li key={i} className="flex gap-2 text-[12px] text-white/50">
+                        <li key={i} className="flex gap-2 text-[14px] text-white/50">
                           <span className="text-white/30 shrink-0">{i + 1}.</span>
                           <span>{step}</span>
                         </li>
