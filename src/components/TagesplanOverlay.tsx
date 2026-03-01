@@ -1182,7 +1182,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <h2 className="flex items-center gap-2 text-[14px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
-              <div className="bg-white/10 backdrop-blur-[6px] rounded-[12px] border border-white/15 p-4 mb-2">
+              <div className="bg-white/5 backdrop-blur-[6px] rounded-[12px] border border-white/15 p-4 mb-2">
                 <a 
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
@@ -1202,7 +1202,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
 
               {/* Tierklinik Bärenwiese */}
-              <div className="bg-white/10 backdrop-blur-[6px] rounded-[12px] border border-white/15 p-4">
+              <div className="bg-white/5 backdrop-blur-[6px] rounded-[12px] border border-white/15 p-4">
                 <a 
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
