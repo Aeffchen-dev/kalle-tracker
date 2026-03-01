@@ -30,7 +30,7 @@ html, body {
     min-height: -webkit-fill-available;
     overflow: visible;
     overscroll-behavior: none;
-    padding: 0;
+    padding: env(safe-area-inset-top, 0px) 0 0 0;
   }
 
   #root {
