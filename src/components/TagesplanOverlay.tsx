@@ -1065,10 +1065,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ) : (
                       <button
                         onClick={() => setShowAddIngredient(true)}
-                        className="flex items-center gap-3 p-3 w-full text-left hover:opacity-80 transition-opacity"
+                        className="flex items-center p-3 w-full text-left hover:opacity-80 transition-opacity"
                       >
-                        <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
-                          <Plus size={14} className="text-white/40" />
+                        <div className="w-[80px] flex-shrink-0 flex items-center -mx-1">
+                          <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center flex-shrink-0">
+                            <Plus size={14} className="text-white/40" />
+                          </div>
                         </div>
                         <span className="text-[12px] text-white/40">Zutat hinzufügen</span>
                       </button>
