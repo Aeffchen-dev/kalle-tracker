@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -326,10 +326,26 @@ const Index = () => {
       return () => clearTimeout(t);
     }
   }, [openCalendarWithTrends]);
+  useLayoutEffect(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as { standalone?: boolean }).standalone === true;
+    if (!isStandalone) return;
 
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+    const root = document.getElementById('root');
+    if (!root) return;
+
+    root.scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    requestAnimationFrame(() => {
+      root.scrollTop = 0;
+      window.scrollTo(0, 0);
+    });
+  }, []);
 
   return (
-    <div className="flex flex-col bg-transparent relative overflow-y-auto overflow-x-hidden overscroll-none">
+    <div className="flex flex-col bg-transparent relative overflow-x-hidden">
 
       {/* Header */}
       <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
