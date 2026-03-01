@@ -1,11 +1,68 @@
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
+import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-const Drawer = ({ shouldScaleBackground = false, ...props }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-  <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
+/**
+ * Bottom-sheet variant system
+ * ─────────────────────────────
+ * compact  – auto-height, no snap points  (e.g. event entry, weather)
+ * medium   – snaps to 95 %, scrollable    (e.g. settings)
+ * full     – persistent, multi-snap       (e.g. calendar)
+ *
+ * Every variant shares:
+ *  • rounded-t-[24px], bg-black, border-0
+ *  • safe-area bottom padding handled via CSS (index.css)
+ *  • max-width constraint on large screens
+ */
+
+/* ── Variant presets ─────────────────────────────────────── */
+
+export type DrawerVariant = "compact" | "medium" | "full";
+
+export const DRAWER_SNAP_POINTS: Record<DrawerVariant, number[] | undefined> = {
+  compact: undefined,           // auto-height, no snap points
+  medium: [0.95],               // single 95 % snap
+  full: undefined,              // caller provides custom snap points
+};
+
+const drawerContentVariants = cva(
+  // shared base
+  "fixed inset-x-0 bottom-0 z-50 flex h-auto flex-col rounded-t-[24px] border-0 bg-black outline-none focus:outline-none focus-visible:outline-none lg:max-w-[80vw] lg:mx-auto",
+  {
+    variants: {
+      variant: {
+        compact: "overflow-hidden",
+        medium: "flex flex-col max-h-[95dvh]",
+        full: "flex flex-col h-full",
+      },
+    },
+    defaultVariants: {
+      variant: "compact",
+    },
+  },
 );
+
+/* ── Root wrapper ────────────────────────────────────────── */
+
+type DrawerRootProps = React.ComponentProps<typeof DrawerPrimitive.Root>;
+
+type DrawerProps = DrawerRootProps & {
+  /** Pre-configured bottom-sheet size. Defaults to "compact". */
+  variant?: DrawerVariant;
+};
+
+const Drawer = ({ shouldScaleBackground = false, variant = "compact", snapPoints: callerSnaps, ...props }: DrawerProps) => {
+  const snapPoints = callerSnaps ?? DRAWER_SNAP_POINTS[variant];
+  return (
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      snapPoints={snapPoints}
+      {...props}
+    />
+  );
+};
 Drawer.displayName = "Drawer";
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
@@ -22,19 +79,22 @@ const DrawerOverlay = React.forwardRef<
 ));
 DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
+/* ── Content ─────────────────────────────────────────────── */
+
+interface DrawerContentProps
+  extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>,
+    VariantProps<typeof drawerContentVariants> {}
+
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, style, ...props }, ref) => {
+  DrawerContentProps
+>(({ className, children, variant, style, ...props }, ref) => {
   return (
     <DrawerPortal>
       <DrawerOverlay />
       <DrawerPrimitive.Content
         ref={ref}
-        className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[24px] border bg-background outline-none focus:outline-none focus-visible:outline-none",
-          className,
-        )}
+        className={cn(drawerContentVariants({ variant }), className)}
         style={style}
         {...props}
       >
@@ -44,6 +104,8 @@ const DrawerContent = React.forwardRef<
   );
 });
 DrawerContent.displayName = "DrawerContent";
+
+/* ── Sub-components (unchanged API) ──────────────────────── */
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("grid gap-1.5 px-4 pt-4 pb-0 text-center sm:text-left", className)} {...props} />
@@ -86,4 +148,5 @@ export {
   DrawerFooter,
   DrawerTitle,
   DrawerDescription,
+  drawerContentVariants,
 };
