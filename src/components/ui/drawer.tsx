@@ -23,7 +23,7 @@ export type DrawerVariant = "compact" | "medium" | "full";
 
 export const DRAWER_SNAP_POINTS: Record<DrawerVariant, number[] | undefined> = {
   compact: undefined,           // auto-height, no snap points
-  medium: [1],                  // single 100 % snap (full height)
+  medium: [0.95],               // single 95 % snap
   full: undefined,              // caller provides custom snap points
 };
 
@@ -34,7 +34,7 @@ const drawerContentVariants = cva(
     variants: {
       variant: {
         compact: "overflow-hidden",
-        medium: "flex flex-col max-h-[100dvh]",
+        medium: "flex flex-col max-h-[95dvh]",
         full: "flex flex-col h-full",
       },
     },
