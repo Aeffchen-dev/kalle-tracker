@@ -165,7 +165,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
                     {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                   </span>
                 </div>
-                <p className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white/80' : 'text-black/70'}`}>
+                <p className={`text-[12px] truncate ${anomaly.type === 'connection_error' ? 'text-white/80' : 'text-black/70'}`}>
                   {anomaly.highlightText ? (
                     <>
                       {anomaly.description.split(anomaly.highlightText)[0]}
