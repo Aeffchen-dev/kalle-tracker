@@ -649,10 +649,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
 
 
   const today = new Date();
-  const sevenDaysAgo = subDays(today, 6);
+  const hundredDaysAgo = subDays(today, 100);
+  const hundredDaysFromNow = addDays(today, 100);
   
-  const canGoNext = addDays(selectedDate, 1) <= today;
-  const canGoPrev = subDays(selectedDate, 1) >= sevenDaysAgo;
+  const canGoNext = addDays(selectedDate, 1) <= hundredDaysFromNow;
+  const canGoPrev = subDays(selectedDate, 1) >= hundredDaysAgo;
 
   // Calculate which days have entries for the calendar
   const daysWithEntries = useMemo(() => {
