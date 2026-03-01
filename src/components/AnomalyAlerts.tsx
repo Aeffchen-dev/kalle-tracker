@@ -1,4 +1,5 @@
 import { memo, useState, useRef } from 'react';
+import { AlertTriangle } from 'lucide-react';
 import { Anomaly } from '@/lib/anomalyDetection';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -154,7 +155,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
                 transition: isSwiping ? 'none' : 'all 150ms ease-linear'
               }}
             >
-              <span className="text-[20px]">{getEmoji(anomaly.type)}</span>
+              {anomaly.type === 'connection_error' ? <AlertTriangle size={20} className="text-white flex-shrink-0" /> : <span className="text-[20px]">{getEmoji(anomaly.type)}</span>}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                     <span className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white' : 'text-black'}`}>
