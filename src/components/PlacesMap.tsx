@@ -40,12 +40,17 @@ export function PlacesMap({ places }: { places: Place[] }) {
       { maxZoom: 18, pane: 'overlayPane' }
     ).addTo(map);
 
-    // Custom small red marker
+    // Green pin marker (same color as "Eintrag hinzufügen") with exact tip anchor
     const icon = L.divIcon({
       className: '',
-      html: '<div style="width:12px;height:12px;background:#ef4444;border:2px solid white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.5)"></div>',
-      iconSize: [12, 12],
-      iconAnchor: [6, 6],
+      html: `
+        <div style="position:relative;width:20px;height:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35));">
+          <div style="position:absolute;left:0;top:0;width:20px;height:20px;background:#5AD940;border:2px solid white;border-radius:9999px;"></div>
+          <div style="position:absolute;left:8px;top:18px;width:0;height:0;border-left:2px solid transparent;border-right:2px solid transparent;border-top:10px solid #5AD940;"></div>
+        </div>
+      `,
+      iconSize: [20, 30],
+      iconAnchor: [10, 30],
     });
 
     const markers = places.map(p => {
