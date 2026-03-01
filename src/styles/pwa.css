@@ -1,1 +1,5 @@
-/* PWA – no overrides, layout matches normal browser */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
