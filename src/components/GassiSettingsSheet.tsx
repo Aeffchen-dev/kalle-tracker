@@ -121,7 +121,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
           <DrawerTitle className="text-center text-[14px] text-white">Einstellungen</DrawerTitle>
         </DrawerHeader>
         
-        <div className="px-4 overflow-y-auto flex-1" style={{ minHeight: 0 }}>
+        <div className="px-4 overflow-y-auto flex-1" style={{ minHeight: 0, paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 50px)' }}>
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
