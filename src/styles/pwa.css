@@ -15,6 +15,14 @@ body {
   margin-bottom: 0 !important;
 }
 
+/* ── Safe-area padding utility (always available) ────────── */
+.safe-area-pad {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
 /* ── PWA standalone mode (iOS-safe fixed viewport) ───────── */
 @media (display-mode: standalone) {
   html,
@@ -40,6 +48,8 @@ body {
     height: 100%;
     box-sizing: border-box;
     padding-top: 0;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     overflow: hidden;
   }
 
@@ -56,5 +66,11 @@ body {
     top: auto !important;
     padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px) !important;
     margin-bottom: 0 !important;
+  }
+
+  /* Fixed/absolute elements that touch edges need safe-area */
+  [class*="fixed"][class*="inset-x-0"],
+  [class*="fixed"][class*="bottom-0"] {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }
