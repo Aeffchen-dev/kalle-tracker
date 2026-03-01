@@ -1,6 +1,6 @@
 import { useState, useRef, TouchEvent, useEffect, useMemo, useCallback } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
-import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
+import { getEvents, deleteEvent, Event, getPendingCount, saveEvent } from '@/lib/events';
 import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
@@ -36,9 +36,12 @@ interface DayPanelProps {
   onLongPressMove: () => void;
   onLongPressEnd: () => void;
   onDelete: (eventId: string) => void;
+  onEventSaved?: () => void;
 }
 
-const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete }: DayPanelProps) => {
+const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete, onEventSaved }: DayPanelProps) => {
+  const [checkingIcal, setCheckingIcal] = useState<Set<string>>(new Set());
+  const [completedIcal, setCompletedIcal] = useState<Map<string, string>>(new Map()); // key → time string
   const isBirthdayToday = birthday
     ? date.getDate() === birthday.getDate() && date.getMonth() === birthday.getMonth()
     : false;
@@ -117,14 +120,60 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           const medicalEmoji = summary.toLowerCase().includes('wurmkur') ? '🪱' : summary.toLowerCase().includes('parasiten') ? '🦟' : '💅';
           
           if (isMedicalIcal) {
+            const icalKey = `${entry.icalEvt.uid}-${entry.icalEvt.dtstart}`;
+            const isChecking = checkingIcal.has(icalKey);
+            const isCompleted = completedIcal.has(icalKey);
+            const completionTime = completedIcal.get(icalKey);
+            
+            const handleIcalMedicalCheck = () => {
+              if (isChecking || isCompleted) return;
+              setCheckingIcal(prev => new Set([...prev, icalKey]));
+              const eventType = summary.toLowerCase().includes('wurmkur') ? 'wurmkur' as const
+                : summary.toLowerCase().includes('krallen') ? 'krallen' as const
+                : 'parasiten' as const;
+              saveEvent(eventType).then(() => {
+                const now = format(new Date(), 'HH:mm');
+                setTimeout(() => {
+                  setCompletedIcal(prev => new Map([...prev, [icalKey, now]]));
+                  setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
+                  onEventSaved?.();
+                }, 600);
+              });
+            };
+            
             return (
-              <div key={`ical-${gi}`} className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <div
+                key={`ical-${gi}`}
+                className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none"
+                onClick={handleIcalMedicalCheck}
+              >
                 <span className="text-[20px] shrink-0">{medicalEmoji}</span>
                 <span className="text-[14px] text-white truncate flex-1 min-w-0">
                   {summary.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+$/gu, '').trim()}
                 </span>
-                <div className="w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center border-[1.5px] border-white/60">
-                </div>
+                {isCompleted ? (
+                  <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">{completionTime} Uhr</span>
+                ) : (
+                  <div
+                    className="w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center overflow-hidden"
+                    style={{
+                      border: '1.5px solid rgba(255,255,255,0.6)',
+                      backgroundColor: isChecking ? 'white' : 'transparent',
+                      transition: 'background-color 0.3s ease',
+                    }}
+                  >
+                    <Check
+                      className="w-[14px] h-[14px]"
+                      style={{
+                        color: 'black',
+                        opacity: isChecking ? 1 : 0,
+                        transform: isChecking ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-45deg)',
+                        transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      }}
+                      strokeWidth={3}
+                    />
+                  </div>
+                )}
               </div>
             );
           }
@@ -889,6 +938,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       onLongPressMove={() => {}}
                       onLongPressEnd={() => {}}
                       onDelete={() => {}}
+                      onEventSaved={loadEvents}
                     />
                   </div>
                 )}
@@ -914,6 +964,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     onLongPressMove={handleLongPressMove}
                     onLongPressEnd={handleLongPressEnd}
                     onDelete={handleDelete}
+                    onEventSaved={loadEvents}
                   />
                 </div>
               </div>
