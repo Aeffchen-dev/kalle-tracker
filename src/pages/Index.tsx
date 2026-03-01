@@ -327,15 +327,24 @@ const Index = () => {
     }
   }, [openCalendarWithTrends]);
 
-  // Force iOS PWA layout reflow on mount
+  // Force iOS PWA layout reflow on mount — ensures initial state matches "scrolled to top"
   useEffect(() => {
     if (window.matchMedia('(display-mode: standalone)').matches) {
+      const el = document.querySelector('#root > *') as HTMLElement;
+      if (!el) return;
+
+      // Force immediate layout recalculation
+      void el.offsetHeight;
+      el.scrollTop = 0;
+
+      // Double rAF to ensure paint is complete, then re-settle
       requestAnimationFrame(() => {
-        const el = document.querySelector('#root > *') as HTMLElement;
-        if (el) {
+        requestAnimationFrame(() => {
           el.scrollTop = 1;
-          el.scrollTop = 0;
-        }
+          requestAnimationFrame(() => {
+            el.scrollTop = 0;
+          });
+        });
       });
     }
   }, []);
