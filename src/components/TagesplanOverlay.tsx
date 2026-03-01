@@ -155,6 +155,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
 
+  // Ingredient swipe & add state
+  const [activeIngredientKey, setActiveIngredientKey] = useState<string | null>(null);
+  const [showAddIngredient, setShowAddIngredient] = useState(false);
+  const [newIngredientQuantity, setNewIngredientQuantity] = useState('');
+  const [newIngredientName, setNewIngredientName] = useState('');
+
   // Swipe state for snacks & medicines
   const [swipingItemId, setSwipingItemId] = useState<string | null>(null);
   const [swipeItemOffset, setSwipeItemOffset] = useState(0);
@@ -257,6 +263,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (activeSnackId && activeSnackId !== id) setActiveSnackId(null);
     if (activeMedicineId && activeMedicineId !== id) setActiveMedicineId(null);
     if (activePlaceId && activePlaceId !== id) setActivePlaceId(null);
+    if (activeIngredientKey && activeIngredientKey !== id) setActiveIngredientKey(null);
   };
 
   const handleItemTouchMove = (e: React.TouchEvent) => {
@@ -268,22 +275,24 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       swipeIsHorizontal.current = Math.abs(dx) > dy;
     }
     if (swipeIsHorizontal.current) {
-      const isOpen = activeSnackId === swipingItemId || activeMedicineId === swipingItemId || activePlaceId === swipingItemId;
+      const isOpen = activeSnackId === swipingItemId || activeMedicineId === swipingItemId || activePlaceId === swipingItemId || activeIngredientKey === swipingItemId;
       const offset = isOpen ? Math.max(0, Math.min(82 - (-dx), 90)) : Math.max(0, Math.min(dx, 90));
       setSwipeItemOffset(offset);
     }
   };
 
-  const handleItemTouchEnd = (type: 'snack' | 'medicine' | 'place') => {
+  const handleItemTouchEnd = (type: 'snack' | 'medicine' | 'place' | 'ingredient') => {
     if (!swipingItemId) return;
-    const isOpen = (type === 'snack' ? activeSnackId : type === 'medicine' ? activeMedicineId : activePlaceId) === swipingItemId;
+    const isOpen = (type === 'snack' ? activeSnackId : type === 'medicine' ? activeMedicineId : type === 'ingredient' ? activeIngredientKey : activePlaceId) === swipingItemId;
     if (swipeItemOffset >= 50) {
       if (type === 'snack') setActiveSnackId(swipingItemId);
       else if (type === 'medicine') setActiveMedicineId(swipingItemId);
+      else if (type === 'ingredient') setActiveIngredientKey(swipingItemId);
       else setActivePlaceId(swipingItemId);
     } else if (isOpen) {
       if (type === 'snack') setActiveSnackId(null);
       else if (type === 'medicine') setActiveMedicineId(null);
+      else if (type === 'ingredient') setActiveIngredientKey(null);
       else setActivePlaceId(null);
     }
     if (swipeIsHorizontal.current || isOpen) {
@@ -326,10 +335,47 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     loadPlaces();
   };
 
-  const handleSwipeDelete = (id: string, type: 'snack' | 'medicine' | 'place') => {
+  const handleSwipeDelete = (id: string, type: 'snack' | 'medicine' | 'place' | 'ingredient') => {
     if (type === 'snack') handleDeleteSnack(id);
     else if (type === 'medicine') handleDeleteMedicine(id);
+    else if (type === 'ingredient') handleDeleteIngredient(id);
     else handleDeletePlace(id);
+  };
+
+  // Delete ingredient from meals by key (mealIndex-ingredientIndex)
+  const handleDeleteIngredient = (key: string) => {
+    const [mealIdx, ingIdx] = key.split('-').map(Number);
+    setHasLocalChanges(true);
+    setMeals(prev => {
+      if (!prev) return prev;
+      const newMeals = [...prev];
+      newMeals[mealIdx] = {
+        ...newMeals[mealIdx],
+        ingredients: newMeals[mealIdx].ingredients.filter((_, i) => i !== ingIdx),
+      };
+      return newMeals;
+    });
+    setActiveIngredientKey(null);
+  };
+
+  // Add new ingredient to meal
+  const handleAddIngredient = (mealIndex: number) => {
+    const quantity = newIngredientQuantity.trim();
+    const name = newIngredientName.trim();
+    if (!name) return;
+    setHasLocalChanges(true);
+    setMeals(prev => {
+      if (!prev) return prev;
+      const newMeals = [...prev];
+      newMeals[mealIndex] = {
+        ...newMeals[mealIndex],
+        ingredients: [...newMeals[mealIndex].ingredients, { quantity: quantity || '', name }],
+      };
+      return newMeals;
+    });
+    setNewIngredientQuantity('');
+    setNewIngredientName('');
+    setShowAddIngredient(false);
   };
 
   const handleAddSnackFromUrl = async () => {
@@ -868,6 +914,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 <p className="text-[12px] text-white/60 mb-4">{meal.title}</p>
                 <div className="glass-card rounded-lg overflow-hidden">
                   {meal.ingredients.map((ingredient, index) => {
+                    const ingredientKey = `${mealIndex}-${index}`;
+                    const isActive = activeIngredientKey === ingredientKey;
                     const isEditingQuantity = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'quantity';
                     const isEditingName = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'name';
                     const isEditingDescription = editingMeal?.mealIndex === mealIndex && editingMeal?.ingredientIndex === index && editingMeal?.field === 'description';
@@ -875,79 +923,138 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     return (
                       <div
                         key={index}
-                        className={`flex items-start p-3 ${index !== meal.ingredients.length - 1 ? 'border-b border-white/[0.06]' : ''}`}
+                        className={`relative flex w-full items-stretch overflow-hidden ${index !== meal.ingredients.length - 1 ? 'border-b border-white/[0.06]' : ''}`}
+                        onTouchStart={(e) => handleItemTouchStart(e, ingredientKey)}
+                        onTouchMove={handleItemTouchMove}
+                        onTouchEnd={() => handleItemTouchEnd('ingredient')}
                       >
-                        {isEditingQuantity ? (
-                          <input
-                            ref={inputRef}
-                            type="text"
-                            value={ingredient.quantity}
-                            onChange={(e) => handleMealChange(e.target.value)}
-                            onBlur={handleMealBlur}
-                            onKeyDown={handleMealKeyDown}
-                            className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
-                          />
-                        ) : (
-                          <span
-                            className="text-[12px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
-                            onClick={() => handleMealClick(mealIndex, index, 'quantity')}
-                          >
-                            {ingredient.quantity}
-                          </span>
-                        )}
-                        <div className="flex-1">
-                          {isEditingName ? (
-                            <textarea
-                              ref={textareaRef}
-                              value={ingredient.name}
+                        <div
+                          className="flex items-start p-3 flex-1 min-w-0"
+                          style={{ transition: swipingItemId === ingredientKey ? 'none' : 'all 150ms ease-linear' }}
+                        >
+                          {isEditingQuantity ? (
+                            <input
+                              ref={inputRef}
+                              type="text"
+                              value={ingredient.quantity}
                               onChange={(e) => handleMealChange(e.target.value)}
                               onBlur={handleMealBlur}
                               onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none min-h-[32px]"
-                              rows={Math.max(1, ingredient.name.split('\n').length)}
+                              className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none"
                             />
                           ) : (
-                            <div className="flex items-center">
-                              <span
-                                className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block whitespace-pre-line"
-                                onClick={() => handleMealClick(mealIndex, index, 'name')}
-                              >
-                                {ingredient.name}
-                              </span>
-                            </div>
-                          )}
-                          {isEditingDescription ? (
-                            <textarea
-                              ref={textareaRef}
-                              value={ingredient.description || ''}
-                              onChange={(e) => handleMealChange(e.target.value)}
-                              onBlur={handleMealBlur}
-                              onKeyDown={handleMealKeyDown}
-                              className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
-                            />
-                          ) : ingredient.description ? (
-                            <p
-                              className="text-[12px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
-                              onClick={() => handleMealClick(mealIndex, index, 'description')}
+                            <span
+                              className="text-[12px] text-white/60 w-[80px] flex-shrink-0 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 -mx-1"
+                              onClick={() => handleMealClick(mealIndex, index, 'quantity')}
                             >
-                              {ingredient.description}
-                            </p>
-                          ) : null}
+                              {ingredient.quantity}
+                            </span>
+                          )}
+                          <div className="flex-1">
+                            {isEditingName ? (
+                              <textarea
+                                ref={textareaRef}
+                                value={ingredient.name}
+                                onChange={(e) => handleMealChange(e.target.value)}
+                                onBlur={handleMealBlur}
+                                onKeyDown={handleMealKeyDown}
+                                className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none min-h-[32px]"
+                                rows={Math.max(1, ingredient.name.split('\n').length)}
+                              />
+                            ) : (
+                              <div className="flex items-center">
+                                <span
+                                  className="text-[12px] text-white/60 cursor-pointer hover:bg-white/10 rounded px-1 py-0.5 inline-block whitespace-pre-line"
+                                  onClick={() => handleMealClick(mealIndex, index, 'name')}
+                                >
+                                  {ingredient.name}
+                                </span>
+                              </div>
+                            )}
+                            {isEditingDescription ? (
+                              <textarea
+                                ref={textareaRef}
+                                value={ingredient.description || ''}
+                                onChange={(e) => handleMealChange(e.target.value)}
+                                onBlur={handleMealBlur}
+                                onKeyDown={handleMealKeyDown}
+                                className="bg-white/10 text-white/60 text-[12px] w-full px-1 py-0.5 rounded border border-white/30 outline-none mt-2 min-h-[80px]"
+                              />
+                            ) : ingredient.description ? (
+                              <p
+                                className="text-[12px] text-white/60 mt-2 whitespace-pre-line cursor-pointer hover:bg-white/10 rounded px-1 py-0.5"
+                                onClick={() => handleMealClick(mealIndex, index, 'description')}
+                              >
+                                {ingredient.description}
+                              </p>
+                            ) : null}
+                          </div>
+                          {ingredient.link && (
+                            <a
+                              href={ingredient.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white/40 hover:text-white transition-colors flex-shrink-0 flex items-center justify-center w-[48px] h-[48px] -m-3 ml-0 -mr-[11px]"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <ExternalLink size={14} />
+                            </a>
+                          )}
                         </div>
-                        {ingredient.link && (
-                          <a
-                            href={ingredient.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-white/40 hover:text-white transition-colors flex-shrink-0 flex items-center justify-center w-[48px] h-[48px] -m-3 ml-0 -mr-[11px]"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <ExternalLink size={14} />
-                          </a>
-                        )}
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleSwipeDelete(ingredientKey, 'ingredient'); }}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          className="flex-shrink-0 bg-destructive flex items-center justify-center text-[14px] text-white overflow-hidden self-stretch"
+                          style={{
+                            width: (() => { const isSwiping = swipingItemId === ingredientKey; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            minWidth: (() => { const isSwiping = swipingItemId === ingredientKey; const offset = isSwiping ? swipeItemOffset : (isActive ? 82 : 0); return offset > 0 ? `${offset}px` : 0; })(),
+                            transition: swipingItemId === ingredientKey ? 'none' : 'width 150ms ease-linear, min-width 150ms ease-linear',
+                          }}
+                        >
+                          <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
+                        </button>
                       </div>
                     );
                   })}
+
+                  {/* Add ingredient */}
+                  <div className="border-t border-white/[0.06]">
+                    {showAddIngredient ? (
+                      <div className="flex items-center gap-2 p-3">
+                        <input
+                          type="text"
+                          placeholder="Menge"
+                          value={newIngredientQuantity}
+                          onChange={(e) => setNewIngredientQuantity(e.target.value)}
+                          className="bg-white/10 text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 rounded border border-white/30 outline-none placeholder:text-white/30"
+                          autoFocus
+                        />
+                        <input
+                          type="text"
+                          placeholder="Zutat"
+                          value={newIngredientName}
+                          onChange={(e) => setNewIngredientName(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); } }}
+                          className="flex-1 min-w-0 bg-white/10 text-white/60 text-[12px] px-1 py-0.5 rounded border border-white/30 outline-none placeholder:text-white/30"
+                        />
+                        <button
+                          onClick={() => handleAddIngredient(mealIndex)}
+                          disabled={!newIngredientName.trim()}
+                          className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
+                        >
+                          Hinzufügen
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setShowAddIngredient(true)}
+                        className="flex items-center gap-3 p-3 w-full text-left hover:opacity-80 transition-opacity"
+                      >
+                        <Plus size={14} className="text-white/40" />
+                        <span className="text-[12px] text-white/40">Zutat hinzufügen</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
