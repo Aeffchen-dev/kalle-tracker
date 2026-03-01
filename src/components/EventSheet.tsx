@@ -156,7 +156,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('pipi')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/[0.12]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
               }`}
             >
               <span>💦</span>
@@ -167,7 +167,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('stuhlgang')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/[0.12]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
               }`}
             >
               <span>💩</span>
@@ -178,7 +178,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('phwert')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/[0.12]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
               }`}
             >
               <span>🧪</span>
@@ -189,7 +189,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
               className={`h-10 px-5 rounded-lg text-[14px] font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                 selectedTypes.has('gewicht')
                   ? 'bg-white text-black'
-                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/[0.12]'
+                  : 'bg-white/10 text-white hover:bg-white/[0.15] border border-white/10'
               }`}
             >
               <span>🏋️</span>
@@ -309,7 +309,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px]"
+              className="h-10 px-6 min-w-[300px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px]"
             >
               {isSubmitting ? 'Speichern...' : 'Speichern'}
             </Button>
