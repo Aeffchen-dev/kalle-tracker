@@ -1032,7 +1032,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             placeholder="Menge"
                             value={newIngredientQuantity}
                             onChange={(e) => setNewIngredientQuantity(e.target.value)}
-                            className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30"
+                            className="bg-transparent text-white/60 text-[12px] w-[52px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30"
                             autoFocus
                           />
                           <input
