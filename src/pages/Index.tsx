@@ -185,8 +185,8 @@ const Index = () => {
         id: 'connection_error',
         type: 'connection_error',
         severity: 'alert',
-        title: 'Offline',
-        description: 'Keine Verbindung – es werden lokale Daten angezeigt.',
+        title: 'Keine Verbindung zum Backend',
+        description: 'Es können nur lokale Daten angezeigt werden.',
         timestamp: new Date(),
       });
     }
