@@ -106,23 +106,25 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Extract coordinates - multiple patterns
-    const coordMatch = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-    if (coordMatch) {
-      latitude = parseFloat(coordMatch[1]);
-      longitude = parseFloat(coordMatch[2]);
+    // Extract coordinates - prioritize precise !3d!4d (actual place pin) over @lat,lng (viewport center)
+    
+    // 1. Most precise: !3d<lat>!4d<lng> from data parameters
+    const dataMatch = finalUrl.match(/!3d(-?\d+\.\d{4,})!4d(-?\d+\.\d{4,})/);
+    if (dataMatch) {
+      latitude = parseFloat(dataMatch[1]);
+      longitude = parseFloat(dataMatch[2]);
     }
 
-    // Also try data= pattern: !3d<lat>!4d<lng>
+    // 2. Fallback: @lat,lng from URL (viewport center, less precise)
     if (!latitude) {
-      const dataMatch = finalUrl.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
-      if (dataMatch) {
-        latitude = parseFloat(dataMatch[1]);
-        longitude = parseFloat(dataMatch[2]);
+      const coordMatch = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (coordMatch) {
+        latitude = parseFloat(coordMatch[1]);
+        longitude = parseFloat(coordMatch[2]);
       }
     }
 
-    // Also try ?q=lat,lng or ll=lat,lng
+    // 3. Fallback: ?q=lat,lng or ll=lat,lng
     if (!latitude) {
       const qMatch = finalUrl.match(/[?&](?:q|ll|center)=(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (qMatch) {
@@ -204,10 +206,9 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Extract coords from page content if not found in URL
+      // Extract coords from page content if not found in URL — prefer !3d!4d (precise pin)
       if (!latitude) {
-        // Try !3d!4d pattern in page content
-        const dataCoordMatch = html.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+        const dataCoordMatch = html.match(/!3d(-?\d+\.\d{4,})!4d(-?\d+\.\d{4,})/);
         if (dataCoordMatch) {
           latitude = parseFloat(dataCoordMatch[1]);
           longitude = parseFloat(dataCoordMatch[2]);
