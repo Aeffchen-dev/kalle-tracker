@@ -63,8 +63,14 @@ body {
     padding-top: env(safe-area-inset-top, 0px);
   }
 
-  [class*="fixed"][class*="bottom-0"],
-  [class*="fixed"][class*="inset-x-0"] {
+  [class*="fixed"][class*="bottom-0"]:not(.pwa-bottom-sheet),
+  [class*="fixed"][class*="inset-x-0"]:not(.pwa-bottom-sheet) {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Stabilize bottom-sheet position before first scroll in iOS PWA */
+  .pwa-bottom-sheet {
+    bottom: calc(-1 * max(env(safe-area-inset-bottom, 0px), 34px)) !important;
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 34px) !important;
   }
 }
