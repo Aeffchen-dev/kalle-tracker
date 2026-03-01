@@ -1277,7 +1277,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   }, []);
 
   return (
-    <div className="pb-4 space-y-2" data-vaul-no-drag>
+    <div className="pb-24 space-y-2" data-vaul-no-drag>
       {/* Age Display */}
       <div className="w-full bg-white/[0.06] backdrop-blur-sm rounded-lg p-4 flex items-center justify-center">
         <span className="text-[13px] leading-none">

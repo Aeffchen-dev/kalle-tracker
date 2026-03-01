@@ -896,7 +896,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="fixed left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ top: 'calc(56px + env(safe-area-inset-top, 0px))', bottom: 0, paddingTop: 0, paddingBottom: 16, background: 'hsl(var(--spot-color))' }}>
+          <div className="fixed left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ top: 'calc(56px + env(safe-area-inset-top, 0px))', bottom: 0, paddingTop: 0, paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
