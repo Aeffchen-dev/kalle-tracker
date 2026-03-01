@@ -1025,16 +1025,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             
             return (
               <div className="relative min-h-full overflow-hidden">
-                {/* Sticky medical item overlay during slide transition */}
-                {stickyItem && (
-                  <div
-                    className="relative z-50 flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] mb-4"
-                  >
-                    <span className="text-[20px] shrink-0">{stickyItem.emoji}</span>
-                    <span className="text-[14px] text-white truncate flex-1 min-w-0">{stickyItem.label}</span>
-                    <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">{stickyItem.time} Uhr</span>
-                  </div>
-                )}
                 {/* Incoming panel */}
                 {showIncoming && (
                   <div 
@@ -1043,7 +1033,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       transform: `translateX(${incomingTranslateX}%) scale(${incomingScale}) rotate(${incomingRotate}deg)`,
                       transition: transStyle,
                       transformOrigin: p < 0 ? 'right center' : 'left center',
-                      paddingTop: stickyItem ? '60px' : undefined,
                     }}
                   >
                     <DayPanel
