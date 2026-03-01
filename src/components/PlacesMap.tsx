@@ -34,10 +34,10 @@ export function PlacesMap({ places }: { places: Place[] }) {
       { maxZoom: 18 }
     ).addTo(map);
 
-    // City/road labels overlay
+    // Detailed labels overlay (districts, neighborhoods, streets, POIs)
     L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 18, pane: 'overlayPane' }
+      'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png',
+      { maxZoom: 18, subdomains: 'abcd', pane: 'overlayPane' }
     ).addTo(map);
 
     // Green circle marker (matches "Eintrag hinzufügen" CTA color)

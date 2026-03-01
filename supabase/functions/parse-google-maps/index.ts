@@ -133,14 +133,37 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If we have an address name but no coordinates, try geocoding via Nominatim
+    // If we have coordinates from @lat,lng (viewport center), try to refine using Nominatim
+    // by looking up the place name at those approximate coordinates
+    if (latitude && name) {
+      const decimals = (finalUrl.match(/@(-?\d+\.(\d+))/) || [])[2]?.length || 0;
+      // If low precision (≤4 decimals ≈ 11m+), try to refine
+      if (decimals <= 4) {
+        try {
+          console.log('Refining low-precision coords for:', name);
+          const refineResp = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1&viewbox=${longitude - 0.05},${latitude + 0.05},${longitude + 0.05},${latitude - 0.05}&bounded=1`,
+            { headers: { 'User-Agent': 'KalleApp/1.0' } }
+          );
+          const refineData = await refineResp.json();
+          if (refineData && refineData.length > 0) {
+            latitude = parseFloat(refineData[0].lat);
+            longitude = parseFloat(refineData[0].lon);
+            console.log('Refined to:', latitude, longitude);
+          }
+        } catch (e) {
+          console.error('Refinement failed:', e);
+        }
+      }
+    }
+
+    // If no coordinates at all, try geocoding via Nominatim
     if (!latitude && name) {
       const qParam = finalUrl.match(/[?&]q=([^&]+)/);
       const geocodeQuery = qParam ? decodeURIComponent(qParam[1]).replace(/\+/g, ' ') : name;
       
       // Try multiple geocoding queries: full address, then parts
       const queries = [geocodeQuery];
-      // If query has commas, try street+city (skip place name), then just city+postal
       const parts = geocodeQuery.split(',').map(p => p.trim());
       if (parts.length >= 3) {
         queries.push(parts.slice(1).join(', ')); // street + city without place name
