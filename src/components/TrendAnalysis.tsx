@@ -1341,7 +1341,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
 
       
       {/* Export Button */}
-      <div className="mt-8 pb-4">
+      <div className="mt-8" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }}>
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
