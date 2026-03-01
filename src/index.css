@@ -251,6 +251,14 @@ html, body {
   padding: env(safe-area-inset-top, 0px) 0 0 0;
 }
 
+/* Keep bottom sheets flush to the physical screen edge in all iOS contexts */
+[data-vaul-drawer] {
+  bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+  top: auto !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
 /* PWA standalone mode: fill entire physical screen */
 @media (display-mode: standalone) {
   html,
