@@ -419,12 +419,13 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 pb-4 overflow-y-auto overflow-x-hidden flex-1"
+          className="px-4 overflow-y-auto overflow-x-hidden flex-1"
           style={{ 
             minHeight: 0, 
             flexGrow: 1, 
             flexShrink: 1, 
             flexBasis: '100%',
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)',
             touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
           }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
