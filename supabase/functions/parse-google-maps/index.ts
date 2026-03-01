@@ -133,63 +133,135 @@ Deno.serve(async (req) => {
       }
     }
 
-    // If we have coordinates from @lat,lng (viewport center), try to refine using Nominatim
-    // by looking up the place name at those approximate coordinates
+    // Helper: Haversine distance in meters
+    function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
+      const R = 6371000;
+      const toRad = (d: number) => d * Math.PI / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // If we have coords (from Google Maps) AND a name, refine via Nominatim multi-result matching
+    const gmapLat = latitude;
+    const gmapLng = longitude;
+    
     if (latitude && name) {
-      const decimals = (finalUrl.match(/@(-?\d+\.(\d+))/) || [])[2]?.length || 0;
-      // If low precision (≤4 decimals ≈ 11m+), try to refine
-      if (decimals <= 4) {
-        try {
-          console.log('Refining low-precision coords for:', name);
-          const refineResp = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(name)}&format=json&limit=1&viewbox=${longitude - 0.05},${latitude + 0.05},${longitude + 0.05},${latitude - 0.05}&bounded=1`,
-            { headers: { 'User-Agent': 'KalleApp/1.0' } }
-          );
-          const refineData = await refineResp.json();
-          if (refineData && refineData.length > 0) {
-            latitude = parseFloat(refineData[0].lat);
-            longitude = parseFloat(refineData[0].lon);
-            console.log('Refined to:', latitude, longitude);
-          }
-        } catch (e) {
-          console.error('Refinement failed:', e);
+      try {
+        // Extract the place name part (before comma) for searching
+        const searchName = name.includes(',') ? name.split(',')[0].trim() : name;
+        const qParam = finalUrl.match(/[?&]q=([^&]+)/);
+        const fullQuery = qParam ? decodeURIComponent(qParam[1]).replace(/\+/g, ' ') : name;
+        
+        // Search with multiple queries and collect all candidates
+        const candidates: Array<{lat: number, lon: number, display: string, dist: number}> = [];
+        const searchQueries = [fullQuery, searchName];
+        // Also try without postal code
+        const noPCQuery = fullQuery.replace(/\d{4,5}\s*/g, '').trim();
+        if (noPCQuery !== fullQuery) searchQueries.push(noPCQuery);
+        
+        for (const q of [...new Set(searchQueries)]) {
+          try {
+            console.log('Precision search:', q);
+            const resp = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&viewbox=${longitude! - 0.1},${latitude! + 0.1},${longitude! + 0.1},${latitude! - 0.1}`,
+              { headers: { 'User-Agent': 'KalleApp/1.0' } }
+            );
+            const data = await resp.json();
+            if (Array.isArray(data)) {
+              for (const r of data) {
+                const lat = parseFloat(r.lat);
+                const lon = parseFloat(r.lon);
+                const dist = haversine(gmapLat!, gmapLng!, lat, lon);
+                candidates.push({ lat, lon, display: r.display_name, dist });
+              }
+            }
+          } catch { /* skip */ }
         }
+        
+        // Pick the candidate closest to the Google Maps coordinates
+        if (candidates.length > 0) {
+          candidates.sort((a, b) => a.dist - b.dist);
+          const best = candidates[0];
+          console.log(`Best match: ${best.display} (${best.dist.toFixed(0)}m from Google pin)`);
+          // Only use if within 5km of original (sanity check)
+          if (best.dist < 5000) {
+            latitude = best.lat;
+            longitude = best.lon;
+          }
+        }
+      } catch (e) {
+        console.error('Precision matching failed:', e);
       }
     }
 
-    // If no coordinates at all, try geocoding via Nominatim
+    // If no coordinates at all, try geocoding via Nominatim with multi-result precision matching
     if (!latitude && name) {
       const qParam = finalUrl.match(/[?&]q=([^&]+)/);
       const geocodeQuery = qParam ? decodeURIComponent(qParam[1]).replace(/\+/g, ' ') : name;
       
-      // Try multiple geocoding queries: full address, then parts
+      // Build multiple search queries for better coverage
       const queries = [geocodeQuery];
       const parts = geocodeQuery.split(',').map(p => p.trim());
+      
+      // Short name only (e.g. "Königsheide" from "Königsheide, Königsheideweg, 12487 Berlin")
+      if (parts.length >= 2) {
+        const city = parts[parts.length - 1].replace(/^\d{4,5}\s*/, '').trim();
+        queries.push(`${parts[0]}, ${city}`); // "Königsheide, Berlin"
+        queries.push(parts[0]); // just "Königsheide"
+      }
       if (parts.length >= 3) {
         queries.push(parts.slice(1).join(', ')); // street + city without place name
-        queries.push(parts[parts.length - 1]);   // just city
-      }
-      if (parts.length >= 2) {
-        queries.push(parts.slice(0, 2).join(', ')); // first two parts
       }
       
-      for (const q of queries) {
-        if (latitude) break;
+      // Collect ALL candidates from ALL queries
+      const candidates: Array<{lat: number, lon: number, display: string, type: string, cls: string, importance: number}> = [];
+      
+      for (const q of [...new Set(queries)]) {
         try {
           console.log('Geocoding attempt:', q);
           const geoResp = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1`,
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&addressdetails=1`,
             { headers: { 'User-Agent': 'KalleApp/1.0' } }
           );
           const geoData = await geoResp.json();
-          if (geoData && geoData.length > 0) {
-            latitude = parseFloat(geoData[0].lat);
-            longitude = parseFloat(geoData[0].lon);
-            console.log('Geocoding success with query:', q, latitude, longitude);
+          if (Array.isArray(geoData)) {
+            for (const r of geoData) {
+              candidates.push({
+                lat: parseFloat(r.lat),
+                lon: parseFloat(r.lon),
+                display: r.display_name || '',
+                type: r.type || '',
+                cls: r.class || '',
+                importance: parseFloat(r.importance) || 0,
+              });
+            }
           }
         } catch (e) {
           console.error('Geocoding failed:', e);
         }
+      }
+      
+      if (candidates.length > 0) {
+        // Prefer natural areas, parks, forests over streets/addresses
+        // Score: natural/leisure/landuse types get a boost
+        const areaTypes = new Set(['forest', 'park', 'wood', 'nature_reserve', 'dog_park', 'garden', 'meadow', 'heath', 'scrub', 'recreation_ground', 'pitch', 'water', 'lake', 'river']);
+        const areaClasses = new Set(['natural', 'leisure', 'landuse', 'waterway', 'amenity']);
+        
+        const scored = candidates.map(c => {
+          let score = c.importance;
+          if (areaTypes.has(c.type) || areaClasses.has(c.cls)) score += 0.5;
+          // Boost if display name contains the search term
+          if (c.display.toLowerCase().includes(parts[0].toLowerCase())) score += 0.3;
+          return { ...c, score };
+        });
+        
+        scored.sort((a, b) => b.score - a.score);
+        const best = scored[0];
+        latitude = best.lat;
+        longitude = best.lon;
+        console.log(`Best geocoding match: ${best.display} (class=${best.cls}, type=${best.type}, score=${best.score.toFixed(2)})`);
       }
     }
 
