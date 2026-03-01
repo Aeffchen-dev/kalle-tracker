@@ -528,8 +528,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           setTransitionActive(false);
           if (sticky) {
             localStorage.setItem(sticky.dismissKey, new Date().toISOString());
-            loadEvents();
-            setStickyItem(null);
           }
         }, 300);
       });
@@ -611,8 +609,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     const minSwipeDistance = 50;
     
     if (isHorizontalSwipe.current && Math.abs(diff) > minSwipeDistance) {
+      if (stickyItem) { setStickyItem(null); loadEvents(); }
       if (diff > 0 && canGoNext) {
-        // Swipe left → next day: animate progress to -1
         setTransitionActive(true);
         setSwipeOffset(-1);
         setTimeout(() => {
@@ -621,7 +619,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           setTransitionActive(false);
         }, 300);
       } else if (diff < 0 && canGoPrev) {
-        // Swipe right → prev day: animate progress to 1
         setTransitionActive(true);
         setSwipeOffset(1);
         setTimeout(() => {
@@ -852,11 +849,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     if (direction === 'left' && !canGoNext) return;
     if (direction === 'right' && !canGoPrev) return;
     
-    // Step 1: mount incoming panel at its off-screen start position (no transition)
+    if (stickyItem) { setStickyItem(null); loadEvents(); }
+    
     const seed = direction === 'left' ? -0.02 : 0.02;
     setSwipeOffset(seed);
     
-    // Step 2: next frame – enable transition and animate to full offset
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setTransitionActive(true);
@@ -1074,6 +1071,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
                     transition: transStyle,
                     transformOrigin: p < 0 ? 'left center' : 'right center',
+                    paddingTop: stickyItem ? `${stickyHeight}px` : undefined,
                   }}
                 >
                   <DayPanel
