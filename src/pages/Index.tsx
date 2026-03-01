@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -326,23 +326,8 @@ const Index = () => {
       return () => clearTimeout(t);
     }
   }, [openCalendarWithTrends]);
-  useLayoutEffect(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as { standalone?: boolean }).standalone === true;
-    if (!isStandalone) return;
 
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-    const root = document.getElementById('root');
-    if (!root) return;
-
-    root.scrollTop = 0;
-    window.scrollTo(0, 0);
-
-    requestAnimationFrame(() => {
-      root.scrollTop = 0;
-      window.scrollTo(0, 0);
-    });
-  }, []);
 
   return (
     <div className="flex flex-col bg-transparent relative overflow-x-hidden">
