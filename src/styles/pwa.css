@@ -70,10 +70,9 @@ body {
 
   /* Keep drawer pinned while filling home-indicator area */
   .drawer-flush-bottom {
-    --drawer-safe-bottom: max(env(safe-area-inset-bottom, 0px), 34px);
     bottom: 0 !important;
     top: auto !important;
-    padding-bottom: calc(var(--drawer-safe-bottom) + 8px) !important;
+    padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
 
