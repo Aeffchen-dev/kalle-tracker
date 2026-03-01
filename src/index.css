@@ -275,7 +275,7 @@ html, body {
   }
 
   .pwa-safe-top {
-    padding-top: 0 !important;
+    /* no extra top padding in standalone – use normal padding from classes */
   }
 
   /* Drawers: anchor to true bottom */
