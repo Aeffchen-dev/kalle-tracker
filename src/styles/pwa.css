@@ -16,8 +16,6 @@ html, body {
 }
 
 /* ── PWA standalone mode (viewport-fit=cover) ────────────── */
-/* Background extends behind status bar & home indicator.    */
-/* Only #root is inset so content stays readable.            */
 
 @media (display-mode: standalone) {
   body {
@@ -31,12 +29,10 @@ html, body {
     flex-direction: column;
     height: 100dvh;
     padding-top: env(safe-area-inset-top, 0px);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
     box-sizing: border-box;
     overflow: hidden;
   }
 
-  /* Main scrollable area fills remaining space */
   #root > * {
     flex: 1;
     min-height: 0;
