@@ -276,16 +276,12 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: anchor flush to bottom */
-  [data-vaul-drawer] {
+  /* Drawers: extend past safe area to physical screen edge */
+  [data-vaul-drawer],
+  [data-vaul-drawer-content] {
     bottom: 0 !important;
     top: auto !important;
-  }
-
-  [data-vaul-drawer-content] {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
-    bottom: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     overflow: visible;
   }
 
