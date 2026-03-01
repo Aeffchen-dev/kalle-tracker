@@ -94,8 +94,15 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set html/body background to beige (home screen default)
+  // Always set html/body background to beige on mount and when overlays close
   // TagesplanOverlay manages its own brown (#3d2b1f) background transition
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    html.style.backgroundColor = '#e8e2db';
+    body.style.backgroundColor = '#e8e2db';
+  }, []);
+
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
