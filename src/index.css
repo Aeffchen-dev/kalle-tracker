@@ -247,32 +247,30 @@ html, body {
   min-height: 100dvh;
 }
 
-/* PWA standalone mode: account for native status bar */
+/* PWA standalone mode: fill entire physical screen */
 @media (display-mode: standalone) {
-  html {
-    background-color: #000 !important;
-  }
-
   html,
   body {
-    height: 100dvh;
+    height: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
     overflow: visible;
     overscroll-behavior: none;
+    padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px) 0;
   }
 
   #root {
     position: relative;
     width: 100%;
-    height: 100dvh;
+    min-height: 100%;
     overflow: visible;
   }
 
   /* All fixed full-screen overlays */
   .fixed.inset-0 {
+    top: 0 !important;
     bottom: 0 !important;
-    padding-bottom: 0;
+    padding: 0;
     overflow: visible;
   }
 
@@ -280,7 +278,7 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: flush to bottom, no extra padding */
+  /* Drawers: flush to physical bottom */
   [data-vaul-drawer],
   [data-vaul-drawer-content] {
     bottom: 0 !important;
