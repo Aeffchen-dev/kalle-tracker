@@ -252,7 +252,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
                   <span className="text-[14px] shrink-0">
                     {getMedicalEmoji(evt.summary)}
                   </span>
-                  <span className="text-[11px] text-black truncate flex-1 min-w-0">
+                  <span className="text-[14px] text-black truncate flex-1 min-w-0">
                     {stripTrailingEmojis(evt.summary)}
                   </span>
                   <button
@@ -282,14 +282,14 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
                   <span className="text-[14px] shrink-0">🗓️</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-[11px] text-black truncate">
+                      <span className="text-[14px] text-black truncate">
                         {evt.summary}
                       </span>
-                      <span className="text-[10px] text-black/50 flex-shrink-0">
+                      <span className="text-[12px] text-black/50 flex-shrink-0">
                         Heute
                       </span>
                     </div>
-                    <p className="text-[11px] text-black/70 truncate">
+                    <p className="text-[14px] text-black/70 truncate">
                       {getTimeLabel(evt)}
                     </p>
                   </div>

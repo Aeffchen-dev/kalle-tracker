@@ -158,14 +158,14 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
               {anomaly.type === 'connection_error' ? <AlertCircle size={18} className="text-white flex-shrink-0" /> : <span className="text-[18px]">{getEmoji(anomaly.type)}</span>}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-              <span className={`text-[12px] truncate ${anomaly.type === 'connection_error' ? 'text-white' : 'text-black'}`}>
+              <span className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white' : 'text-black'}`}>
                     {anomaly.title}
                   </span>
-                  <span className={`text-[10px] flex-shrink-0 ${anomaly.type === 'connection_error' ? 'text-white/70' : 'text-black/50'}`}>
+                  <span className={`text-[12px] flex-shrink-0 ${anomaly.type === 'connection_error' ? 'text-white/70' : 'text-black/50'}`}>
                     {format(anomaly.timestamp, 'd. MMM', { locale: de })}
                   </span>
                 </div>
-                <p className={`text-[12px] truncate ${anomaly.type === 'connection_error' ? 'text-white/80' : 'text-black/70'}`}>
+                <p className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white/80' : 'text-black/70'}`}>
                   {anomaly.highlightText ? (
                     <>
                       {anomaly.description.split(anomaly.highlightText)[0]}
