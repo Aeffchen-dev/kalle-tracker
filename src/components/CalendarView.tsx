@@ -808,36 +808,33 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             </div>
           ) : (() => {
             // swipeOffset: -1 (swiping left/next) to 1 (swiping right/prev), 0 = idle
-            const p = swipeOffset; // progress
+            const p = swipeOffset; // progress: -1 (left/next) to 1 (right/prev)
             const absP = Math.abs(p);
-            const dir = p < 0 ? 'left' : 'right'; // swipe direction
             
-            // Active (current) panel: starts at scale 1, rotate 0 → ends at scale 0.75, rotate ±3deg
-            const activeScale = 1 - absP * 0.25;
-            const activeRotate = p < 0 ? -absP * 3 : absP * 3; // rotate away from swipe direction
-            const activeTranslateX = p * 50; // percentage shift
-            const activeOpacity = 1 - absP * 0.4;
+            // Both panels travel the same distance at the same speed
+            // Active: 0% → ±100% (exits viewport), no fade
+            const activeTranslateX = p * 100;
+            const activeScale = 1 - absP * 0.25; // 1 → 0.75
+            const activeRotate = p < 0 ? -absP * 3 : absP * 3; // 0 → ±3deg outward
             
-            // Incoming panel: starts at scale 0.7, rotate ±3deg → ends at scale 1, rotate 0
-            const incomingScale = 0.7 + absP * 0.3;
-            const incomingRotate = p < 0 ? (1 - absP) * 3 : -(1 - absP) * 3; // starts rotated from outside
-            const incomingTranslateX = p < 0 ? (1 - absP) * 100 : -(1 - absP) * 100; // slides in from edge
-            const incomingOpacity = 0.3 + absP * 0.7;
+            // Incoming: ∓100% → 0% (enters from opposite edge)
+            const incomingTranslateX = p < 0 ? (1 - absP) * 100 : -(1 - absP) * 100;
+            const incomingScale = 0.7 + absP * 0.3; // 0.7 → 1
+            const incomingRotate = p < 0 ? (1 - absP) * 3 : -(1 - absP) * 3; // ±3deg → 0
             
-            const transStyle = transitionActive ? 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+            const transStyle = transitionActive ? 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
             
             const incomingDate = p < 0 ? nextDate : prevDate;
             const showIncoming = absP > 0.01;
             
             return (
-              <div className="relative min-h-full">
-                {/* Incoming panel (behind) */}
+              <div className="relative min-h-full overflow-hidden">
+                {/* Incoming panel */}
                 {showIncoming && (
                   <div 
                     className="absolute inset-0"
                     style={{
                       transform: `translateX(${incomingTranslateX}%) scale(${incomingScale}) rotate(${incomingRotate}deg)`,
-                      opacity: incomingOpacity,
                       transition: transStyle,
                       transformOrigin: p < 0 ? 'right center' : 'left center',
                     }}
@@ -859,11 +856,10 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     />
                   </div>
                 )}
-                {/* Active (current) panel */}
+                {/* Active (current) panel – no opacity fade, just exits viewport */}
                 <div 
                   style={{
                     transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
-                    opacity: activeOpacity,
                     transition: transStyle,
                     transformOrigin: p < 0 ? 'left center' : 'right center',
                   }}
