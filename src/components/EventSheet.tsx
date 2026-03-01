@@ -249,7 +249,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   value={weightValue}
                   onChange={(e) => setWeightValue(e.target.value)}
                   placeholder="32"
-                  className="bg-transparent text-white/70 text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-16 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="bg-transparent text-white text-[16px] text-center border-none outline-none focus:ring-0 focus:outline-none placeholder:text-white/50 w-16 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <span className="text-[16px] text-white ml-1">kg</span>
               </div>
@@ -298,9 +298,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   type="time"
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
-                  className="bg-transparent text-white/70 text-[14px] text-center border-none outline-none w-[70px] md:[&::-webkit-calendar-picker-indicator]:filter md:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 md:[&::-webkit-calendar-picker-indicator]:static md:[&::-webkit-calendar-picker-indicator]:w-auto md:[&::-webkit-calendar-picker-indicator]:h-auto md:[&::-webkit-calendar-picker-indicator]:opacity-100 md:[&::-webkit-calendar-picker-indicator]:ml-2"
+                  className="bg-transparent text-white text-[14px] text-center border-none outline-none w-[70px] md:[&::-webkit-calendar-picker-indicator]:filter md:[&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 md:[&::-webkit-calendar-picker-indicator]:static md:[&::-webkit-calendar-picker-indicator]:w-auto md:[&::-webkit-calendar-picker-indicator]:h-auto md:[&::-webkit-calendar-picker-indicator]:opacity-100 md:[&::-webkit-calendar-picker-indicator]:ml-2"
                 />
-                <span className="text-[14px] text-white">Uhr</span>
+                <span className="text-[14px] text-white opacity-100">Uhr</span>
               </div>
             </label>
           </div>

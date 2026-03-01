@@ -1279,7 +1279,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   }, []);
 
   return (
-    <div className="space-y-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)' }} data-vaul-no-drag>
+    <div className="space-y-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }} data-vaul-no-drag>
       {/* Age Display */}
       <div className="w-full bg-white/[0.06] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-4 flex items-center justify-center">
         <span className="text-[14px] leading-none">
