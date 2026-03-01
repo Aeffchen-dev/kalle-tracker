@@ -80,9 +80,9 @@ export function PlacesMap({ places }: { places: Place[] }) {
         <button
           onClick={() => setIsFullscreen(false)}
           className="absolute top-4 right-4 z-[10000] bg-black text-white flex items-center justify-center shadow-lg"
-          style={{ width: 48, height: 48, borderRadius: 4 }}
+          style={{ width: 24, height: 24, borderRadius: 4 }}
         >
-          <X size={24} />
+          <X size={14} />
         </button>
       </div>
     );
@@ -94,9 +94,9 @@ export function PlacesMap({ places }: { places: Place[] }) {
       <button
         onClick={() => setIsFullscreen(true)}
         className="absolute bottom-2 right-2 z-[1000] bg-black text-white flex items-center justify-center shadow-lg"
-        style={{ width: 48, height: 48, borderRadius: 4 }}
+        style={{ width: 24, height: 24, borderRadius: 4 }}
       >
-        <Maximize2 size={24} />
+        <Maximize2 size={14} />
       </button>
     </div>
   );
