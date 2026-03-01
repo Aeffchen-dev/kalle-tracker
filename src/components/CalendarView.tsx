@@ -101,7 +101,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   entries.sort((a, b) => b.sortTime - a.sortTime);
 
   return (
-    <div className="space-y-2 pb-20">
+    <div className="space-y-4 pb-20">
       {isBirthdayToday && birthdayAge > 0 && (
         <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[16px] text-white flex items-center gap-2">
@@ -408,11 +408,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       isHorizontalSwipe.current = Math.abs(diffX) > diffY * 1.5;
     }
     
-    // Update visual offset for horizontal swipes
+    // Update visual offset for horizontal swipes  
     if (isHorizontalSwipe.current) {
-      const maxOffset = window.innerWidth;
-      const resistedOffset = diffX * 0.6;
-      setSwipeOffset(Math.max(-maxOffset, Math.min(maxOffset, resistedOffset)));
+      // Map finger movement to -1..1 progress (full swipe = screen width)
+      const containerWidth = scrollContainerRef.current?.clientWidth || window.innerWidth;
+      const progress = Math.max(-1, Math.min(1, diffX / containerWidth));
+      setSwipeOffset(progress);
     }
     
     // Cancel long press on any movement
@@ -425,34 +426,32 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     
     if (isHorizontalSwipe.current && Math.abs(diff) > minSwipeDistance) {
       if (diff > 0 && canGoNext) {
-        // Swipe left - next day: animate to -100%
+        // Swipe left → next day: animate progress to -1
         setTransitionActive(true);
-        setSwipeOffset(-window.innerWidth);
+        setSwipeOffset(-1);
         setTimeout(() => {
           setSelectedDate(addDays(selectedDate, 1));
           setSwipeOffset(0);
           setTransitionActive(false);
-        }, 250);
+        }, 300);
       } else if (diff < 0 && canGoPrev) {
-        // Swipe right - prev day: animate to +100%
+        // Swipe right → prev day: animate progress to 1
         setTransitionActive(true);
-        setSwipeOffset(window.innerWidth);
+        setSwipeOffset(1);
         setTimeout(() => {
           setSelectedDate(subDays(selectedDate, 1));
           setSwipeOffset(0);
           setTransitionActive(false);
-        }, 250);
+        }, 300);
       } else {
-        // Snap back
         setTransitionActive(true);
         setSwipeOffset(0);
-        setTimeout(() => setTransitionActive(false), 250);
+        setTimeout(() => setTransitionActive(false), 300);
       }
     } else {
-      // Snap back
       setTransitionActive(true);
       setSwipeOffset(0);
-      setTimeout(() => setTransitionActive(false), 250);
+      setTimeout(() => setTransitionActive(false), 300);
     }
     
     daySwipeStartX.current = 0;
@@ -666,9 +665,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     if (direction === 'left' && !canGoNext) return;
     if (direction === 'right' && !canGoPrev) return;
     
-    const targetOffset = direction === 'left' ? -window.innerWidth : window.innerWidth;
     setTransitionActive(true);
-    setSwipeOffset(targetOffset);
+    setSwipeOffset(direction === 'left' ? -1 : 1);
     setTimeout(() => {
       if (direction === 'left') {
         setSelectedDate(addDays(selectedDate, 1));
@@ -677,7 +675,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       }
       setSwipeOffset(0);
       setTransitionActive(false);
-    }, 250);
+    }, 300);
   };
 
   // Handle clicks outside the drawer to snap to default
@@ -808,36 +806,68 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             <div data-vaul-no-drag>
               <TrendAnalysis events={events} scrollToChart={initialScrollToChart} />
             </div>
-          ) : (
-            <div className="overflow-hidden min-h-full">
-              <div 
-                className="flex min-h-full"
-                style={{ 
-                  width: '300%',
-                  transform: `translateX(calc(-33.333% + ${swipeOffset}px))`,
-                  transition: transitionActive ? 'transform 250ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
-                }}
-              >
-                {/* Previous day panel */}
-                <div className="w-1/3 min-w-0 shrink-0">
-                  <DayPanel
-                    date={prevDate}
-                    events={getEventsForDate(prevDate)}
-                    icalEvents={getIcalEventsForDate(prevDate)}
-                    kalleOwner={getKalleOwnerForDateCb(prevDate)}
-                    birthday={birthday}
-                    predictionSlots={[]}
-                    activeEventId={null}
-                    onItemClick={() => {}}
-                    onContextMenu={() => {}}
-                    onLongPressStart={() => {}}
-                    onLongPressMove={() => {}}
-                    onLongPressEnd={() => {}}
-                    onDelete={() => {}}
-                  />
-                </div>
-                {/* Current day panel */}
-                <div className="w-1/3 min-w-0 shrink-0">
+          ) : (() => {
+            // swipeOffset: -1 (swiping left/next) to 1 (swiping right/prev), 0 = idle
+            const p = swipeOffset; // progress
+            const absP = Math.abs(p);
+            const dir = p < 0 ? 'left' : 'right'; // swipe direction
+            
+            // Active (current) panel: starts at scale 1, rotate 0 → ends at scale 0.75, rotate ±3deg
+            const activeScale = 1 - absP * 0.25;
+            const activeRotate = p < 0 ? -absP * 3 : absP * 3; // rotate away from swipe direction
+            const activeTranslateX = p * 50; // percentage shift
+            const activeOpacity = 1 - absP * 0.4;
+            
+            // Incoming panel: starts at scale 0.7, rotate ±3deg → ends at scale 1, rotate 0
+            const incomingScale = 0.7 + absP * 0.3;
+            const incomingRotate = p < 0 ? (1 - absP) * 3 : -(1 - absP) * 3; // starts rotated from outside
+            const incomingTranslateX = p < 0 ? (1 - absP) * 100 : -(1 - absP) * 100; // slides in from edge
+            const incomingOpacity = 0.3 + absP * 0.7;
+            
+            const transStyle = transitionActive ? 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)' : 'none';
+            
+            const incomingDate = p < 0 ? nextDate : prevDate;
+            const showIncoming = absP > 0.01;
+            
+            return (
+              <div className="relative min-h-full">
+                {/* Incoming panel (behind) */}
+                {showIncoming && (
+                  <div 
+                    className="absolute inset-0"
+                    style={{
+                      transform: `translateX(${incomingTranslateX}%) scale(${incomingScale}) rotate(${incomingRotate}deg)`,
+                      opacity: incomingOpacity,
+                      transition: transStyle,
+                      transformOrigin: p < 0 ? 'right center' : 'left center',
+                    }}
+                  >
+                    <DayPanel
+                      date={incomingDate}
+                      events={getEventsForDate(incomingDate)}
+                      icalEvents={getIcalEventsForDate(incomingDate)}
+                      kalleOwner={getKalleOwnerForDateCb(incomingDate)}
+                      birthday={birthday}
+                      predictionSlots={[]}
+                      activeEventId={null}
+                      onItemClick={() => {}}
+                      onContextMenu={() => {}}
+                      onLongPressStart={() => {}}
+                      onLongPressMove={() => {}}
+                      onLongPressEnd={() => {}}
+                      onDelete={() => {}}
+                    />
+                  </div>
+                )}
+                {/* Active (current) panel */}
+                <div 
+                  style={{
+                    transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
+                    opacity: activeOpacity,
+                    transition: transStyle,
+                    transformOrigin: p < 0 ? 'left center' : 'right center',
+                  }}
+                >
                   <DayPanel
                     date={selectedDate}
                     events={filteredEvents}
@@ -854,27 +884,9 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     onDelete={handleDelete}
                   />
                 </div>
-                {/* Next day panel */}
-                <div className="w-1/3 min-w-0 shrink-0">
-                  <DayPanel
-                    date={nextDate}
-                    events={getEventsForDate(nextDate)}
-                    icalEvents={getIcalEventsForDate(nextDate)}
-                    kalleOwner={getKalleOwnerForDateCb(nextDate)}
-                    birthday={birthday}
-                    predictionSlots={[]}
-                    activeEventId={null}
-                    onItemClick={() => {}}
-                    onContextMenu={() => {}}
-                    onLongPressStart={() => {}}
-                    onLongPressMove={() => {}}
-                    onLongPressEnd={() => {}}
-                    onDelete={() => {}}
-                  />
-                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </DrawerContent>
     </Drawer>
