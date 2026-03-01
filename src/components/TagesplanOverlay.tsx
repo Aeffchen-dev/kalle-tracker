@@ -1051,7 +1051,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             value={newIngredientLink}
                             onChange={(e) => setNewIngredientLink(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
-                            className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
+                            className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
                           />
                         </div>
                         <button
