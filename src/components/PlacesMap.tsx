@@ -14,14 +14,20 @@ interface Place {
 
 function MapContent({ places, containerRef }: { places: Place[]; containerRef: React.RefObject<HTMLDivElement> }) {
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const placesKeyRef = useRef<string>('');
 
   useEffect(() => {
     if (!containerRef.current || places.length === 0) return;
+
+    const newKey = places.map(p => `${p.latitude},${p.longitude}`).join('|');
+    if (mapInstanceRef.current && newKey === placesKeyRef.current) return;
 
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
     }
+
+    placesKeyRef.current = newKey;
 
     const map = L.map(containerRef.current, {
       zoomControl: false,
@@ -63,6 +69,7 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+      placesKeyRef.current = '';
     };
   }, [places, containerRef]);
 
