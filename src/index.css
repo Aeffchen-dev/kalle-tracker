@@ -283,7 +283,7 @@ html, body {
   }
 
   [data-vaul-drawer-content] {
-    padding-bottom: 0 !important;
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
     margin-bottom: 0 !important;
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     overflow: visible;
