@@ -472,7 +472,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 >
                   <ArrowLeft size={24} className="text-white" />
                 </button>
-                <DrawerTitle className="text-center text-[14px] text-white leading-6">
+                <DrawerTitle className="text-center text-[16px] text-white leading-6">
                   Trend-Analyse
                 </DrawerTitle>
                 <button 
@@ -520,7 +520,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     )}
                   </div>
                 </div>
-                <DrawerTitle className="text-center text-[14px] text-white leading-6 flex-1">
+                <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1">
                   {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                 </DrawerTitle>
                 <div className="flex items-center gap-2 w-[56px] justify-end">
@@ -575,7 +575,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             >
               {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).length === 0 && predictionSlots.length === 0 ? (
                 <div className="flex items-center justify-center py-4">
-                  <p className="text-center text-[14px] text-white/60">
+                  <p className="text-center text-[16px] text-white/60">
                     Keine Einträge
                   </p>
                 </div>
@@ -584,7 +584,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   {/* Birthday entry */}
                   {isBirthdayToday && birthdayAge > 0 && (
                     <div className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg">
-                      <span className="text-[14px] text-white flex items-center gap-2">
+                      <span className="text-[16px] text-white flex items-center gap-2">
                         <span>🎉</span>
                         <span>{birthdayAge}. Geburtstag</span>
                       </span>
@@ -650,11 +650,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       if (entry.kind === 'ical') {
                         return (
                           <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
-                            <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
+                            <span className="text-[16px] text-white flex items-center gap-2 overflow-hidden">
                               <span className="text-[20px] shrink-0">🗓️</span>
                               <span className="truncate">{entry.icalEvt.summary}</span>
                             </span>
-                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                            <span className="text-[16px] text-white/60 whitespace-nowrap shrink-0 ml-2">
                               {entry.timeKey} Uhr
                             </span>
                           </div>
@@ -664,11 +664,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       if (entry.kind === 'prediction') {
                         return (
                           <div key={`pred-${gi}`} className="flex items-center justify-between px-3 py-3.5 rounded-lg opacity-60">
-                            <span className="text-[14px] text-white flex items-center gap-1.5">
+                            <span className="text-[16px] text-white flex items-center gap-1.5">
                               <span className="text-[20px] shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
                               <span>{entry.hasPipi && entry.hasPoop ? 'Pipi & Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
                             </span>
-                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                            <span className="text-[16px] text-white/60 whitespace-nowrap shrink-0 ml-2">
                               {entry.timeKey} Uhr
                             </span>
                           </div>
@@ -700,16 +700,16 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                   {group.events.length === 2 && group.events.some(e => e.type === 'pipi') && group.events.some(e => e.type === 'stuhlgang') ? (
                                     <>
                                       <span className="text-[20px] shrink-0">💦💩</span>
-                                      <span className="text-[14px] text-white truncate">Pipi & Stuhlgang</span>
+                                      <span className="text-[16px] text-white truncate">Pipi & Stuhlgang</span>
                                     </>
                                   ) : group.events.map((ev, ei) => (
                                     <span key={ei} className="flex items-center gap-1.5">
                                       <span className="text-[20px] shrink-0">{ev.type === 'pipi' ? '💦' : '💩'}</span>
-                                      <span className="text-[14px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
+                                      <span className="text-[16px] text-white truncate">{ev.type === 'pipi' ? 'Pipi' : 'Stuhlgang'}</span>
                                     </span>
                                   ))}
                                 </div>
-                                <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                                <span className="text-[16px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
                                   {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
                                   {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
                                   {group.timeKey} Uhr
@@ -720,7 +720,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                               onClick={() => {
                                 group.events.forEach(e => handleDelete(e.id));
                               }}
-                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[16px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                             >
                               Löschen
                             </button>
@@ -744,7 +744,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                             onMouseUp={handleLongPressEnd}
                             onMouseLeave={handleLongPressEnd}
                           >
-                            <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
+                            <span className="text-[16px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
                               <span className="text-[20px] shrink-0">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
                               <span className="truncate">
                                 {event.type === 'wurmkur' && 'Wurmkur'}
@@ -762,7 +762,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                                 )}
                               </span>
                             </span>
-                            <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                            <span className="text-[16px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
                               {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
                               {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
                               {format(new Date(event.time), 'HH:mm')} Uhr
@@ -770,7 +770,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                           </div>
                           <button
                             onClick={() => handleDelete(event.id)}
-                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[16px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                           >
                             Löschen
                           </button>
@@ -781,11 +781,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   {/* Who has Kalle - only show when there are other entries */}
                   {kalleOwner && (filteredEvents.length > 0 || filteredIcalEvents.length > 0) && (
                     <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.06] rounded-lg">
-                      <span className="text-[14px] text-white flex items-center gap-2">
+                      <span className="text-[16px] text-white flex items-center gap-2">
                         <span className="text-[20px] shrink-0">🐶</span>
                         <span>{kalleOwner.person} hat Kalle</span>
                       </span>
-                      <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                      <span className="text-[16px] text-white/60 whitespace-nowrap shrink-0 ml-2">
                         bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
                       </span>
                     </div>

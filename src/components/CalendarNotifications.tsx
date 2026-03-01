@@ -282,14 +282,14 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
                   <span className="text-[20px] shrink-0">🗓️</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <span className="text-[14px] text-black truncate">
+                      <span className="text-[16px] text-black truncate">
                         {evt.summary}
                       </span>
-                      <span className="text-[12px] text-black/50 flex-shrink-0">
+                      <span className="text-[14px] text-black/50 flex-shrink-0">
                         Heute
                       </span>
                     </div>
-                    <p className="text-[14px] text-black/70 truncate">
+                    <p className="text-[16px] text-black/70 truncate">
                       {getTimeLabel(evt)}
                     </p>
                   </div>
@@ -301,7 +301,7 @@ const CalendarNotifications: React.FC<CalendarNotificationsProps> = ({ onCalenda
             <button
               onClick={(e) => { e.stopPropagation(); handleSwipeDelete(evt); }}
               onTouchStart={(e) => e.stopPropagation()}
-              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[14px] text-white rounded-[16px] overflow-hidden self-stretch"
+              className="flex-shrink-0 bg-red-500 flex items-center justify-center text-[16px] text-white rounded-[16px] overflow-hidden self-stretch"
               style={{
                 width: showDelete > 0 ? `${showDelete}px` : 0,
                 minWidth: showDelete > 0 ? `${showDelete}px` : 0,

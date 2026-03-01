@@ -205,9 +205,9 @@ const DogFoodChecker = () => {
           <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[20px]">{config.emoji}</span>
-                <span className="text-[14px] font-medium text-white/80">{config.label}</span>
+                <span className="text-[16px] font-medium text-white/80">{config.label}</span>
                 {result.purin && (
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ml-auto ${
+                  <span className={`text-[12px] px-1.5 py-0.5 rounded-full ml-auto ${
                     result.purin === 'niedrig' ? 'bg-green-500/20 text-green-400' :
                     result.purin === 'mittel' ? 'bg-yellow-500/20 text-yellow-400' :
                     'bg-red-500/20 text-red-400'
@@ -216,10 +216,10 @@ const DogFoodChecker = () => {
                   </span>
                 )}
               </div>
-              <p className="text-[12px] text-white/40">{result.reason}</p>
+              <p className="text-[14px] text-white/40">{result.reason}</p>
             </div>
         ) : (
-          <p className="text-[12px] text-white/40 leading-relaxed">
+          <p className="text-[14px] text-white/40 leading-relaxed">
             Kalle hat Harnsteine, die eine Operation erforderlich machen können, wenn seine Ernährung nicht konsequent purinfrei ist. Bestimmte Futtermittel begünstigen die Neubildung von Steinen im Harntrakt, weshalb er ausschließlich purinfreies, speziell abgestimmtes Futter bekommen darf.
           </p>
         )}
