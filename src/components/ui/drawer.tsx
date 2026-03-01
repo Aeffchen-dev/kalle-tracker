@@ -35,7 +35,7 @@ const drawerContentVariants = cva(
       variant: {
         compact: "overflow-hidden",
         medium: "flex flex-col max-h-[95dvh]",
-        full: "flex flex-col h-full",
+        full: "flex flex-col h-full pt-[env(safe-area-inset-top,0px)]",
       },
     },
     defaultVariants: {
