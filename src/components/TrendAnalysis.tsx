@@ -1343,7 +1343,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
 
       
       {/* Export Button */}
-      <div className="mt-8">
+      <div className="mt-8 flex justify-center">
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
