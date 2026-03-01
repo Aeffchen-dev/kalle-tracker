@@ -155,7 +155,7 @@ const AnomalyAlerts = memo(({ anomalies, onDismiss, onGassiSettingsTap, onTrends
                 transition: isSwiping ? 'none' : 'all 150ms ease-linear'
               }}
             >
-              {anomaly.type === 'connection_error' ? <AlertCircle size={18} className="text-white flex-shrink-0" /> : <span className="text-[18px]">{getEmoji(anomaly.type)}</span>}
+              {anomaly.type === 'connection_error' ? <AlertCircle size={18} className="text-white flex-shrink-0" /> : <span className="text-[20px]">{getEmoji(anomaly.type)}</span>}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
               <span className={`text-[14px] truncate ${anomaly.type === 'connection_error' ? 'text-white' : 'text-black'}`}>
