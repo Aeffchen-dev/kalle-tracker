@@ -25,7 +25,8 @@ html, body {
   html,
   body {
     height: 100%;
-    min-height: 100vh;
+    min-height: 100dvh;
+    min-height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
     min-height: -webkit-fill-available;
     overflow: visible;
     overscroll-behavior: none;
@@ -35,7 +36,8 @@ html, body {
   #root {
     position: relative;
     width: 100%;
-    min-height: 100%;
+    min-height: 100dvh;
+    min-height: calc(100dvh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px));
     overflow: visible;
   }
 
