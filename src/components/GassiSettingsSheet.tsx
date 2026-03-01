@@ -129,7 +129,7 @@ const GassiSettingsSheet = ({ open, onOpenChange, onSettingsChanged }: GassiSett
             ))}
           </div>
         ) : (
-          <div className="space-y-3 pb-4">
+          <div className="space-y-3 pb-11">
             {/* Walk Interval Setting */}
             <div className="bg-white/[0.06] rounded-lg p-4">
               <div className="flex items-center justify-between">
