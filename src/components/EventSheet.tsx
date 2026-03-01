@@ -265,7 +265,7 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="flex items-center justify-center text-white/70 hover:text-white transition-colors"
+                      className="flex items-center justify-center text-white hover:text-white transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <span className="text-[16px]">🗓️</span>
