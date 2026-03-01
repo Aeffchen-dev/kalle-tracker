@@ -720,7 +720,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                               onClick={() => {
                                 group.events.forEach(e => handleDelete(e.id));
                               }}
-                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[16px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                              className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                             >
                               Löschen
                             </button>
@@ -770,7 +770,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                           </div>
                           <button
                             onClick={() => handleDelete(event.id)}
-                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[14px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
+                            className={`absolute right-0 top-0 h-full w-[82px] bg-red-500 flex items-center justify-center text-[12px] text-white rounded-lg transition-transform duration-150 ease-linear ${isActive ? 'translate-x-0' : 'translate-x-full'}`}
                           >
                             Löschen
                           </button>
