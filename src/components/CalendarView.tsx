@@ -27,8 +27,9 @@ interface CalendarViewProps {
 interface StickyMedicalItem {
   emoji: string;
   label: string;
-  top: number; // relative to scroll container
+  top: number;
   time: string;
+  dismissKey: string;
 }
 
 interface DayPanelProps {
@@ -150,20 +151,23 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                 : summary.toLowerCase().includes('krallen') ? 'krallen' as const
                 : 'parasiten' as const;
               const label = summary.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+$/gu, '').trim();
+              const dismissKey = `${MEDICAL_ICAL_DISMISSED_KEY}${entry.icalEvt.uid}_${entry.icalEvt.dtstart}`;
+              
               saveEvent(eventType).then(() => {
-                const dismissKey = `${MEDICAL_ICAL_DISMISSED_KEY}${entry.icalEvt.uid}_${entry.icalEvt.dtstart}`;
-                localStorage.setItem(dismissKey, new Date().toISOString());
-                
+                // Don't set dismissal key yet — wait until transition completes
                 setTimeout(() => {
                   setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
-                  onEventSaved?.();
                   if (isOnDifferentDay) {
                     onNavigateToToday?.({
                       emoji: medicalEmoji,
                       label,
                       top: rect.top,
                       time: format(new Date(), 'HH:mm'),
+                      dismissKey,
                     });
+                  } else {
+                    localStorage.setItem(dismissKey, new Date().toISOString());
+                    onEventSaved?.();
                   }
                 }, 600);
               });
@@ -525,8 +529,10 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       setSelectedDate(today);
       setSwipeOffset(0);
       setTransitionActive(false);
-      // After slide completes, settle the sticky item
       if (sticky) {
+        // Now set dismissal key and refresh events after slide completes
+        localStorage.setItem(sticky.dismissKey, new Date().toISOString());
+        loadEvents();
         setStickySettling(true);
         setTimeout(() => {
           setStickyItem(null);
