@@ -250,6 +250,130 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     return getKalleOwnerForDate(icalEvents, selectedDate);
   }, [icalEvents, selectedDate]);
 
+  // Compute average walk predictions per day-of-week (same logic as Wochenplan)
+  const avgGassiByDay = useMemo(() => {
+    const now = new Date();
+    const weekdayCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const weekendCutoff = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000);
+    
+    const byDate = new Map<string, { hour: number; isPoop: boolean }[]>();
+    for (const event of events) {
+      if (event.type !== 'pipi' && event.type !== 'stuhlgang') continue;
+      const d = new Date(event.time);
+      const jsDay = d.getDay();
+      const isWeekend = jsDay === 0 || jsDay === 6;
+      const cutoff = isWeekend ? weekendCutoff : weekdayCutoff;
+      if (d < cutoff) continue;
+      const dateKey = d.toISOString().slice(0, 10);
+      if (!byDate.has(dateKey)) byDate.set(dateKey, []);
+      byDate.get(dateKey)!.push({ hour: d.getHours() + d.getMinutes() / 60, isPoop: event.type === 'stuhlgang' });
+    }
+    
+    type ClusterInfo = { avgHour: number; hasPoop: boolean };
+    const weekdayClusters: ClusterInfo[] = [];
+    const weekendClusters: ClusterInfo[] = [];
+    
+    for (const [dateKey, evts] of byDate) {
+      const d = new Date(dateKey + 'T12:00:00');
+      const jsDay = d.getDay();
+      const isWeekend = jsDay === 0 || jsDay === 6;
+      const sorted = evts.sort((a, b) => a.hour - b.hour);
+      
+      const dayClusters: { hours: number[]; hasPoop: boolean }[] = [];
+      for (const evt of sorted) {
+        const last = dayClusters[dayClusters.length - 1];
+        if (last && evt.hour - last.hours[last.hours.length - 1] <= 4) {
+          last.hours.push(evt.hour);
+          if (evt.isPoop) last.hasPoop = true;
+        } else {
+          dayClusters.push({ hours: [evt.hour], hasPoop: evt.isPoop });
+        }
+      }
+      
+      for (const c of dayClusters) {
+        const avgH = c.hours.reduce((a, b) => a + b, 0) / c.hours.length;
+        (isWeekend ? weekendClusters : weekdayClusters).push({ avgHour: avgH, hasPoop: c.hasPoop });
+      }
+    }
+    
+    const mergeIntoBuckets = (clusters: ClusterInfo[]) => {
+      const sorted = clusters.sort((a, b) => a.avgHour - b.avgHour);
+      const buckets: { hours: number[]; poopCount: number; totalCount: number }[] = [];
+      for (const c of sorted) {
+        const last = buckets[buckets.length - 1];
+        const lastAvg = last ? last.hours.reduce((a, b) => a + b, 0) / last.hours.length : -99;
+        if (last && Math.abs(c.avgHour - lastAvg) <= 4) {
+          last.hours.push(c.avgHour);
+          last.totalCount++;
+          if (c.hasPoop) last.poopCount++;
+        } else {
+          buckets.push({ hours: [c.avgHour], poopCount: c.hasPoop ? 1 : 0, totalCount: 1 });
+        }
+      }
+      const pipiHours: number[] = [];
+      const poopFlags: boolean[] = [];
+      for (const b of buckets) {
+        const avg = b.hours.reduce((a, v) => a + v, 0) / b.hours.length;
+        pipiHours.push(avg);
+        poopFlags.push(b.poopCount / b.totalCount >= 0.4);
+      }
+      return { pipiHours, poopFlags };
+    };
+    
+    const weekdayData = mergeIntoBuckets(weekdayClusters);
+    const weekendData = mergeIntoBuckets(weekendClusters);
+    
+    const dayMap = new Map<number, { pipiHours: number[]; poopFlags: boolean[] }>();
+    for (let i = 0; i < 7; i++) {
+      const isWeekend = i >= 5;
+      dayMap.set(i, isWeekend ? weekendData : weekdayData);
+    }
+    return dayMap;
+  }, [events]);
+
+  // Build prediction slots for today
+  const predictionSlots = useMemo(() => {
+    const isToday = isSameDay(selectedDate, new Date());
+    if (!isToday) return [];
+    
+    const jsDay = selectedDate.getDay();
+    const monBasedDay = (jsDay + 6) % 7;
+    const data = avgGassiByDay.get(monBasedDay);
+    if (!data) return [];
+    
+    // Build estimate slots
+    type PredSlot = { avgHour: number; hasPoop: boolean; hasPipi: boolean };
+    const estimates: PredSlot[] = data.pipiHours.map((h, i) => ({
+      avgHour: h, hasPoop: data.poopFlags[i], hasPipi: true,
+    }));
+    
+    // Get real pipi/stuhlgang events for today
+    const realHours = filteredEvents
+      .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
+      .map(e => {
+        const d = new Date(e.time);
+        return d.getHours() + d.getMinutes() / 60;
+      });
+    
+    const currentHour = new Date().getHours() + new Date().getMinutes() / 60;
+    const usedEstimates = new Set<number>();
+    
+    // Match estimates to real events within ±2h
+    for (let ei = 0; ei < estimates.length; ei++) {
+      for (const rh of realHours) {
+        if (Math.abs(rh - estimates[ei].avgHour) <= 2) {
+          usedEstimates.add(ei);
+          break;
+        }
+      }
+    }
+    
+    // Keep only future unmatched estimates
+    return estimates
+      .filter((_, i) => !usedEstimates.has(i))
+      .filter(e => e.avgHour > currentHour);
+  }, [selectedDate, avgGassiByDay, filteredEvents]);
+
   // Check if content is scrollable
   useEffect(() => {
     const checkScrollable = () => {
@@ -449,7 +573,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 opacity: swipeOffset !== 0 ? 1 - Math.abs(swipeOffset) / 200 : undefined
               }}
             >
-              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).length === 0 ? (
+              {filteredEvents.length === 0 && !isBirthdayToday && filteredIcalEvents.filter(evt => !/hat\s+Kalle/i.test(evt.summary || '')).length === 0 && predictionSlots.length === 0 ? (
                 <div className="flex items-center justify-center py-4">
                   <p className="text-center text-[14px] text-white/60">
                     Keine Einträge
@@ -640,6 +764,28 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                         bis {format(kalleOwner.endDate, 'd. MMM', { locale: de })}
                       </span>
                     </div>
+                  )}
+                  {/* Prediction slots for today */}
+                  {predictionSlots.length > 0 && (
+                    <>
+                      {predictionSlots.map((slot, i) => {
+                        const hours = Math.floor(slot.avgHour);
+                        const mins = Math.round((slot.avgHour % 1) * 60);
+                        const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
+                        return (
+                          <div key={`pred-${i}`} className="flex items-center justify-between p-3 bg-white/[0.06] rounded-lg opacity-60">
+                            <span className="text-[14px] text-white flex items-center gap-1.5">
+                              {slot.hasPipi && <span className="shrink-0">💦</span>}
+                              {slot.hasPoop && <span className="shrink-0">💩</span>}
+                              <span>{slot.hasPipi && slot.hasPoop ? 'Pipi + Stuhlgang' : slot.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
+                            </span>
+                            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+                              ~{timeStr} Uhr
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </>
                   )}
                 </div>
               )}
