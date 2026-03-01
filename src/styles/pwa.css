@@ -31,7 +31,7 @@ body {
     margin: 0;
     overflow: hidden;
     overscroll-behavior: none;
-    background-color: hsl(0 0% 0%);
+    background-color: #e8e2db;
   }
 
   body {
