@@ -287,15 +287,23 @@ html, body {
   [data-vaul-drawer-content],
   [vaul-drawer],
   [data-vaul-drawer-wrapper],
-  .vaul-drawer {
-    bottom: 0 !important;
+  .vaul-drawer,
+  [data-vaul-drawer][data-vaul-drawer-direction='bottom'] {
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     overflow: visible;
   }
 
-  [data-vaul-overlay] {
-    bottom: 0 !important;
+  [data-vaul-drawer][data-vaul-drawer-direction='bottom'][data-vaul-snap-points='false'] {
+    animation-duration: 0.22s !important;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
+
+  [data-vaul-drawer][data-vaul-drawer-direction='bottom'][data-vaul-snap-points='true'] {
+    transition-duration: 0.22s !important;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
 }
