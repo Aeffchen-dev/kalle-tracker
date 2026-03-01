@@ -822,7 +822,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             const incomingScale = 0.7 + absP * 0.3; // 0.7 → 1
             const incomingRotate = p < 0 ? (1 - absP) * 3 : -(1 - absP) * 3; // ±3deg → 0
             
-            const transStyle = transitionActive ? 'transform 450ms cubic-bezier(0.42, 0, 0.58, 1)' : 'none';
+            const transStyle = transitionActive ? 'transform 300ms cubic-bezier(0.42, 0, 0.58, 1)' : 'none';
             
             const incomingDate = p < 0 ? nextDate : prevDate;
             const showIncoming = absP > 0.01;
