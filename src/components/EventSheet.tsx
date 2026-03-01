@@ -258,9 +258,9 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
 
           {/* Time and Date Selection - Combined */}
           <div>
-            <label className="flex items-center h-12 bg-white/[0.06] rounded-lg cursor-pointer relative" style={{ width: 'calc(100vw - 32px)' }}>
-              {/* Left-aligned calendar icon and date */}
-              <div className="absolute left-3 flex items-center gap-2">
+            <label className="flex items-center h-12 bg-white/[0.06] rounded-lg cursor-pointer relative md:justify-center md:gap-[80px]" style={{ width: 'calc(100vw - 32px)' }}>
+              {/* Left-aligned calendar icon and date (mobile) / centered with gap (tablet+) */}
+              <div className="absolute left-3 flex items-center gap-2 md:relative md:left-auto">
                 <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
                   <PopoverTrigger asChild>
                     <button
@@ -292,8 +292,8 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
                   </span>
                 )}
               </div>
-              {/* Centered time */}
-              <div className="flex-1 flex items-center justify-center">
+              {/* Centered time (mobile) / centered with gap (tablet+) */}
+              <div className="flex-1 flex items-center justify-center md:flex-none">
                 <input
                   type="time"
                   value={selectedTime}
