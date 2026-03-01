@@ -275,7 +275,7 @@ html, body {
   }
 
   .pwa-safe-top {
-    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-top: 0 !important;
   }
 
   /* Drawers: anchor to true bottom */
@@ -286,5 +286,13 @@ html, body {
   [data-vaul-drawer-content] {
     padding-bottom: 0 !important;
     overflow: visible;
+  }
+
+  /* All modals and drawers: no bottom padding */
+  .fixed.inset-0,
+  [data-vaul-drawer],
+  [data-vaul-drawer-content],
+  [role="dialog"] {
+    padding-bottom: 0 !important;
   }
 }
