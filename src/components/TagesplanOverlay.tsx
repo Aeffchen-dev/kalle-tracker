@@ -668,20 +668,21 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
       setAnimationPhase('expanding');
-      // Reveal content + recolor root/body/html after dots have mostly expanded
+      // Reveal content after dots have mostly expanded
       setTimeout(() => {
         setAnimationPhase('visible');
-        document.documentElement.style.backgroundColor = '#3d2b1f';
-        document.body.style.backgroundColor = '#3d2b1f';
       }, 1100);
+      // Recolor body (status bar + bottom bar) after dot transition completes
+      setTimeout(() => {
+        document.body.style.backgroundColor = '#3d2b1f';
+      }, 1400);
     }
   }, [isOpen, animationPhase]);
 
   // Reset when fully closed
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
-      document.documentElement.style.backgroundColor = '#e8e2db';
-      document.body.style.backgroundColor = '#e8e2db';
+      document.body.style.backgroundColor = '';
     }
   }, [animationPhase, isOpen]);
 
@@ -780,8 +781,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const handleClose = () => {
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
-    document.documentElement.style.backgroundColor = '#e8e2db';
-    document.body.style.backgroundColor = '#e8e2db';
+    document.body.style.backgroundColor = '';
     
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
@@ -896,7 +896,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="fixed left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ top: 'calc(56px + env(safe-area-inset-top, 0px))', bottom: 0, paddingTop: 0, paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 32px)', background: 'hsl(var(--spot-color))', overscrollBehavior: 'none' }}>
+          <div className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (

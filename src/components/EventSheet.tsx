@@ -62,7 +62,6 @@ const EventSheet = ({ open, onOpenChange, onEventAdded }: EventSheetProps) => {
     }
   }, [open]);
 
-
   const toggleType = (type: 'pipi' | 'stuhlgang' | 'phwert' | 'gewicht') => {
     setSelectedTypes(prev => {
       const newSet = new Set(prev);

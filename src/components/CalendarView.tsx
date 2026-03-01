@@ -335,7 +335,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       >
       <DrawerContent className="bg-black border-black flex flex-col h-full lg:max-w-[80vw] lg:mx-auto">
         <DrawerHeader 
-          className="sticky top-0 z-10 pb-4 pt-4 cursor-pointer" 
+          className="sticky top-0 z-10 pb-4 pt-4 pwa-safe-top cursor-pointer" 
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
@@ -425,7 +425,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             flexGrow: 1, 
             flexShrink: 1, 
             flexBasis: '100%',
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 16px)',
             touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
           }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
