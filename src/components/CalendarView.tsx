@@ -514,7 +514,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const handleNavigateToToday = (sticky?: StickyMedicalItem) => {
     const today = new Date();
     if (isSameDay(selectedDate, today)) return;
-    if (sticky) setStickyItem(sticky);
+    if (sticky) {
+      setStickyItem(sticky);
+      // Set dismissal BEFORE slide so incoming panel won't show the iCal event
+      localStorage.setItem(sticky.dismissKey, new Date().toISOString());
+    }
     const direction = today > selectedDate ? -1 : 1;
     const seed = direction * 0.02;
     setSwipeOffset(seed);
@@ -526,9 +530,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           setSelectedDate(today);
           setSwipeOffset(0);
           setTransitionActive(false);
-          if (sticky) {
-            localStorage.setItem(sticky.dismissKey, new Date().toISOString());
-          }
         }, 300);
       });
     });
@@ -1020,9 +1021,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             const incomingDate = p < 0 ? nextDate : prevDate;
             const showIncoming = absP > 0.01;
             
-            // Height of the sticky medical item row + gap
-            const stickyHeight = 60;
-            
             return (
               <div className="relative min-h-full overflow-hidden">
                 {/* Sticky medical item overlay – stays fixed on top during slide */}
@@ -1043,7 +1041,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       transform: `translateX(${incomingTranslateX}%) scale(${incomingScale}) rotate(${incomingRotate}deg)`,
                       transition: transStyle,
                       transformOrigin: p < 0 ? 'right center' : 'left center',
-                      paddingTop: stickyItem ? `${stickyHeight}px` : undefined,
                     }}
                   >
                     <DayPanel
@@ -1071,7 +1068,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
                     transition: transStyle,
                     transformOrigin: p < 0 ? 'left center' : 'right center',
-                    paddingTop: stickyItem ? `${stickyHeight}px` : undefined,
                   }}
                 >
                   <DayPanel
