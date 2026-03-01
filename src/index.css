@@ -259,7 +259,7 @@ html, body {
     left: 0;
     right: 0;
     bottom: 0;
-    overflow: hidden;
+    overflow: visible;
     /* Extend background behind safe areas */
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
