@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" style="background-color: #e8e2db;">
+<html lang="en" style="background-color: #e8e2db; height: 100dvh; min-height: 100dvh; max-height: 100dvh; overflow: visible;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -32,7 +32,7 @@
     <meta name="twitter:image" content="https://kalletracker.relationshipbydesign.de/og-image.jpg?v=2" />
   </head>
 
-  <body style="background-color: #e8e2db; margin: 0;">
+  <body style="background-color: #e8e2db; margin: 0; height: 100dvh; min-height: 100dvh; max-height: 100dvh; overflow: visible;">
     <style>
       @font-face {
         font-family: 'Rauschen B';
@@ -44,7 +44,7 @@
       }
     </style>
     <!-- Persistent spots - outside #root so they stay when React loads -->
-    <div id="dalmatian-spots" style="position: fixed; top: 0; left: 0; right: 0; height: 100dvh; pointer-events: none; z-index: 0; transform: translateZ(0); backface-visibility: hidden;">
+    <div id="dalmatian-spots" style="position: fixed; top: 0; left: 0; right: 0; height: 100dvh; min-height: 100dvh; max-height: 100dvh; pointer-events: none; z-index: 0; transform: translateZ(0); backface-visibility: hidden;">
       <!-- Large spots -->
       <div style="position: absolute; width: 48px; height: 56px; background: #5c4033; top: 8%; left: 5%; transform: rotate(12deg); border-radius: 60% 40% 55% 45% / 55% 60% 40% 45%;"></div>
       <div style="position: absolute; width: 64px; height: 48px; background: #5c4033; top: 8%; left: 70%; transform: rotate(-6deg); border-radius: 45% 55% 40% 60% / 50% 45% 55% 50%;"></div>
@@ -82,9 +82,9 @@
       <div style="position: absolute; width: 20px; height: 20px; background: #5c4033; top: 65%; left: 88%; border-radius: 50% 50% 50% 50% / 55% 45% 55% 45%;"></div>
       <div style="position: absolute; width: 16px; height: 20px; background: #5c4033; top: 80%; left: 58%; border-radius: 45% 55% 45% 55% / 50% 50% 50% 50%;"></div>
     </div>
-    <div id="root">
+    <div id="root" style="height: 100dvh; min-height: 100dvh; max-height: 100dvh;">
       <!-- Static loading state -->
-      <div id="static-loader" style="position: fixed; top: 0; left: 0; right: 0; height: 100dvh; z-index: 50; display: flex; align-items: center; justify-content: center; padding-bottom: 20dvh;">
+      <div id="static-loader" style="position: fixed; top: 0; left: 0; right: 0; height: 100dvh; min-height: 100dvh; max-height: 100dvh; z-index: 50; display: flex; align-items: center; justify-content: center; padding-bottom: 20dvh;">
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
