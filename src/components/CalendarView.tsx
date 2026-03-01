@@ -814,12 +814,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             // Both panels travel the same distance at the same speed
             // Active: 0% → ±100% (exits viewport), no fade
             const activeTranslateX = p * 100;
-            const activeScale = 1 - absP * 0.25; // 1 → 0.75
+            const activeScale = 1 - absP * 0.15; // 1 → 0.85
             const activeRotate = p < 0 ? -absP * 3 : absP * 3; // 0 → ±3deg outward
             
             // Incoming: ∓100% → 0% (enters from opposite edge)
             const incomingTranslateX = p < 0 ? (1 - absP) * 100 : -(1 - absP) * 100;
-            const incomingScale = 0.7 + absP * 0.3; // 0.7 → 1
+            const incomingScale = 0.85 + absP * 0.15; // 0.85 → 1
             const incomingRotate = p < 0 ? (1 - absP) * 3 : -(1 - absP) * 3; // ±3deg → 0
             
             const transStyle = transitionActive ? 'transform 300ms cubic-bezier(0.42, 0, 0.58, 1)' : 'none';
