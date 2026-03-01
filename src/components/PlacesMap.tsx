@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Maximize2, X } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface Place {
   latitude: number;
@@ -10,20 +11,18 @@ interface Place {
   link?: string | null;
 }
 
-export function PlacesMap({ places }: { places: Place[] }) {
-  const mapRef = useRef<HTMLDivElement>(null);
+function MapContent({ places, containerRef }: { places: Place[]; containerRef: React.RefObject<HTMLDivElement> }) {
   const mapInstanceRef = useRef<L.Map | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
-    if (!mapRef.current || places.length === 0) return;
+    if (!containerRef.current || places.length === 0) return;
 
     if (mapInstanceRef.current) {
       mapInstanceRef.current.remove();
       mapInstanceRef.current = null;
     }
 
-    const map = L.map(mapRef.current, {
+    const map = L.map(containerRef.current, {
       zoomControl: false,
       attributionControl: false,
     });
@@ -64,40 +63,46 @@ export function PlacesMap({ places }: { places: Place[] }) {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, [places, isFullscreen]);
+  }, [places, containerRef]);
 
-  // Invalidate map size after fullscreen transition
-  useEffect(() => {
-    if (mapInstanceRef.current) {
-      setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
-    }
-  }, [isFullscreen]);
+  return null;
+}
 
-  if (isFullscreen) {
-    return (
-      <div className="fixed inset-0 z-[9999] bg-black">
-        <div ref={mapRef} className="w-full h-full" />
-        <button
-          onClick={() => setIsFullscreen(false)}
-          className="absolute top-4 right-4 z-[10000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
-          style={{ borderRadius: 4 }}
-        >
-          <X size={14} />
-        </button>
-      </div>
-    );
-  }
+export function PlacesMap({ places }: { places: Place[] }) {
+  const inlineMapRef = useRef<HTMLDivElement>(null);
+  const fullscreenMapRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
-    <div className="relative w-full h-full">
-      <div ref={mapRef} className="w-full h-full" />
-      <button
-        onClick={() => setIsFullscreen(true)}
-        className="absolute bottom-2 right-2 z-[1000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
-        style={{ borderRadius: 4 }}
-      >
-        <Maximize2 size={14} />
-      </button>
-    </div>
+    <>
+      <div className="relative w-full h-full">
+        <div ref={inlineMapRef} className="w-full h-full" />
+        <MapContent places={places} containerRef={inlineMapRef} />
+        <button
+          onClick={() => setIsFullscreen(true)}
+          className="absolute bottom-2 right-2 z-[1000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
+          style={{ borderRadius: 4 }}
+        >
+          <Maximize2 size={14} />
+        </button>
+      </div>
+
+      <Dialog open={isFullscreen} onOpenChange={setIsFullscreen}>
+        <DialogContent
+          className="max-w-none w-screen h-screen p-0 border-none bg-black [&>button]:hidden"
+          style={{ borderRadius: 0 }}
+        >
+          <div ref={fullscreenMapRef} className="w-full h-full" />
+          {isFullscreen && <MapContent places={places} containerRef={fullscreenMapRef} />}
+          <button
+            onClick={() => setIsFullscreen(false)}
+            className="absolute top-4 right-4 z-[10000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
+            style={{ borderRadius: 4 }}
+          >
+            <X size={14} />
+          </button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
