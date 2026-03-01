@@ -4,7 +4,7 @@ import { getEvents, deleteEvent, Event, getPendingCount } from '@/lib/events';
 import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff, Watch, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff, Watch, LayoutGrid, Check } from 'lucide-react';
 import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -183,6 +183,27 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           );
         }
         const event = firstEvent;
+        const isMedical = ['wurmkur', 'parasiten', 'krallen'].includes(event.type);
+        
+        if (isMedical) {
+          // Notification-style: emoji + text + filled checkmark
+          return (
+            <div key={event.id} className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+              <span className="text-[20px] shrink-0">{event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : '💅'}</span>
+              <span className="text-[14px] text-white truncate flex-1 min-w-0">
+                {event.type === 'wurmkur' && 'Wurmkur'}
+                {event.type === 'parasiten' && 'Parasiten Tablette'}
+                {event.type === 'krallen' && 'Krallen schneiden'}
+              </span>
+              <div
+                className="w-[28px] h-[28px] rounded-full shrink-0 flex items-center justify-center bg-white"
+              >
+                <Check className="w-[14px] h-[14px] text-black" strokeWidth={3} />
+              </div>
+            </div>
+          );
+        }
+
         const isActive = activeEventId === event.id;
         return (
           <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
@@ -199,11 +220,8 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
               onMouseLeave={onLongPressEnd}
             >
               <span className="text-[14px] text-white whitespace-nowrap flex items-center gap-2 overflow-hidden">
-                <span className="text-[20px] shrink-0">{event.type === 'phwert' ? '🧪' : event.type === 'wurmkur' ? '🪱' : event.type === 'parasiten' ? '🦟' : event.type === 'krallen' ? '💅' : '🏋️'}</span>
+                <span className="text-[20px] shrink-0">{event.type === 'phwert' ? '🧪' : '🏋️'}</span>
                 <span className="truncate">
-                  {event.type === 'wurmkur' && 'Wurmkur'}
-                  {event.type === 'parasiten' && 'Parasiten Tablette'}
-                  {event.type === 'krallen' && 'Krallen schneiden'}
                   {event.type === 'gewicht' && (
                     <>Gewicht: <span className={event.weight_value && isWeightOutOfBounds(Number(event.weight_value), new Date(event.time)) ? 'text-[#FF0000]' : 'text-[#5AD940]'}>{event.weight_value ? `${String(event.weight_value).replace('.', ',')} kg` : '-'}</span></>
                   )}
