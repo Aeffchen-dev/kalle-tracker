@@ -881,7 +881,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
       {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }} />
+        <div className="fixed inset-0 pointer-events-auto" style={{ background: 'hsl(var(--spot-color))', bottom: '-100px' }} />
       )}
 
       {/* Content - only render when visible */}
@@ -896,7 +896,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="fixed inset-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', background: 'hsl(var(--spot-color))' }}>
+          <div className="fixed inset-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: '100px', background: 'hsl(var(--spot-color))', bottom: '-100px' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Loading skeleton for meals */}
             {!dataLoaded && (
