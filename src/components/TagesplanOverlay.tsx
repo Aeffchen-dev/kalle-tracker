@@ -1747,7 +1747,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             <div className="relative h-full">
                               <div className="sticky left-0 h-full flex items-center pl-5 pr-6 pointer-events-none" style={{ width: 'calc(100vw)', maxWidth: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)` }}>
                                 <span className="text-[14px] text-white flex items-center gap-1.5 min-w-0">
-                                  <span className="text-[16px] shrink-0">🐶</span>
+                                  <span className="text-[16px] shrink-0 leading-none">🐶</span>
                                   <span className="truncate">{span.person} hat Kalle</span>
                                 </span>
                                 <span className="flex-1" />
