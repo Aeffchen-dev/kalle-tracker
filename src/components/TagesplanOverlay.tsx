@@ -1025,40 +1025,42 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   {/* Add ingredient */}
                   <div className="border-t border-white/[0.06]">
                     {showAddIngredient ? (
-                      <div className="flex flex-col gap-1.5 p-3">
-                      <div className="flex items-center">
+                      <div className="flex items-center p-3">
+                        <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                          <div className="flex items-center">
+                            <input
+                              type="text"
+                              placeholder="Menge"
+                              value={newIngredientQuantity}
+                              onChange={(e) => setNewIngredientQuantity(e.target.value)}
+                              className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
+                              autoFocus
+                            />
+                            <input
+                              type="text"
+                              placeholder="Zutat"
+                              value={newIngredientName}
+                              onChange={(e) => setNewIngredientName(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
+                              className="flex-1 min-w-0 bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
+                            />
+                          </div>
                           <input
-                            type="text"
-                            placeholder="Menge"
-                            value={newIngredientQuantity}
-                            onChange={(e) => setNewIngredientQuantity(e.target.value)}
-                            className="bg-transparent text-white/60 text-[12px] w-[80px] flex-shrink-0 px-1 py-0.5 outline-none placeholder:text-white/30 -mx-1"
-                            autoFocus
-                          />
-                          <input
-                            type="text"
-                            placeholder="Zutat"
-                            value={newIngredientName}
-                            onChange={(e) => setNewIngredientName(e.target.value)}
+                            type="url"
+                            placeholder="Link (optional)"
+                            value={newIngredientLink}
+                            onChange={(e) => setNewIngredientLink(e.target.value)}
                             onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
-                            className="flex-1 min-w-0 bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
+                            className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30"
                           />
-                          <button
-                            onClick={() => handleAddIngredient(mealIndex)}
-                            disabled={!newIngredientName.trim()}
-                            className="text-[10px] text-white flex-shrink-0 disabled:opacity-30"
-                          >
-                            Hinzufügen
-                          </button>
                         </div>
-                        <input
-                          type="url"
-                          placeholder="Link (optional)"
-                          value={newIngredientLink}
-                          onChange={(e) => setNewIngredientLink(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter') handleAddIngredient(mealIndex); if (e.key === 'Escape') { setShowAddIngredient(false); setNewIngredientQuantity(''); setNewIngredientName(''); setNewIngredientLink(''); } }}
-                          className="bg-transparent text-white/60 text-[12px] px-1 py-0.5 outline-none placeholder:text-white/30 ml-0"
-                        />
+                        <button
+                          onClick={() => handleAddIngredient(mealIndex)}
+                          disabled={!newIngredientName.trim()}
+                          className="text-[10px] text-white flex-shrink-0 disabled:opacity-30 self-center ml-2"
+                        >
+                          Hinzufügen
+                        </button>
                       </div>
                     ) : (
                       <button
