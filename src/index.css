@@ -280,13 +280,13 @@ html, body {
     padding-top: env(safe-area-inset-top, 0px) !important;
   }
 
-  /* Drawers: flush to physical bottom */
+  /* Drawers: flush to physical bottom, behind safe areas */
   [data-vaul-drawer],
   [data-vaul-drawer-content],
   [vaul-drawer],
   [data-vaul-drawer-wrapper],
   .vaul-drawer {
-    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0 !important;
     top: auto !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
@@ -294,6 +294,6 @@ html, body {
   }
 
   [data-vaul-overlay] {
-    bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
+    bottom: 0 !important;
   }
 }
