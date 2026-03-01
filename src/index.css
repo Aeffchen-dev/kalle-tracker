@@ -282,10 +282,14 @@ html, body {
 
   /* Drawers: flush to physical bottom */
   [data-vaul-drawer],
-  [data-vaul-drawer-content] {
+  [data-vaul-drawer-content],
+  [vaul-drawer],
+  [data-vaul-drawer-wrapper],
+  .vaul-drawer {
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
     padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
     overflow: visible;
   }
 
