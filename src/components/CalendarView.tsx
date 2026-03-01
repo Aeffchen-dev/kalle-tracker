@@ -24,6 +24,13 @@ interface CalendarViewProps {
 
 /* ── DayPanel: renders entries for a single day ─────────── */
 
+interface StickyMedicalItem {
+  emoji: string;
+  label: string;
+  top: number; // relative to scroll container
+  time: string;
+}
+
 interface DayPanelProps {
   date: Date;
   events: Event[];
@@ -39,7 +46,7 @@ interface DayPanelProps {
   onLongPressEnd: () => void;
   onDelete: (eventId: string) => void;
   onEventSaved?: () => void;
-  onNavigateToToday?: () => void;
+  onNavigateToToday?: (sticky?: StickyMedicalItem) => void;
 }
 
 const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete, onEventSaved, onNavigateToToday }: DayPanelProps) => {
@@ -135,12 +142,14 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
             const today = new Date();
             const isOnDifferentDay = !isSameDay(date, today);
             
-            const handleIcalMedicalCheck = () => {
+            const handleIcalMedicalCheck = (e: React.MouseEvent<HTMLDivElement>) => {
               if (isChecking) return;
+              const rect = e.currentTarget.getBoundingClientRect();
               setCheckingIcal(prev => new Set([...prev, icalKey]));
               const eventType = summary.toLowerCase().includes('wurmkur') ? 'wurmkur' as const
                 : summary.toLowerCase().includes('krallen') ? 'krallen' as const
                 : 'parasiten' as const;
+              const label = summary.replace(/[\s\u{FE0F}\u{200D}\u{20E3}\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]+$/gu, '').trim();
               saveEvent(eventType).then(() => {
                 const dismissKey = `${MEDICAL_ICAL_DISMISSED_KEY}${entry.icalEvt.uid}_${entry.icalEvt.dtstart}`;
                 localStorage.setItem(dismissKey, new Date().toISOString());
@@ -149,7 +158,12 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                   setCheckingIcal(prev => { const n = new Set(prev); n.delete(icalKey); return n; });
                   onEventSaved?.();
                   if (isOnDifferentDay) {
-                    onNavigateToToday?.();
+                    onNavigateToToday?.({
+                      emoji: medicalEmoji,
+                      label,
+                      top: rect.top,
+                      time: format(new Date(), 'HH:mm'),
+                    });
                   }
                 }, 600);
               });
@@ -372,6 +386,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
+  const [stickyItem, setStickyItem] = useState<StickyMedicalItem | null>(null);
+  const [stickySettling, setStickySettling] = useState(false);
   const { toast } = useToast();
   
   const toggleSnapPoint = () => {
@@ -495,8 +511,29 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     }
   };
 
-  const handleNavigateToToday = () => {
-    animateToDate(new Date());
+  const handleNavigateToToday = (sticky?: StickyMedicalItem) => {
+    if (sticky) {
+      setStickyItem(sticky);
+      setStickySettling(false);
+    }
+    const today = new Date();
+    if (isSameDay(selectedDate, today)) return;
+    const direction = today > selectedDate ? -1 : 1;
+    setTransitionActive(true);
+    setSwipeOffset(direction);
+    setTimeout(() => {
+      setSelectedDate(today);
+      setSwipeOffset(0);
+      setTransitionActive(false);
+      // After slide completes, settle the sticky item
+      if (sticky) {
+        setStickySettling(true);
+        setTimeout(() => {
+          setStickyItem(null);
+          setStickySettling(false);
+        }, 400);
+      }
+    }, 300);
   };
 
   // Haptic feedback helper
@@ -979,6 +1016,21 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             
             return (
               <div className="relative min-h-full overflow-hidden">
+                {/* Sticky medical item overlay during slide transition */}
+                {stickyItem && (
+                  <div
+                    className="fixed left-4 right-4 z-50 flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]"
+                    style={{
+                      top: stickyItem.top,
+                      transition: stickySettling ? 'opacity 0.4s ease' : 'none',
+                      opacity: stickySettling ? 0 : 1,
+                    }}
+                  >
+                    <span className="text-[20px] shrink-0">{stickyItem.emoji}</span>
+                    <span className="text-[14px] text-white truncate flex-1 min-w-0">{stickyItem.label}</span>
+                    <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">{stickyItem.time} Uhr</span>
+                  </div>
+                )}
                 {/* Incoming panel */}
                 {showIncoming && (
                   <div 
@@ -1008,12 +1060,15 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     />
                   </div>
                 )}
-                {/* Active (current) panel – no opacity fade, just exits viewport */}
+                {/* Active (current) panel */}
                 <div 
                   style={{
                     transform: `translateX(${activeTranslateX}%) scale(${activeScale}) rotate(${activeRotate}deg)`,
                     transition: transStyle,
                     transformOrigin: p < 0 ? 'left center' : 'right center',
+                    // Push content down when sticky item is visible on today's panel
+                    paddingTop: stickySettling ? '60px' : '0px',
+                    ...(stickySettling ? { transition: `${transStyle}, padding-top 0.4s ease` } : {}),
                   }}
                 >
                   <DayPanel
