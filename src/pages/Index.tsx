@@ -330,7 +330,7 @@ const Index = () => {
 
 
   return (
-    <div className="flex flex-col bg-transparent relative overflow-x-hidden">
+    <div className="flex flex-col min-h-dvh bg-transparent relative overflow-x-hidden">
 
       {/* Header */}
       <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
@@ -359,7 +359,7 @@ const Index = () => {
       </header>
 
       {/* Main countdown area */}
-      <main className="flex-1 flex flex-col items-center justify-center relative z-10 pb-[calc(20vh+40px)] px-4 gap-3 mx-auto w-full md:max-w-[60vw] lg:max-w-[50vw]">
+      <main className="flex-1 flex flex-col items-center justify-center relative z-10 px-4 gap-3 mx-auto w-full md:max-w-[60vw] lg:max-w-[50vw]">
         <div 
           className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-10 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none relative ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
           style={{ animationFillMode: 'backwards', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
