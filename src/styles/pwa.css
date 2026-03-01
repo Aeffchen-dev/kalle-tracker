@@ -2,12 +2,13 @@
   body {
     position: fixed;
     inset: 0;
-    padding-top: env(safe-area-inset-top, 0px);
     overflow: hidden;
   }
 
   #root {
     height: 100%;
+    padding-top: env(safe-area-inset-top, 0px);
+    box-sizing: border-box;
     overflow-y: auto;
     overscroll-behavior-y: none;
   }
