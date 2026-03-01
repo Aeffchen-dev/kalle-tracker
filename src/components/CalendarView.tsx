@@ -101,7 +101,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   entries.sort((a, b) => b.sortTime - a.sortTime);
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-0 pb-20">
       {isBirthdayToday && birthdayAge > 0 && (
         <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[16px] text-white flex items-center gap-2">
