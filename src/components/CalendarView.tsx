@@ -900,7 +900,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       >
       <DrawerContent variant="full">
         <DrawerHeader 
-          className="sticky top-0 z-10 pb-6 pt-6 cursor-pointer" 
+          className="sticky top-0 z-10 pb-6 pt-6 cursor-pointer md:px-[calc(20vw+16px)] lg:px-[calc(15vw+16px)]" 
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
@@ -924,7 +924,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 w-[56px]">
+                <div className="flex items-center gap-2">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoPrev ? (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
@@ -963,7 +963,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1">
                   {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                 </DrawerTitle>
-                <div className="flex items-center gap-2 w-[56px] justify-end">
+                <div className="flex items-center gap-2 justify-end">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoNext && (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
@@ -973,9 +973,10 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                   </div>
                   <button 
                     onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
-                    className="w-6 h-6 flex items-center justify-center"
+                    className="flex items-center gap-[6px] rounded-full border border-white/60 px-3 py-1"
                   >
-                    <TrendingUp size={20} className="text-white" />
+                    <TrendingUp size={16} className="text-white" />
+                    <span className="text-white text-[16px] leading-5">Trend Analyse</span>
                   </button>
                 </div>
               </>
