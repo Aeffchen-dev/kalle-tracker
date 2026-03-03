@@ -960,10 +960,10 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     )}
                   </div>
                 </div>
-                <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1">
+                <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1 min-w-0">
                   {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                 </DrawerTitle>
-                <div className="flex items-center gap-2 justify-end">
+                <div className="flex items-center gap-2">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoNext && (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
@@ -971,14 +971,16 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       </button>
                     )}
                   </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
-                    className="flex items-center gap-[6px] rounded-full border border-white/60 px-3 py-1"
-                  >
-                    <TrendingUp size={16} className="text-white" />
-                    <span className="text-white text-[16px] leading-5">Trend Analyse</span>
-                  </button>
                 </div>
+              <div className="flex justify-end mt-3">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
+                  className="h-10 px-6 rounded-[999px] bg-[#5AD940] text-black text-[14px] flex items-center justify-center gap-[6px]"
+                >
+                  <TrendingUp size={16} className="text-black" />
+                  <span>Trend Analyse</span>
+                </button>
+              </div>
               </>
             )}
           </div>
