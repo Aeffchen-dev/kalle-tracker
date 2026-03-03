@@ -900,10 +900,10 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       >
       <DrawerContent variant="full">
         <DrawerHeader 
-          className="sticky top-0 z-10 pb-6 pt-6 cursor-pointer md:px-[calc(20vw+16px)] lg:px-[calc(15vw+16px)]" 
+          className="sticky top-0 z-10 pb-6 pt-6 cursor-pointer" 
           onClick={toggleSnapPoint}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
             {showTrends ? (
               <>
                 <button 
@@ -972,15 +972,13 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     )}
                   </div>
                 </div>
-              <div className="flex justify-end mt-3">
                 <button 
                   onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
-                  className="h-10 px-6 rounded-[999px] bg-[#5AD940] text-black text-[14px] flex items-center justify-center gap-[6px]"
+                  className="h-10 px-4 rounded-[999px] border border-white/60 text-white text-[14px] flex items-center justify-center gap-[6px] whitespace-nowrap"
                 >
-                  <TrendingUp size={16} className="text-black" />
+                  <TrendingUp size={16} className="text-white" />
                   <span>Trend Analyse</span>
                 </button>
-              </div>
               </>
             )}
           </div>
