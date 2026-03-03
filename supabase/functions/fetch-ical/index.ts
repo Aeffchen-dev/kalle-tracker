@@ -15,6 +15,18 @@ interface ICalEvent {
   rrule?: string;
 }
 
+interface RawEvent {
+  uid: string;
+  summary: string;
+  dtstart: string;
+  dtend: string;
+  location?: string;
+  description?: string;
+  rrule?: string;
+  exdates: string[];
+  recurrenceId?: string;
+}
+
 function parseICalDate(value: string): string {
   // Handle formats: 20250212T140000Z, 20250212T140000, 20250212
   const clean = value.replace(/^[A-Z]+[;=].*:/, '');
@@ -30,58 +42,82 @@ function parseICalDate(value: string): string {
 }
 
 function unfoldLines(raw: string): string[] {
-  // iCal uses line folding: continuation lines start with a space or tab
   return raw.replace(/\r\n[ \t]/g, '').replace(/\r/g, '').split('\n');
+}
+
+function dateKey(isoStr: string): string {
+  // Normalize to YYYY-MM-DD for comparison
+  return isoStr.slice(0, 10);
 }
 
 function parseICal(raw: string): ICalEvent[] {
   const lines = unfoldLines(raw);
-  const events: ICalEvent[] = [];
-  let current: Partial<ICalEvent> | null = null;
+  const rawEvents: RawEvent[] = [];
+  let current: Partial<RawEvent> | null = null;
 
   for (const line of lines) {
     if (line === 'BEGIN:VEVENT') {
-      current = {};
+      current = { exdates: [] };
     } else if (line === 'END:VEVENT' && current) {
       if (current.summary && current.dtstart) {
-        events.push(current as ICalEvent);
+        rawEvents.push(current as RawEvent);
       }
       current = null;
     } else if (current) {
       const colonIdx = line.indexOf(':');
       if (colonIdx === -1) continue;
-      const key = line.slice(0, colonIdx).split(';')[0].toUpperCase();
+      const keyPart = line.slice(0, colonIdx);
+      const key = keyPart.split(';')[0].toUpperCase();
       const value = line.slice(colonIdx + 1);
       
       switch (key) {
         case 'UID': current.uid = value; break;
         case 'SUMMARY': current.summary = value; break;
-        case 'DTSTART': current.dtstart = parseICalDate(line.slice(line.indexOf(':') + 1)); break;
-        case 'DTEND': current.dtend = parseICalDate(line.slice(line.indexOf(':') + 1)); break;
+        case 'DTSTART': current.dtstart = parseICalDate(value); break;
+        case 'DTEND': current.dtend = parseICalDate(value); break;
         case 'LOCATION': current.location = value; break;
         case 'DESCRIPTION': current.description = value.replace(/\\n/g, '\n').replace(/\\,/g, ','); break;
         case 'RRULE': current.rrule = value; break;
+        case 'EXDATE': {
+          // EXDATE can have multiple dates comma-separated
+          const dates = value.split(',').map(v => parseICalDate(v.trim()));
+          current.exdates!.push(...dates);
+          break;
+        }
+        case 'RECURRENCE-ID': {
+          current.recurrenceId = parseICalDate(value);
+          break;
+        }
       }
     }
   }
 
-  // Expand recurring events
-  const expanded = expandRecurringEvents(events);
-  return expanded;
-}
+  // Separate: base events (with rrule, no recurrence-id) vs override instances
+  const baseEvents: RawEvent[] = [];
+  const overridesByUid = new Map<string, RawEvent[]>();
 
-function expandRecurringEvents(events: ICalEvent[]): ICalEvent[] {
+  for (const evt of rawEvents) {
+    if (evt.recurrenceId) {
+      // This is an override of a specific recurrence instance
+      const list = overridesByUid.get(evt.uid) || [];
+      list.push(evt);
+      overridesByUid.set(evt.uid, list);
+    } else {
+      baseEvents.push(evt);
+    }
+  }
+
+  // Expand recurring events with EXDATE + RECURRENCE-ID support
   const result: ICalEvent[] = [];
   const horizon = new Date();
-  horizon.setMonth(horizon.getMonth() + 6); // expand 6 months ahead
+  horizon.setMonth(horizon.getMonth() + 6);
 
-  for (const event of events) {
+  for (const event of baseEvents) {
     if (!event.rrule) {
-      result.push(event);
+      result.push(toICalEvent(event));
       continue;
     }
 
-    // Parse RRULE
     const rules: Record<string, string> = {};
     for (const part of event.rrule.split(';')) {
       const [k, v] = part.split('=');
@@ -97,15 +133,48 @@ function expandRecurringEvents(events: ICalEvent[]): ICalEvent[] {
     const dtend = new Date(event.dtend || event.dtstart);
     const duration = dtend.getTime() - dtstart.getTime();
 
-    // Push the original event
-    result.push(event);
+    // Build set of excluded dates
+    const exdateSet = new Set(event.exdates.map(d => dateKey(d)));
 
-    let current = new Date(dtstart);
-    let occurrences = 1;
+    // Build map of override instances by their original start date
+    const overrides = overridesByUid.get(event.uid) || [];
+    const overrideMap = new Map<string, RawEvent>();
+    for (const ov of overrides) {
+      if (ov.recurrenceId) {
+        overrideMap.set(dateKey(ov.recurrenceId), ov);
+      }
+    }
+
     const maxOccurrences = count || 100;
+    let current = new Date(dtstart);
+    let occurrences = 0;
 
     while (occurrences < maxOccurrences) {
-      // Advance by interval
+      if (current > until || current > horizon) break;
+
+      const dk = dateKey(current.toISOString());
+
+      if (exdateSet.has(dk)) {
+        // Skip excluded date
+      } else if (overrideMap.has(dk)) {
+        // Use the override instance instead
+        result.push(toICalEvent(overrideMap.get(dk)!));
+      } else {
+        // Normal instance
+        const newEnd = new Date(current.getTime() + duration);
+        result.push({
+          uid: event.uid,
+          summary: event.summary,
+          dtstart: current.toISOString(),
+          dtend: newEnd.toISOString(),
+          location: event.location,
+          description: event.description,
+        });
+      }
+
+      occurrences++;
+
+      // Advance to next occurrence
       if (freq === 'DAILY') {
         current = new Date(current.getTime() + interval * 86400000);
       } else if (freq === 'WEEKLY') {
@@ -121,22 +190,25 @@ function expandRecurringEvents(events: ICalEvent[]): ICalEvent[] {
       } else {
         break;
       }
-
-      if (current > until || current > horizon) break;
-
-      const newEnd = new Date(current.getTime() + duration);
-      result.push({
-        ...event,
-        dtstart: current.toISOString(),
-        dtend: newEnd.toISOString(),
-        rrule: undefined, // don't mark expanded instances as recurring
-      });
-      occurrences++;
     }
   }
 
   return result;
 }
+
+function toICalEvent(raw: RawEvent): ICalEvent {
+  const evt: ICalEvent = {
+    uid: raw.uid,
+    summary: raw.summary,
+    dtstart: raw.dtstart,
+    dtend: raw.dtend,
+  };
+  if (raw.location) evt.location = raw.location;
+  if (raw.description) evt.description = raw.description;
+  // Don't include rrule on output - all instances are expanded
+  return evt;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -153,7 +225,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Convert webcal:// to https://
     const fetchUrl = calUrl.replace(/^webcal:\/\//, 'https://');
     
     const response = await fetch(fetchUrl, {
