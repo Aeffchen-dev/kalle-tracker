@@ -903,7 +903,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           className="sticky top-0 z-10 pb-6 pt-6 cursor-pointer" 
           onClick={toggleSnapPoint}
         >
-          <div className="flex items-center justify-between gap-2 relative">
+          <div className="flex items-center justify-between">
             {showTrends ? (
               <>
                 <button 
@@ -924,65 +924,60 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
               </>
             ) : (
               <>
-                {/* Navigation row: on desktop constrained to countdown box width, centered */}
-                <div className="flex items-center justify-between flex-1 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      {canGoPrev ? (
-                        <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
-                          <ArrowLeft size={24} className="text-white" />
-                        </button>
-                      ) : (
-                        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                          <PopoverTrigger asChild>
-                            <button onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
-                              <CalendarIcon size={20} className="text-white" />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
-                            <Calendar
-                              mode="single"
-                              selected={selectedDate}
-                              onSelect={(date) => {
-                                if (date) {
-                                  setSelectedDate(date);
-                                  setCalendarOpen(false);
-                                }
-                              }}
-                              disabled={(date) => date > today}
-                              modifiers={{ hasEntry: daysWithEntries }}
-                              modifiersClassNames={{ 
-                                hasEntry: 'has-entry'
-                              }}
-                              className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
-                              locale={de}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      )}
-                    </div>
-                  </div>
-                  <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1 min-w-0">
-                    {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
-                  </DrawerTitle>
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center">
-                      {canGoNext && (
-                        <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
-                          <ArrowRight size={24} className="text-white" />
-                        </button>
-                      )}
-                    </div>
+                <div className="flex items-center gap-2 w-[56px]">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {canGoPrev ? (
+                      <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
+                        <ArrowLeft size={24} className="text-white" />
+                      </button>
+                    ) : (
+                      <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                        <PopoverTrigger asChild>
+                          <button onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
+                            <CalendarIcon size={20} className="text-white" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(date) => {
+                              if (date) {
+                                setSelectedDate(date);
+                                setCalendarOpen(false);
+                              }
+                            }}
+                            disabled={(date) => date > today}
+                            modifiers={{ hasEntry: daysWithEntries }}
+                            modifiersClassNames={{ 
+                              hasEntry: 'has-entry'
+                            }}
+                            className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
+                            locale={de}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    )}
                   </div>
                 </div>
-                {/* Trend button: absolute right on desktop, inline on mobile */}
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
-                  className="h-10 pl-[8px] pr-4 rounded-[999px] border border-white/60 text-white text-[14px] flex items-center justify-center gap-[6px] whitespace-nowrap hover:bg-white/20 transition-colors md:absolute md:right-0 md:top-1/2 md:-translate-y-1/2"
-                >
-                  <TrendingUp size={16} className="text-white" />
-                  <span>Trend Analyse</span>
-                </button>
+                <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1">
+                  {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
+                </DrawerTitle>
+                <div className="flex items-center gap-2 w-[56px] justify-end">
+                  <div className="w-6 h-6 flex items-center justify-center">
+                    {canGoNext && (
+                      <button onClick={(e) => { e.stopPropagation(); changeDate('left'); }} className="flex items-center justify-center">
+                        <ArrowRight size={24} className="text-white" />
+                      </button>
+                    )}
+                  </div>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
+                    className="w-6 h-6 flex items-center justify-center"
+                  >
+                    <TrendingUp size={20} className="text-white" />
+                  </button>
+                </div>
               </>
             )}
           </div>
