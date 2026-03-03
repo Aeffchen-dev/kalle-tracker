@@ -66,10 +66,31 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
     return true;
   });
 
+  // Check if we're 30min past the last prediction and still no real events
+  const isPostPredictionEmpty = useMemo(() => {
+    if (dayEvents.length > 0) return false;
+    if (predictionSlots.length > 0) return false;
+    // Check if today — only relevant for current day
+    const now = new Date();
+    const isToday = date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
+    if (!isToday) return false;
+    // We need the original full prediction list — if all predictions are in the past
+    // and none matched (predictionSlots is empty because they're all past currentHour),
+    // that means we're past prediction time with no events logged
+    return true;
+  }, [dayEvents.length, predictionSlots.length, date]);
+
   if (dayEvents.length === 0 && !isBirthdayToday && displayIcalEvents.length === 0 && predictionSlots.length === 0) {
     return (
-      <div className="flex items-center justify-center py-4">
-        <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
+      <div className="flex flex-col items-center justify-center py-8 gap-2">
+        {isPostPredictionEmpty ? (
+          <>
+            <p className="text-center text-[16px] text-white/60">Noch nichts eingetragen 🐾</p>
+            <p className="text-center text-[13px] text-white/40">Die vorhergesagten Zeiten sind vorbei — trag doch was nach!</p>
+          </>
+        ) : (
+          <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
+        )}
       </div>
     );
   }
