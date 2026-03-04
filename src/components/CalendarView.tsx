@@ -108,7 +108,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
     const hours = Math.floor(slot.avgHour);
     const mins = Math.round((slot.avgHour % 1) * 60);
     const timeStr = `${hours}:${mins.toString().padStart(2, '0')}`;
-    const d = new Date();
+    const d = new Date(date);
     d.setHours(hours, mins, 0, 0);
     entries.push({ avgHour: slot.avgHour, hasPoop: slot.hasPoop, hasPipi: slot.hasPipi, timeKey: timeStr, sortTime: d.getTime(), kind: 'prediction' });
   }
