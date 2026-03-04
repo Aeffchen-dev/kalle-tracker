@@ -1920,7 +1920,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 }
                               }
                               
-                              const kept = slots.filter((_, i) => !usedEstimates.has(i));
+                              const kept = slots.filter((_, i) => !usedEstimates.has(i)).map(s => s.isEstimate ? { ...s, isFutureEstimate: true } : s);
                               const extraReals = realSlots.filter((_, i) => !usedReals.has(i));
                               slots.length = 0;
                               slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
@@ -1939,10 +1939,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           slots.length = 0;
                           slots.push(...kept);
                         } else {
-                          // Past day with no real events — hide all predictions
                           const isPast = dayDate < new Date(new Date().setHours(0, 0, 0, 0));
                           if (isPast) {
+                            // Past day with no real events — hide all predictions
                             const kept = slots.filter(s => !s.isEstimate);
+                            slots.length = 0;
+                            slots.push(...kept);
+                          } else {
+                            // Future day with no real events — mark estimates as future
+                            const kept = slots.map(s => s.isEstimate ? { ...s, isFutureEstimate: true } : s);
                             slots.length = 0;
                             slots.push(...kept);
                           }
@@ -2031,7 +2036,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 <div key={i}>
                                    {/* Walk entry - compact single-line */}
                                    {slot.isWalk && (
-                                    <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate && isToday ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
+                                    <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
                                       <span className="text-[12px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
                                         <span className="text-[18px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
