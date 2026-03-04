@@ -81,29 +81,9 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   }, [dayEvents.length, predictionSlots.length, date]);
 
   if (dayEvents.length === 0 && !isBirthdayToday && displayIcalEvents.length === 0 && predictionSlots.length === 0) {
-    // Show kalleOwner and empty hint even when no events
-    const lastDay = kalleOwner ? new Date(kalleOwner.endDate.getTime() - 86400000) : null;
     return (
-      <div className="flex flex-col gap-2 py-4">
-        {kalleOwner && (
-          <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
-            <span className="text-[14px] text-white flex items-center gap-2">
-              <span className="text-[20px] shrink-0">🐶</span>
-              <span>{kalleOwner.person} hat Kalle</span>
-            </span>
-            <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
-              bis {format(lastDay!, 'd. MMM', { locale: de })}
-            </span>
-          </div>
-        )}
-        {isPostPredictionEmpty ? (
-          <div className="flex flex-col items-center justify-center py-4 gap-2">
-            <p className="text-center text-[16px] text-white/60">Noch nichts eingetragen 🐾</p>
-            <p className="text-center text-[13px] text-white/40">Die vorhergesagten Zeiten sind vorbei — trag doch was nach!</p>
-          </div>
-        ) : (
-          <p className="text-center text-[16px] text-white/60 py-4">Keine Einträge</p>
-        )}
+      <div className="flex items-center justify-center py-4">
+        <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
       </div>
     );
   }
