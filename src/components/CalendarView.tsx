@@ -39,6 +39,7 @@ interface DayPanelProps {
   kalleOwner: { person: string; endDate: Date } | null;
   birthday: Date | null;
   predictionSlots: { avgHour: number; hasPoop: boolean; hasPipi: boolean }[];
+  lastPredictionHour?: number; // latest prediction hour (including matched/past ones)
   activeEventId: string | null;
   onItemClick: (eventId: string) => void;
   onContextMenu: (e: React.MouseEvent, eventId: string) => void;
@@ -50,7 +51,7 @@ interface DayPanelProps {
   onNavigateToToday?: (sticky?: StickyMedicalItem) => void;
 }
 
-const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete, onEventSaved, onNavigateToToday }: DayPanelProps) => {
+const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwner, birthday, predictionSlots, lastPredictionHour, activeEventId, onItemClick, onContextMenu, onLongPressStart, onLongPressMove, onLongPressEnd, onDelete, onEventSaved, onNavigateToToday }: DayPanelProps) => {
   const [checkingIcal, setCheckingIcal] = useState<Set<string>>(new Set());
   const [completedIcal, setCompletedIcal] = useState<Map<string, string>>(new Map());
   const isBirthdayToday = birthday
@@ -66,7 +67,23 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
     return true;
   });
 
-  if (dayEvents.length === 0 && !isBirthdayToday && displayIcalEvents.length === 0) {
+  // Show "Keine Einträge" when no real events AND 30min past last prediction (today only)
+  const showEmptyState = useMemo(() => {
+    if (dayEvents.length > 0 || isBirthdayToday || displayIcalEvents.length > 0) return false;
+    if (predictionSlots.length > 0) return false; // still have future predictions
+    // For non-today days: always show empty
+    const now = new Date();
+    const isToday = date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth() && date.getDate() === now.getDate();
+    if (!isToday) return true;
+    // If we have a lastPredictionHour, check if 30min has passed
+    if (lastPredictionHour !== undefined) {
+      const currentHour = now.getHours() + now.getMinutes() / 60;
+      return currentHour > lastPredictionHour + 0.5; // 30 min after last prediction
+    }
+    return true;
+  }, [dayEvents.length, isBirthdayToday, displayIcalEvents.length, predictionSlots.length, date, lastPredictionHour]);
+
+  if (showEmptyState) {
     return (
       <div className="flex items-center justify-center py-4">
         <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
@@ -770,20 +787,23 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   }, [events]);
 
   // Build prediction slots for today
-  const predictionSlots = useMemo(() => {
+  const { predictionSlots, lastPredictionHour } = useMemo(() => {
     const isToday = isSameDay(selectedDate, new Date());
-    if (!isToday) return [];
+    if (!isToday) return { predictionSlots: [] as { avgHour: number; hasPoop: boolean; hasPipi: boolean }[], lastPredictionHour: undefined };
     
     const jsDay = selectedDate.getDay();
     const monBasedDay = (jsDay + 6) % 7;
     const data = avgGassiByDay.get(monBasedDay);
-    if (!data) return [];
+    if (!data) return { predictionSlots: [], lastPredictionHour: undefined };
     
     // Build estimate slots
     type PredSlot = { avgHour: number; hasPoop: boolean; hasPipi: boolean };
     const estimates: PredSlot[] = data.pipiHours.map((h, i) => ({
       avgHour: h, hasPoop: data.poopFlags[i], hasPipi: true,
     }));
+    
+    // Track the latest prediction hour (before filtering)
+    const maxPredHour = estimates.length > 0 ? Math.max(...estimates.map(e => e.avgHour)) : undefined;
     
     // Get real pipi/stuhlgang events for today
     const realHours = filteredEvents
@@ -807,9 +827,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     }
     
     // Keep only future unmatched estimates
-    return estimates
+    const slots = estimates
       .filter((_, i) => !usedEstimates.has(i))
       .filter(e => e.avgHour > currentHour);
+    
+    return { predictionSlots: slots, lastPredictionHour: maxPredHour };
   }, [selectedDate, avgGassiByDay, filteredEvents]);
 
   // Check if content is scrollable
@@ -1078,6 +1100,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                     kalleOwner={kalleOwner}
                     birthday={birthday}
                     predictionSlots={predictionSlots}
+                    lastPredictionHour={lastPredictionHour}
                     activeEventId={activeEventId}
                     onItemClick={handleItemClick}
                     onContextMenu={handleContextMenu}
