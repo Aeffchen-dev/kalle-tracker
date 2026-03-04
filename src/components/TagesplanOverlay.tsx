@@ -499,14 +499,30 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   // Total days to display
   const TOTAL_DAYS = 62;
 
+  // Tick that increments at midnight to force day recalculation
+  const [midnightTick, setMidnightTick] = useState(0);
+  useEffect(() => {
+    const scheduleNextMidnight = () => {
+      const now = new Date();
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+      const msUntilMidnight = tomorrow.getTime() - now.getTime();
+      return setTimeout(() => {
+        setMidnightTick(t => t + 1);
+      }, msUntilMidnight);
+    };
+    const timer = scheduleNextMidnight();
+    return () => clearTimeout(timer);
+  }, [midnightTick]);
+
   // Compute range start: today, shifted by weekOffset
   const rangeStart = useMemo(() => {
+    void midnightTick; // dependency to re-calc at midnight
     const now = new Date();
     now.setHours(0, 0, 0, 0);
     const start = new Date(now);
     start.setDate(start.getDate() + weekOffset * 7);
     return start;
-  }, [weekOffset]);
+  }, [weekOffset, midnightTick]);
 
   // For backward compat keep weekStart for any other usage
   const weekStart = rangeStart;
@@ -518,13 +534,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
   // Current day index within the range (-1 if today not in range)
   const currentDayIndex = useMemo(() => {
+    void midnightTick; // dependency to re-calc at midnight
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const diffMs = today.getTime() - rangeStart.getTime();
     const idx = Math.round(diffMs / (24 * 60 * 60 * 1000));
     return idx >= 0 && idx < TOTAL_DAYS ? idx : -1;
-  }, [rangeStart]);
-  const currentHour = useMemo(() => new Date().getHours(), []);
+  }, [rangeStart, midnightTick]);
+  const currentHour = useMemo(() => { void midnightTick; return new Date().getHours(); }, [midnightTick]);
 
   const handleAddPlaceFromUrl = async () => {
     const url = newPlaceLink.trim();
@@ -1873,31 +1890,41 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             slots.length = 0;
                             slots.push(...kept, ...realSlots);
                           } else {
-                            const usedEstimates = new Set<number>();
-                            const usedReals = new Set<number>();
-                            
-                            for (let ei = 0; ei < slots.length; ei++) {
-                              if (!slots[ei].isEstimate) continue;
-                              let bestRi = -1;
-                              let bestDist = Infinity;
-                              for (let ri = 0; ri < realSlots.length; ri++) {
-                                if (usedReals.has(ri)) continue;
-                                const dist = Math.abs(realSlots[ri].avgHour - slots[ei].avgHour);
-                                if (dist <= 2 && dist < bestDist) {
-                                  bestDist = dist;
-                                  bestRi = ri;
+                            const isPast = dayDate < new Date(new Date().setHours(0, 0, 0, 0));
+                            if (isPast) {
+                              // Past day: drop all estimates, keep only real entries
+                              const kept = slots.filter(s => !s.isEstimate);
+                              const extraReals = realSlots;
+                              slots.length = 0;
+                              slots.push(...kept, ...extraReals);
+                            } else {
+                              // Future day: keep unmatched estimates
+                              const usedEstimates = new Set<number>();
+                              const usedReals = new Set<number>();
+                              
+                              for (let ei = 0; ei < slots.length; ei++) {
+                                if (!slots[ei].isEstimate) continue;
+                                let bestRi = -1;
+                                let bestDist = Infinity;
+                                for (let ri = 0; ri < realSlots.length; ri++) {
+                                  if (usedReals.has(ri)) continue;
+                                  const dist = Math.abs(realSlots[ri].avgHour - slots[ei].avgHour);
+                                  if (dist <= 2 && dist < bestDist) {
+                                    bestDist = dist;
+                                    bestRi = ri;
+                                  }
+                                }
+                                if (bestRi >= 0) {
+                                  usedEstimates.add(ei);
+                                  usedReals.add(bestRi);
                                 }
                               }
-                              if (bestRi >= 0) {
-                                usedEstimates.add(ei);
-                                usedReals.add(bestRi);
-                              }
+                              
+                              const kept = slots.filter((_, i) => !usedEstimates.has(i));
+                              const extraReals = realSlots.filter((_, i) => !usedReals.has(i));
+                              slots.length = 0;
+                              slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
                             }
-                            
-                            const kept = slots.filter((_, i) => !usedEstimates.has(i));
-                            const extraReals = realSlots.filter((_, i) => !usedReals.has(i));
-                            slots.length = 0;
-                            slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
                           }
                           slots.sort((a, b) => a.avgHour - b.avgHour);
                         } else if (isToday) {
@@ -1911,6 +1938,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           }
                           slots.length = 0;
                           slots.push(...kept);
+                        } else {
+                          // Past day with no real events — hide all predictions
+                          const isPast = dayDate < new Date(new Date().setHours(0, 0, 0, 0));
+                          if (isPast) {
+                            const kept = slots.filter(s => !s.isEstimate);
+                            slots.length = 0;
+                            slots.push(...kept);
+                          }
                         }
                       }
                     }
