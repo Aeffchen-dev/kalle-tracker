@@ -1751,7 +1751,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                   <span className="truncate">{span.person} hat Kalle</span>
                                 </span>
                                 <span className="flex-1" />
-                                <span className="text-[12px] text-white/40 shrink-0 text-right">bis {format(span.endDate, 'd.M.', { locale: de })}</span>
+                                <span className="text-[12px] text-white/40 shrink-0 text-right">bis {format(new Date(span.endDate.getTime() - 86400000), 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
