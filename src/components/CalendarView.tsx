@@ -786,10 +786,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     return dayMap;
   }, [events]);
 
-  // Build prediction slots for today
+  // Build prediction slots for today and future days
   const { predictionSlots, lastPredictionHour } = useMemo(() => {
-    const isToday = isSameDay(selectedDate, new Date());
-    if (!isToday) return { predictionSlots: [] as { avgHour: number; hasPoop: boolean; hasPipi: boolean }[], lastPredictionHour: undefined };
+    const now = new Date();
+    const isToday = isSameDay(selectedDate, now);
+    const isPast = selectedDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (isPast) return { predictionSlots: [] as { avgHour: number; hasPoop: boolean; hasPipi: boolean }[], lastPredictionHour: undefined };
     
     const jsDay = selectedDate.getDay();
     const monBasedDay = (jsDay + 6) % 7;
@@ -805,7 +807,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     // Track the latest prediction hour (before filtering)
     const maxPredHour = estimates.length > 0 ? Math.max(...estimates.map(e => e.avgHour)) : undefined;
     
-    // Get real pipi/stuhlgang events for today
+    if (!isToday) {
+      // Future day: show all predictions
+      return { predictionSlots: estimates, lastPredictionHour: maxPredHour };
+    }
+    
+    // Today: match against real events and show only next upcoming
     const realHours = filteredEvents
       .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
       .map(e => {
@@ -813,7 +820,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
         return d.getHours() + d.getMinutes() / 60;
       });
     
-    const currentHour = new Date().getHours() + new Date().getMinutes() / 60;
+    const currentHour = now.getHours() + now.getMinutes() / 60;
     const usedEstimates = new Set<number>();
     
     // Match estimates to real events within ±2h
