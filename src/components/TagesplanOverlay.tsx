@@ -1920,7 +1920,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                 }
                               }
                               
-                              const kept = slots.filter((_, i) => !usedEstimates.has(i)).map(s => s.isEstimate ? { ...s, isFutureEstimate: true } : s);
+                              const kept = slots.filter((_, i) => !usedEstimates.has(i));
                               const extraReals = realSlots.filter((_, i) => !usedReals.has(i));
                               slots.length = 0;
                               slots.push(...kept, ...realSlots.filter((_, i) => usedReals.has(i)), ...extraReals);
@@ -1946,10 +1946,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             slots.length = 0;
                             slots.push(...kept);
                           } else {
-                            // Future day with no real events — mark estimates as future
-                            const kept = slots.map(s => s.isEstimate ? { ...s, isFutureEstimate: true } : s);
-                            slots.length = 0;
-                            slots.push(...kept);
+                            // Future day with no real events — keep estimates as-is (full opacity)
                           }
                         }
                       }
