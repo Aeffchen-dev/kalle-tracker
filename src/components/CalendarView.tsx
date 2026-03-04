@@ -786,34 +786,30 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     return dayMap;
   }, [events]);
 
-  // Build prediction slots for today and future days
-  const { predictionSlots, lastPredictionHour } = useMemo(() => {
+  // Helper to compute prediction slots for any date
+  const getPredictionsForDate = useCallback((targetDate: Date, targetEvents: Event[]) => {
     const now = new Date();
-    const isToday = isSameDay(selectedDate, now);
-    const isPast = selectedDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const isToday = isSameDay(targetDate, now);
+    const isPast = targetDate < new Date(now.getFullYear(), now.getMonth(), now.getDate());
     if (isPast) return { predictionSlots: [] as { avgHour: number; hasPoop: boolean; hasPipi: boolean }[], lastPredictionHour: undefined };
     
-    const jsDay = selectedDate.getDay();
+    const jsDay = targetDate.getDay();
     const monBasedDay = (jsDay + 6) % 7;
     const data = avgGassiByDay.get(monBasedDay);
-    if (!data) return { predictionSlots: [], lastPredictionHour: undefined };
+    if (!data) return { predictionSlots: [] as { avgHour: number; hasPoop: boolean; hasPipi: boolean }[], lastPredictionHour: undefined };
     
-    // Build estimate slots
     type PredSlot = { avgHour: number; hasPoop: boolean; hasPipi: boolean };
     const estimates: PredSlot[] = data.pipiHours.map((h, i) => ({
       avgHour: h, hasPoop: data.poopFlags[i], hasPipi: true,
     }));
     
-    // Track the latest prediction hour (before filtering)
     const maxPredHour = estimates.length > 0 ? Math.max(...estimates.map(e => e.avgHour)) : undefined;
     
     if (!isToday) {
-      // Future day: show all predictions
       return { predictionSlots: estimates, lastPredictionHour: maxPredHour };
     }
     
-    // Today: match against real events and show only next upcoming
-    const realHours = filteredEvents
+    const realHours = targetEvents
       .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
       .map(e => {
         const d = new Date(e.time);
@@ -823,7 +819,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     const currentHour = now.getHours() + now.getMinutes() / 60;
     const usedEstimates = new Set<number>();
     
-    // Match estimates to real events within ±2h
     for (let ei = 0; ei < estimates.length; ei++) {
       for (const rh of realHours) {
         if (Math.abs(rh - estimates[ei].avgHour) <= 2) {
@@ -833,7 +828,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       }
     }
     
-    // Keep only the next upcoming unmatched estimate
     const futureSlots = estimates
       .filter((_, i) => !usedEstimates.has(i))
       .filter(e => e.avgHour > currentHour)
@@ -841,7 +835,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     const slots = futureSlots.length > 0 ? [futureSlots[0]] : [];
     
     return { predictionSlots: slots, lastPredictionHour: maxPredHour };
-  }, [selectedDate, avgGassiByDay, filteredEvents]);
+  }, [avgGassiByDay]);
+
+  // Build prediction slots for selected date
+  const { predictionSlots, lastPredictionHour } = useMemo(() => {
+    return getPredictionsForDate(selectedDate, filteredEvents);
+  }, [selectedDate, getPredictionsForDate, filteredEvents]);
 
   // Check if content is scrollable
   useEffect(() => {
@@ -1081,7 +1080,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       icalEvents={stickyItem ? getIcalEventsForDate(incomingDate).filter(e => !e.summary?.toLowerCase().includes(stickyItem.eventType)) : getIcalEventsForDate(incomingDate)}
                       kalleOwner={getKalleOwnerForDateCb(incomingDate)}
                       birthday={birthday}
-                      predictionSlots={[]}
+                      predictionSlots={getPredictionsForDate(incomingDate, getEventsForDate(incomingDate)).predictionSlots}
                       activeEventId={null}
                       onItemClick={() => {}}
                       onContextMenu={() => {}}
