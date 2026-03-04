@@ -826,10 +826,12 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
       }
     }
     
-    // Keep only future unmatched estimates
-    const slots = estimates
+    // Keep only the next upcoming unmatched estimate
+    const futureSlots = estimates
       .filter((_, i) => !usedEstimates.has(i))
-      .filter(e => e.avgHour > currentHour);
+      .filter(e => e.avgHour > currentHour)
+      .sort((a, b) => a.avgHour - b.avgHour);
+    const slots = futureSlots.length > 0 ? [futureSlots[0]] : [];
     
     return { predictionSlots: slots, lastPredictionHour: maxPredHour };
   }, [selectedDate, avgGassiByDay, filteredEvents]);
