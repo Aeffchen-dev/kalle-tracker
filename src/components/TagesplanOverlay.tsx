@@ -1020,14 +1020,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           if (!container) return;
 
                           const section = document.getElementById(item.id);
-                          if (!section || !container.contains(section)) return;
+                          if (!section) return;
 
-                          const stickyNav = container.querySelector('.sticky');
-                          const navHeight = stickyNav ? stickyNav.getBoundingClientRect().height : 70;
-                          const sectionTop = (section as HTMLElement).offsetTop;
-                          const targetTop = Math.max(0, sectionTop - navHeight - 8);
+                          const stickyNav = container.querySelector('.sticky') as HTMLElement | null;
+                          const navHeight = stickyNav ? stickyNav.offsetHeight : 70;
+                          const sectionRect = section.getBoundingClientRect();
+                          const containerRect = container.getBoundingClientRect();
+                          const currentScroll = container.scrollTop;
+                          const targetScroll = currentScroll + sectionRect.top - containerRect.top - navHeight - 8;
 
-                          container.scrollTo({ top: targetTop, behavior: 'smooth' });
+                          // Use instant scroll first, then apply smooth if needed
+                          container.scrollTop = Math.max(0, targetScroll);
                         }}
                         className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
                           activeSection === item.id
