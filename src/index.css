@@ -99,6 +99,12 @@
 
   body {
     @apply text-foreground font-rauschen;
+    background-color: #000000;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  #root {
     background-color: #e8e2db;
     min-height: 100vh;
     min-height: 100dvh;
