@@ -1338,27 +1338,26 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
               <WeightChart data={weightData} width={width} />
             </div>
           </div>
-          <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
-            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+          <div ref={phChartRef} data-vaul-no-drag>
+            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 pb-[68px] overflow-hidden relative">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <PhChart data={phData} width={width} />
+              {/* Export Button - 16px above bottom edge of pH box */}
+              <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center">
+                <Button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
+                >
+                  <Download className="w-4 h-4" />
+                  {isExporting ? 'Exportiere...' : 'Daten exportieren'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div ref={endRef} />
-      </div>
-
-      {/* Export Button - sticky at viewport bottom during trends section */}
-      <div className="sticky bottom-6 z-10 flex justify-center pointer-events-none -mt-2 pb-2">
-        <Button
-          onClick={handleExportPDF}
-          disabled={isExporting}
-          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)] pointer-events-auto"
-        >
-          <Download className="w-4 h-4" />
-          {isExporting ? 'Exportiere...' : 'Daten exportieren'}
-        </Button>
       </div>
     </div>
   );
