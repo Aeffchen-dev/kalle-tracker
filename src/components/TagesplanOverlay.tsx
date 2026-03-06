@@ -958,11 +958,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* INFO header + close - scrolls with content */}
-            <div className="sticky top-0 z-10" style={{ background: 'hsl(var(--spot-color))' }}>
-              <div className="flex justify-between items-center pt-4 pb-2 px-4">
-                <h1 className="text-[16px] uppercase text-white">Info</h1>
+          {/* Sticky close + nav - highest z-index */}
+          <div className="fixed left-0 right-0 z-50 pointer-events-none" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+            <div className="pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }}>
+              {/* Close button row */}
+              <div className="flex justify-end px-4 pt-3 pb-0">
                 <button onClick={handleClose} className="text-white p-1">
                   <X size={20} />
                 </button>
@@ -994,10 +994,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   ))}
                 </div>
               </div>
-              {/* Fade out bottom edge */}
-              <div className="h-3 -mb-3" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
-            <div className="px-4 pt-2">
+            {/* Fade out bottom edge */}
+            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+          </div>
+
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(80px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+            {/* INFO header - scrolls with content */}
+            <div className="px-4 pb-4">
+              <h1 className="text-[16px] uppercase text-white">Info</h1>
+            </div>
+            <div className="px-4">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
