@@ -40,7 +40,7 @@ const CountUp = ({ value, duration = 800, decimals = 0, suffix = '', prefix = ''
             // ease-out cubic
             const eased = 1 - Math.pow(1 - progress, 3);
             const current = eased * value;
-            setDisplay(current.toFixed(decimals));
+            setDisplay(current.toFixed(decimals).replace('.', ','));
             if (progress < 1) requestAnimationFrame(animate);
           };
           requestAnimationFrame(animate);
