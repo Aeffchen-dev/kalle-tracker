@@ -941,7 +941,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
                     <DrawerTitle 
-                      className="text-center text-[16px] text-white leading-6 flex-1 cursor-pointer select-none"
+                      className="text-center text-[14px] text-white leading-5 flex-1 cursor-pointer select-none"
                       onClick={(e: React.MouseEvent) => { e.preventDefault(); }}
                       onTouchStart={(e: React.TouchEvent) => {
                         e.stopPropagation();
