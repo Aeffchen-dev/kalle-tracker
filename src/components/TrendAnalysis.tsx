@@ -1326,21 +1326,21 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
           <div ref={weightChartRef} className="mb-4">
-            <h3 className="text-[16px] text-white font-medium mb-3">Wachstumskurve</h3>
-            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+              <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <GrowthCurveChart events={events} />
             </div>
           </div>
           
           <div className="mb-4" data-vaul-no-drag>
-            <h3 className="text-[16px] text-white font-medium mb-3">Gewichtsverlauf</h3>
-            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+              <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <WeightChart data={weightData} width={width} />
             </div>
           </div>
           <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
-            <h3 className="text-[16px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
-            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+              <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <PhChart data={phData} width={width} />
             </div>
           </div>
