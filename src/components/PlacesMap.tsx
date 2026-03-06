@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Maximize2, X, LocateFixed } from 'lucide-react';
+import { Maximize2, X, Navigation } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 
@@ -149,7 +149,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
           style={{ borderRadius: 4, bottom: 8, right: 44 }}
           disabled={locatingInline}
         >
-          <LocateFixed size={14} className={locatingInline ? 'animate-pulse' : ''} />
+          <Navigation size={14} className={locatingInline ? 'animate-pulse' : ''} />
         </button>
         <button
           onClick={() => setIsFullscreen(true)}
@@ -173,7 +173,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
             style={{ borderRadius: 4, top: 8, right: 44 }}
             disabled={locatingFullscreen}
           >
-            <LocateFixed size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
+            <Navigation size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
           </button>
           <button
             onClick={() => setIsFullscreen(false)}
