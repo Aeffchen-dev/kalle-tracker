@@ -1056,7 +1056,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </button>
             </div>
             {/* INFO title - scrolls away on mobile */}
-            <div className="px-4 pt-4 pb-0 md:pt-14">
+            <div className="px-4 pt-4 pb-0 md:pt-[88px]">
               <h1 className="text-[16px] uppercase text-white md:hidden">Info</h1>
             </div>
             {/* Sticky navigation (mobile only) */}
