@@ -94,23 +94,15 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically sync root + browser UI colors to current overlay/sheet state (helps iOS floating browser bars)
+  // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-
     if (showTagesplan) {
-      html.style.backgroundColor = '#3d2b1f';
-      document.body.style.backgroundColor = '#3d2b1f';
-      themeColorMeta?.setAttribute('content', '#3d2b1f');
+      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
-      html.style.backgroundColor = '#000000';
-      document.body.style.backgroundColor = '#000000';
-      themeColorMeta?.setAttribute('content', '#000000');
+      html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
-      html.style.backgroundColor = '#000000';
-      document.body.style.backgroundColor = '#e8e2db';
-      themeColorMeta?.setAttribute('content', '#e8e2db');
+      html.style.backgroundColor = '#000000'; // black (matches drawer bottom)
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
@@ -352,7 +344,7 @@ const Index = () => {
     <div className="flex flex-col min-h-dvh bg-transparent relative overflow-x-hidden">
 
       {/* Header */}
-      {!showTagesplan && <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex items-start gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -375,10 +367,9 @@ const Index = () => {
         >
           Info
         </button>
-      </header>}
+      </header>
 
       {/* Main countdown area */}
-      {!showTagesplan && (
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 px-4 gap-3 mx-auto w-full md:max-w-[60vw] lg:max-w-[50vw] main-with-sheet-offset">
         <div 
           className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-6 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none relative ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
@@ -451,13 +442,12 @@ const Index = () => {
           </div>
         )}
       </main>
-      )}
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
       {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} initialShowTrends={openCalendarWithTrends} initialScrollToChart={scrollToChart} />}
 
       {/* Dog animation */}
-      {showDogAnimation && !showTagesplan && (
+      {showDogAnimation && (
         <img
           src={dogInCar}
           alt="Dog in car"
@@ -468,7 +458,7 @@ const Index = () => {
       )}
 
       {/* Event sheet opens on top */}
-      {!showTagesplan && <EventSheet
+      <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
@@ -477,7 +467,7 @@ const Index = () => {
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
-      />}
+      />
 
       {/* Tagesplan overlay */}
       <TagesplanOverlay 
@@ -487,7 +477,7 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      {!showTagesplan && <Drawer variant="compact" open={showWeather} onOpenChange={setShowWeather}>
+      <Drawer variant="compact" open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent variant="compact" className="z-[60]">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[16px] leading-6 font-semibold text-center">
@@ -580,14 +570,14 @@ const Index = () => {
             </div>
           </div>
         </DrawerContent>
-      </Drawer>}
+      </Drawer>
 
       {/* Gassi settings sheet */}
-      {!showTagesplan && <GassiSettingsSheet
+      <GassiSettingsSheet 
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
-      />}
+      />
     </div>
   );
 };
