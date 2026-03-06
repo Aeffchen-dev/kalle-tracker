@@ -1934,7 +1934,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             
             <div id="section-wochenplan" className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
-                <h2 className="flex items-center gap-2 text-[16px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
+                <h2 className="flex items-center gap-2 text-[14px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
               </div>
               
               {!dataLoaded ? (
@@ -1990,12 +1990,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           >
                             <div className="relative h-full">
                               <div className="sticky left-0 h-full flex items-center pl-5 pr-6 pointer-events-none" style={{ width: 'calc(100vw)', maxWidth: `calc(${span.length} * ${cardWidth} + ${(span.length - 1) * gap}px)` }}>
-                                <span className="text-[14px] text-white flex items-center gap-1.5 min-w-0">
-                                  <span className="text-[16px] shrink-0 leading-none -translate-y-[2px]">🐶</span>
+                                <span className="text-[13px] text-white flex items-center gap-1.5 min-w-0">
+                                  <span className="text-[14px] shrink-0 leading-none -translate-y-[2px]">🐶</span>
                                   <span className="truncate">{span.person} hat Kalle</span>
                                 </span>
                                 <span className="flex-1" />
-                                <span className="text-[12px] text-white/40 shrink-0 text-right">bis {format(new Date(span.endDate.getTime() - 86400000), 'd.M.', { locale: de })}</span>
+                                <span className="text-[11px] text-white/40 shrink-0 text-right">bis {format(new Date(span.endDate.getTime() - 86400000), 'd.M.', { locale: de })}</span>
                               </div>
                             </div>
                           </div>
@@ -2239,10 +2239,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         {/* Compact day header */}
                         <div className="px-3 pt-2.5 pb-2 flex items-center justify-between">
                           <div className="flex items-center gap-6">
-                            <span className="text-[14px] font-medium text-white">
+                            <span className="text-[13px] font-medium text-white">
                               {isToday ? 'Heute' : dayAbbr[jsDay]}
                             </span>
-                            <span className="text-white/70 text-[12px]">
+                            <span className="text-white/70 text-[11px]">
                               {format(dayDate, 'd. MMM', { locale: de })}
                             </span>
                           </div>
@@ -2253,7 +2253,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         {/* Entries */}
                         <div className="px-2.5 pb-2.5">
                           {(slots.length === 0 && dayMedicalEvents.length === 0 && medicalIcalEvents.length === 0) ? (
-                            <div className="text-white/15 text-[12px] py-2 text-center">–</div>
+                            <div className="text-white/15 text-[11px] py-2 text-center">–</div>
                           ) : (
                             <div className="space-y-1.5">
                               {slots.map((slot, i) => (
@@ -2262,8 +2262,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                    {slot.isWalk && (
                                     <div className={`p-3 rounded-lg overflow-hidden ${slot.isFutureEstimate ? '' : 'bg-white/[0.06]'} ${slot.isFutureEstimate ? 'opacity-60' : ''}`}>
                                       <div className="flex items-center gap-1.5 overflow-hidden">
-                                      <span className="text-[12px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
-                                        <span className="text-[18px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
+                                      <span className="text-[11px] text-white/50 shrink-0">{slot.exactTime || formatTime(slot.avgHour)}</span>
+                                        <span className="text-[16px] shrink-0">{slot.hasPipi && slot.hasPoop ? '💦💩' : slot.hasPoop ? '💩' : '💦'}</span>
                                       </div>
                                     </div>
                                    )}
@@ -2273,10 +2273,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                                         <div className="p-3 rounded-lg bg-white/[0.06]">
                                           <div className="flex flex-col gap-0.5">
                                             <div className="flex items-center gap-1.5">
-                                              <span className="text-[12px] text-white/50 shrink-0">{evt.timeStr}</span>
-                                              <span className="text-[18px] shrink-0">🗓️</span>
+                                              <span className="text-[11px] text-white/50 shrink-0">{evt.timeStr}</span>
+                                              <span className="text-[16px] shrink-0">🗓️</span>
                                             </div>
-                                            <span className="text-[12px] text-white/70 break-words min-w-0">{evt.summary}</span>
+                                            <span className="text-[11px] text-white/70 break-words min-w-0">{evt.summary}</span>
                                           </div>
                                         </div>
                                       </div>
@@ -2287,8 +2287,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               {dayMedicalEvents.map((mev, mi) => (
                                 <div key={`med-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[18px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
-                                    <span className="text-[12px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
+                                    <span className="text-[16px] shrink-0">{medicalEmojis[mev.type] || '💊'}</span>
+                                    <span className="text-[11px] text-white/70 truncate">{medicalLabels[mev.type] || mev.type}</span>
                                   </div>
                                 </div>
                               ))}
@@ -2296,8 +2296,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                               {medicalIcalEvents.map((mev, mi) => (
                                 <div key={`medIcal-${mi}`} className="p-3 rounded-lg overflow-hidden bg-white/[0.06]">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[18px] shrink-0">{mev.medicalEmoji}</span>
-                                    <span className="text-[12px] text-white/70 break-words min-w-0">{mev.summary}</span>
+                                    <span className="text-[16px] shrink-0">{mev.medicalEmoji}</span>
+                                    <span className="text-[11px] text-white/70 break-words min-w-0">{mev.summary}</span>
                                   </div>
                                 </div>
                               ))}
