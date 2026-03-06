@@ -909,52 +909,49 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           {/* Header - floating over scroll content */}
             <header className="absolute left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
               <h1 className="text-[16px] uppercase text-white mt-1">Info</h1>
-            <button onClick={handleClose} className="text-white p-1 mt-1">
-              <X size={20} />
-            </button>
-          </header>
-
-          {/* Floating TOC button */}
-          <div className="absolute z-20" style={{ bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))', right: 16 }}>
-            {showToc && (
-              <div className="absolute bottom-14 right-0 bg-[#2a1e15] border border-white/10 rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2 min-w-[180px] animate-fade-in">
-                {[
-                  { id: 'section-essen', emoji: '🍖', label: 'Essen' },
-                  { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
-                  { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
-                  { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
-                  { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
-                  { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
-                  { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
-                  { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      setShowToc(false);
-                      const el = document.getElementById(item.id);
-                      if (el && infoScrollRef.current) {
-                        const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                        const elTop = el.getBoundingClientRect().top;
-                        const scrollTop = infoScrollRef.current.scrollTop;
-                        infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
-                      }
-                    }}
-                    className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-white/80 text-[14px] active:bg-white/[0.1] transition-colors"
-                  >
-                    <span className="text-[18px]">{item.emoji}</span>
-                    <span>{item.label}</span>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <button onClick={() => setShowToc(prev => !prev)} className="text-white p-1 mt-1">
+                    <span className="text-[18px]">{showToc ? '✕' : '☰'}</span>
                   </button>
-                ))}
+                  {showToc && (
+                    <div className="absolute top-10 right-0 bg-[#2a1e15] border border-white/10 rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2 min-w-[180px] animate-fade-in">
+                      {[
+                        { id: 'section-essen', emoji: '🍖', label: 'Essen' },
+                        { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
+                        { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
+                        { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
+                        { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
+                        { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
+                        { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
+                        { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            setShowToc(false);
+                            const el = document.getElementById(item.id);
+                            if (el && infoScrollRef.current) {
+                              const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                              const elTop = el.getBoundingClientRect().top;
+                              const scrollTop = infoScrollRef.current.scrollTop;
+                              infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
+                            }
+                          }}
+                          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-white/80 text-[14px] active:bg-white/[0.1] transition-colors"
+                        >
+                          <span className="text-[18px]">{item.emoji}</span>
+                          <span>{item.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button onClick={handleClose} className="text-white p-1 mt-1">
+                  <X size={20} />
+                </button>
               </div>
-            )}
-            <button
-              onClick={() => setShowToc(prev => !prev)}
-              className="w-12 h-12 rounded-full bg-white/[0.15] backdrop-blur-md border border-white/20 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.3)] active:scale-95 transition-transform"
-            >
-              <span className="text-[20px]">{showToc ? '✕' : '☰'}</span>
-            </button>
-          </div>
+           </header>
 
           <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
