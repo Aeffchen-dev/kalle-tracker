@@ -959,49 +959,62 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
            <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 85%, transparent)' }}>
-              <div className="flex justify-between items-center px-4 pt-4 pb-1">
+              {/* Progress bar line - topmost */}
+              <div className="relative w-full h-[1px] bg-white/10" style={{ opacity: hasScrolled ? 1 : 0, transition: 'opacity 0.3s' }}>
+                <div
+                  className="absolute top-0 left-0 h-full bg-white/60"
+                  style={{ width: `${scrollProgress * 100}%` }}
+                />
+              </div>
+              {/* Title row - scrolls out, replaced by labels */}
+              <div className="flex justify-between items-center px-4 pt-3 pb-1" style={{ 
+                opacity: hasScrolled ? 0 : 1, 
+                maxHeight: hasScrolled ? 0 : 40, 
+                overflow: 'hidden',
+                transition: 'all 0.3s'
+              }}>
                 <h1 className="text-[16px] uppercase text-white">Info</h1>
                 <button onClick={handleClose} className="text-white p-1">
                   <X size={20} />
                 </button>
               </div>
+              {/* Labels row - scrolls in */}
               <div
                 ref={tocChipsRef}
-                className="pb-2 transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, overflow: 'hidden' }}
+                className="transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 36 : 0, overflow: 'hidden' }}
               >
-                <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-1.5 px-4" style={{ marginLeft: 0, marginRight: 0, width: '100vw' }}>
-                  {tocSections.map((item) => (
-                    <button
-                      key={item.id}
-                      data-section={item.id}
-                      onClick={() => {
-                        const el = document.getElementById(item.id);
-                        if (el && infoScrollRef.current) {
-                          const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                          const elTop = el.getBoundingClientRect().top;
-                          const scrollTop = infoScrollRef.current.scrollTop;
-                          infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
-                        }
-                      }}
-                      className={`flex-shrink-0 text-[11px] transition-all duration-200 ${
-                        activeSection === item.id ? 'text-white' : 'text-white/50'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="relative w-full h-[1px] bg-white/10">
-                  <div
-                    className="absolute top-0 left-0 h-full bg-white/60"
-                    style={{ width: `${scrollProgress * 100}%` }}
-                  />
+                <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide" style={{ width: '100vw' }}>
+                  <div className="flex gap-4 px-4 py-1.5">
+                    {tocSections.map((item) => (
+                      <button
+                        key={item.id}
+                        data-section={item.id}
+                        onClick={() => {
+                          const el = document.getElementById(item.id);
+                          if (el && infoScrollRef.current) {
+                            const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                            const elTop = el.getBoundingClientRect().top;
+                            const scrollTop = infoScrollRef.current.scrollTop;
+                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
+                          }
+                        }}
+                        className={`flex-shrink-0 text-[11px] transition-all duration-200 ${
+                          activeSection === item.id ? 'text-white' : 'text-white/50'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                  <button onClick={handleClose} className="flex-shrink-0 text-white/50 px-3 py-1">
+                    <X size={16} />
+                  </button>
                 </div>
               </div>
            </header>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(80px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(48px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
