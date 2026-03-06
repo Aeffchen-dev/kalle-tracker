@@ -527,7 +527,7 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
 
