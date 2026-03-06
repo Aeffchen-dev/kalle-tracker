@@ -252,18 +252,25 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
     },
     series: [
       {
-        name: 'Gewicht',
+        name: 'Gewicht-Linie',
         type: 'line',
-        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
-        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
+        animation: false,
         data: data.map(d => d.value),
         smooth: true,
-        symbol: 'circle',
-        symbolSize: 10,
+        symbol: 'none',
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
+        z: 5,
+      },
+      {
+        name: 'Gewicht',
+        type: 'scatter',
+        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
+        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
+        data: data.map(d => d.value),
+        symbolSize: 10,
         itemStyle: {
           color: (params: any) => {
             return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
@@ -275,8 +282,6 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
-            shadowBlur: 12,
-            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
