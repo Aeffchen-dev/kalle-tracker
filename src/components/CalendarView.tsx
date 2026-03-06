@@ -85,7 +85,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
 
   if (showEmptyState) {
     return (
-      <div className="flex items-center justify-center py-4">
+      <div className="flex items-center justify-center py-4 px-4">
         <p className="text-center text-[16px] text-white/60">Keine Einträge</p>
       </div>
     );
@@ -139,7 +139,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   entries.sort((a, b) => b.sortTime - a.sortTime);
 
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4 pb-20 px-4">
       {isBirthdayToday && birthdayAge > 0 && (
         <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[16px] text-white flex items-center gap-2">
@@ -1014,7 +1014,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
         </DrawerHeader>
         <div 
           ref={scrollContainerRef} 
-          className="px-4 overflow-y-auto overflow-x-hidden flex-1"
+          className="overflow-y-auto overflow-x-hidden flex-1"
           style={{ 
             minHeight: 0, 
             flexGrow: 1, 
@@ -1028,7 +1028,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
         >
           {showTrends ? (
-            <div data-vaul-no-drag>
+            <div data-vaul-no-drag className="px-4">
               <TrendAnalysis events={events} scrollToChart={initialScrollToChart} />
             </div>
           ) : (() => {
