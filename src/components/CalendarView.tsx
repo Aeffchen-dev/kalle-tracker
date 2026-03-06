@@ -415,6 +415,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   // Long press refs
   const longPressTimer = useRef<NodeJS.Timeout | null>(null);
   const longPressTriggered = useRef<boolean>(false);
+  const titleLongPressTimer = useRef<NodeJS.Timeout | null>(null);
   
   // Double tap refs
   const lastTapTime = useRef<number>(0);
@@ -964,9 +965,43 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                     )}
                   </div>
                 </div>
-                <DrawerTitle className="text-center text-[16px] text-white leading-6 flex-1">
-                  {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
-                </DrawerTitle>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <DrawerTitle 
+                      className="text-center text-[16px] text-white leading-6 flex-1 cursor-pointer select-none"
+                      onTouchStart={(e: React.TouchEvent) => {
+                        e.stopPropagation();
+                        titleLongPressTimer.current = setTimeout(() => {
+                          if (navigator.vibrate) navigator.vibrate(10);
+                          setCalendarOpen(true);
+                        }, 500);
+                      }}
+                      onTouchEnd={() => { if (titleLongPressTimer.current) { clearTimeout(titleLongPressTimer.current); titleLongPressTimer.current = null; } }}
+                      onTouchMove={() => { if (titleLongPressTimer.current) { clearTimeout(titleLongPressTimer.current); titleLongPressTimer.current = null; } }}
+                    >
+                      {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
+                    </DrawerTitle>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-black border-white/30" align="center" onClick={(e) => e.stopPropagation()}>
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        if (date) {
+                          setSelectedDate(date);
+                          setCalendarOpen(false);
+                        }
+                      }}
+                      disabled={(date) => date > today}
+                      modifiers={{ hasEntry: daysWithEntries }}
+                      modifiersClassNames={{ 
+                        hasEntry: 'has-entry'
+                      }}
+                      className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
+                      locale={de}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <div className="flex items-center gap-2 w-[56px] justify-end">
                   <div className="w-6 h-6 flex items-center justify-center">
                     {canGoNext && (
