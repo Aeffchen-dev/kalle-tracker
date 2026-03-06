@@ -1076,12 +1076,30 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       
       // Capture Growth Curve chart (inner content only, no glassmorphism box)
       if (growthChartInnerRef.current) {
+        // Temporarily shrink legend text for PDF export (30% smaller)
+        const legendEl = growthChartInnerRef.current.querySelector('.flex.flex-wrap.gap-3') as HTMLElement;
+        let origFontSize = '';
+        let origGap = '';
+        if (legendEl) {
+          origFontSize = legendEl.style.fontSize;
+          origGap = legendEl.style.gap;
+          legendEl.style.fontSize = '8px';
+          legendEl.style.gap = '6px';
+        }
+        
         const canvas = await html2canvas(growthChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
           useCORS: true,
         });
+        
+        // Restore legend
+        if (legendEl) {
+          legendEl.style.fontSize = origFontSize;
+          legendEl.style.gap = origGap;
+        }
+        
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = pageWidth - margin * 2;
         const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
@@ -1098,40 +1116,66 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
-      // Capture Weight chart (inner content only)
+      // Capture Weight chart (inner content only) — expand to full width so entire graph fits
       if (weightChartInnerRef.current) {
         const scrollContainer = weightChartInnerRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
-        let originalStyles: { overflow: string; width: string } | null = null;
+        let originalStyles: { overflow: string; width: string; maxWidth: string } | null = null;
+        let originalContainerStyles: { overflow: string; width: string } | null = null;
         
         if (scrollContainer && innerChart) {
           originalStyles = {
             overflow: scrollContainer.style.overflow,
             width: scrollContainer.style.width,
+            maxWidth: scrollContainer.style.maxWidth,
+          };
+          originalContainerStyles = {
+            overflow: weightChartInnerRef.current.style.overflow,
+            width: weightChartInnerRef.current.style.width,
           };
           scrollContainer.style.overflow = 'visible';
           scrollContainer.style.width = `${innerChart.scrollWidth}px`;
+          scrollContainer.style.maxWidth = 'none';
+          weightChartInnerRef.current.style.overflow = 'visible';
+          weightChartInnerRef.current.style.width = `${innerChart.scrollWidth}px`;
           scrollContainer.scrollLeft = 0;
         }
+        
+        const captureWidth = innerChart ? innerChart.scrollWidth + 100 : undefined;
         
         const canvas = await html2canvas(weightChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
           useCORS: true,
-          windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
+          windowWidth: captureWidth,
+          width: innerChart ? innerChart.scrollWidth : undefined,
         });
         
         if (scrollContainer && originalStyles) {
           scrollContainer.style.overflow = originalStyles.overflow;
           scrollContainer.style.width = originalStyles.width;
+          scrollContainer.style.maxWidth = originalStyles.maxWidth;
+        }
+        if (weightChartInnerRef.current && originalContainerStyles) {
+          weightChartInnerRef.current.style.overflow = originalContainerStyles.overflow;
+          weightChartInnerRef.current.style.width = originalContainerStyles.width;
         }
         
         const imgData = canvas.toDataURL('image/png');
+        // Scale to fit entire page width, and ensure height fits within remaining page space
         const imgWidth = pageWidth - margin * 2;
-        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const maxHeight = pageHeight - yPos - margin;
+        if (imgHeight > maxHeight) {
+          // Scale down to fit height, center horizontally
+          const scaledWidth = (canvas.width * maxHeight) / canvas.height;
+          const xOffset = margin + (imgWidth - scaledWidth) / 2;
+          pdf.addImage(imgData, 'PNG', xOffset, yPos, scaledWidth, maxHeight);
+        } else {
+          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        }
       }
       
       // ===== PAGE 4: pH Chart =====
