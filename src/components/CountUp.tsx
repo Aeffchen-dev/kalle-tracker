@@ -19,7 +19,7 @@ interface CountUpProps {
 /**
  * Animates a number from 0 to `value` when scrolled into view.
  */
-const CountUp = ({ value, duration = 800, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
+const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
   const ref = useRef<HTMLSpanElement>(null);
   const [display, setDisplay] = useState('0');
   const hasAnimated = useRef(false);
@@ -37,8 +37,8 @@ const CountUp = ({ value, duration = 800, decimals = 0, suffix = '', prefix = ''
           const startTime = performance.now();
           const animate = (now: number) => {
             const progress = Math.min(1, (now - startTime) / duration);
-            // ease-out cubic
-            const eased = 1 - Math.pow(1 - progress, 3);
+            // ease-out quint — starts fast, decelerates smoothly
+            const eased = 1 - Math.pow(1 - progress, 5);
             const current = eased * value;
             setDisplay(current.toFixed(decimals).replace('.', ','));
             if (progress < 1) requestAnimationFrame(animate);
