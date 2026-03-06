@@ -141,7 +141,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   return (
     <div className="space-y-4 pb-20 px-4">
       {isBirthdayToday && birthdayAge > 0 && (
-        <div className="flex items-center justify-between p-3 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+        <div className="flex items-center justify-between p-3 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[16px] text-white flex items-center gap-2">
             <span>🎉</span>
             <span>{birthdayAge}. Geburtstag</span>
@@ -185,7 +185,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
             return (
               <div
                 key={`ical-${gi}`}
-                className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none"
+                className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none"
                 onClick={handleIcalMedicalCheck}
               >
                 <span className="text-[20px] shrink-0">{medicalEmoji}</span>
@@ -216,7 +216,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           }
           
           return (
-            <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+            <div key={`ical-${gi}`} className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
               <span className="text-[14px] text-white flex items-center gap-2 overflow-hidden">
                 <span className="text-[20px] shrink-0">🗓️</span>
                 <span className="truncate">{summary}</span>
@@ -244,7 +244,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           return (
             <div key={`group-${gi}`} className="relative flex w-full items-stretch overflow-hidden">
               <div
-                className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                 onClick={() => onItemClick(firstEvent.id)}
                 onContextMenu={(e) => onContextMenu(e, firstEvent.id)}
                 onTouchStart={() => onLongPressStart(firstEvent.id)}
@@ -294,7 +294,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
           return (
             <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
               <div
-                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+                className={`flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
                 onClick={() => onItemClick(event.id)}
                 onTouchStart={() => onLongPressStart(event.id)}
                 onTouchMove={onLongPressMove}
@@ -328,7 +328,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
         return (
           <div key={event.id} className="relative flex w-full items-stretch overflow-hidden">
             <div
-              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
+              className={`flex items-center justify-between px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] cursor-pointer select-none transition-[margin] duration-150 ease-linear min-w-0 flex-1 ${isActive ? 'mr-[90px]' : 'mr-0'}`}
               onClick={() => onItemClick(event.id)}
               onContextMenu={(e) => onContextMenu(e, event.id)}
               onTouchStart={() => onLongPressStart(event.id)}
@@ -366,7 +366,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
         );
       })}
       {kalleOwner && (dayEvents.length > 0 || dayIcalEvents.length > 0) && (
-        <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+        <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[14px] text-white flex items-center gap-2">
             <span className="text-[20px] shrink-0">🐶</span>
             <span>{kalleOwner.person} hat Kalle</span>
@@ -1057,7 +1057,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                 {/* Sticky medical item overlay – stays fixed on top during slide */}
                 {stickyItem && (
                   <div className="absolute top-0 left-0 right-0 z-50">
-                    <div className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                    <div className="flex items-center gap-3 px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
                       <span className="text-[20px] shrink-0">{stickyItem.emoji}</span>
                       <span className="text-[14px] text-white truncate flex-1 min-w-0">{stickyItem.label}</span>
                       <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">{stickyItem.time} Uhr</span>
