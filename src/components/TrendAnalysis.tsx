@@ -528,12 +528,26 @@ interface GrowthDataPoint {
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
   const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
-  const isZoomedRef = useRef<boolean>(false);
 
-  const handleChartClick = () => {
-    // no-op: zoom disabled to allow page scroll
-  };
+  const handleDoubleTap = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTapRef.current < 300) {
+      // Double tap detected — toggle zoom
+      const chart = chartRef.current?.getEchartsInstance?.();
+      if (!chart) return;
+      if (isZoomed) {
+        chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+        setIsZoomed(false);
+      } else {
+        chart.dispatchAction({ type: 'dataZoom', start: 25, end: 75 });
+        setIsZoomed(true);
+      }
+    }
+    lastTapRef.current = now;
+  }, [isZoomed]);
+
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
@@ -578,7 +592,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
-      confine: false,
+      confine: true,
       backgroundColor: 'rgba(0,0,0,0.9)',
       borderColor: 'rgba(255,255,255,0.2)',
       borderWidth: 1,
@@ -604,7 +618,17 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         return null;
       },
     },
-    dataZoom: [],
+    dataZoom: [
+      {
+        type: 'inside',
+        xAxisIndex: 0,
+        filterMode: 'none',
+        zoomOnMouseWheel: false,
+        moveOnMouseMove: false,
+        moveOnMouseWheel: false,
+        preventDefaultMouseMove: false,
+      },
+    ],
     grid: {
       left: 40,
       right: 10,
@@ -686,13 +710,13 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         name: 'Normal',
         type: 'scatter',
         data: normalPoints.map(p => [p.month, p.weight]),
-        symbolSize: 8,
+        symbolSize: 10,
         itemStyle: {
           color: '#5AD940',
           opacity: 1,
         },
         emphasis: {
-          scale: 1.8,
+          scale: 2,
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
@@ -706,7 +730,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         name: 'Abweichung',
         type: 'scatter',
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
-        symbolSize: 8,
+        symbolSize: 10,
         itemStyle: {
           color: '#FF0000',
           opacity: 1,
@@ -714,7 +738,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           shadowColor: 'rgba(255, 0, 0, 0.6)',
         },
         emphasis: {
-          scale: 1.8,
+          scale: 2,
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
@@ -728,7 +752,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   };
 
   return (
-    <div ref={containerRef2} onClick={handleChartClick} style={{ touchAction: 'pan-y' }}>
+    <div ref={containerRef2} onClick={handleDoubleTap} style={{ touchAction: 'pan-y' }}>
       {inView ? (
         <ReactECharts
           ref={chartRef}
@@ -758,6 +782,20 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           <span>Abweichung</span>
         </div>
       </div>
+      {isZoomed && (
+        <button 
+          onClick={() => {
+            const chart = chartRef.current?.getEchartsInstance?.();
+            if (chart) {
+              chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
+              setIsZoomed(false);
+            }
+          }}
+          className="flex items-center gap-1 mx-auto mt-2 text-[11px] text-white/50 hover:text-white/70 transition-colors"
+        >
+          ↩ Zurücksetzen
+        </button>
+      )}
     </div>
   );
 });
