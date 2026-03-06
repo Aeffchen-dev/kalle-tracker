@@ -78,7 +78,7 @@ const StatCard = memo(({
   subtext?: string;
   trend?: 'up' | 'down' | 'neutral';
 }) => (
-  <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3">
+  <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 shadow-[0_0_24px_24px_rgba(0,0,0,0.08)]">
     <div className="flex items-center gap-1.5 mb-0.5">
       <span className="text-base">{emoji}</span>
       <span className="text-[10px] text-white/60 uppercase tracking-wide whitespace-pre-line">{label}</span>
@@ -1402,7 +1402,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     <div className="relative" data-vaul-no-drag>
       <div className="space-y-2">
       {/* Age Display */}
-      <div className="w-full bg-white/[0.04] rounded-[12px] border border-white/5 p-4 flex items-center justify-center">
+      <div className="w-full bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 flex items-center justify-center shadow-[0_0_24px_24px_rgba(0,0,0,0.08)]">
         <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
           <span className="text-white">{kalleAge}</span>
@@ -1446,7 +1446,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       <div ref={chartsRef}>
         <div ref={containerRef} className="space-y-2">
           <div ref={growthChartRef}>
-            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+            <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 overflow-hidden shadow-[0_0_24px_24px_rgba(0,0,0,0.08)]">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <div ref={growthChartInnerRef}>
                 <GrowthCurveChart events={events} />
@@ -1455,7 +1455,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           </div>
           
           <div ref={weightChartRef} data-vaul-no-drag>
-            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+            <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 overflow-hidden shadow-[0_0_24px_24px_rgba(0,0,0,0.08)]">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <div ref={weightChartInnerRef}>
                 <WeightChart data={weightData} width={width} />
@@ -1463,7 +1463,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             </div>
           </div>
           <div ref={phChartRef} data-vaul-no-drag>
-            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+            <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 overflow-hidden shadow-[0_0_24px_24px_rgba(0,0,0,0.08)]">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <div ref={phChartInnerRef}>
                 <PhChart data={phData} width={width} />
