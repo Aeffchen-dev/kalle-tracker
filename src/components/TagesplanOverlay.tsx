@@ -991,7 +991,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </button>
             </div>
             {/* INFO title - scrolls away */}
-            <div className="px-4 pt-4 pb-2">
+            <div className="px-4 pt-4 pb-0">
               <h1 className="text-[16px] uppercase text-white">Info</h1>
             </div>
             {/* Sticky navigation */}
@@ -1008,7 +1008,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     } : {})
                   }}
                 >
-                  <div className="flex items-center gap-5 pl-4 py-4" style={{ paddingRight: Math.round(16 + navStickyProgress * 80) }}>
+                  <div className="flex items-center gap-5 pl-4 pt-2 pb-4" style={{ paddingRight: Math.round(16 + navStickyProgress * 80) }}>
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -1035,7 +1035,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
               {/* Bottom fade */}
-              <div className="h-10 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+              <div className="h-8 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4 relative z-0">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
