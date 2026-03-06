@@ -973,7 +973,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <div className="sticky top-0 z-[15]">
               <div className="flex items-center" style={{ background: 'hsl(var(--spot-color))' }}>
                 <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
-                  <div className="flex items-center gap-5 px-4 py-5">
+                  <div className="flex items-center gap-5 pl-4 py-4">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
