@@ -584,6 +584,8 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         zoomOnMouseWheel: false,
         moveOnMouseMove: false,
         moveOnMouseWheel: false,
+        moveOnTouch: false,
+        zoomOnTouch: false,
         minSpan: 33,
         maxSpan: 100,
       },
