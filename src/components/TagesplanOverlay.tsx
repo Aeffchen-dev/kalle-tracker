@@ -958,12 +958,19 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-           {/* Sticky navigation bar */}
-           <header className="absolute left-0 right-0 z-10" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
-              <div className="absolute inset-0" style={{ background: hasScrolled ? 'linear-gradient(to bottom, hsl(var(--spot-color)) 90%, transparent)' : 'transparent', transition: 'background 0.3s' }} />
-              <div ref={tocChipsRef} className="relative flex items-center transition-all duration-300" style={{ opacity: hasScrolled ? 1 : 0, pointerEvents: hasScrolled ? 'auto' : 'none' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+            {/* INFO header - scrolls with content */}
+            <div className="flex justify-between items-center pt-4 pb-2 px-4">
+              <h1 className="text-[16px] uppercase text-white">Info</h1>
+              <button onClick={handleClose} className="text-white p-1">
+                <X size={20} />
+              </button>
+            </div>
+            {/* Sticky navigation - sits below INFO, sticks to top */}
+            <div className="sticky top-0 z-10 -mx-0" style={{ background: 'hsl(var(--spot-color))' }}>
+              <div ref={tocChipsRef} className="flex items-center">
                 <div className="flex-1 overflow-x-auto scrollbar-hide">
-                  <div className="flex items-center gap-5 px-4 py-2.5">
+                  <div className="flex items-center gap-5 px-4 py-2">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -974,12 +981,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             const containerTop = infoScrollRef.current.getBoundingClientRect().top;
                             const elTop = el.getBoundingClientRect().top;
                             const scrollTop = infoScrollRef.current.scrollTop;
-                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 48, behavior: 'smooth' });
+                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 44, behavior: 'smooth' });
                           }
                         }}
                         className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
                           activeSection === item.id
-                            ? 'text-white scale-[1.05]'
+                            ? 'text-white'
                             : 'text-white/35 active:text-white/60'
                         }`}
                       >
@@ -990,21 +997,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
                 <div className="relative flex-shrink-0 flex items-center">
                   <div className="absolute left-0 w-6 h-full -translate-x-full" style={{ background: 'linear-gradient(to left, hsl(var(--spot-color)), transparent)' }} />
-                  <button onClick={handleClose} className="text-white px-3 py-2.5 active:text-white/70 transition-colors">
+                  <button onClick={handleClose} className="text-white px-3 py-2 active:text-white/70 transition-colors">
                     <X size={20} />
                   </button>
                 </div>
               </div>
-           </header>
-
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* INFO header - scrolls with content */}
-            <div className="flex justify-between items-center pt-4 pb-6">
-              <h1 className="text-[16px] uppercase text-white">Info</h1>
-              <button onClick={handleClose} className="text-white p-1">
-                <X size={20} />
-              </button>
             </div>
+            <div className="px-4 pt-2">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
@@ -2174,6 +2173,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
               )}
+            </div>
             </div>
             
           </div>
