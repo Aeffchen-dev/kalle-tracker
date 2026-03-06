@@ -4,8 +4,8 @@ import { getEvents, deleteEvent, Event, getPendingCount, saveEvent } from '@/lib
 import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, TrendingUp, CalendarIcon, CloudOff, Watch, LayoutGrid, Check } from 'lucide-react';
-import TrendAnalysis, { isWeightOutOfBounds } from './TrendAnalysis';
+import { ArrowLeft, ArrowRight, CalendarIcon, CloudOff, Watch, LayoutGrid, Check } from 'lucide-react';
+import { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
@@ -18,8 +18,6 @@ const MEDICAL_ICAL_DISMISSED_KEY = 'kalle_medical_ical_dismissed_';
 
 interface CalendarViewProps {
   eventSheetOpen?: boolean;
-  initialShowTrends?: boolean;
-  initialScrollToChart?: 'weight' | 'ph' | null;
 }
 
 /* ── DayPanel: renders entries for a single day ─────────── */
@@ -380,7 +378,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   );
 };
 
-const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initialScrollToChart = null }: CalendarViewProps) => {
+const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const isStandalonePwa = useMemo(() => {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(display-mode: standalone)').matches;
@@ -390,8 +388,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<Event[]>([]);
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
-  const [snap, setSnap] = useState<SnapPoint | null>(initialShowTrends ? 0.9 : collapsedSnapPoint);
-  const [showTrends, setShowTrends] = useState(initialShowTrends);
+  const [snap, setSnap] = useState<SnapPoint | null>(collapsedSnapPoint);
   const [isOffline, setIsOffline] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [swipeOffset, setSwipeOffset] = useState(0);
@@ -456,10 +453,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     fetchICalEvents().then(setIcalEvents).catch(console.error);
   }, []);
 
-  // Scroll to top when switching views
-  useEffect(() => {
-    scrollContainerRef.current?.scrollTo({ top: 0 });
-  }, [showTrends]);
 
   // Subscribe to realtime updates
   useEffect(() => {
@@ -860,7 +853,7 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
     }
     
     return () => resizeObserver.disconnect();
-  }, [snap, filteredEvents.length, showTrends]);
+  }, [snap, filteredEvents.length]);
 
 
   const today = new Date();
@@ -934,25 +927,6 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
           onClick={toggleSnapPoint}
         >
           <div className="flex items-center justify-between">
-            {showTrends ? (
-              <>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowTrends(false); }} 
-                  className="w-6 h-6 flex items-center justify-center"
-                >
-                  <ArrowLeft size={24} className="text-white" />
-                </button>
-                <DrawerTitle className="text-center text-[16px] text-white leading-6">
-                  Trend-Analyse
-                </DrawerTitle>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowTrends(false); }}
-                  className="w-6 h-6 flex items-center justify-center"
-                >
-                  <TrendingUp size={20} className="text-[#5AD940]" />
-                </button>
-              </>
-            ) : (
               <>
                 <div className="flex items-center gap-2 w-[56px]">
                   <div className="w-6 h-6 flex items-center justify-center">
@@ -1001,15 +975,8 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
                       </button>
                     )}
                   </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setShowTrends(true); setSnap(0.9); }} 
-                    className="w-6 h-6 flex items-center justify-center"
-                  >
-                    <TrendingUp size={20} className="text-white" />
-                  </button>
                 </div>
               </>
-            )}
           </div>
         </DrawerHeader>
         <div 
@@ -1023,15 +990,11 @@ const CalendarView = ({ eventSheetOpen = false, initialShowTrends = false, initi
             touchAction: snap === 0.9 && isContentScrollable ? 'pan-y' : 'none'
           }}
           {...(snap === 0.9 && isContentScrollable ? { 'data-vaul-no-drag': true } : {})}
-          onTouchStart={(e) => !showTrends && handleDaySwipeStart(e)}
-          onTouchMove={(e) => !showTrends && handleDaySwipeMove(e)}
-          onTouchEnd={() => !showTrends && handleDaySwipeEnd()}
+          onTouchStart={(e) => handleDaySwipeStart(e)}
+          onTouchMove={(e) => handleDaySwipeMove(e)}
+          onTouchEnd={() => handleDaySwipeEnd()}
         >
-          {showTrends ? (
-            <div data-vaul-no-drag className="px-4">
-              <TrendAnalysis events={events} scrollToChart={initialScrollToChart} />
-            </div>
-          ) : (() => {
+          {(() => {
             // swipeOffset: -1 (swiping left/next) to 1 (swiping right/prev), 0 = idle
             const p = swipeOffset; // progress: -1 (left/next) to 1 (right/prev)
             const absP = Math.abs(p);
