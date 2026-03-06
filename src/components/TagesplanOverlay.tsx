@@ -163,8 +163,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const tocChipsRef = useRef<HTMLDivElement>(null);
   const [navScrolledToEnd, setNavScrolledToEnd] = useState(false);
   const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
-  const [stickyHeaderVisible, setStickyHeaderVisible] = useState(false);
-  const [prevActiveSection, setPrevActiveSection] = useState<string | null>(null);
 
   const tocSections = useMemo(() => [
     { id: 'section-trends', emoji: '📊', label: 'Trends' },
@@ -207,27 +205,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           }
         }
       }
-      setActiveSection(prev => {
-        if (prev !== current) setPrevActiveSection(prev);
-        return current;
-      });
-
-      // Determine if the section h2 has scrolled past the sticky nav
-      const stickyNav = container.querySelector('.sticky') as HTMLElement | null;
-      const navBottom = stickyNav ? stickyNav.getBoundingClientRect().bottom : containerTop + 70;
-      if (current) {
-        const sectionEl = document.getElementById(current);
-        if (sectionEl) {
-          const h2 = sectionEl.querySelector('h2, h3');
-          if (h2) {
-            const h2Bottom = h2.getBoundingClientRect().bottom;
-            setStickyHeaderVisible(h2Bottom < navBottom);
-          }
-        }
-      } else {
-        setStickyHeaderVisible(false);
-      }
-
+      setActiveSection(current);
       // Auto-scroll chips to keep active visible
       if (current && tocChipsRef.current) {
         const chip = tocChipsRef.current.querySelector(`[data-section="${current}"]`) as HTMLElement;
@@ -1076,31 +1054,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ))}
                   </div>
                 </div>
-              </div>
-              {/* Sticky section header */}
-              <div
-                className="pointer-events-none overflow-hidden"
-                style={{
-                  height: stickyHeaderVisible ? 28 : 0,
-                  opacity: stickyHeaderVisible ? 1 : 0,
-                  transition: 'height 0.25s ease-out, opacity 0.2s ease-out',
-                  background: 'hsl(var(--spot-color))',
-                }}
-              >
-                {activeSection && (() => {
-                  const section = tocSections.find(s => s.id === activeSection);
-                  if (!section) return null;
-                  return (
-                    <div
-                      key={section.id}
-                      className="flex items-center gap-2 pl-4 text-[13px] text-white/70 animate-fade-in"
-                      style={{ height: 28 }}
-                    >
-                      <span className="info-emoji text-[12px]">{section.emoji}</span>
-                      <span>{section.label}</span>
-                    </div>
-                  );
-                })()}
               </div>
               {/* Bottom fade */}
               <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
