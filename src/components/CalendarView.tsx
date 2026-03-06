@@ -942,6 +942,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                   <PopoverTrigger asChild>
                     <DrawerTitle 
                       className="text-center text-[16px] text-white leading-6 flex-1 cursor-pointer select-none"
+                      onClick={(e: React.MouseEvent) => { e.preventDefault(); }}
                       onTouchStart={(e: React.TouchEvent) => {
                         e.stopPropagation();
                         titleLongPressTimer.current = setTimeout(() => {
@@ -951,6 +952,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       }}
                       onTouchEnd={() => { if (titleLongPressTimer.current) { clearTimeout(titleLongPressTimer.current); titleLongPressTimer.current = null; } }}
                       onTouchMove={() => { if (titleLongPressTimer.current) { clearTimeout(titleLongPressTimer.current); titleLongPressTimer.current = null; } }}
+                      onPointerDown={(e) => { e.preventDefault(); }}
                     >
                       {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                     </DrawerTitle>
