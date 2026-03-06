@@ -190,8 +190,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
-    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
+    animationDuration: 800,
     animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
@@ -252,25 +251,16 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
     },
     series: [
       {
-        name: 'Gewicht-Linie',
+        name: 'Gewicht',
         type: 'line',
-        animation: false,
         data: data.map(d => d.value),
         smooth: true,
-        symbol: 'none',
+        symbol: 'circle',
+        symbolSize: 10,
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
-        z: 5,
-      },
-      {
-        name: 'Gewicht',
-        type: 'scatter',
-        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
-        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
-        data: data.map(d => d.value),
-        symbolSize: 10,
         itemStyle: {
           color: (params: any) => {
             return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
@@ -369,8 +359,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
-    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
+    animationDuration: 800,
     animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
@@ -449,8 +438,6 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       {
         name: 'pH-Wert',
         type: 'line',
-        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
-        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
         data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
