@@ -961,13 +961,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3 transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, marginTop: hasScrolled ? 0 : -4 }}
+                className="flex items-center justify-center gap-2 px-4 pb-3 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 28 : 0, marginTop: hasScrolled ? 0 : -4 }}
               >
                 {tocSections.map((item) => (
                   <button
                     key={item.id}
                     data-section={item.id}
+                    title={`${item.emoji} ${item.label}`}
                     onClick={() => {
                       const el = document.getElementById(item.id);
                       if (el && infoScrollRef.current) {
@@ -977,20 +978,21 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                       }
                     }}
-                    className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[13px] transition-all duration-200 ${
-                      activeSection === item.id
-                        ? 'bg-white/20 border-white/30 text-white'
-                        : 'bg-white/[0.06] border-white/10 text-white/60 active:bg-white/[0.15]'
-                    }`}
+                    className="relative flex items-center justify-center transition-all duration-200 active:scale-125"
                   >
-                    <span className="text-[14px]">{item.emoji}</span>
-                    <span>{item.label}</span>
+                    <span
+                      className={`block rounded-full transition-all duration-200 ${
+                        activeSection === item.id
+                          ? 'w-2.5 h-2.5 bg-white shadow-[0_0_6px_rgba(255,255,255,0.4)]'
+                          : 'w-1.5 h-1.5 bg-white/40'
+                      }`}
+                    />
                   </button>
                 ))}
               </div>
            </header>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(88px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(76px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
