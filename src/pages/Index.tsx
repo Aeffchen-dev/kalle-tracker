@@ -410,14 +410,7 @@ const Index = () => {
           </button>
         </div>
         
-        {/* Calendar event notifications */}
-        {showCard && (
-          <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            <CalendarNotifications onCalendarEventTap={(date) => { setTagesplanScrollDate(date); setShowTagesplan(true); }} onEventSaved={() => loadEvents()} />
-          </div>
-        )}
-
-        {/* Anomaly alerts - only show if there are alerts */}
+        {/* Anomaly alerts - newest on top */}
         {anomalies.length > 0 && showCard && (
           <div className={`w-full animate-fade-in-up`} style={{ animationDelay: '100ms', animationFillMode: 'backwards' }}>
             <AnomalyAlerts 
@@ -428,6 +421,13 @@ const Index = () => {
                 setShowTagesplan(true);
               }}
             />
+          </div>
+        )}
+
+        {/* Calendar event notifications */}
+        {showCard && (
+          <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
+            <CalendarNotifications onCalendarEventTap={(date) => { setTagesplanScrollDate(date); setShowTagesplan(true); }} onEventSaved={() => loadEvents()} />
           </div>
         )}
       </main>
