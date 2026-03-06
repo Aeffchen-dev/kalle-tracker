@@ -970,8 +970,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               <h1 className="text-[16px] uppercase text-white">Info</h1>
             </div>
             {/* Sticky navigation */}
-            <div className="sticky top-0 z-10" style={{ background: 'hsl(var(--spot-color))' }}>
-              <div className="flex items-center">
+            <div className="sticky top-0 z-[15]">
+              <div className="flex items-center" style={{ background: 'hsl(var(--spot-color))' }}>
                 <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
                   <div className="flex items-center gap-5 px-4 py-2">
                     {tocSections.map((item) => (
@@ -999,10 +999,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   </div>
                 </div>
                 {/* Right fade before fixed close */}
-                <div className="flex-shrink-0 w-14 h-full" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }}>&nbsp;</div>
+                <div className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
               </div>
               {/* Bottom fade */}
-              <div className="h-6 -mb-6" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+              <div className="h-8 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
