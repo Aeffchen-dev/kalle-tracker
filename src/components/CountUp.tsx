@@ -38,8 +38,8 @@ const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '
           const animate = (now: number) => {
             const progress = Math.min(1, (now - startTime) / duration);
             // ease-in-out: slow start, slow end
-            const eased = progress < 0.3
-              ? 0.5 * Math.pow(progress / 0.3, 2) * 0.3 / 0.5
+            const eased = progress < 0.5
+              ? 0.5 * Math.pow(progress / 0.5, 2)
               : 1 - Math.pow(1 - progress, 6);
             const current = eased * value;
             setDisplay(current.toFixed(decimals).replace('.', ','));
