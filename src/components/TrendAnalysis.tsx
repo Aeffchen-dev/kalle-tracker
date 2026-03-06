@@ -240,7 +240,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -306,9 +306,6 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
-        animationDuration: 0,
-        animationDurationUpdate: 300,
-        animationEasingUpdate: 'elasticOut',
         lineStyle: {
           color: '#ffffff',
           width: 2,
@@ -409,7 +406,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -491,9 +488,6 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
-        animationDuration: 0,
-        animationDurationUpdate: 300,
-        animationEasingUpdate: 'elasticOut',
         lineStyle: {
           color: '#ffffff',
           width: 2,
@@ -644,7 +638,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -732,7 +726,6 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         data: visibleCurve.map(d => [d.month, d.expected]),
         smooth: true,
         symbol: 'none',
-        animationDuration: 0,
         lineStyle: {
           color: '#ffffff',
           width: 2,
@@ -745,7 +738,6 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         data: visibleCurve.map(d => [d.month, d.upper]),
         smooth: true,
         symbol: 'none',
-        animationDuration: 0,
         lineStyle: {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
@@ -758,7 +750,6 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         data: visibleCurve.map(d => [d.month, d.lower]),
         smooth: true,
         symbol: 'none',
-        animationDuration: 0,
         lineStyle: {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
@@ -774,7 +765,8 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: '#5AD940',
           opacity: 1,
         },
-        animationDuration: 300,
+        animationDuration: 600,
+        animationDelay: (idx: number) => idx * 100,
         animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
@@ -794,7 +786,8 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: '#FF0000',
           opacity: 1,
         },
-        animationDuration: 300,
+        animationDuration: 600,
+        animationDelay: (idx: number) => idx * 100,
         animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
