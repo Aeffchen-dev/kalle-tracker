@@ -10,6 +10,7 @@ import { getEvents, Event as AppEvent } from '@/lib/events';
 import { fetchICalEvents, getICalEventsForWeek, getICalEventsForRange, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 import { PlacesMap } from '@/components/PlacesMap';
 import TrendAnalysis from '@/components/TrendAnalysis';
+import ScrollReveal from '@/components/ScrollReveal';
 
 
 
@@ -1064,10 +1065,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Trend Analysis Section */}
             
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-trends" className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">📊</span> <span>Trends</span></h2>
               <TrendAnalysis events={appEvents} />
             </div>
+            </ScrollReveal>
             {!dataLoaded && (
               <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
@@ -1250,9 +1253,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             ))}
 
             {/* Dog Food Checker */}
+            <ScrollReveal root={infoScrollRef}>
             <DogFoodChecker />
+            </ScrollReveal>
 
             {/* Snacks Section */}
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-snacks" className="mb-8">
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Snacks</h3>
@@ -1345,8 +1351,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Emergency Section */}
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-notfall" className="mb-2">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
@@ -1427,8 +1435,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             {/* Hausapotheke Section */}
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-apotheke" className="mb-8">
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Hausapotheke</h3>
@@ -1520,7 +1530,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
+            <ScrollReveal root={infoScrollRef}>
             {(() => {
               const settings = getCachedSettings();
               const birthday = settings.birthday ? new Date(settings.birthday) : new Date('2025-01-20');
@@ -1743,8 +1755,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               );
             })()}
+            </ScrollReveal>
 
             {/* Orte Section */}
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-orte" className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
@@ -1854,10 +1868,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
               </div>
             </div>
+            </ScrollReveal>
 
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
-            
+            <ScrollReveal root={infoScrollRef}>
             <div id="section-wochenplan" className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
                 <h2 className="flex items-center gap-2 text-[16px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
@@ -2238,6 +2253,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               )}
             </div>
+            </ScrollReveal>
             
             </div>
             
