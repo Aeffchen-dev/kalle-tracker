@@ -158,6 +158,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [navStickyProgress, setNavStickyProgress] = useState(0);
   const tocChipsRef = useRef<HTMLDivElement>(null);
   const [navScrolledToEnd, setNavScrolledToEnd] = useState(false);
   const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
@@ -181,6 +182,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     const handleScroll = () => {
       const scrolled = container.scrollTop > 30;
       setHasScrolled(scrolled);
+      // Interpolate nav sticky progress over 0-40px scroll range
+      const stickyP = Math.min(1, Math.max(0, container.scrollTop / 40));
+      setNavStickyProgress(stickyP);
       // Calculate overall scroll progress
       const scrollProgress = container.scrollTop / (container.scrollHeight - container.clientHeight);
       setScrollProgress(Math.min(1, Math.max(0, scrollProgress)));
@@ -997,15 +1001,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   ref={tocChipsRef}
                   className="overflow-x-auto scrollbar-hide"
                   style={{
-                    marginRight: hasScrolled ? 60 : 0,
-                    transition: 'margin-right 0.4s cubic-bezier(0.4,0,0.2,1)',
-                    ...((hasScrolled && !navScrolledToEnd) ? {
-                      maskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
-                      WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)',
+                    marginRight: Math.round(navStickyProgress * 60),
+                    ...((!navScrolledToEnd && navStickyProgress > 0) ? {
+                      maskImage: `linear-gradient(to right, black ${85 + (1 - navStickyProgress) * 15}%, transparent 100%)`,
+                      WebkitMaskImage: `linear-gradient(to right, black ${85 + (1 - navStickyProgress) * 15}%, transparent 100%)`,
                     } : {})
                   }}
                 >
-                  <div className="flex items-center gap-5 pl-4 py-4" style={{ paddingRight: hasScrolled ? 96 : 16, transition: 'padding-right 0.4s cubic-bezier(0.4,0,0.2,1)' }}>
+                  <div className="flex items-center gap-5 pl-4 py-4" style={{ paddingRight: Math.round(16 + navStickyProgress * 80) }}>
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
