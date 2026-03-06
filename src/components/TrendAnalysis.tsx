@@ -531,7 +531,7 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.05);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
 
@@ -677,7 +677,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: 'Zielkurve',
         type: 'line',
-        data: [...curveData].reverse().map(d => [d.month, d.expected]),
+        data: curveData.map(d => [d.month, d.expected]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -689,7 +689,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: '+5%',
         type: 'line',
-        data: [...curveData].reverse().map(d => [d.month, d.upper]),
+        data: curveData.map(d => [d.month, d.upper]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -701,7 +701,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: '-5%',
         type: 'line',
-        data: [...curveData].reverse().map(d => [d.month, d.lower]),
+        data: curveData.map(d => [d.month, d.lower]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
