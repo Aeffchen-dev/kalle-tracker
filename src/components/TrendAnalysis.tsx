@@ -1347,7 +1347,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         </div>
       </div>
       {/* Export Button - sticky 16px above viewport bottom, scrolls with page at its natural position */}
-      <div className="sticky bottom-0 z-10 flex justify-center mt-4 mb-4">
+      <div className="sticky bottom-4 z-10 flex justify-center mt-4 mb-4">
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
