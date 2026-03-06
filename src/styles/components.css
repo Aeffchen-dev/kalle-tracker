@@ -43,6 +43,13 @@
   line-height: 1;
 }
 
+/* ── Kill all vaul drawer shadows ─────────────────────────── */
+
+[data-vaul-drawer],
+[vaul-drawer] {
+  box-shadow: none !important;
+}
+
 /* ── Hide drawer after-element when info overlay is open ── */
 
 html[data-info-open] [data-vaul-drawer]::after,
