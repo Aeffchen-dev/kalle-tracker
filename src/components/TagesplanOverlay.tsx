@@ -155,7 +155,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
-  const [showToc, setShowToc] = useState(false);
+  
 
   // Ingredient swipe & add state
   const [activeIngredientKey, setActiveIngredientKey] = useState<string | null>(null);
@@ -907,53 +907,45 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-            <header className="absolute left-0 right-0 z-10 p-4 pb-8 flex justify-between items-start" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 50%, transparent)' }}>
-              <h1 className="text-[16px] uppercase text-white mt-1">Info</h1>
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <button onClick={() => setShowToc(prev => !prev)} className="text-white p-1 mt-1">
-                    <span className="text-[18px]">{showToc ? '✕' : '☰'}</span>
-                  </button>
-                  {showToc && (
-                    <div className="absolute top-10 right-0 bg-[#2a1e15] border border-white/10 rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2 min-w-[180px] animate-fade-in">
-                      {[
-                        { id: 'section-essen', emoji: '🍖', label: 'Essen' },
-                        { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
-                        { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
-                        { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
-                        { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
-                        { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
-                        { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
-                        { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
-                      ].map((item) => (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            setShowToc(false);
-                            const el = document.getElementById(item.id);
-                            if (el && infoScrollRef.current) {
-                              const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                              const elTop = el.getBoundingClientRect().top;
-                              const scrollTop = infoScrollRef.current.scrollTop;
-                              infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
-                            }
-                          }}
-                          className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-white/80 text-[14px] active:bg-white/[0.1] transition-colors"
-                        >
-                          <span className="text-[18px]">{item.emoji}</span>
-                          <span>{item.label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <button onClick={handleClose} className="text-white p-1 mt-1">
+           <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 70%, transparent)' }}>
+              <div className="flex justify-between items-center px-4 pt-4 pb-1">
+                <h1 className="text-[16px] uppercase text-white">Info</h1>
+                <button onClick={handleClose} className="text-white p-1">
                   <X size={20} />
                 </button>
               </div>
+              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3">
+                {[
+                  { id: 'section-essen', emoji: '🍖', label: 'Essen' },
+                  { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
+                  { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
+                  { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
+                  { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
+                  { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
+                  { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
+                  { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      const el = document.getElementById(item.id);
+                      if (el && infoScrollRef.current) {
+                        const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                        const elTop = el.getBoundingClientRect().top;
+                        const scrollTop = infoScrollRef.current.scrollTop;
+                        infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
+                      }
+                    }}
+                    className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/10 text-white/80 text-[13px] active:bg-white/[0.15] transition-colors"
+                  >
+                    <span className="text-[14px]">{item.emoji}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
            </header>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(88px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
