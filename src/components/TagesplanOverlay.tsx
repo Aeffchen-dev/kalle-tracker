@@ -961,14 +961,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="flex items-center justify-center gap-2 px-4 pb-3 transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 28 : 0, marginTop: hasScrolled ? 0 : -4 }}
+                className="flex items-center justify-center gap-3 px-4 pb-3 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 36 : 0, marginTop: hasScrolled ? 0 : -4 }}
               >
                 {tocSections.map((item) => (
                   <button
                     key={item.id}
                     data-section={item.id}
-                    title={`${item.emoji} ${item.label}`}
                     onClick={() => {
                       const el = document.getElementById(item.id);
                       if (el && infoScrollRef.current) {
@@ -978,15 +977,18 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                       }
                     }}
-                    className="relative flex items-center justify-center transition-all duration-200 active:scale-125"
+                    className="flex flex-col items-center gap-0.5 transition-all duration-200 active:scale-110"
                   >
                     <span
                       className={`block rounded-full transition-all duration-200 ${
                         activeSection === item.id
-                          ? 'w-2.5 h-2.5 bg-white shadow-[0_0_6px_rgba(255,255,255,0.4)]'
+                          ? 'w-2 h-2 bg-white shadow-[0_0_6px_rgba(255,255,255,0.4)]'
                           : 'w-1.5 h-1.5 bg-white/40'
                       }`}
                     />
+                    <span className={`text-[9px] leading-none transition-all duration-200 ${
+                      activeSection === item.id ? 'text-white' : 'text-white/40'
+                    }`}>{item.label}</span>
                   </button>
                 ))}
               </div>
