@@ -137,7 +137,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
   entries.sort((a, b) => b.sortTime - a.sortTime);
 
   return (
-    <div className="space-y-4 pb-20 px-4">
+    <div className="space-y-2 pb-20 px-4">
       {isBirthdayToday && birthdayAge > 0 && (
         <div className="flex items-center justify-between px-3 py-3.5 bg-white/[0.08] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
           <span className="text-[14px] text-white flex items-center gap-2">
