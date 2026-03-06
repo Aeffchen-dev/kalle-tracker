@@ -958,51 +958,52 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-          {/* Sticky close + nav - highest z-index */}
-          <div className="fixed left-0 right-0 z-50 pointer-events-none" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
-            <div className="pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }}>
-              {/* Close button row */}
-              <div className="flex justify-end px-4 pt-3 pb-0">
-                <button onClick={handleClose} className="text-white p-1">
-                  <X size={20} />
-                </button>
-              </div>
-              {/* Navigation labels */}
-              <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide">
-                <div className="flex items-center gap-5 px-4 py-2">
-                  {tocSections.map((item) => (
-                    <button
-                      key={item.id}
-                      data-section={item.id}
-                      onClick={() => {
-                        const el = document.getElementById(item.id);
-                        if (el && infoScrollRef.current) {
-                          const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                          const elTop = el.getBoundingClientRect().top;
-                          const scrollTop = infoScrollRef.current.scrollTop;
-                          infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
-                        }
-                      }}
-                      className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
-                        activeSection === item.id
-                          ? 'text-white'
-                          : 'text-white/35 active:text-white/60'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* Fade out bottom edge */}
-            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+          {/* Fixed close button - always top right */}
+          <div className="fixed right-0 z-50 pointer-events-none px-4 pt-3" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+            <button onClick={handleClose} className="pointer-events-auto text-white p-1">
+              <X size={20} />
+            </button>
           </div>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(80px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             {/* INFO header - scrolls with content */}
-            <div className="px-4 pb-4">
+            <div className="flex justify-between items-center px-4 pt-4 pb-2">
               <h1 className="text-[16px] uppercase text-white">Info</h1>
+            </div>
+            {/* Sticky navigation */}
+            <div className="sticky top-0 z-10" style={{ background: 'hsl(var(--spot-color))' }}>
+              <div className="flex items-center">
+                <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
+                  <div className="flex items-center gap-5 px-4 py-2">
+                    {tocSections.map((item) => (
+                      <button
+                        key={item.id}
+                        data-section={item.id}
+                        onClick={() => {
+                          const el = document.getElementById(item.id);
+                          if (el && infoScrollRef.current) {
+                            const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                            const elTop = el.getBoundingClientRect().top;
+                            const scrollTop = infoScrollRef.current.scrollTop;
+                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 44, behavior: 'smooth' });
+                          }
+                        }}
+                        className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
+                          activeSection === item.id
+                            ? 'text-white'
+                            : 'text-white/35 active:text-white/60'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {/* Fade gradient before close area */}
+                <div className="flex-shrink-0 w-10" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }}>&nbsp;</div>
+              </div>
+              {/* Fade out bottom edge */}
+              <div className="h-4 -mb-4" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
