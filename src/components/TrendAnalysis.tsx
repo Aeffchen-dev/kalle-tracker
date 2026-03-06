@@ -1188,40 +1188,64 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
-      // Capture pH chart (inner content only)
+      // Capture pH chart (inner content only) — expand to full width so entire graph fits
       if (phChartInnerRef.current) {
         const scrollContainer = phChartInnerRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
-        let originalPhStyles: { overflow: string; width: string } | null = null;
+        let originalPhStyles: { overflow: string; width: string; maxWidth: string } | null = null;
+        let originalPhContainerStyles: { overflow: string; width: string } | null = null;
         
         if (scrollContainer && innerChart) {
           originalPhStyles = {
             overflow: scrollContainer.style.overflow,
             width: scrollContainer.style.width,
+            maxWidth: scrollContainer.style.maxWidth,
+          };
+          originalPhContainerStyles = {
+            overflow: phChartInnerRef.current.style.overflow,
+            width: phChartInnerRef.current.style.width,
           };
           scrollContainer.style.overflow = 'visible';
           scrollContainer.style.width = `${innerChart.scrollWidth}px`;
+          scrollContainer.style.maxWidth = 'none';
+          phChartInnerRef.current.style.overflow = 'visible';
+          phChartInnerRef.current.style.width = `${innerChart.scrollWidth}px`;
           scrollContainer.scrollLeft = 0;
         }
+        
+        const captureWidth = innerChart ? innerChart.scrollWidth + 100 : undefined;
         
         const canvas = await html2canvas(phChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
           useCORS: true,
-          windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
+          windowWidth: captureWidth,
+          width: innerChart ? innerChart.scrollWidth : undefined,
         });
         
         if (scrollContainer && originalPhStyles) {
           scrollContainer.style.overflow = originalPhStyles.overflow;
           scrollContainer.style.width = originalPhStyles.width;
+          scrollContainer.style.maxWidth = originalPhStyles.maxWidth;
+        }
+        if (phChartInnerRef.current && originalPhContainerStyles) {
+          phChartInnerRef.current.style.overflow = originalPhContainerStyles.overflow;
+          phChartInnerRef.current.style.width = originalPhContainerStyles.width;
         }
         
         const imgData = canvas.toDataURL('image/png');
         const imgWidth = pageWidth - margin * 2;
-        const imgHeight = Math.min((canvas.height * imgWidth) / canvas.width, pageHeight - yPos - margin);
-        pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const maxHeight = pageHeight - yPos - margin;
+        if (imgHeight > maxHeight) {
+          const scaledWidth = (canvas.width * maxHeight) / canvas.height;
+          const xOffset = margin + (imgWidth - scaledWidth) / 2;
+          pdf.addImage(imgData, 'PNG', xOffset, yPos, scaledWidth, maxHeight);
+        } else {
+          pdf.addImage(imgData, 'PNG', margin, yPos, imgWidth, imgHeight);
+        }
       }
       
       // ===== PAGE 5+: Data Table =====
