@@ -135,12 +135,22 @@ interface WeightChartData {
 const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
+  const containerRef2 = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
+
+  useEffect(() => {
+    const el = containerRef2.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   if (data.length < 2) {
     return (
@@ -160,8 +170,9 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
-    animationDuration: 500,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -252,7 +263,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   };
 
   return (
-    <div className="flex">
+    <div ref={containerRef2} className="flex">
       {/* Static Y-Axis */}
       <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 40, height: CHART_HEIGHT - 30, marginTop: 10 }}>
         {Array.from({ length: Math.floor((domainMax - domainMin) / 5) + 1 }, (_, i) => domainMax - i * 5).map((tick, i) => (
@@ -290,12 +301,22 @@ interface PhChartData {
 const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
+  const containerRef2 = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
+
+  useEffect(() => {
+    const el = containerRef2.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   if (data.length < 2) {
     return (
@@ -322,8 +343,9 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
-    animationDuration: 500,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -454,7 +476,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   };
 
   return (
-    <div className="flex">
+    <div ref={containerRef2} className="flex">
       {/* Static Y-Axis */}
       <div className="flex-shrink-0 flex flex-col justify-between text-right pr-2" style={{ width: 35, height: CHART_HEIGHT - 45, marginTop: 10 }}>
         {[...yTicks].reverse().map((tick, i) => (
@@ -490,8 +512,18 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
+  const containerRef2 = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
   const lastTapRef = useRef<number>(0);
   const isZoomedRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    const el = containerRef2.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   const handleChartClick = () => {
     // no-op: zoom disabled to allow page scroll
@@ -534,8 +566,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
   const option = {
     backgroundColor: 'transparent',
-    animation: true,
-    animationDuration: 500,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -689,7 +722,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   };
 
   return (
-    <div onClick={handleChartClick} style={{ touchAction: 'pan-y' }}>
+    <div ref={containerRef2} onClick={handleChartClick} style={{ touchAction: 'pan-y' }}>
       <ReactECharts
         ref={chartRef}
         option={option}
