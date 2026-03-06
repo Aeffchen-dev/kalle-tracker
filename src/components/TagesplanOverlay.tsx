@@ -959,49 +959,43 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
           <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* INFO header - scrolls with content */}
-            <div className="flex justify-between items-center pt-4 pb-2 px-4">
-              <h1 className="text-[16px] uppercase text-white">Info</h1>
-              <button onClick={handleClose} className="text-white p-1">
-                <X size={20} />
-              </button>
-            </div>
-            {/* Sticky navigation - sits below INFO, sticks to top */}
-            <div className="sticky top-0 z-10 -mx-0" style={{ background: 'hsl(var(--spot-color))' }}>
-              <div ref={tocChipsRef} className="flex items-center">
-                <div className="flex-1 overflow-x-auto scrollbar-hide">
-                  <div className="flex items-center gap-5 px-4 py-2">
-                    {tocSections.map((item) => (
-                      <button
-                        key={item.id}
-                        data-section={item.id}
-                        onClick={() => {
-                          const el = document.getElementById(item.id);
-                          if (el && infoScrollRef.current) {
-                            const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                            const elTop = el.getBoundingClientRect().top;
-                            const scrollTop = infoScrollRef.current.scrollTop;
-                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 44, behavior: 'smooth' });
-                          }
-                        }}
-                        className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
-                          activeSection === item.id
-                            ? 'text-white'
-                            : 'text-white/35 active:text-white/60'
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div className="relative flex-shrink-0 flex items-center">
-                  <div className="absolute left-0 w-6 h-full -translate-x-full" style={{ background: 'linear-gradient(to left, hsl(var(--spot-color)), transparent)' }} />
-                  <button onClick={handleClose} className="text-white px-3 py-2 active:text-white/70 transition-colors">
-                    <X size={20} />
-                  </button>
+            {/* INFO header + close - scrolls with content */}
+            <div className="sticky top-0 z-10" style={{ background: 'hsl(var(--spot-color))' }}>
+              <div className="flex justify-between items-center pt-4 pb-2 px-4">
+                <h1 className="text-[16px] uppercase text-white">Info</h1>
+                <button onClick={handleClose} className="text-white p-1">
+                  <X size={20} />
+                </button>
+              </div>
+              {/* Navigation labels */}
+              <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-5 px-4 py-2">
+                  {tocSections.map((item) => (
+                    <button
+                      key={item.id}
+                      data-section={item.id}
+                      onClick={() => {
+                        const el = document.getElementById(item.id);
+                        if (el && infoScrollRef.current) {
+                          const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                          const elTop = el.getBoundingClientRect().top;
+                          const scrollTop = infoScrollRef.current.scrollTop;
+                          infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
+                        }
+                      }}
+                      className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
+                        activeSection === item.id
+                          ? 'text-white'
+                          : 'text-white/35 active:text-white/60'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
                 </div>
               </div>
+              {/* Fade out bottom edge */}
+              <div className="h-3 -mb-3" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4 pt-2">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
