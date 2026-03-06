@@ -17,11 +17,14 @@ interface CountUpProps {
 }
 
 /**
- * Animates a number from 0 to `value` when scrolled into view.
+ * Animates the last few digits of a number when scrolled into view.
+ * Starts near the target value for a subtle, refined effect.
  */
-const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
+const CountUp = ({ value, duration = 1800, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
   const ref = useRef<HTMLSpanElement>(null);
-  const [display, setDisplay] = useState('0');
+  // Start from ~80% of the value so only the last digits animate
+  const startValue = value * 0.8;
+  const [display, setDisplay] = useState(startValue.toFixed(decimals).replace('.', ','));
   const hasAnimated = useRef(false);
 
   useEffect(() => {
@@ -34,14 +37,13 @@ const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '
           hasAnimated.current = true;
           observer.unobserve(el);
 
+          const range = value - startValue;
           const startTime = performance.now();
           const animate = (now: number) => {
             const progress = Math.min(1, (now - startTime) / duration);
-            // ease-in-out: slow start, slow end
-            const eased = progress < 0.5
-              ? 0.5 * Math.pow(progress / 0.5, 2)
-              : 1 - Math.pow(1 - progress, 6);
-            const current = eased * value;
+            // ease-out quint — gentle deceleration
+            const eased = 1 - Math.pow(1 - progress, 5);
+            const current = startValue + eased * range;
             setDisplay(current.toFixed(decimals).replace('.', ','));
             if (progress < 1) requestAnimationFrame(animate);
           };
@@ -53,7 +55,7 @@ const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [value, duration, decimals, root]);
+  }, [value, duration, decimals, root, startValue]);
 
   return (
     <span ref={ref} className={className}>
