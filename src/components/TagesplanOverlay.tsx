@@ -995,13 +995,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ))}
                   </div>
                 </div>
-                {/* Right fade gradient + close */}
-                <div className="relative flex-shrink-0 flex items-center">
-                  <div className="absolute right-full w-8 h-full" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
-                  <button onClick={handleClose} className="text-white pl-1 pr-4 py-3">
-                    <X size={20} />
-                  </button>
-                </div>
+                {/* Right fade gradient */}
+                <div className="flex-shrink-0 w-10 h-full" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
               </div>
               {/* Bottom fade */}
               <div className="h-5 -mb-5" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
