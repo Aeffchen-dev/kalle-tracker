@@ -260,7 +260,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', overscrollBehavior: 'contain' }}
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', overscrollBehaviorX: 'contain', overscrollBehaviorY: 'auto' }}
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
@@ -461,7 +461,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       <div 
         ref={scrollRef}
         className="flex-1 overflow-x-auto overflow-y-hidden scrollbar-hide"
-        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', overscrollBehavior: 'contain' }}
+        style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', overscrollBehaviorX: 'contain', overscrollBehaviorY: 'auto' }}
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
@@ -581,8 +581,8 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         type: 'inside',
         xAxisIndex: 0,
-        zoomOnMouseWheel: true,
-        moveOnMouseMove: true,
+        zoomOnMouseWheel: false,
+        moveOnMouseMove: false,
         moveOnMouseWheel: false,
         minSpan: 33,
         maxSpan: 100,
