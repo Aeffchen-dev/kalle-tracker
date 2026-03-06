@@ -1,5 +1,4 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
-import ScrollBreathe from '@/components/ScrollBreathe';
 import CountUp from '@/components/CountUp';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
@@ -14,7 +13,6 @@ import { getCachedSettings } from '@/lib/settings';
 interface TrendAnalysisProps {
   events: Event[];
   scrollToChart?: 'weight' | 'ph' | null;
-  scrollRoot?: React.RefObject<HTMLElement>;
 }
 
 // Helper to format numbers with German comma separator
@@ -40,7 +38,7 @@ const useContainerWidth = () => {
   return { containerRef, width };
 };
 
-const useInViewOnce = <T extends HTMLElement>(threshold = 0.5, root?: React.RefObject<HTMLElement>) => {
+const useInViewOnce = <T extends HTMLElement>(threshold = 0.2) => {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
 
@@ -55,63 +53,14 @@ const useInViewOnce = <T extends HTMLElement>(threshold = 0.5, root?: React.RefO
           obs.disconnect();
         }
       },
-      { threshold, root: root?.current || null }
+      { threshold }
     );
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [inView, threshold, root]);
+  }, [inView, threshold]);
 
   return { ref, inView };
-};
-
-/** Returns 0→1 progress as element scrolls from bottom edge to center of scroll container */
-const useScrollProgress = <T extends HTMLElement>(root?: React.RefObject<HTMLElement>) => {
-  const ref = useRef<T>(null);
-  const [progress, setProgress] = useState(0);
-  const completedRef = useRef(false);
-
-  useEffect(() => {
-    const container = root?.current;
-    const el = ref.current;
-    if (!container || !el) return;
-
-    let rafId: number;
-    const update = () => {
-      if (completedRef.current) return;
-      cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(() => {
-        const containerRect = container.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
-        
-        // Progress: 0 when element bottom enters viewport, 1 when element top reaches 20% from top
-        const containerCenter = containerRect.top + containerRect.height * 0.2;
-        const elTop = elRect.top;
-        const entryPoint = containerRect.bottom;
-        
-        if (elTop >= entryPoint) {
-          setProgress(0);
-        } else if (elTop <= containerCenter) {
-          setProgress(1);
-          completedRef.current = true;
-        } else {
-          const range = entryPoint - containerCenter;
-          const p = Math.max(0, Math.min(1, (entryPoint - elTop) / range));
-          // Apply easing
-          setProgress(p * p * (3 - 2 * p));
-        }
-      });
-    };
-
-    container.addEventListener('scroll', update, { passive: true });
-    update();
-    return () => {
-      container.removeEventListener('scroll', update);
-      cancelAnimationFrame(rafId);
-    };
-  }, [root]);
-
-  return { ref, progress, completed: progress >= 1 };
 };
 
 const StatCard = memo(({ 
@@ -208,11 +157,11 @@ interface WeightChartData {
   isOutOfBounds: boolean;
 }
 
-const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
+const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
-
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
@@ -235,55 +184,11 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 60);
 
-  // Interpolate with 3x sub-steps between each data point
-  const SUBSTEPS = 3;
-  const totalSubSteps = (data.length - 1) * SUBSTEPS;
-  const continuousStep = totalSubSteps * progress;
-  
-  const visibleData: WeightChartData[] = [];
-  const isInterpolated: boolean[] = [];
-  for (let s = 0; s <= Math.min(Math.floor(continuousStep), totalSubSteps); s++) {
-    const segIndex = Math.floor(s / SUBSTEPS);
-    const subFrac = (s % SUBSTEPS) / SUBSTEPS;
-    if (subFrac === 0) {
-      visibleData.push(data[segIndex]);
-      isInterpolated.push(false);
-    } else if (segIndex < data.length - 1) {
-      const from = data[segIndex];
-      const to = data[segIndex + 1];
-      visibleData.push({
-        date: '',
-        value: from.value + (to.value - from.value) * subFrac,
-        expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * subFrac,
-        isOutOfBounds: to.isOutOfBounds,
-      });
-      isInterpolated.push(true);
-    }
-  }
-  // Add fractional sub-step
-  const flooredStep = Math.floor(continuousStep);
-  const stepFrac = continuousStep - flooredStep;
-  if (flooredStep < totalSubSteps && stepFrac > 0) {
-    const segIndex = Math.floor(flooredStep / SUBSTEPS);
-    const subFracStart = (flooredStep % SUBSTEPS) / SUBSTEPS;
-    const subFracEnd = ((flooredStep % SUBSTEPS) + 1) / SUBSTEPS;
-    const frac = subFracStart + (subFracEnd - subFracStart) * stepFrac;
-    if (segIndex < data.length - 1) {
-      const from = data[segIndex];
-      const to = data[segIndex + 1];
-      visibleData.push({
-        date: '',
-        value: from.value + (to.value - from.value) * frac,
-        expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * frac,
-        isOutOfBounds: to.isOutOfBounds,
-      });
-      isInterpolated.push(true);
-    }
-  }
-
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -345,11 +250,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
       {
         name: 'Gewicht',
         type: 'line',
-        data: visibleData.map((d, i) => ({
-          value: d.value,
-          symbol: isInterpolated[i] ? 'none' : 'circle',
-          symbolSize: isInterpolated[i] ? 0 : 8,
-        })),
+        data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
@@ -359,7 +260,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         },
         itemStyle: {
           color: (params: any) => {
-            return visibleData[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
+            return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
         },
@@ -368,6 +269,8 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
+            shadowBlur: 12,
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -391,7 +294,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          {progress > 0 ? (
+          {inView ? (
             <ReactECharts
               ref={chartRef}
               option={option}
@@ -415,11 +318,11 @@ interface PhChartData {
   value: number;
 }
 
-const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
+const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
-
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
@@ -448,53 +351,12 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
   }
-  // Interpolate with 3x sub-steps between each data point
-  const SUBSTEPS_PH = 3;
-  const totalSubSteps = (data.length - 1) * SUBSTEPS_PH;
-  const continuousStep = totalSubSteps * progress;
-  
-  const visibleData: PhChartData[] = [];
-  const isInterpolatedPh: boolean[] = [];
-  for (let s = 0; s <= Math.min(Math.floor(continuousStep), totalSubSteps); s++) {
-    const segIndex = Math.floor(s / SUBSTEPS_PH);
-    const subFrac = (s % SUBSTEPS_PH) / SUBSTEPS_PH;
-    if (subFrac === 0) {
-      visibleData.push(data[segIndex]);
-      isInterpolatedPh.push(false);
-    } else if (segIndex < data.length - 1) {
-      const from = data[segIndex];
-      const to = data[segIndex + 1];
-      visibleData.push({
-        dateLine1: '',
-        dateLine2: '',
-        value: from.value + (to.value - from.value) * subFrac,
-      });
-      isInterpolatedPh.push(true);
-    }
-  }
-  // Add fractional sub-step
-  const flooredStep = Math.floor(continuousStep);
-  const stepFrac = continuousStep - flooredStep;
-  if (flooredStep < totalSubSteps && stepFrac > 0) {
-    const segIndex = Math.floor(flooredStep / SUBSTEPS_PH);
-    const subFracStart = (flooredStep % SUBSTEPS_PH) / SUBSTEPS_PH;
-    const subFracEnd = ((flooredStep % SUBSTEPS_PH) + 1) / SUBSTEPS_PH;
-    const frac = subFracStart + (subFracEnd - subFracStart) * stepFrac;
-    if (segIndex < data.length - 1) {
-      const from = data[segIndex];
-      const to = data[segIndex + 1];
-      visibleData.push({
-        dateLine1: '',
-        dateLine2: '',
-        value: from.value + (to.value - from.value) * frac,
-      });
-      isInterpolatedPh.push(true);
-    }
-  }
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -572,11 +434,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
       {
         name: 'pH-Wert',
         type: 'line',
-        data: visibleData.map((d, i) => ({
-          value: d.value,
-          symbol: isInterpolatedPh[i] ? 'none' : 'circle',
-          symbolSize: isInterpolatedPh[i] ? 0 : 8,
-        })),
+        data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
@@ -586,7 +444,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         },
         itemStyle: {
           color: (params: any) => {
-            const ph = visibleData[params.dataIndex]?.value;
+            const ph = data[params.dataIndex]?.value;
             return ph < 6.5 || ph > 7.2 ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
@@ -596,6 +454,8 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
+            shadowBlur: 12,
+            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -641,7 +501,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          {progress > 0 ? (
+          {inView ? (
             <ReactECharts
               ref={chartRef}
               option={option}
@@ -665,9 +525,9 @@ interface GrowthDataPoint {
   isOutOfBounds: boolean;
 }
 
-const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scrollRoot?: React.RefObject<HTMLElement> }) => {
+const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
 
@@ -721,16 +581,14 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
     return data;
   }, []);
 
-  const visibleCurveCount = Math.max(2, Math.ceil(curveData.length * progress));
-  const visibleCurve = curveData.slice(0, visibleCurveCount);
-
-  const maxVisibleMonth = visibleCurve.length > 0 ? visibleCurve[visibleCurve.length - 1].month : 0;
-  const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds && p.month <= maxVisibleMonth);
-  const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds && p.month <= maxVisibleMonth);
+  const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
+  const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
   const option = {
     backgroundColor: 'transparent',
-    animation: false,
+    animation: inView,
+    animationDuration: 800,
+    animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -815,7 +673,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
       {
         name: 'Zielkurve',
         type: 'line',
-        data: visibleCurve.map(d => [d.month, d.expected]),
+        data: curveData.map(d => [d.month, d.expected]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -827,7 +685,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
       {
         name: '+5%',
         type: 'line',
-        data: visibleCurve.map(d => [d.month, d.upper]),
+        data: curveData.map(d => [d.month, d.upper]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -839,7 +697,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
       {
         name: '-5%',
         type: 'line',
-        data: visibleCurve.map(d => [d.month, d.lower]),
+        data: curveData.map(d => [d.month, d.lower]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -848,18 +706,15 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         },
         z: 1,
       },
-      ...(normalPoints.length > 0 ? [{
+      {
         name: 'Normal',
-        type: 'scatter' as const,
+        type: 'scatter',
         data: normalPoints.map(p => [p.month, p.weight]),
         symbolSize: 10,
         itemStyle: {
           color: '#5AD940',
           opacity: 1,
         },
-        animationDuration: 600,
-        animationDelay: (idx: number) => idx * 100,
-        animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -868,19 +723,16 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           },
         },
         z: 10,
-      }] : []),
-      ...(outOfBoundsPoints.length > 0 ? [{
+      },
+      {
         name: 'Abweichung',
-        type: 'scatter' as const,
+        type: 'scatter',
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
         symbolSize: 10,
         itemStyle: {
           color: '#FF0000',
           opacity: 1,
         },
-        animationDuration: 600,
-        animationDelay: (idx: number) => idx * 100,
-        animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -889,13 +741,13 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           },
         },
         z: 10,
-      }] : []),
+      },
     ],
   };
 
   return (
     <div ref={containerRef2} onClick={handleDoubleTap} style={{ touchAction: 'pan-y' }}>
-      {progress > 0 ? (
+      {inView ? (
         <ReactECharts
           ref={chartRef}
           option={option}
@@ -906,7 +758,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         <div style={{ height: CHART_HEIGHT }} />
       )}
       {/* Legend */}
-      <div className="flex flex-wrap gap-2 text-[12px] text-white/60 justify-center mt-1">
+      <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
@@ -944,7 +796,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
 
 GrowthCurveChart.displayName = 'GrowthCurveChart';
 
-const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysisProps) => {
+const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   const chartsRef = useRef<HTMLDivElement>(null);
   const growthChartRef = useRef<HTMLDivElement>(null);
@@ -1478,7 +1330,6 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
     <div className="relative" data-vaul-no-drag>
       <div className="space-y-2">
       {/* Age Display */}
-      <ScrollBreathe root={scrollRoot}>
       <div className="w-full bg-white/[0.04] rounded-[12px] border border-white/5 p-4 flex items-center justify-center">
         <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
@@ -1486,10 +1337,8 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
           <span className="text-white/60"> alt</span>
         </span>
       </div>
-      </ScrollBreathe>
 
       {/* Stats Overview */}
-      <ScrollBreathe root={scrollRoot}>
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
           emoji="🏋️" 
@@ -1520,41 +1369,34 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
           subtext={stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : undefined}
         />
       </div>
-      </ScrollBreathe>
 
       {/* Charts */}
       <div ref={chartsRef}>
         <div ref={containerRef} className="space-y-2">
           <div ref={growthChartRef}>
-            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <div ref={growthChartInnerRef}>
-                <GrowthCurveChart events={events} scrollRoot={scrollRoot} />
+                <GrowthCurveChart events={events} />
               </div>
             </div>
-            </ScrollBreathe>
           </div>
           
           <div ref={weightChartRef} data-vaul-no-drag>
-            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <div ref={weightChartInnerRef}>
-                <WeightChart data={weightData} width={width} scrollRoot={scrollRoot} />
+                <WeightChart data={weightData} width={width} />
               </div>
             </div>
-            </ScrollBreathe>
           </div>
           <div ref={phChartRef} data-vaul-no-drag>
-            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <div ref={phChartInnerRef}>
-                <PhChart data={phData} width={width} scrollRoot={scrollRoot} />
+                <PhChart data={phData} width={width} />
               </div>
             </div>
-            </ScrollBreathe>
           </div>
         </div>
       </div>
