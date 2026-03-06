@@ -958,23 +958,19 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-          {/* Fixed close button - always top right */}
-          <div className="fixed right-0 z-50 pointer-events-none px-4 pt-3" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
-            <button onClick={handleClose} className="pointer-events-auto text-white p-1">
-              <X size={20} />
-            </button>
-          </div>
-
           <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* INFO header - scrolls with content */}
+            {/* INFO header + close - scrolls with content */}
             <div className="flex justify-between items-center px-4 pt-4 pb-2">
               <h1 className="text-[16px] uppercase text-white">Info</h1>
+              <button onClick={handleClose} className="text-white p-1">
+                <X size={20} />
+              </button>
             </div>
-            {/* Sticky navigation */}
+            {/* Sticky navigation - vertically centered with close button */}
             <div className="sticky top-0 z-10" style={{ background: 'hsl(var(--spot-color))' }}>
               <div className="flex items-center">
                 <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
-                  <div className="flex items-center gap-5 px-4 py-2">
+                  <div className="flex items-center gap-5 px-4 py-3">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -985,7 +981,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             const containerTop = infoScrollRef.current.getBoundingClientRect().top;
                             const elTop = el.getBoundingClientRect().top;
                             const scrollTop = infoScrollRef.current.scrollTop;
-                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 44, behavior: 'smooth' });
+                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 48, behavior: 'smooth' });
                           }
                         }}
                         className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
@@ -999,11 +995,16 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ))}
                   </div>
                 </div>
-                {/* Fade gradient before close area */}
-                <div className="flex-shrink-0 w-10" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }}>&nbsp;</div>
+                {/* Right fade gradient + close */}
+                <div className="relative flex-shrink-0 flex items-center">
+                  <div className="absolute right-full w-8 h-full" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
+                  <button onClick={handleClose} className="text-white pl-1 pr-4 py-3">
+                    <X size={20} />
+                  </button>
+                </div>
               </div>
-              {/* Fade out bottom edge */}
-              <div className="h-4 -mb-4" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+              {/* Bottom fade */}
+              <div className="h-5 -mb-5" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
