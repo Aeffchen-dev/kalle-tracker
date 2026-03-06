@@ -172,11 +172,12 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
   // Track scroll position for active section highlighting & show-on-scroll
   useEffect(() => {
+    if (animationPhase !== 'visible') return;
     const container = infoScrollRef.current;
     if (!container) return;
     const handleScroll = () => {
       const scrolled = container.scrollTop > 30;
-      if (scrolled !== hasScrolled) setHasScrolled(scrolled);
+      setHasScrolled(scrolled);
       const containerTop = container.getBoundingClientRect().top;
       let current: string | null = null;
       for (const s of tocSections) {
@@ -195,7 +196,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     };
     container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);
-  }, [tocSections, hasScrolled]);
+  }, [tocSections, animationPhase]);
 
   // Reset hasScrolled when overlay closes
   useEffect(() => {
