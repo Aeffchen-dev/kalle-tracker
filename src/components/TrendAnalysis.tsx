@@ -758,7 +758,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         <div style={{ height: CHART_HEIGHT }} />
       )}
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-2">
+      <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
