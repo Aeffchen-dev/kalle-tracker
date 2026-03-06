@@ -998,8 +998,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ))}
                   </div>
                 </div>
-                {/* Right fade before fixed close */}
-                <div className="absolute top-0 bottom-0 w-24 pointer-events-none" style={{ right: 44, background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
               </div>
               {/* Bottom fade */}
               <div className="h-10 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
