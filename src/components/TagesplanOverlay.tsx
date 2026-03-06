@@ -963,31 +963,45 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3 transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 36 : 0, overflow: hasScrolled ? undefined : 'hidden' }}
+                className="px-4 pb-3 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 24 : 0, overflow: 'hidden' }}
               >
-                {tocSections.map((item) => (
-                  <button
-                    key={item.id}
-                    data-section={item.id}
-                    onClick={() => {
-                      const el = document.getElementById(item.id);
-                      if (el && infoScrollRef.current) {
-                        const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                        const elTop = el.getBoundingClientRect().top;
-                        const scrollTop = infoScrollRef.current.scrollTop;
-                        infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
-                      }
-                    }}
-                    className={`flex-shrink-0 px-3 py-1 rounded-full text-[12px] text-white transition-all duration-200 ${
-                      activeSection === item.id
-                        ? 'bg-white/20'
-                        : ''
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                <div className="relative w-full h-[6px] rounded-full bg-white/10">
+                  {/* Section markers */}
+                  {tocSections.map((item, i) => (
+                    <button
+                      key={item.id}
+                      data-section={item.id}
+                      onClick={() => {
+                        const el = document.getElementById(item.id);
+                        if (el && infoScrollRef.current) {
+                          const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                          const elTop = el.getBoundingClientRect().top;
+                          const scrollTop = infoScrollRef.current.scrollTop;
+                          infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
+                        }
+                      }}
+                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 -ml-1.5 flex items-center justify-center"
+                      style={{ left: `${(i / (tocSections.length - 1)) * 100}%` }}
+                      title={item.label}
+                    >
+                      <span className={`block rounded-full transition-all duration-200 ${
+                        activeSection === item.id
+                          ? 'w-2.5 h-2.5 bg-white shadow-[0_0_6px_rgba(255,255,255,0.5)]'
+                          : 'w-1.5 h-1.5 bg-white/50'
+                      }`} />
+                    </button>
+                  ))}
+                  {/* Active label */}
+                  {activeSection && (
+                    <span
+                      className="absolute -bottom-3 text-[9px] text-white/70 transition-all duration-200 -translate-x-1/2 whitespace-nowrap"
+                      style={{ left: `${(tocSections.findIndex(s => s.id === activeSection) / (tocSections.length - 1)) * 100}%` }}
+                    >
+                      {tocSections.find(s => s.id === activeSection)?.label}
+                    </span>
+                  )}
+                </div>
               </div>
            </header>
 
