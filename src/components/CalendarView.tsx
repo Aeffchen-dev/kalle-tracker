@@ -4,7 +4,7 @@ import { getEvents, deleteEvent, Event, getPendingCount, saveEvent } from '@/lib
 import { format, subDays, addDays, isSameDay, startOfDay, differenceInYears, parse } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabaseClient as supabase } from '@/lib/supabaseClient';
-import { ArrowLeft, ArrowRight, CalendarIcon, CloudOff, Watch, LayoutGrid, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CloudOff, Watch, LayoutGrid, Check } from 'lucide-react';
 import { isWeightOutOfBounds } from './TrendAnalysis';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
@@ -931,37 +931,10 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
               <>
                 <div className="flex items-center gap-2 w-[56px]">
                   <div className="w-6 h-6 flex items-center justify-center">
-                    {canGoPrev ? (
+                    {canGoPrev && (
                       <button onClick={(e) => { e.stopPropagation(); changeDate('right'); }} className="flex items-center justify-center">
                         <ArrowLeft size={24} className="text-white" />
                       </button>
-                    ) : (
-                      <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                        <PopoverTrigger asChild>
-                          <button onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
-                            <CalendarIcon size={20} className="text-white" />
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-black border-0 rounded-2xl overflow-hidden" align="start" onClick={(e) => e.stopPropagation()}>
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={(date) => {
-                              if (date) {
-                                setSelectedDate(date);
-                                setCalendarOpen(false);
-                              }
-                            }}
-                            disabled={(date) => date > today}
-                            modifiers={{ hasEntry: daysWithEntries }}
-                            modifiersClassNames={{ 
-                              hasEntry: 'has-entry'
-                            }}
-                            className="pointer-events-auto bg-black text-white [&_.has-entry]:after:content-[''] [&_.has-entry]:after:absolute [&_.has-entry]:after:bottom-1 [&_.has-entry]:after:left-1/2 [&_.has-entry]:after:-translate-x-1/2 [&_.has-entry]:after:w-1 [&_.has-entry]:after:h-1 [&_.has-entry]:after:bg-[#5AD940] [&_.has-entry]:after:rounded-full [&_.has-entry]:relative [&_button]:text-white [&_.rdp-head_cell]:text-white/60 [&_.rdp-caption]:text-white [&_.rdp-nav_button]:text-white [&_.rdp-nav_button]:hover:bg-white/20 [&_.rdp-day_selected]:bg-[#5AD940] [&_.rdp-day_selected]:text-black"
-                            locale={de}
-                          />
-                        </PopoverContent>
-                      </Popover>
                     )}
                   </div>
                 </div>
