@@ -65,6 +65,55 @@ const useInViewOnce = <T extends HTMLElement>(threshold = 0.5, root?: React.RefO
   return { ref, inView };
 };
 
+/** Returns 0→1 progress as element scrolls from bottom edge to center of scroll container */
+const useScrollProgress = <T extends HTMLElement>(root?: React.RefObject<HTMLElement>) => {
+  const ref = useRef<T>(null);
+  const [progress, setProgress] = useState(0);
+  const completedRef = useRef(false);
+
+  useEffect(() => {
+    const container = root?.current;
+    const el = ref.current;
+    if (!container || !el) return;
+
+    let rafId: number;
+    const update = () => {
+      if (completedRef.current) return;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const containerRect = container.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        
+        // Progress: 0 when element bottom enters viewport, 1 when element top reaches center
+        const containerCenter = containerRect.top + containerRect.height * 0.5;
+        const elTop = elRect.top;
+        const entryPoint = containerRect.bottom;
+        
+        if (elTop >= entryPoint) {
+          setProgress(0);
+        } else if (elTop <= containerCenter) {
+          setProgress(1);
+          completedRef.current = true;
+        } else {
+          const range = entryPoint - containerCenter;
+          const p = Math.max(0, Math.min(1, (entryPoint - elTop) / range));
+          // Apply easing
+          setProgress(p * p * (3 - 2 * p));
+        }
+      });
+    };
+
+    container.addEventListener('scroll', update, { passive: true });
+    update();
+    return () => {
+      container.removeEventListener('scroll', update);
+      cancelAnimationFrame(rafId);
+    };
+  }, [root]);
+
+  return { ref, progress, completed: progress >= 1 };
+};
+
 const StatCard = memo(({ 
   emoji, 
   label, 
@@ -162,16 +211,8 @@ interface WeightChartData {
 const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
-  const [showDots, setShowDots] = useState(false);
+  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
 
-  useEffect(() => {
-    if (inView && !showDots) {
-      const t = setTimeout(() => setShowDots(true), 1400);
-      return () => clearTimeout(t);
-    }
-  }, [inView, showDots]);
-  
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
@@ -194,12 +235,12 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 60);
 
+  const visibleCount = Math.max(2, Math.ceil(data.length * progress));
+  const visibleData = data.slice(0, visibleCount);
+
   const option = {
     backgroundColor: 'transparent',
-    animation: inView,
-    animationDuration: 1200,
-    animationDelay: (idx: number) => idx * 80,
-    animationEasing: 'cubicInOut',
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -261,19 +302,17 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
       {
         name: 'Gewicht',
         type: 'line',
-        data: data.map(d => d.value),
+        data: visibleData.map(d => d.value),
         smooth: true,
-        symbol: showDots ? 'circle' : 'none',
+        symbol: completed ? 'circle' : 'none',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
-        animationDuration: 1400,
-        animationEasing: 'cubicInOut',
         itemStyle: {
           color: (params: any) => {
-            return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
+            return visibleData[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
         },
@@ -305,7 +344,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          {inView ? (
+          {progress > 0 ? (
             <ReactECharts
               ref={chartRef}
               option={option}
@@ -332,16 +371,8 @@ interface PhChartData {
 const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
-  const [showDots, setShowDots] = useState(false);
+  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
 
-  useEffect(() => {
-    if (inView && !showDots) {
-      const t = setTimeout(() => setShowDots(true), 1400);
-      return () => clearTimeout(t);
-    }
-  }, [inView, showDots]);
-  
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
@@ -370,13 +401,12 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
   }
+  const visibleCount = Math.max(2, Math.ceil(data.length * progress));
+  const visibleData = data.slice(0, visibleCount);
 
   const option = {
     backgroundColor: 'transparent',
-    animation: inView,
-    animationDuration: 1200,
-    animationDelay: (idx: number) => idx * 80,
-    animationEasing: 'cubicInOut',
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -454,19 +484,17 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
       {
         name: 'pH-Wert',
         type: 'line',
-        data: data.map(d => d.value),
+        data: visibleData.map(d => d.value),
         smooth: true,
-        symbol: showDots ? 'circle' : 'none',
+        symbol: completed ? 'circle' : 'none',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
-        animationDuration: 1400,
-        animationEasing: 'cubicInOut',
         itemStyle: {
           color: (params: any) => {
-            const ph = data[params.dataIndex]?.value;
+            const ph = visibleData[params.dataIndex]?.value;
             return ph < 6.5 || ph > 7.2 ? '#FF0000' : '#5AD940';
           },
           opacity: 1,
@@ -521,7 +549,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          {inView ? (
+          {progress > 0 ? (
             <ReactECharts
               ref={chartRef}
               option={option}
@@ -547,17 +575,9 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
+  const { ref: containerRef2, progress, completed } = useScrollProgress<HTMLDivElement>(scrollRoot);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [showDots, setShowDots] = useState(false);
   const lastTapRef = useRef<number>(0);
-
-  useEffect(() => {
-    if (inView && !showDots) {
-      const t = setTimeout(() => setShowDots(true), 1500);
-      return () => clearTimeout(t);
-    }
-  }, [inView, showDots]);
 
   const handleDoubleTap = useCallback(() => {
     const now = Date.now();
@@ -609,15 +629,15 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
     return data;
   }, []);
 
+  const visibleCurveCount = Math.max(2, Math.ceil(curveData.length * progress));
+  const visibleCurve = curveData.slice(0, visibleCurveCount);
+
   const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
   const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
 
   const option = {
     backgroundColor: 'transparent',
-    animation: inView,
-    animationDuration: 1200,
-    animationDelay: (idx: number) => idx * 80,
-    animationEasing: 'cubicInOut',
+    animation: false,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -702,48 +722,40 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
       {
         name: 'Zielkurve',
         type: 'line',
-        data: curveData.map(d => [d.month, d.expected]),
+        data: visibleCurve.map(d => [d.month, d.expected]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
-        animationDuration: 1400,
-        animationEasing: 'cubicInOut',
         z: 1,
       },
       {
         name: '+5%',
         type: 'line',
-        data: curveData.map(d => [d.month, d.upper]),
+        data: visibleCurve.map(d => [d.month, d.upper]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
-        animationDuration: 1200,
-        animationDelay: 200,
-        animationEasing: 'cubicInOut',
         z: 1,
       },
       {
         name: '-5%',
         type: 'line',
-        data: curveData.map(d => [d.month, d.lower]),
+        data: visibleCurve.map(d => [d.month, d.lower]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
-        animationDuration: 1200,
-        animationDelay: 200,
-        animationEasing: 'cubicInOut',
         z: 1,
       },
-      ...(showDots ? [{
+      ...(completed ? [{
         name: 'Normal',
         type: 'scatter' as const,
         data: normalPoints.map(p => [p.month, p.weight]),
@@ -764,7 +776,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         },
         z: 10,
       }] : []),
-      ...(showDots ? [{
+      ...(completed ? [{
         name: 'Abweichung',
         type: 'scatter' as const,
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
@@ -790,7 +802,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
 
   return (
     <div ref={containerRef2} onClick={handleDoubleTap} style={{ touchAction: 'pan-y' }}>
-      {inView ? (
+      {progress > 0 ? (
         <ReactECharts
           ref={chartRef}
           option={option}
