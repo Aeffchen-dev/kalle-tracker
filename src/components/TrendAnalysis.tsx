@@ -491,22 +491,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const isZoomedRef = useRef<boolean>(false);
 
   const handleChartClick = () => {
-    const now = Date.now();
-    if (now - lastTapRef.current < 300) {
-      const chart = chartRef.current?.getEchartsInstance();
-      if (chart) {
-        if (isZoomedRef.current) {
-          chart.dispatchAction({ type: 'dataZoom', start: 0, end: 100 });
-          isZoomedRef.current = false;
-        } else {
-          chart.dispatchAction({ type: 'dataZoom', start: 25, end: 75 });
-          isZoomedRef.current = true;
-        }
-      }
-      lastTapRef.current = 0;
-    } else {
-      lastTapRef.current = now;
-    }
+    // no-op: zoom disabled to allow page scroll
   };
   const weightMeasurements = useMemo((): GrowthDataPoint[] => {
     return events
@@ -577,19 +562,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         return null;
       },
     },
-    dataZoom: [
-      {
-        type: 'inside',
-        xAxisIndex: 0,
-        zoomOnMouseWheel: false,
-        moveOnMouseMove: false,
-        moveOnMouseWheel: false,
-        moveOnTouch: false,
-        zoomOnTouch: false,
-        minSpan: 33,
-        maxSpan: 100,
-      },
-    ],
+    dataZoom: [],
     grid: {
       left: 40,
       right: 10,
