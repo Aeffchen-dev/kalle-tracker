@@ -94,16 +94,23 @@ const Index = () => {
   const [forecast, setForecast] = useState<DayForecast[]>([]);
   const [showWeather, setShowWeather] = useState(false);
 
-  // Dynamically set html background to match current overlay/sheet
+  // Dynamically sync root + browser UI colors to current overlay/sheet state (helps iOS floating browser bars)
   useEffect(() => {
     const html = document.documentElement;
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
     if (showTagesplan) {
-      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
-      document.body.style.backgroundColor = '#3d2b1f'; // sync body immediately for iOS floating bar
+      html.style.backgroundColor = '#3d2b1f';
+      document.body.style.backgroundColor = '#3d2b1f';
+      themeColorMeta?.setAttribute('content', '#3d2b1f');
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
-      html.style.backgroundColor = '#000000'; // black (bottom sheets)
+      html.style.backgroundColor = '#000000';
+      document.body.style.backgroundColor = '#000000';
+      themeColorMeta?.setAttribute('content', '#000000');
     } else {
-      html.style.backgroundColor = '#000000'; // black (matches drawer bottom)
+      html.style.backgroundColor = '#000000';
+      document.body.style.backgroundColor = '#e8e2db';
+      themeColorMeta?.setAttribute('content', '#e8e2db');
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
