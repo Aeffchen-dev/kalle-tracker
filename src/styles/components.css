@@ -45,6 +45,7 @@
 
 /* ── Hide drawer after-element when info overlay is open ── */
 
+html[data-info-open] [data-vaul-drawer]::after,
 html[data-info-open] [vaul-drawer]::after {
-  display: none;
+  display: none !important;
 }
