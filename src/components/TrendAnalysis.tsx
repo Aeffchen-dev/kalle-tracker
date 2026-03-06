@@ -587,7 +587,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 3000,
+    animationDuration: 800,
     animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
