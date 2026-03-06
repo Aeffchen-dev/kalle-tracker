@@ -187,8 +187,9 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 3000,
+    animationDuration: 1200,
     animationEasing: 'cubicOut',
+    animationDurationUpdate: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -321,7 +322,7 @@ interface PhChartData {
 const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.05);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.1);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -355,8 +356,9 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 3000,
+    animationDuration: 1200,
     animationEasing: 'cubicOut',
+    animationDurationUpdate: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
