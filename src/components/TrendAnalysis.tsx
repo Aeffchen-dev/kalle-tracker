@@ -1,4 +1,5 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
+import ScrollBreathe from '@/components/ScrollBreathe';
 import CountUp from '@/components/CountUp';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
@@ -588,8 +589,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 800,
-    animationEasing: 'cubicOut',
+    animationDuration: 1200,
+    animationDelay: (idx: number) => idx * 80,
+    animationEasing: 'cubicInOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -681,6 +683,8 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: '#ffffff',
           width: 2,
         },
+        animationDuration: 1400,
+        animationEasing: 'cubicInOut',
         z: 1,
       },
       {
@@ -693,6 +697,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
+        animationDuration: 1200,
+        animationDelay: 200,
+        animationEasing: 'cubicInOut',
         z: 1,
       },
       {
@@ -705,6 +712,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: 'rgba(255,255,255,0.3)',
           width: 1,
         },
+        animationDuration: 1200,
+        animationDelay: 200,
+        animationEasing: 'cubicInOut',
         z: 1,
       },
       {
@@ -716,6 +726,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: '#5AD940',
           opacity: 1,
         },
+        animationDuration: 600,
+        animationDelay: (idx: number) => 800 + idx * 100,
+        animationEasing: 'elasticOut',
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -734,6 +747,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           color: '#FF0000',
           opacity: 1,
         },
+        animationDuration: 600,
+        animationDelay: (idx: number) => 800 + idx * 100,
+        animationEasing: 'elasticOut',
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -1375,29 +1391,35 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
       <div ref={chartsRef}>
         <div ref={containerRef} className="space-y-2">
           <div ref={growthChartRef}>
+            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <div ref={growthChartInnerRef}>
                 <GrowthCurveChart events={events} scrollRoot={scrollRoot} />
               </div>
             </div>
+            </ScrollBreathe>
           </div>
           
           <div ref={weightChartRef} data-vaul-no-drag>
+            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <div ref={weightChartInnerRef}>
                 <WeightChart data={weightData} width={width} scrollRoot={scrollRoot} />
               </div>
             </div>
+            </ScrollBreathe>
           </div>
           <div ref={phChartRef} data-vaul-no-drag>
+            <ScrollBreathe root={scrollRoot}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <div ref={phChartInnerRef}>
                 <PhChart data={phData} width={width} scrollRoot={scrollRoot} />
               </div>
             </div>
+            </ScrollBreathe>
           </div>
         </div>
       </div>
