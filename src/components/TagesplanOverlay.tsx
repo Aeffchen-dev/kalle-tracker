@@ -958,20 +958,20 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-           <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 85%, transparent)' }}>
-              {/* Progress bar line - topmost */}
-              <div className="relative w-full h-[1px] bg-white/10">
+           <header className="absolute left-0 right-0 z-10" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+              {/* Solid background behind nav */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 90%, transparent)' }} />
+              {/* Progress bar - thin elegant line */}
+              <div className="relative w-full h-[1px] bg-white/[0.06]">
                 <div
-                  className="absolute top-0 left-0 h-full bg-white/60"
-                  style={{ width: `${scrollProgress * 100}%` }}
+                  className="absolute top-0 left-0 h-full bg-white/50"
+                  style={{ width: `${scrollProgress * 100}%`, transition: 'width 0.08s linear' }}
                 />
               </div>
-              {/* Labels + close */}
-              <div
-                ref={tocChipsRef}
-              >
-                <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide" style={{ width: '100vw' }}>
-                  <div className="flex gap-4 px-4 py-2">
+              {/* Navigation row */}
+              <div ref={tocChipsRef} className="relative flex items-center">
+                <div className="flex-1 overflow-x-auto scrollbar-hide">
+                  <div className="flex items-center gap-5 px-4 py-2.5">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -982,25 +982,31 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                             const containerTop = infoScrollRef.current.getBoundingClientRect().top;
                             const elTop = el.getBoundingClientRect().top;
                             const scrollTop = infoScrollRef.current.scrollTop;
-                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
+                            infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 56, behavior: 'smooth' });
                           }
                         }}
-                        className={`flex-shrink-0 text-[11px] transition-all duration-200 ${
-                          activeSection === item.id ? 'text-white' : 'text-white/50'
+                        className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
+                          activeSection === item.id
+                            ? 'text-white scale-[1.05]'
+                            : 'text-white/35 active:text-white/60'
                         }`}
                       >
                         {item.label}
                       </button>
                     ))}
                   </div>
-                  <button onClick={handleClose} className="flex-shrink-0 text-white/50 px-3 py-1">
-                    <X size={16} />
+                </div>
+                {/* Fade edge + close */}
+                <div className="relative flex-shrink-0 flex items-center">
+                  <div className="absolute left-0 w-6 h-full -translate-x-full" style={{ background: 'linear-gradient(to left, hsl(var(--spot-color)), transparent)' }} />
+                  <button onClick={handleClose} className="text-white/40 px-3 py-2.5 active:text-white/70 transition-colors">
+                    <X size={15} strokeWidth={1.5} />
                   </button>
                 </div>
               </div>
            </header>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(40px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(44px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
