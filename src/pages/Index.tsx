@@ -99,6 +99,7 @@ const Index = () => {
     const html = document.documentElement;
     if (showTagesplan) {
       html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
+      document.body.style.backgroundColor = '#3d2b1f'; // sync body immediately for iOS floating bar
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
