@@ -52,7 +52,7 @@ const StatCard = memo(({
   subtext?: string;
   trend?: 'up' | 'down' | 'neutral';
 }) => (
-  <div className="bg-white/[0.08] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3">
+  <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3">
     <div className="flex items-center gap-1.5 mb-0.5">
       <span className="text-base">{emoji}</span>
       <span className="text-[10px] text-white/60 uppercase tracking-wide whitespace-pre-line">{label}</span>
@@ -1281,7 +1281,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   return (
     <div className="space-y-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }} data-vaul-no-drag>
       {/* Age Display */}
-      <div className="w-full bg-white/[0.06] backdrop-blur-[12px] rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-4 flex items-center justify-center">
+      <div className="w-full bg-white/[0.04] rounded-[12px] border border-white/5 p-4 flex items-center justify-center">
         <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
           <span className="text-white">{kalleAge}</span>
@@ -1325,18 +1325,24 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       <div ref={chartsRef} className="!mt-6">
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
-          <div ref={weightChartRef} className="mb-8 relative">
+          <div ref={weightChartRef} className="mb-4">
             <h3 className="text-[16px] text-white font-medium mb-3">Wachstumskurve</h3>
-            <GrowthCurveChart events={events} />
+            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+              <GrowthCurveChart events={events} />
+            </div>
           </div>
           
-          <div className="mb-6" data-vaul-no-drag>
+          <div className="mb-4" data-vaul-no-drag>
             <h3 className="text-[16px] text-white font-medium mb-3">Gewichtsverlauf</h3>
-            <WeightChart data={weightData} width={width} />
+            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+              <WeightChart data={weightData} width={width} />
+            </div>
           </div>
           <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
             <h3 className="text-[16px] text-white font-medium mb-3">pH-Wert Verlauf</h3>
-            <PhChart data={phData} width={width} />
+            <div className="bg-white/[0.08] rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.12)] p-3 overflow-hidden">
+              <PhChart data={phData} width={width} />
+            </div>
           </div>
         </div>
       </div>
