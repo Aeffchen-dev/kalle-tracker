@@ -677,7 +677,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: 'Zielkurve',
         type: 'line',
-        data: curveData.map(d => [d.month, d.expected]),
+        data: [...curveData].reverse().map(d => [d.month, d.expected]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -689,7 +689,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: '+5%',
         type: 'line',
-        data: curveData.map(d => [d.month, d.upper]),
+        data: [...curveData].reverse().map(d => [d.month, d.upper]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
@@ -701,7 +701,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: '-5%',
         type: 'line',
-        data: curveData.map(d => [d.month, d.lower]),
+        data: [...curveData].reverse().map(d => [d.month, d.lower]),
         smooth: true,
         symbol: 'none',
         lineStyle: {
