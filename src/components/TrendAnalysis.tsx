@@ -253,7 +253,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
-        symbolSize: 8,
+        symbolSize: 10,
         lineStyle: {
           color: '#ffffff',
           width: 2,
@@ -437,7 +437,7 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
-        symbolSize: 8,
+        symbolSize: 10,
         lineStyle: {
           color: '#ffffff',
           width: 2,
