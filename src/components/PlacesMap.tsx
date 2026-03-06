@@ -104,7 +104,7 @@ function useLocateUser(containerRef: React.RefObject<HTMLDivElement>) {
         const userMarkerRef = (containerRef as any).__userMarker as React.MutableRefObject<L.Marker | null> | undefined;
         const map = mapRef?.current;
         if (map) {
-          map.setView([latitude, longitude], 15);
+          map.setView([latitude, longitude], 13);
           if (userMarkerRef) {
             if (userMarkerRef.current) {
               userMarkerRef.current.setLatLng([latitude, longitude]);
@@ -146,7 +146,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
         <button
           onClick={locateInline}
           className={btnStyle}
-          style={{ borderRadius: 4, bottom: 8, right: 44 }}
+          style={{ borderRadius: 4, bottom: 44, right: 8 }}
           disabled={locatingInline}
         >
           <Navigation size={14} className={locatingInline ? 'animate-pulse' : ''} />
@@ -170,7 +170,7 @@ export function PlacesMap({ places }: { places: Place[] }) {
           <button
             onClick={locateFullscreen}
             className={btnStyle}
-            style={{ borderRadius: 4, top: 8, right: 44 }}
+            style={{ borderRadius: 4, top: 44, right: 8 }}
             disabled={locatingFullscreen}
           >
             <Navigation size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
