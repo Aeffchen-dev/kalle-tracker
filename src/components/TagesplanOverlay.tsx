@@ -155,7 +155,52 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
-  
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const tocChipsRef = useRef<HTMLDivElement>(null);
+
+  const tocSections = useMemo(() => [
+    { id: 'section-essen', emoji: '🍖', label: 'Essen' },
+    { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
+    { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
+    { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
+    { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
+    { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
+    { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
+    { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
+  ], []);
+
+  // Track scroll position for active section highlighting & show-on-scroll
+  useEffect(() => {
+    const container = infoScrollRef.current;
+    if (!container) return;
+    const handleScroll = () => {
+      if (!hasScrolled && container.scrollTop > 30) setHasScrolled(true);
+      const containerTop = container.getBoundingClientRect().top;
+      let current: string | null = null;
+      for (const s of tocSections) {
+        const el = document.getElementById(s.id);
+        if (el) {
+          const top = el.getBoundingClientRect().top - containerTop;
+          if (top <= 120) current = s.id;
+        }
+      }
+      setActiveSection(current);
+      // Auto-scroll chips to keep active visible
+      if (current && tocChipsRef.current) {
+        const chip = tocChipsRef.current.querySelector(`[data-section="${current}"]`) as HTMLElement;
+        if (chip) chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    };
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [tocSections, hasScrolled]);
+
+  // Reset hasScrolled when overlay closes
+  useEffect(() => {
+    if (animationPhase !== 'visible') setHasScrolled(false);
+  }, [animationPhase]);
+
 
   // Ingredient swipe & add state
   const [activeIngredientKey, setActiveIngredientKey] = useState<string | null>(null);
@@ -914,19 +959,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   <X size={20} />
                 </button>
               </div>
-              <div className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3">
-                {[
-                  { id: 'section-essen', emoji: '🍖', label: 'Essen' },
-                  { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
-                  { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
-                  { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
-                  { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
-                  { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
-                  { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
-                  { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
-                ].map((item) => (
+              <div
+                ref={tocChipsRef}
+                className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, marginTop: hasScrolled ? 0 : -4 }}
+              >
+                {tocSections.map((item) => (
                   <button
                     key={item.id}
+                    data-section={item.id}
                     onClick={() => {
                       const el = document.getElementById(item.id);
                       if (el && infoScrollRef.current) {
@@ -936,7 +977,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                       }
                     }}
-                    className="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.08] border border-white/10 text-white/80 text-[13px] active:bg-white/[0.15] transition-colors"
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[13px] transition-all duration-200 ${
+                      activeSection === item.id
+                        ? 'bg-white/20 border-white/30 text-white'
+                        : 'bg-white/[0.06] border-white/10 text-white/60 active:bg-white/[0.15]'
+                    }`}
                   >
                     <span className="text-[14px]">{item.emoji}</span>
                     <span>{item.label}</span>
