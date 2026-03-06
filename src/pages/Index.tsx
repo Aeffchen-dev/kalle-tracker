@@ -99,10 +99,13 @@ const Index = () => {
     const html = document.documentElement;
     if (showTagesplan) {
       html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
+      html.setAttribute('data-info-open', '');
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
+      html.removeAttribute('data-info-open');
     } else {
       html.style.backgroundColor = '#000000'; // black (matches drawer bottom)
+      html.removeAttribute('data-info-open');
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
