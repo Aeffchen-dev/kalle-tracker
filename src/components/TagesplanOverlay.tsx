@@ -963,12 +963,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="px-4 pb-3 transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 24 : 0, overflow: 'hidden' }}
+                className="px-4 pb-2 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, overflow: 'hidden' }}
               >
-                <div className="relative w-full h-[6px] rounded-full bg-white/10">
-                  {/* Section markers */}
-                  {tocSections.map((item, i) => (
+                <div className="flex justify-between">
+                  {tocSections.map((item) => (
                     <button
                       key={item.id}
                       data-section={item.id}
@@ -981,25 +980,23 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                         }
                       }}
-                      className="absolute top-1/2 -translate-y-1/2 w-3 h-3 -ml-1.5 flex items-center justify-center"
-                      style={{ left: `${(i / (tocSections.length - 1)) * 100}%` }}
-                      title={item.label}
+                      className={`text-[10px] pb-1.5 transition-all duration-200 ${
+                        activeSection === item.id ? 'text-white' : 'text-white/50'
+                      }`}
                     >
-                      <span className={`block rounded-full transition-all duration-200 ${
-                        activeSection === item.id
-                          ? 'w-2.5 h-2.5 bg-white shadow-[0_0_6px_rgba(255,255,255,0.5)]'
-                          : 'w-1.5 h-1.5 bg-white/50'
-                      }`} />
+                      {item.label}
                     </button>
                   ))}
-                  {/* Active label */}
+                </div>
+                <div className="relative w-full h-[2px] rounded-full bg-white/10">
                   {activeSection && (
-                    <span
-                      className="absolute -bottom-3 text-[9px] text-white/70 transition-all duration-200 -translate-x-1/2 whitespace-nowrap"
-                      style={{ left: `${(tocSections.findIndex(s => s.id === activeSection) / (tocSections.length - 1)) * 100}%` }}
-                    >
-                      {tocSections.find(s => s.id === activeSection)?.label}
-                    </span>
+                    <div
+                      className="absolute top-0 h-full bg-white rounded-full transition-all duration-300"
+                      style={{
+                        left: `${(tocSections.findIndex(s => s.id === activeSection) / tocSections.length) * 100}%`,
+                        width: `${100 / tocSections.length}%`,
+                      }}
+                    />
                   )}
                 </div>
               </div>
