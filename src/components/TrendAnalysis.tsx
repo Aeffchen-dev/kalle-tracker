@@ -254,6 +254,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       {
         name: 'Gewicht',
         type: 'line',
+        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
+        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
         data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
@@ -442,6 +444,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
       {
         name: 'pH-Wert',
         type: 'line',
+        animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
+        animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
         data: data.map(d => d.value),
         smooth: true,
         symbol: 'circle',
