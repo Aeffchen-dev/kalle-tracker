@@ -33,7 +33,7 @@ const drawerContentVariants = cva(
   {
     variants: {
       variant: {
-        compact: "overflow-hidden",
+        compact: "overflow-visible",
         medium: "flex flex-col max-h-[95dvh]",
         full: "flex flex-col h-full",
       },
