@@ -23,7 +23,7 @@ const StaggerItem = ({ children, index, root, className = '' }: StaggerItemProps
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setIsVisible(true), index * 40);
+          setTimeout(() => setIsVisible(true), Math.min(index * 30, 150));
           observer.unobserve(el);
         }
       },
