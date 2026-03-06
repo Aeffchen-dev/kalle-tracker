@@ -84,8 +84,8 @@ const useScrollProgress = <T extends HTMLElement>(root?: React.RefObject<HTMLEle
         const containerRect = container.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
         
-        // Progress: 0 when element bottom enters viewport, 1 when element top reaches 5% from top
-        const containerCenter = containerRect.top + containerRect.height * 0.05;
+        // Progress: 0 when element bottom enters viewport, 1 when element top reaches 20% from top
+        const containerCenter = containerRect.top + containerRect.height * 0.2;
         const elTop = elRect.top;
         const entryPoint = containerRect.bottom;
         
@@ -235,26 +235,50 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 60);
 
-  // Interpolate between points for smooth drawing
-  const totalSegments = data.length - 1;
-  const continuousIndex = totalSegments * progress; // e.g. 2.4 means between point 2 and 3
-  const lastFullIndex = Math.floor(continuousIndex);
-  const segmentFraction = continuousIndex - lastFullIndex;
+  // Interpolate with 3x sub-steps between each data point
+  const SUBSTEPS = 3;
+  const totalSubSteps = (data.length - 1) * SUBSTEPS;
+  const continuousStep = totalSubSteps * progress;
   
   const visibleData: WeightChartData[] = [];
-  for (let i = 0; i <= Math.min(lastFullIndex, data.length - 1); i++) {
-    visibleData.push(data[i]);
+  const isInterpolated: boolean[] = [];
+  for (let s = 0; s <= Math.min(Math.floor(continuousStep), totalSubSteps); s++) {
+    const segIndex = Math.floor(s / SUBSTEPS);
+    const subFrac = (s % SUBSTEPS) / SUBSTEPS;
+    if (subFrac === 0) {
+      visibleData.push(data[segIndex]);
+      isInterpolated.push(false);
+    } else if (segIndex < data.length - 1) {
+      const from = data[segIndex];
+      const to = data[segIndex + 1];
+      visibleData.push({
+        date: '',
+        value: from.value + (to.value - from.value) * subFrac,
+        expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * subFrac,
+        isOutOfBounds: to.isOutOfBounds,
+      });
+      isInterpolated.push(true);
+    }
   }
-  // Add interpolated point if we're between two points
-  if (lastFullIndex < totalSegments && segmentFraction > 0) {
-    const from = data[lastFullIndex];
-    const to = data[lastFullIndex + 1];
-    visibleData.push({
-      date: to.date,
-      value: from.value + (to.value - from.value) * segmentFraction,
-      expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * segmentFraction,
-      isOutOfBounds: to.isOutOfBounds,
-    });
+  // Add fractional sub-step
+  const flooredStep = Math.floor(continuousStep);
+  const stepFrac = continuousStep - flooredStep;
+  if (flooredStep < totalSubSteps && stepFrac > 0) {
+    const segIndex = Math.floor(flooredStep / SUBSTEPS);
+    const subFracStart = (flooredStep % SUBSTEPS) / SUBSTEPS;
+    const subFracEnd = ((flooredStep % SUBSTEPS) + 1) / SUBSTEPS;
+    const frac = subFracStart + (subFracEnd - subFracStart) * stepFrac;
+    if (segIndex < data.length - 1) {
+      const from = data[segIndex];
+      const to = data[segIndex + 1];
+      visibleData.push({
+        date: '',
+        value: from.value + (to.value - from.value) * frac,
+        expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * frac,
+        isOutOfBounds: to.isOutOfBounds,
+      });
+      isInterpolated.push(true);
+    }
   }
 
   const option = {
@@ -323,8 +347,8 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         type: 'line',
         data: visibleData.map((d, i) => ({
           value: d.value,
-          symbol: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 'none' : 'circle',
-          symbolSize: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 0 : 8,
+          symbol: isInterpolated[i] ? 'none' : 'circle',
+          symbolSize: isInterpolated[i] ? 0 : 8,
         })),
         smooth: true,
         symbol: 'circle',
@@ -424,25 +448,48 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
   }
-  // Interpolate between points for smooth drawing
-  const totalSegments = data.length - 1;
-  const continuousIndex = totalSegments * progress;
-  const lastFullIndex = Math.floor(continuousIndex);
-  const segmentFraction = continuousIndex - lastFullIndex;
+  // Interpolate with 3x sub-steps between each data point
+  const SUBSTEPS_PH = 3;
+  const totalSubSteps = (data.length - 1) * SUBSTEPS_PH;
+  const continuousStep = totalSubSteps * progress;
   
   const visibleData: PhChartData[] = [];
-  for (let i = 0; i <= Math.min(lastFullIndex, data.length - 1); i++) {
-    visibleData.push(data[i]);
+  const isInterpolatedPh: boolean[] = [];
+  for (let s = 0; s <= Math.min(Math.floor(continuousStep), totalSubSteps); s++) {
+    const segIndex = Math.floor(s / SUBSTEPS_PH);
+    const subFrac = (s % SUBSTEPS_PH) / SUBSTEPS_PH;
+    if (subFrac === 0) {
+      visibleData.push(data[segIndex]);
+      isInterpolatedPh.push(false);
+    } else if (segIndex < data.length - 1) {
+      const from = data[segIndex];
+      const to = data[segIndex + 1];
+      visibleData.push({
+        dateLine1: '',
+        dateLine2: '',
+        value: from.value + (to.value - from.value) * subFrac,
+      });
+      isInterpolatedPh.push(true);
+    }
   }
-  // Add interpolated point if we're between two points
-  if (lastFullIndex < totalSegments && segmentFraction > 0) {
-    const from = data[lastFullIndex];
-    const to = data[lastFullIndex + 1];
-    visibleData.push({
-      dateLine1: to.dateLine1,
-      dateLine2: to.dateLine2,
-      value: from.value + (to.value - from.value) * segmentFraction,
-    });
+  // Add fractional sub-step
+  const flooredStep = Math.floor(continuousStep);
+  const stepFrac = continuousStep - flooredStep;
+  if (flooredStep < totalSubSteps && stepFrac > 0) {
+    const segIndex = Math.floor(flooredStep / SUBSTEPS_PH);
+    const subFracStart = (flooredStep % SUBSTEPS_PH) / SUBSTEPS_PH;
+    const subFracEnd = ((flooredStep % SUBSTEPS_PH) + 1) / SUBSTEPS_PH;
+    const frac = subFracStart + (subFracEnd - subFracStart) * stepFrac;
+    if (segIndex < data.length - 1) {
+      const from = data[segIndex];
+      const to = data[segIndex + 1];
+      visibleData.push({
+        dateLine1: '',
+        dateLine2: '',
+        value: from.value + (to.value - from.value) * frac,
+      });
+      isInterpolatedPh.push(true);
+    }
   }
 
   const option = {
@@ -527,8 +574,8 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         type: 'line',
         data: visibleData.map((d, i) => ({
           value: d.value,
-          symbol: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 'none' : 'circle',
-          symbolSize: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 0 : 8,
+          symbol: isInterpolatedPh[i] ? 'none' : 'circle',
+          symbolSize: isInterpolatedPh[i] ? 0 : 8,
         })),
         smooth: true,
         symbol: 'circle',
