@@ -966,7 +966,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 className="px-4 pb-2 transition-all duration-300"
                 style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, overflow: 'hidden' }}
               >
-                <div className="flex justify-between">
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1.5">
                   {tocSections.map((item) => (
                     <button
                       key={item.id}
@@ -980,7 +980,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                         }
                       }}
-                      className={`text-[10px] pb-1.5 transition-all duration-200 ${
+                      className={`flex-shrink-0 text-[11px] transition-all duration-200 ${
                         activeSection === item.id ? 'text-white' : 'text-white/50'
                       }`}
                     >
@@ -989,15 +989,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   ))}
                 </div>
                 <div className="relative w-full h-[2px] rounded-full bg-white/10">
-                  {activeSection && (
-                    <div
-                      className="absolute top-0 h-full bg-white rounded-full transition-all duration-300"
-                      style={{
-                        left: `${(tocSections.findIndex(s => s.id === activeSection) / tocSections.length) * 100}%`,
-                        width: `${100 / tocSections.length}%`,
-                      }}
-                    />
-                  )}
+                  <div
+                    className="absolute top-0 left-0 h-full bg-white/60 rounded-full transition-all duration-300"
+                    style={{
+                      width: activeSection
+                        ? `${((tocSections.findIndex(s => s.id === activeSection) + 1) / tocSections.length) * 100}%`
+                        : '0%',
+                    }}
+                  />
                 </div>
               </div>
            </header>
