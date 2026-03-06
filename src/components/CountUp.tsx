@@ -20,10 +20,9 @@ interface CountUpProps {
  * Animates the last few digits of a number when scrolled into view.
  * Starts near the target value for a subtle, refined effect.
  */
-const CountUp = ({ value, duration = 1800, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
+const CountUp = ({ value, duration = 2400, decimals = 0, suffix = '', prefix = '', root, className }: CountUpProps) => {
   const ref = useRef<HTMLSpanElement>(null);
-  // Start from ~80% of the value so only the last digits animate
-  const startValue = value * 0.8;
+  const startValue = value * 0.92;
   const [display, setDisplay] = useState(startValue.toFixed(decimals).replace('.', ','));
   const hasAnimated = useRef(false);
 
