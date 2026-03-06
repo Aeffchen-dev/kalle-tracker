@@ -344,7 +344,7 @@ const Index = () => {
     <div className="flex flex-col min-h-dvh bg-transparent relative overflow-x-hidden">
 
       {/* Header */}
-      <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
+      {!showTagesplan && <header className={`px-4 pb-4 flex justify-between items-start relative z-10 transition-opacity duration-500 md:px-[2.5vw] md:pt-[1.7vw] md:pb-[1.7vw] lg:px-[2vw] lg:pt-[1.4vw] lg:pb-[1.4vw] ${showCard ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex items-start gap-2 md:gap-[0.85vw] lg:gap-[0.7vw]">
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -367,9 +367,10 @@ const Index = () => {
         >
           Info
         </button>
-      </header>
+      </header>}
 
       {/* Main countdown area */}
+      {!showTagesplan && (
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 px-4 gap-3 mx-auto w-full md:max-w-[60vw] lg:max-w-[50vw] main-with-sheet-offset">
         <div 
           className={`w-full bg-white/20 backdrop-blur-[8px] rounded-[16px] border border-[#FFFEF5]/40 flex flex-col items-center justify-center py-6 shadow-[0_0_16px_rgba(0,0,0,0.08)] transition-none select-none relative ${showCard ? 'animate-fade-in-up opacity-100' : 'opacity-0'}`} 
@@ -442,12 +443,13 @@ const Index = () => {
           </div>
         )}
       </main>
+      )}
 
       {/* Always visible calendar sheet - hidden when Tagesplan is open */}
       {showCalendar && !showTagesplan && <CalendarView key={calendarKey} eventSheetOpen={eventSheetOpen} initialShowTrends={openCalendarWithTrends} initialScrollToChart={scrollToChart} />}
 
       {/* Dog animation */}
-      {showDogAnimation && (
+      {showDogAnimation && !showTagesplan && (
         <img
           src={dogInCar}
           alt="Dog in car"
@@ -458,7 +460,7 @@ const Index = () => {
       )}
 
       {/* Event sheet opens on top */}
-      <EventSheet
+      {!showTagesplan && <EventSheet
         open={eventSheetOpen}
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
@@ -467,7 +469,7 @@ const Index = () => {
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
         }}
-      />
+      />}
 
       {/* Tagesplan overlay */}
       <TagesplanOverlay 
@@ -477,7 +479,7 @@ const Index = () => {
       />
 
       {/* Weather forecast drawer */}
-      <Drawer variant="compact" open={showWeather} onOpenChange={setShowWeather}>
+      {!showTagesplan && <Drawer variant="compact" open={showWeather} onOpenChange={setShowWeather}>
         <DrawerContent variant="compact" className="z-[60]">
           <div className="pt-4 px-4 pb-4">
             <h2 className="text-white text-[16px] leading-6 font-semibold text-center">
@@ -570,14 +572,14 @@ const Index = () => {
             </div>
           </div>
         </DrawerContent>
-      </Drawer>
+      </Drawer>}
 
       {/* Gassi settings sheet */}
-      <GassiSettingsSheet 
+      {!showTagesplan && <GassiSettingsSheet
         open={showGassiSettings} 
         onOpenChange={setShowGassiSettings}
         onSettingsChanged={() => loadEvents()}
-      />
+      />}
     </div>
   );
 };
