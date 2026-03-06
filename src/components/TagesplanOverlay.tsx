@@ -155,6 +155,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+  const [showToc, setShowToc] = useState(false);
 
   // Ingredient swipe & add state
   const [activeIngredientKey, setActiveIngredientKey] = useState<string | null>(null);
@@ -913,38 +914,49 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </button>
           </header>
 
-          {/* Scrollable content - fills entire viewport */}
+          {/* Floating TOC button */}
+          <div className="absolute z-20" style={{ bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))', right: 16 }}>
+            {showToc && (
+              <div className="absolute bottom-14 right-0 bg-[#2a1e15] border border-white/10 rounded-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.4)] p-2 min-w-[180px] animate-fade-in">
+                {[
+                  { id: 'section-essen', emoji: '🍖', label: 'Essen' },
+                  { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
+                  { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
+                  { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
+                  { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
+                  { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
+                  { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
+                  { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setShowToc(false);
+                      const el = document.getElementById(item.id);
+                      if (el && infoScrollRef.current) {
+                        const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                        const elTop = el.getBoundingClientRect().top;
+                        const scrollTop = infoScrollRef.current.scrollTop;
+                        infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
+                      }
+                    }}
+                    className="flex items-center gap-3 w-full px-3 py-2 rounded-lg text-white/80 text-[14px] active:bg-white/[0.1] transition-colors"
+                  >
+                    <span className="text-[18px]">{item.emoji}</span>
+                    <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => setShowToc(prev => !prev)}
+              className="w-12 h-12 rounded-full bg-white/[0.15] backdrop-blur-md border border-white/20 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.3)] active:scale-95 transition-transform"
+            >
+              <span className="text-[20px]">{showToc ? '✕' : '☰'}</span>
+            </button>
+          </div>
+
           <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* Quick nav */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 -mx-1 px-1 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
-              {[
-                { id: 'section-essen', emoji: '🍖', label: 'Essen' },
-                { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
-                { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
-                { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
-                { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
-                { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
-                { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
-                { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    const el = document.getElementById(item.id);
-                    if (el && infoScrollRef.current) {
-                      const containerTop = infoScrollRef.current.getBoundingClientRect().top;
-                      const elTop = el.getBoundingClientRect().top;
-                      const scrollTop = infoScrollRef.current.scrollTop;
-                      infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
-                    }
-                  }}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] text-white/80 text-[13px] active:bg-white/[0.15] transition-colors"
-                >
-                  <span className="text-[16px]">{item.emoji}</span>
-                  <span>{item.label}</span>
-                </button>
-              ))}
-            </div>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
