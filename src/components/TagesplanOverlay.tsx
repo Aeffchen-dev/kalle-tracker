@@ -156,6 +156,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
   const tocChipsRef = useRef<HTMLDivElement>(null);
 
@@ -178,6 +179,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     const handleScroll = () => {
       const scrolled = container.scrollTop > 30;
       setHasScrolled(scrolled);
+      // Calculate overall scroll progress
+      const scrollProgress = container.scrollTop / (container.scrollHeight - container.clientHeight);
+      setScrollProgress(Math.min(1, Math.max(0, scrollProgress)));
       const containerTop = container.getBoundingClientRect().top;
       let current: string | null = null;
       for (const s of tocSections) {
@@ -990,12 +994,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                 </div>
                 <div className="relative w-full h-[1px] bg-white/10">
                   <div
-                    className="absolute top-0 left-0 h-full bg-white/60 transition-all duration-300"
-                    style={{
-                      width: activeSection
-                        ? `${((tocSections.findIndex(s => s.id === activeSection) + 1) / tocSections.length) * 100}%`
-                        : '0%',
-                    }}
+                    className="absolute top-0 left-0 h-full bg-white/60"
+                    style={{ width: `${scrollProgress * 100}%` }}
                   />
                 </div>
               </div>
