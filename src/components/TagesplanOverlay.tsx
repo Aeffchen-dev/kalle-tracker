@@ -159,6 +159,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
   const tocChipsRef = useRef<HTMLDivElement>(null);
+  const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
 
   const tocSections = useMemo(() => [
     { id: 'section-essen', emoji: '🍖', label: 'Essen' },
@@ -184,11 +185,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       setScrollProgress(Math.min(1, Math.max(0, scrollProgress)));
       const containerTop = container.getBoundingClientRect().top;
       let current: string | null = null;
-      for (const s of tocSections) {
-        const el = document.getElementById(s.id);
-        if (el) {
-          const top = el.getBoundingClientRect().top - containerTop;
-          if (top <= 120) current = s.id;
+      // Check if scrolled to bottom
+      const isAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 10;
+      if (isAtBottom) {
+        current = tocSections[tocSections.length - 1].id;
+      } else {
+        for (const s of tocSections) {
+          const el = document.getElementById(s.id);
+          if (el) {
+            const top = el.getBoundingClientRect().top - containerTop;
+            if (top <= 120) current = s.id;
+          }
         }
       }
       setActiveSection(current);
@@ -1002,7 +1009,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               {/* Bottom fade */}
               <div className="h-10 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
-            <div className="px-4">
+            <div className="px-4 relative z-0">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
@@ -1659,7 +1666,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
               const ageGroup = trainingsByAge.find(g => ageInMonths < g.maxAge) || trainingsByAge[trainingsByAge.length - 1];
               // Pick a random trick on each reload
-              const trick = ageGroup.tricks[Math.floor(Math.random() * ageGroup.tricks.length)];
+              const trick = ageGroup.tricks[trainingTrickIndexRef.current % ageGroup.tricks.length];
 
               return (
                 <div id="section-training" className="mb-8">
