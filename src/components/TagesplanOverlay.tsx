@@ -11,7 +11,7 @@ import { fetchICalEvents, getICalEventsForWeek, getICalEventsForRange, getKalleO
 import { PlacesMap } from '@/components/PlacesMap';
 import TrendAnalysis from '@/components/TrendAnalysis';
 import ScrollReveal from '@/components/ScrollReveal';
-import StaggerItem from '@/components/StaggerItem';
+
 
 interface Ingredient {
   quantity: string;
@@ -1265,8 +1265,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     const isLast = index === snacks.length - 1;
 
                     return (
-                      <StaggerItem key={snack.id} index={index} root={infoScrollRef as React.RefObject<HTMLElement>}>
                       <div
+                        key={snack.id}
                         className="relative flex w-full items-stretch overflow-hidden gap-1"
                         onTouchStart={(e) => handleItemTouchStart(e, snack.id)}
                         onTouchMove={handleItemTouchMove}
@@ -1305,7 +1305,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
                         </button>
                       </div>
-                      </StaggerItem>
                     );
                   })}
                 </div>
@@ -1445,8 +1444,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     const isFirst = index === 0;
 
                     return (
-                      <StaggerItem key={med.id} index={index} root={infoScrollRef as React.RefObject<HTMLElement>}>
                       <div
+                        key={med.id}
                         className="relative flex w-full items-stretch overflow-hidden gap-1"
                         onTouchStart={(e) => handleItemTouchStart(e, med.id)}
                         onTouchMove={handleItemTouchMove}
@@ -1485,7 +1484,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
                         </button>
                       </div>
-                      </StaggerItem>
                     );
                   })}
                 </div>
@@ -1773,8 +1771,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     const isActive = activePlaceId === place.id;
                     const isFirst = index === 0;
                     return (
-                      <StaggerItem key={place.id} index={index} root={infoScrollRef as React.RefObject<HTMLElement>}>
                       <div
+                        key={place.id}
                         className="relative flex w-full items-stretch overflow-hidden gap-1"
                         onTouchStart={(e) => handleItemTouchStart(e, place.id)}
                         onTouchMove={handleItemTouchMove}
@@ -1826,7 +1824,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           <span className="whitespace-nowrap overflow-hidden text-ellipsis">Löschen</span>
                         </button>
                       </div>
-                      </StaggerItem>
                     );
                   })}
                 </div>
