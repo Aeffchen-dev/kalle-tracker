@@ -190,8 +190,8 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 1500 : 0,
-    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 80 : 0,
+    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
+    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
     animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
@@ -362,8 +362,8 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 1500 : 0,
-    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 80 : 0,
+    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 2000 : 0,
+    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 100 : 0,
     animationEasing: 'cubicOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
