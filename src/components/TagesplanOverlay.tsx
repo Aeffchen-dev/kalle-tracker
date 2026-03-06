@@ -979,7 +979,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Sticky navigation */}
             <div className="sticky top-0 z-[15]">
               <div style={{ background: 'hsl(var(--spot-color))' }}>
-                <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide" style={{ marginRight: 80, maskImage: 'linear-gradient(to right, black 80%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 80%, transparent 100%)' }}>
+                <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide" style={{ marginRight: 80 }}>
                   <div className="flex items-center gap-5 pl-4 pr-12 py-4">
                     {tocSections.map((item) => (
                       <button
