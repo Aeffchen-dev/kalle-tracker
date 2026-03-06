@@ -163,6 +163,14 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
+  const [showDots, setShowDots] = useState(false);
+
+  useEffect(() => {
+    if (inView && !showDots) {
+      const t = setTimeout(() => setShowDots(true), 1400);
+      return () => clearTimeout(t);
+    }
+  }, [inView, showDots]);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -255,12 +263,14 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         type: 'line',
         data: data.map(d => d.value),
         smooth: true,
-        symbol: 'circle',
+        symbol: showDots ? 'circle' : 'none',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
+        animationDuration: 1400,
+        animationEasing: 'cubicInOut',
         itemStyle: {
           color: (params: any) => {
             return data[params.dataIndex]?.isOutOfBounds ? '#FF0000' : '#5AD940';
@@ -272,8 +282,6 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
-            shadowBlur: 12,
-            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -325,6 +333,14 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
+  const [showDots, setShowDots] = useState(false);
+
+  useEffect(() => {
+    if (inView && !showDots) {
+      const t = setTimeout(() => setShowDots(true), 1400);
+      return () => clearTimeout(t);
+    }
+  }, [inView, showDots]);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -440,12 +456,14 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         type: 'line',
         data: data.map(d => d.value),
         smooth: true,
-        symbol: 'circle',
+        symbol: showDots ? 'circle' : 'none',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
           width: 2,
         },
+        animationDuration: 1400,
+        animationEasing: 'cubicInOut',
         itemStyle: {
           color: (params: any) => {
             const ph = data[params.dataIndex]?.value;
@@ -458,8 +476,6 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
-            shadowBlur: 12,
-            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -533,7 +549,15 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
   const chartRef = useRef<any>(null);
   const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [showDots, setShowDots] = useState(false);
   const lastTapRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (inView && !showDots) {
+      const t = setTimeout(() => setShowDots(true), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [inView, showDots]);
 
   const handleDoubleTap = useCallback(() => {
     const now = Date.now();
@@ -719,9 +743,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         animationEasing: 'cubicInOut',
         z: 1,
       },
-      {
+      ...(showDots ? [{
         name: 'Normal',
-        type: 'scatter',
+        type: 'scatter' as const,
         data: normalPoints.map(p => [p.month, p.weight]),
         symbolSize: 10,
         itemStyle: {
@@ -729,8 +753,8 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           opacity: 1,
         },
         animationDuration: 600,
-        animationDelay: (idx: number) => 800 + idx * 100,
-        animationEasing: 'elasticOut',
+        animationDelay: (idx: number) => idx * 100,
+        animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -739,10 +763,10 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           },
         },
         z: 10,
-      },
-      {
+      }] : []),
+      ...(showDots ? [{
         name: 'Abweichung',
-        type: 'scatter',
+        type: 'scatter' as const,
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
         symbolSize: 10,
         itemStyle: {
@@ -750,8 +774,8 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           opacity: 1,
         },
         animationDuration: 600,
-        animationDelay: (idx: number) => 800 + idx * 100,
-        animationEasing: 'elasticOut',
+        animationDelay: (idx: number) => idx * 100,
+        animationEasing: 'elasticOut' as const,
         emphasis: {
           scale: 2,
           itemStyle: {
@@ -760,7 +784,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
           },
         },
         z: 10,
-      },
+      }] : []),
     ],
   };
 
