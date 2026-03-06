@@ -96,7 +96,7 @@ const Index = () => {
   useEffect(() => {
     const html = document.documentElement;
     if (showTagesplan) {
-      html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
+      html.style.backgroundColor = '#2e2017'; // brown (spot-color)
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
     } else {
