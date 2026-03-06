@@ -44,9 +44,9 @@ const ScrollReveal = ({ children, className = '', root, delay = 0 }: ScrollRevea
       ref={ref}
       className={className}
       style={{
-        opacity: isVisible ? 1 : 0.7,
-        transform: isVisible ? 'translateY(0)' : 'translateY(3px)',
-        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
+        filter: isVisible ? 'blur(0px)' : 'blur(2px)',
+        opacity: 1,
+        transition: 'filter 0.4s ease-out',
       }}
     >
       {children}
