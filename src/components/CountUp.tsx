@@ -46,7 +46,7 @@ const CountUp = ({ value, duration = 800, decimals = 0, suffix = '', prefix = ''
           requestAnimationFrame(animate);
         }
       },
-      { threshold: 0.5, root: root?.current || null }
+      { threshold: 0.1, root: root?.current || null }
     );
 
     observer.observe(el);
