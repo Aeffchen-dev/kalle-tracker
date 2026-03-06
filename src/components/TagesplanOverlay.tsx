@@ -971,8 +971,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </div>
             {/* Sticky navigation */}
             <div className="sticky top-0 z-[15]">
-              <div className="flex items-center" style={{ background: 'hsl(var(--spot-color))' }}>
-                <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
+              <div className="relative" style={{ background: 'hsl(var(--spot-color))', marginRight: 40 }}>
+                <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide">
                   <div className="flex items-center gap-5 pl-4 py-4">
                     {tocSections.map((item) => (
                       <button
@@ -998,6 +998,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     ))}
                   </div>
                 </div>
+                {/* Right fade */}
+                <div className="absolute right-0 top-0 bottom-0 w-16 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
               </div>
               {/* Bottom fade */}
               <div className="h-10 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
