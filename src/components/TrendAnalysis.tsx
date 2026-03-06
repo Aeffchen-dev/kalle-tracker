@@ -711,7 +711,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   };
 
   return (
-    <div onClick={handleChartClick}>
+    <div onClick={handleChartClick} style={{ touchAction: 'pan-y' }}>
       <ReactECharts
         ref={chartRef}
         option={option}
@@ -746,6 +746,7 @@ GrowthCurveChart.displayName = 'GrowthCurveChart';
 const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   const chartsRef = useRef<HTMLDivElement>(null);
+  const growthChartRef = useRef<HTMLDivElement>(null);
   const weightChartRef = useRef<HTMLDivElement>(null);
   const phChartRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -1013,10 +1014,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('Wachstumskurve', margin, yPos);
       yPos += 10;
       
-      // Capture Growth Curve chart - it's not scrollable so capture directly
-      const growthChartElement = chartsRef.current.querySelector('.mb-8');
-      if (growthChartElement) {
-        const canvas = await html2canvas(growthChartElement as HTMLElement, {
+      // Capture Growth Curve chart using ref
+      if (growthChartRef.current) {
+        const canvas = await html2canvas(growthChartRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1038,11 +1038,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
-      // Capture Weight chart - capture full wrapper including Y-axis
-      const weightChartWrapper = chartsRef.current.querySelector('.mb-6');
-      if (weightChartWrapper) {
-        // Find scrollable container and expand it temporarily
-        const scrollContainer = weightChartWrapper.querySelector('.overflow-x-auto') as HTMLElement;
+      // Capture Weight chart using ref
+      if (weightChartRef.current) {
+        const scrollContainer = weightChartRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
         let originalStyles: { overflow: string; width: string } | null = null;
@@ -1057,8 +1055,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           scrollContainer.scrollLeft = 0;
         }
         
-        // Capture the entire wrapper including Y-axis labels
-        const canvas = await html2canvas(weightChartWrapper as HTMLElement, {
+        const canvas = await html2canvas(weightChartRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1066,7 +1063,6 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
         });
         
-        // Restore original state
         if (scrollContainer && originalStyles) {
           scrollContainer.style.overflow = originalStyles.overflow;
           scrollContainer.style.width = originalStyles.width;
@@ -1088,11 +1084,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
-      // Capture pH chart - capture full wrapper including Y-axis
-      const phChartWrapper = chartsRef.current.querySelector('.pt-16');
-      if (phChartWrapper) {
-        // Find scrollable container and expand it temporarily
-        const scrollContainer = phChartWrapper.querySelector('.overflow-x-auto') as HTMLElement;
+      // Capture pH chart using ref
+      if (phChartRef.current) {
+        const scrollContainer = phChartRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
         let originalPhStyles: { overflow: string; width: string } | null = null;
@@ -1107,8 +1101,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           scrollContainer.scrollLeft = 0;
         }
         
-        // Capture the entire wrapper including Y-axis labels
-        const canvas = await html2canvas(phChartWrapper as HTMLElement, {
+        const canvas = await html2canvas(phChartRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1116,7 +1109,6 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           windowWidth: innerChart ? innerChart.scrollWidth + 100 : undefined,
         });
         
-        // Restore original state
         if (scrollContainer && originalPhStyles) {
           scrollContainer.style.overflow = originalPhStyles.overflow;
           scrollContainer.style.width = originalPhStyles.width;
@@ -1325,14 +1317,14 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       {/* Charts */}
       <div ref={chartsRef}>
         <div ref={containerRef} className="space-y-2">
-          <div ref={weightChartRef}>
+          <div ref={growthChartRef}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <GrowthCurveChart events={events} />
             </div>
           </div>
           
-          <div data-vaul-no-drag>
+          <div ref={weightChartRef} data-vaul-no-drag>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <WeightChart data={weightData} width={width} />
