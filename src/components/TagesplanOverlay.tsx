@@ -767,10 +767,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       setTimeout(() => {
         setAnimationPhase('visible');
       }, 1100);
-      // Recolor body + html + #root (status bar + bottom bar + iOS floating bar) after dot transition completes
-      document.documentElement.style.backgroundColor = '#3d2b1f';
-      const rootEl = document.getElementById('root');
-      if (rootEl) rootEl.style.backgroundColor = '#3d2b1f';
+      // Recolor body (status bar + bottom bar) after dot transition completes
       setTimeout(() => {
         document.body.style.backgroundColor = '#3d2b1f';
       }, 1400);
@@ -781,9 +778,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   useEffect(() => {
     if (animationPhase === 'idle' && !isOpen) {
       document.body.style.backgroundColor = '';
-      document.documentElement.style.backgroundColor = '#000000';
-      const rootEl = document.getElementById('root');
-      if (rootEl) rootEl.style.backgroundColor = '';
     }
   }, [animationPhase, isOpen]);
 
@@ -883,9 +877,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     // Start animation immediately
     setAnimationPhase('dots-collapsing');
     document.body.style.backgroundColor = '';
-    document.documentElement.style.backgroundColor = '#000000';
-    const rootEl = document.getElementById('root');
-    if (rootEl) rootEl.style.backgroundColor = '';
     
     // Close modal after brief delay so animation starts
     requestAnimationFrame(() => {
