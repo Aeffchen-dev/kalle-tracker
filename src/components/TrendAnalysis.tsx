@@ -785,7 +785,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
               setIsZoomed(false);
             }
           }}
-          className="flex items-center gap-1 mx-auto mt-2 text-[11px] text-white/50 hover:text-white/70 transition-colors"
+          className="flex items-center gap-1 mx-auto mt-1 text-[11px] text-white/50 hover:text-white/70 transition-colors"
         >
           ↩ Zurücksetzen
         </button>
