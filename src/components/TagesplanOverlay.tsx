@@ -963,8 +963,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="flex overflow-x-auto scrollbar-hide px-4 pb-0 transition-all duration-300 border-b border-white/10"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 32 : 0, overflow: hasScrolled ? undefined : 'hidden' }}
+                className="flex gap-1.5 overflow-x-auto scrollbar-hide px-4 pb-3 transition-all duration-300"
+                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 36 : 0, overflow: hasScrolled ? undefined : 'hidden' }}
               >
                 {tocSections.map((item) => (
                   <button
@@ -979,13 +979,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                         infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 80, behavior: 'smooth' });
                       }
                     }}
-                    className={`flex-shrink-0 px-2.5 pb-2 text-[12px] transition-all duration-200 border-b-2 ${
+                    className={`flex-shrink-0 px-3 py-1 rounded-full text-[12px] text-white transition-all duration-200 ${
                       activeSection === item.id
-                        ? 'text-white border-white'
-                        : 'text-white/40 border-transparent'
+                        ? 'bg-white/20'
+                        : ''
                     }`}
                   >
-                    {item.emoji} {item.label}
+                    {item.label}
                   </button>
                 ))}
               </div>
