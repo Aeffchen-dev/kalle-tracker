@@ -749,8 +749,11 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   const chartsRef = useRef<HTMLDivElement>(null);
   const growthChartRef = useRef<HTMLDivElement>(null);
+  const growthChartInnerRef = useRef<HTMLDivElement>(null);
   const weightChartRef = useRef<HTMLDivElement>(null);
+  const weightChartInnerRef = useRef<HTMLDivElement>(null);
   const phChartRef = useRef<HTMLDivElement>(null);
+  const phChartInnerRef = useRef<HTMLDivElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   // Scroll to specific chart on mount if requested
@@ -1016,9 +1019,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('Wachstumskurve', margin, yPos);
       yPos += 10;
       
-      // Capture Growth Curve chart using ref
-      if (growthChartRef.current) {
-        const canvas = await html2canvas(growthChartRef.current, {
+      // Capture Growth Curve chart (inner content only, no glassmorphism box)
+      if (growthChartInnerRef.current) {
+        const canvas = await html2canvas(growthChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1040,9 +1043,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('Gewichtsverlauf', margin, yPos);
       yPos += 10;
       
-      // Capture Weight chart using ref
-      if (weightChartRef.current) {
-        const scrollContainer = weightChartRef.current.querySelector('.overflow-x-auto') as HTMLElement;
+      // Capture Weight chart (inner content only)
+      if (weightChartInnerRef.current) {
+        const scrollContainer = weightChartInnerRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
         let originalStyles: { overflow: string; width: string } | null = null;
@@ -1057,7 +1060,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           scrollContainer.scrollLeft = 0;
         }
         
-        const canvas = await html2canvas(weightChartRef.current, {
+        const canvas = await html2canvas(weightChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1086,9 +1089,9 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       pdf.text('pH-Wert Verlauf', margin, yPos);
       yPos += 10;
       
-      // Capture pH chart using ref
-      if (phChartRef.current) {
-        const scrollContainer = phChartRef.current.querySelector('.overflow-x-auto') as HTMLElement;
+      // Capture pH chart (inner content only)
+      if (phChartInnerRef.current) {
+        const scrollContainer = phChartInnerRef.current.querySelector('.overflow-x-auto') as HTMLElement;
         const innerChart = scrollContainer?.firstElementChild as HTMLElement;
         
         let originalPhStyles: { overflow: string; width: string } | null = null;
@@ -1103,7 +1106,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           scrollContainer.scrollLeft = 0;
         }
         
-        const canvas = await html2canvas(phChartRef.current, {
+        const canvas = await html2canvas(phChartInnerRef.current, {
           backgroundColor: '#000000',
           scale: 2,
           logging: false,
@@ -1322,20 +1325,26 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           <div ref={growthChartRef}>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
-              <GrowthCurveChart events={events} />
+              <div ref={growthChartInnerRef}>
+                <GrowthCurveChart events={events} />
+              </div>
             </div>
           </div>
           
           <div ref={weightChartRef} data-vaul-no-drag>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
-              <WeightChart data={weightData} width={width} />
+              <div ref={weightChartInnerRef}>
+                <WeightChart data={weightData} width={width} />
+              </div>
             </div>
           </div>
           <div ref={phChartRef} data-vaul-no-drag>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
-              <PhChart data={phData} width={width} />
+              <div ref={phChartInnerRef}>
+                <PhChart data={phData} width={width} />
+              </div>
             </div>
           </div>
         </div>
