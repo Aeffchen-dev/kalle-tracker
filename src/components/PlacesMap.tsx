@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Maximize2, X } from 'lucide-react';
+import { Maximize2, X, LocateFixed } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 
@@ -15,6 +15,7 @@ interface Place {
 function MapContent({ places, containerRef }: { places: Place[]; containerRef: React.RefObject<HTMLDivElement> }) {
   const mapInstanceRef = useRef<L.Map | null>(null);
   const placesKeyRef = useRef<string>('');
+  const userMarkerRef = useRef<L.Marker | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || places.length === 0) return;
@@ -59,11 +60,6 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
       return marker;
     });
 
-    // Focus on Berlin places only
-    const berlinBounds = L.latLngBounds(
-      [52.33, 13.08], // SW corner of Berlin
-      [52.68, 13.76], // NE corner of Berlin
-    );
     const berlinPlaces = places.filter(
       p => p.latitude >= 52.33 && p.latitude <= 52.68 && p.longitude >= 13.08 && p.longitude <= 13.76
     );
@@ -75,6 +71,7 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
     } else if (berlinPlaces.length === 1) {
       map.setView([berlinPlaces[0].latitude, berlinPlaces[0].longitude], 14);
     } else {
+      const berlinBounds = L.latLngBounds([52.33, 13.08], [52.68, 13.76]);
       map.fitBounds(berlinBounds);
     }
   }, [places, containerRef]);
@@ -87,13 +84,59 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
     };
   }, []);
 
+  // Expose map instance for external use
+  (containerRef as any).__mapInstance = mapInstanceRef;
+  (containerRef as any).__userMarker = userMarkerRef;
+
   return null;
+}
+
+function useLocateUser(containerRef: React.RefObject<HTMLDivElement>) {
+  const [locating, setLocating] = useState(false);
+
+  const locate = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const mapRef = (containerRef as any).__mapInstance as React.MutableRefObject<L.Map | null> | undefined;
+        const userMarkerRef = (containerRef as any).__userMarker as React.MutableRefObject<L.Marker | null> | undefined;
+        const map = mapRef?.current;
+        if (map) {
+          map.setView([latitude, longitude], 15);
+          if (userMarkerRef) {
+            if (userMarkerRef.current) {
+              userMarkerRef.current.setLatLng([latitude, longitude]);
+            } else {
+              const userIcon = L.divIcon({
+                className: '',
+                html: '<div style="width:14px;height:14px;background:#4A90D9;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+              });
+              userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
+            }
+          }
+        }
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [containerRef]);
+
+  return { locate, locating };
 }
 
 export function PlacesMap({ places }: { places: Place[] }) {
   const inlineMapRef = useRef<HTMLDivElement>(null);
   const fullscreenMapRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const { locate: locateInline, locating: locatingInline } = useLocateUser(inlineMapRef);
+  const { locate: locateFullscreen, locating: locatingFullscreen } = useLocateUser(fullscreenMapRef);
+
+  const btnStyle = "absolute z-[1000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg";
 
   return (
     <>
@@ -101,9 +144,17 @@ export function PlacesMap({ places }: { places: Place[] }) {
         <div ref={inlineMapRef} className="w-full h-full" />
         <MapContent places={places} containerRef={inlineMapRef} />
         <button
+          onClick={locateInline}
+          className={btnStyle}
+          style={{ borderRadius: 4, bottom: 8, right: 44 }}
+          disabled={locatingInline}
+        >
+          <LocateFixed size={14} className={locatingInline ? 'animate-pulse' : ''} />
+        </button>
+        <button
           onClick={() => setIsFullscreen(true)}
-          className="absolute bottom-2 right-2 z-[1000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
-          style={{ borderRadius: 4 }}
+          className={btnStyle}
+          style={{ borderRadius: 4, bottom: 8, right: 8 }}
         >
           <Maximize2 size={14} />
         </button>
@@ -117,9 +168,17 @@ export function PlacesMap({ places }: { places: Place[] }) {
           <div ref={fullscreenMapRef} className="w-full h-full" />
           {isFullscreen && <MapContent places={places} containerRef={fullscreenMapRef} />}
           <button
+            onClick={locateFullscreen}
+            className={btnStyle}
+            style={{ borderRadius: 4, top: 8, right: 44 }}
+            disabled={locatingFullscreen}
+          >
+            <LocateFixed size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
+          </button>
+          <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-2 right-2 z-[1000] bg-black text-white w-8 h-8 flex items-center justify-center shadow-lg"
-            style={{ borderRadius: 4 }}
+            className={btnStyle}
+            style={{ borderRadius: 4, top: 8, right: 8 }}
           >
             <X size={14} />
           </button>
