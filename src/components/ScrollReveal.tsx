@@ -32,7 +32,7 @@ const ScrollReveal = ({ children, className = '', root, delay = 0 }: ScrollRevea
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15, root: root?.current || null }
+      { threshold: 0.3, root: root?.current || null }
     );
 
     observer.observe(el);

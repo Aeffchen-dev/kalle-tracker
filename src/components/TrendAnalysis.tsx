@@ -13,6 +13,7 @@ import { getCachedSettings } from '@/lib/settings';
 interface TrendAnalysisProps {
   events: Event[];
   scrollToChart?: 'weight' | 'ph' | null;
+  scrollRoot?: React.RefObject<HTMLElement>;
 }
 
 // Helper to format numbers with German comma separator
@@ -38,7 +39,7 @@ const useContainerWidth = () => {
   return { containerRef, width };
 };
 
-const useInViewOnce = <T extends HTMLElement>(threshold = 0.2) => {
+const useInViewOnce = <T extends HTMLElement>(threshold = 0.5, root?: React.RefObject<HTMLElement>) => {
   const ref = useRef<T>(null);
   const [inView, setInView] = useState(false);
 
@@ -53,12 +54,12 @@ const useInViewOnce = <T extends HTMLElement>(threshold = 0.2) => {
           obs.disconnect();
         }
       },
-      { threshold }
+      { threshold, root: root?.current || null }
     );
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [inView, threshold]);
+  }, [inView, threshold, root]);
 
   return { ref, inView };
 };
@@ -157,10 +158,10 @@ interface WeightChartData {
   isOutOfBounds: boolean;
 }
 
-const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
+const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -318,10 +319,10 @@ interface PhChartData {
   value: number;
 }
 
-const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
+const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width: number; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -525,9 +526,9 @@ interface GrowthDataPoint {
   isOutOfBounds: boolean;
 }
 
-const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
+const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scrollRoot?: React.RefObject<HTMLElement> }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5, scrollRoot);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
 
@@ -758,7 +759,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         <div style={{ height: CHART_HEIGHT }} />
       )}
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-1">
+      <div className="flex flex-wrap gap-2 text-[10px] text-white/60 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
@@ -796,7 +797,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
 GrowthCurveChart.displayName = 'GrowthCurveChart';
 
-const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
+const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysisProps) => {
   const { containerRef, width } = useContainerWidth();
   const chartsRef = useRef<HTMLDivElement>(null);
   const growthChartRef = useRef<HTMLDivElement>(null);
@@ -1377,7 +1378,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <div ref={growthChartInnerRef}>
-                <GrowthCurveChart events={events} />
+                <GrowthCurveChart events={events} scrollRoot={scrollRoot} />
               </div>
             </div>
           </div>
@@ -1386,7 +1387,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <div ref={weightChartInnerRef}>
-                <WeightChart data={weightData} width={width} />
+                <WeightChart data={weightData} width={width} scrollRoot={scrollRoot} />
               </div>
             </div>
           </div>
@@ -1394,7 +1395,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <div ref={phChartInnerRef}>
-                <PhChart data={phData} width={width} />
+                <PhChart data={phData} width={width} scrollRoot={scrollRoot} />
               </div>
             </div>
           </div>

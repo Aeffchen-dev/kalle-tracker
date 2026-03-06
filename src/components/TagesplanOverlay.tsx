@@ -1066,7 +1066,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <ScrollReveal root={infoScrollRef as React.RefObject<HTMLElement>}>
             <div id="section-trends" className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">📊</span> <span>Trends</span></h2>
-              <TrendAnalysis events={appEvents} />
+              <TrendAnalysis events={appEvents} scrollRoot={infoScrollRef as React.RefObject<HTMLElement>} />
             </div>
             </ScrollReveal>
             {!dataLoaded && (

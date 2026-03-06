@@ -27,7 +27,7 @@ const StaggerItem = ({ children, index, root, className = '' }: StaggerItemProps
           observer.unobserve(el);
         }
       },
-      { threshold: 0.1, root: root?.current || null }
+      { threshold: 0.3, root: root?.current || null }
     );
 
     observer.observe(el);
