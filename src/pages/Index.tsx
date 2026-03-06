@@ -97,15 +97,19 @@ const Index = () => {
   // Dynamically set html background to match current overlay/sheet
   useEffect(() => {
     const html = document.documentElement;
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (showTagesplan) {
       html.style.backgroundColor = '#3d2b1f'; // brown (spot-color)
       html.setAttribute('data-info-open', '');
+      themeMeta?.setAttribute('content', '#3d2b1f');
     } else if (eventSheetOpen || showWeather || showGassiSettings || (showCalendar && !showTagesplan)) {
       html.style.backgroundColor = '#000000'; // black (bottom sheets)
       html.removeAttribute('data-info-open');
+      themeMeta?.setAttribute('content', '#000000');
     } else {
       html.style.backgroundColor = '#000000'; // black (matches drawer bottom)
       html.removeAttribute('data-info-open');
+      themeMeta?.setAttribute('content', '#000000');
     }
   }, [showTagesplan, eventSheetOpen, showWeather, showCalendar, showGassiSettings]);
 
