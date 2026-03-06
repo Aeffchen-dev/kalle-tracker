@@ -304,7 +304,7 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
         type: 'line',
         data: visibleData.map(d => d.value),
         smooth: true,
-        symbol: completed ? 'circle' : 'none',
+        symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
@@ -486,7 +486,7 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
         type: 'line',
         data: visibleData.map(d => d.value),
         smooth: true,
-        symbol: completed ? 'circle' : 'none',
+        symbol: 'circle',
         symbolSize: 8,
         lineStyle: {
           color: '#ffffff',
@@ -632,8 +632,9 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
   const visibleCurveCount = Math.max(2, Math.ceil(curveData.length * progress));
   const visibleCurve = curveData.slice(0, visibleCurveCount);
 
-  const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds);
-  const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds);
+  const maxVisibleMonth = visibleCurve.length > 0 ? visibleCurve[visibleCurve.length - 1].month : 0;
+  const normalPoints = weightMeasurements.filter(p => !p.isOutOfBounds && p.month <= maxVisibleMonth);
+  const outOfBoundsPoints = weightMeasurements.filter(p => p.isOutOfBounds && p.month <= maxVisibleMonth);
 
   const option = {
     backgroundColor: 'transparent',
@@ -755,7 +756,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         },
         z: 1,
       },
-      ...(completed ? [{
+      ...(normalPoints.length > 0 ? [{
         name: 'Normal',
         type: 'scatter' as const,
         data: normalPoints.map(p => [p.month, p.weight]),
@@ -776,7 +777,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         },
         z: 10,
       }] : []),
-      ...(completed ? [{
+      ...(outOfBoundsPoints.length > 0 ? [{
         name: 'Abweichung',
         type: 'scatter' as const,
         data: outOfBoundsPoints.map(p => [p.month, p.weight]),
