@@ -189,8 +189,9 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 800,
-    animationEasing: 'cubicOut',
+    animationDuration: 1200,
+    animationDelay: (idx: number) => idx * 80,
+    animationEasing: 'cubicInOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -357,8 +358,9 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 800,
-    animationEasing: 'cubicOut',
+    animationDuration: 1200,
+    animationDelay: (idx: number) => idx * 80,
+    animationEasing: 'cubicInOut',
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -775,7 +777,7 @@ const GrowthCurveChart = memo(({ events, scrollRoot }: { events: Event[]; scroll
         <div style={{ height: CHART_HEIGHT }} />
       )}
       {/* Legend */}
-      <div className="flex flex-wrap gap-2 text-[10px] text-white/60 justify-center mt-1">
+      <div className="flex flex-wrap gap-2 text-[12px] text-white/60 justify-center mt-1">
         <div className="flex items-center gap-1">
           <div className="w-4 h-[2px] bg-white rounded"></div>
           <span>Ziel: {TARGET_WEIGHT}kg</span>
@@ -1347,6 +1349,7 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
     <div className="relative" data-vaul-no-drag>
       <div className="space-y-2">
       {/* Age Display */}
+      <ScrollBreathe root={scrollRoot}>
       <div className="w-full bg-white/[0.04] rounded-[12px] border border-white/5 p-4 flex items-center justify-center">
         <span className="text-[14px] leading-none">
           <span className="text-white/60">Kalle ist heute </span>
@@ -1354,8 +1357,10 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
           <span className="text-white/60"> alt</span>
         </span>
       </div>
+      </ScrollBreathe>
 
       {/* Stats Overview */}
+      <ScrollBreathe root={scrollRoot}>
       <div className="grid grid-cols-2 gap-2">
         <StatCard 
           emoji="🏋️" 
@@ -1386,6 +1391,7 @@ const TrendAnalysis = memo(({ events, scrollToChart, scrollRoot }: TrendAnalysis
           subtext={stuhlgangStats.avgPerDay ? `Ø ${String(stuhlgangStats.avgPerDay).replace('.', ',')}x pro Tag` : undefined}
         />
       </div>
+      </ScrollBreathe>
 
       {/* Charts */}
       <div ref={chartsRef}>
