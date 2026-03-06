@@ -1326,40 +1326,39 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       <div ref={chartsRef} className="!mt-6">
         <div ref={containerRef}>
           {/* Growth Curve Chart */}
-          <div ref={weightChartRef} className="mb-4">
+          <div ref={weightChartRef} className="mb-2">
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <GrowthCurveChart events={events} />
             </div>
           </div>
           
-          <div className="mb-4" data-vaul-no-drag>
+          <div className="mb-2" data-vaul-no-drag>
             <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Gewichtsverlauf</h3>
               <WeightChart data={weightData} width={width} />
             </div>
           </div>
           <div ref={phChartRef} className="pt-16 -mt-16" data-vaul-no-drag>
-            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 overflow-hidden">
+            <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-3 pb-[72px] overflow-hidden relative">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <PhChart data={phData} width={width} />
+              {/* Export Button - 16px above bottom of pH box */}
+              <div className="absolute bottom-4 left-0 right-0 z-10 flex justify-center">
+                <Button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
+                >
+                  <Download className="w-4 h-4" />
+                  {isExporting ? 'Exportiere...' : 'Daten exportieren'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div ref={endRef} />
-
-      {/* Export Button - overlaps pH box, 16px above its bottom edge */}
-      <div className="-mt-[56px] relative z-10 flex justify-center pb-4">
-        <Button
-          onClick={handleExportPDF}
-          disabled={isExporting}
-          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
-        >
-          <Download className="w-4 h-4" />
-          {isExporting ? 'Exportiere...' : 'Daten exportieren'}
-        </Button>
-      </div>
       </div>
     </div>
   );
