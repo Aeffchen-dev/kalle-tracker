@@ -9,6 +9,7 @@ import { getCachedSettings } from '@/lib/settings';
 import { getEvents, Event as AppEvent } from '@/lib/events';
 import { fetchICalEvents, getICalEventsForWeek, getICalEventsForRange, getKalleOwnerForDate, ICalEvent } from '@/lib/ical';
 import { PlacesMap } from '@/components/PlacesMap';
+import TrendAnalysis from '@/components/TrendAnalysis';
 
 interface Ingredient {
   quantity: string;
@@ -164,6 +165,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
 
   const tocSections = useMemo(() => [
+    { id: 'section-trends', emoji: '📊', label: 'Trends' },
     { id: 'section-essen', emoji: '🍖', label: 'Essen' },
     { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
     { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
@@ -1039,6 +1041,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </div>
             <div className="px-4 relative z-0">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
+            {/* Trend Analysis Section */}
+            <div id="section-trends" className="mb-8">
+              <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">📊</span> <span>Trends</span></h2>
+              <TrendAnalysis events={appEvents} />
+            </div>
             {!dataLoaded && (
               <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
