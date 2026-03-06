@@ -1348,18 +1348,18 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         </div>
       </div>
       <div ref={endRef} />
-      </div>
 
-      {/* Export Button - sticky at bottom, scrolls out with section */}
-      <div className="sticky bottom-6 z-10 flex justify-center pointer-events-none pb-2">
+      {/* Export Button - overlaps pH box, 16px above its bottom edge */}
+      <div className="-mt-[56px] relative z-10 flex justify-center pb-4">
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)] pointer-events-auto"
+          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
         >
           <Download className="w-4 h-4" />
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
         </Button>
+      </div>
       </div>
     </div>
   );
