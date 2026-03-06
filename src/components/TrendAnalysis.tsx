@@ -84,8 +84,8 @@ const useScrollProgress = <T extends HTMLElement>(root?: React.RefObject<HTMLEle
         const containerRect = container.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
         
-        // Progress: 0 when element bottom enters viewport, 1 when element top reaches 30% from top
-        const containerCenter = containerRect.top + containerRect.height * 0.3;
+        // Progress: 0 when element bottom enters viewport, 1 when element top reaches 20% from top
+        const containerCenter = containerRect.top + containerRect.height * 0.2;
         const elTop = elRect.top;
         const entryPoint = containerRect.bottom;
         
