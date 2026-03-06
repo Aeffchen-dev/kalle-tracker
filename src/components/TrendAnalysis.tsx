@@ -1,4 +1,5 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
+import CountUp from '@/components/CountUp';
 import { Event } from '@/lib/events';
 import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -60,7 +61,9 @@ const StatCard = memo(({
     <div className="flex items-center gap-2">
       <div className="flex items-baseline gap-1">
         <span className="text-2xl font-semibold text-white">
-          {value !== null && value !== undefined ? String(value).replace('.', ',') : '-'}
+          {value !== null && value !== undefined ? (
+            <CountUp value={Number(String(value).replace(',', '.'))} decimals={String(value).includes('.') || String(value).includes(',') ? 1 : 0} duration={800} className="" />
+          ) : '-'}
         </span>
         <span className="text-[14px] text-white">{unit}</span>
       </div>
