@@ -95,7 +95,7 @@ const DrawerContent = React.forwardRef<
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(drawerContentVariants({ variant }), className)}
-        style={style}
+        style={{ boxShadow: 'none', ...style }}
         {...props}
       >
         {children}
