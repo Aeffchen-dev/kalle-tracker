@@ -160,7 +160,7 @@ interface WeightChartData {
 const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.05);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -322,7 +322,7 @@ interface PhChartData {
 const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.05);
   
   useEffect(() => {
     if (scrollRef.current) {
@@ -531,7 +531,7 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
-  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.5);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.05);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastTapRef = useRef<number>(0);
 
