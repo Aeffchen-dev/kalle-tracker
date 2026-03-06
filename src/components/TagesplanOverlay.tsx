@@ -960,32 +960,18 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           {/* Header - floating over scroll content */}
            <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 85%, transparent)' }}>
               {/* Progress bar line - topmost */}
-              <div className="relative w-full h-[1px] bg-white/10" style={{ opacity: hasScrolled ? 1 : 0, transition: 'opacity 0.3s' }}>
+              <div className="relative w-full h-[1px] bg-white/10">
                 <div
                   className="absolute top-0 left-0 h-full bg-white/60"
                   style={{ width: `${scrollProgress * 100}%` }}
                 />
               </div>
-              {/* Title row - scrolls out, replaced by labels */}
-              <div className="flex justify-between items-center px-4 pt-3 pb-1" style={{ 
-                opacity: hasScrolled ? 0 : 1, 
-                maxHeight: hasScrolled ? 0 : 40, 
-                overflow: 'hidden',
-                transition: 'all 0.3s'
-              }}>
-                <h1 className="text-[16px] uppercase text-white">Info</h1>
-                <button onClick={handleClose} className="text-white p-1">
-                  <X size={20} />
-                </button>
-              </div>
-              {/* Labels row - scrolls in */}
+              {/* Labels + close */}
               <div
                 ref={tocChipsRef}
-                className="transition-all duration-300"
-                style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 36 : 0, overflow: 'hidden' }}
               >
                 <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-hide" style={{ width: '100vw' }}>
-                  <div className="flex gap-4 px-4 py-1.5">
+                  <div className="flex gap-4 px-4 py-2">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -1014,7 +1000,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
            </header>
 
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(48px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(40px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {!dataLoaded && (
               <div className="mb-8">
