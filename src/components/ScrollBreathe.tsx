@@ -13,7 +13,7 @@ interface ScrollBreatheProps {
  * Subtly stretches children vertically based on how centered they are
  * in the scroll viewport — like a breathing/bulge effect.
  */
-const ScrollBreathe = ({ children, root, intensity = 0.015, className = '' }: ScrollBreatheProps) => {
+const ScrollBreathe = ({ children, root, intensity = 0.025, className = '' }: ScrollBreatheProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const [scaleY, setScaleY] = useState(1);
 
