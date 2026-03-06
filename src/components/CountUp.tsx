@@ -37,8 +37,10 @@ const CountUp = ({ value, duration = 1400, decimals = 0, suffix = '', prefix = '
           const startTime = performance.now();
           const animate = (now: number) => {
             const progress = Math.min(1, (now - startTime) / duration);
-            // ease-out quint — starts fast, decelerates smoothly
-            const eased = 1 - Math.pow(1 - progress, 5);
+            // ease-in-out: slow start, slow end
+            const eased = progress < 0.3
+              ? 0.5 * Math.pow(progress / 0.3, 2) * 0.3 / 0.5
+              : 1 - Math.pow(1 - progress, 6);
             const current = eased * value;
             setDisplay(current.toFixed(decimals).replace('.', ','));
             if (progress < 1) requestAnimationFrame(animate);
