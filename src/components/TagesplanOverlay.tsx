@@ -1027,10 +1027,21 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                           const sectionRect = section.getBoundingClientRect();
                           const containerRect = container.getBoundingClientRect();
                           const currentScroll = container.scrollTop;
-                          const targetScroll = currentScroll + sectionRect.top - containerRect.top - navHeight - 8;
+                          const targetScroll = Math.max(0, currentScroll + sectionRect.top - containerRect.top - navHeight - 8);
 
-                          // Use instant scroll first, then apply smooth if needed
-                          container.scrollTop = Math.max(0, targetScroll);
+                          const start = container.scrollTop;
+                          const distance = targetScroll - start;
+                          const duration = 320;
+                          const startTime = performance.now();
+                          const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+                          const animate = (now: number) => {
+                            const progress = Math.min(1, (now - startTime) / duration);
+                            container.scrollTop = start + distance * easeOutCubic(progress);
+                            if (progress < 1) requestAnimationFrame(animate);
+                          };
+
+                          requestAnimationFrame(animate);
                         }}
                         className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
                           activeSection === item.id
