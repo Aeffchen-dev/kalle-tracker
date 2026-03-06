@@ -183,13 +183,16 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
   
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 60);
+  const visibleWidth = width - 45;
+  const visiblePoints = Math.ceil(visibleWidth / 60);
+  const firstVisibleIdx = Math.max(0, data.length - visiblePoints);
 
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 1200,
+    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 1500 : 0,
+    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 80 : 0,
     animationEasing: 'cubicOut',
-    animationDurationUpdate: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
@@ -345,7 +348,10 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 80);
-  
+  const visibleWidth = width - 45;
+  const visiblePoints = Math.ceil(visibleWidth / 80);
+  const firstVisibleIdx = Math.max(0, data.length - visiblePoints);
+
   // Generate Y ticks
   const yTicks: number[] = [];
   const step = (domainMax - domainMin) / 4;
@@ -356,9 +362,9 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
   const option = {
     backgroundColor: 'transparent',
     animation: inView,
-    animationDuration: 1200,
+    animationDuration: (idx: number) => idx >= firstVisibleIdx ? 1500 : 0,
+    animationDelay: (idx: number) => idx >= firstVisibleIdx ? (idx - firstVisibleIdx) * 80 : 0,
     animationEasing: 'cubicOut',
-    animationDurationUpdate: 300,
     textStyle: { fontFamily: FONT_FAMILY },
     tooltip: {
       trigger: 'item',
