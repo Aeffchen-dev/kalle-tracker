@@ -159,6 +159,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [scrollProgress, setScrollProgress] = useState(0);
   const [hasScrolled, setHasScrolled] = useState(false);
   const tocChipsRef = useRef<HTMLDivElement>(null);
+  const [navScrolledToEnd, setNavScrolledToEnd] = useState(false);
   const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
 
   const tocSections = useMemo(() => [
@@ -208,6 +209,19 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);
   }, [tocSections, animationPhase]);
+
+  // Track horizontal scroll of nav chips to hide fade at end
+  useEffect(() => {
+    const el = tocChipsRef.current;
+    if (!el) return;
+    const checkEnd = () => {
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
+      setNavScrolledToEnd(atEnd);
+    };
+    checkEnd();
+    el.addEventListener('scroll', checkEnd, { passive: true });
+    return () => el.removeEventListener('scroll', checkEnd);
+  }, [animationPhase]);
 
   // Reset hasScrolled when overlay closes
   useEffect(() => {
@@ -979,8 +993,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             {/* Sticky navigation */}
             <div className="sticky top-0 z-[15]">
               <div style={{ background: 'hsl(var(--spot-color))' }}>
-                <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide" style={{ marginRight: 36, maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}>
-                  <div className="flex items-center gap-5 pl-4 pr-16 py-4">
+                <div ref={tocChipsRef} className="overflow-x-auto scrollbar-hide" style={{ marginRight: 36, ...(navScrolledToEnd ? {} : { maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }) }}>
+                  <div className="flex items-center gap-5 pl-4 pr-12 py-4">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
