@@ -116,12 +116,12 @@
 }
 
 .main-with-sheet-offset {
-  padding-bottom: calc(20dvh + 8px);
+  padding-bottom: calc(25dvh + 8px);
 }
 
 @media (display-mode: standalone) {
   .main-with-sheet-offset {
-    padding-bottom: calc(25dvh + 16px);
+    padding-bottom: calc(30dvh + 8px);
   }
 }
 
