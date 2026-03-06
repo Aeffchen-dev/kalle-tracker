@@ -196,12 +196,12 @@ export function detectAnomalies(events: Event[]): Anomaly[] {
     }
   }
   
-  // Sort by severity (alert > warning > info) then by timestamp
+  // Sort by timestamp (newest first), then by severity as tiebreaker
   const severityOrder = { alert: 0, warning: 1, info: 2 };
   anomalies.sort((a, b) => {
-    const severityDiff = severityOrder[a.severity] - severityOrder[b.severity];
-    if (severityDiff !== 0) return severityDiff;
-    return b.timestamp.getTime() - a.timestamp.getTime();
+    const timeDiff = b.timestamp.getTime() - a.timestamp.getTime();
+    if (timeDiff !== 0) return timeDiff;
+    return severityOrder[a.severity] - severityOrder[b.severity];
   });
   
   // Deduplicate by keeping only the most severe anomaly of each type
