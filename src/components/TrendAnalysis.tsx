@@ -720,8 +720,6 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
-            shadowBlur: 12,
-            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
@@ -734,16 +732,12 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
         itemStyle: {
           color: '#FF0000',
           opacity: 1,
-          shadowBlur: 8,
-          shadowColor: 'rgba(255, 0, 0, 0.6)',
         },
         emphasis: {
           scale: 2,
           itemStyle: {
             borderColor: '#ffffff',
             borderWidth: 3,
-            shadowBlur: 15,
-            shadowColor: 'rgba(255, 255, 255, 0.5)',
           },
         },
         z: 10,
