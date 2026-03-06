@@ -164,6 +164,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [hasScrolled, setHasScrolled] = useState(false);
   const [navStickyProgress, setNavStickyProgress] = useState(0);
   const tocChipsRef = useRef<HTMLDivElement>(null);
+  const tocChipsMobileRef = useRef<HTMLDivElement>(null);
   const [navScrolledToEnd, setNavScrolledToEnd] = useState(false);
   const trainingTrickIndexRef = useRef<number>(Math.floor(Math.random() * 100));
 
@@ -210,9 +211,13 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       }
       setActiveSection(current);
       // Auto-scroll chips to keep active visible
-      if (current && tocChipsRef.current) {
-        const chip = tocChipsRef.current.querySelector(`[data-section="${current}"]`) as HTMLElement;
-        if (chip) chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      if (current) {
+        const refs = [tocChipsRef.current, tocChipsMobileRef.current];
+        refs.forEach(ref => {
+          if (!ref) return;
+          const chip = ref.querySelector(`[data-section="${current}"]`) as HTMLElement;
+          if (chip) chip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        });
       }
     };
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -221,7 +226,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
   // Track horizontal scroll of nav chips to hide fade at end
   useEffect(() => {
-    const el = tocChipsRef.current;
+    const el = tocChipsMobileRef.current || tocChipsRef.current;
     if (!el) return;
     const checkEnd = () => {
       const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 8;
@@ -987,23 +992,74 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
-          {/* Header - floating over scroll content */}
+          {/* Desktop: fixed header bar with INFO + nav + close in one row */}
+          <div className="hidden md:flex fixed top-0 left-0 right-0 z-20 items-center px-4 pt-3 pb-0" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)', background: 'hsl(var(--spot-color))' }}>
+            <h1 className="text-[16px] uppercase text-white shrink-0">Info</h1>
+            <div className="flex-1 flex justify-center overflow-hidden mx-4">
+              <div
+                ref={tocChipsRef}
+                className="overflow-x-auto scrollbar-hide"
+              >
+                <div className="flex items-center gap-5 px-2 py-3">
+                  {tocSections.map((item) => (
+                    <button
+                      key={item.id}
+                      data-section={item.id}
+                      onClick={() => {
+                        const container = infoScrollRef.current;
+                        if (!container) return;
+                        const section = document.getElementById(item.id);
+                        if (!section) return;
+                        const stickyNav = container.querySelector('.sticky') as HTMLElement | null;
+                        const navHeight = stickyNav ? stickyNav.offsetHeight : 70;
+                        const sectionRect = section.getBoundingClientRect();
+                        const containerRect = container.getBoundingClientRect();
+                        const currentScroll = container.scrollTop;
+                        const targetScroll = Math.max(0, currentScroll + sectionRect.top - containerRect.top - navHeight - 8);
+                        const start = container.scrollTop;
+                        const distance = targetScroll - start;
+                        const duration = 320;
+                        const startTime = performance.now();
+                        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+                        const animate = (now: number) => {
+                          const progress = Math.min(1, (now - startTime) / duration);
+                          container.scrollTop = start + distance * easeOutCubic(progress);
+                          if (progress < 1) requestAnimationFrame(animate);
+                        };
+                        requestAnimationFrame(animate);
+                      }}
+                      className={`flex-shrink-0 text-[12px] tracking-wide transition-all duration-300 ${
+                        activeSection === item.id ? 'text-white' : 'text-white/35 active:text-white/60'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button onClick={handleClose} className="text-white p-1 shrink-0">
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Mobile: scrollable layout with sticky nav */}
           <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
-            {/* Fixed close button - always top right */}
-            <div className="fixed right-0 z-20 px-4 pt-3" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+            {/* Fixed close button - always top right (mobile only) */}
+            <div className="fixed right-0 z-20 px-4 pt-3 md:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
               <button onClick={handleClose} className="text-white p-1">
                 <X size={20} />
               </button>
             </div>
-            {/* INFO title - scrolls away */}
-            <div className="px-4 pt-4 pb-0">
-              <h1 className="text-[16px] uppercase text-white">Info</h1>
+            {/* INFO title - scrolls away on mobile */}
+            <div className="px-4 pt-4 pb-0 md:pt-14">
+              <h1 className="text-[16px] uppercase text-white md:hidden">Info</h1>
             </div>
-            {/* Sticky navigation */}
-            <div className="sticky top-0 z-[15]">
+            {/* Sticky navigation (mobile only) */}
+            <div className="sticky top-0 z-[15] md:hidden">
               <div style={{ background: 'hsl(var(--spot-color))' }}>
                 <div
-                  ref={tocChipsRef}
+                  ref={tocChipsMobileRef}
                   className="overflow-x-auto scrollbar-hide"
                   style={{
                     marginRight: Math.round(navStickyProgress * 60),
