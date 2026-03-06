@@ -973,7 +973,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <div className="sticky top-0 z-[15]">
               <div className="flex items-center" style={{ background: 'hsl(var(--spot-color))' }}>
                 <div ref={tocChipsRef} className="flex-1 overflow-x-auto scrollbar-hide">
-                  <div className="flex items-center gap-5 px-4 py-3">
+                  <div className="flex items-center gap-5 px-4 py-5">
                     {tocSections.map((item) => (
                       <button
                         key={item.id}
@@ -999,7 +999,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                   </div>
                 </div>
                 {/* Right fade before fixed close */}
-                <div className="absolute right-0 top-0 bottom-0 w-24 pointer-events-none" style={{ background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
+                <div className="absolute top-0 bottom-0 w-24 pointer-events-none" style={{ right: 44, background: 'linear-gradient(to right, transparent, hsl(var(--spot-color)))' }} />
               </div>
               {/* Bottom fade */}
               <div className="h-10 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
