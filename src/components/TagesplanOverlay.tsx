@@ -954,7 +954,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
       {animationPhase === 'visible' && (
         <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Header - floating over scroll content */}
-           <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 70%, transparent)' }}>
+           <header className="absolute left-0 right-0 z-10 flex flex-col" style={{ top: 'env(safe-area-inset-top, 0px)', background: 'linear-gradient(to bottom, hsl(var(--spot-color)) 85%, transparent)' }}>
               <div className="flex justify-between items-center px-4 pt-4 pb-1">
                 <h1 className="text-[16px] uppercase text-white">Info</h1>
                 <button onClick={handleClose} className="text-white p-1">
