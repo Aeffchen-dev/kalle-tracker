@@ -23,7 +23,7 @@ const StaggerItem = ({ children, index, root, className = '' }: StaggerItemProps
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setIsVisible(true), index * 60);
+          setTimeout(() => setIsVisible(true), index * 40);
           observer.unobserve(el);
         }
       },
@@ -40,8 +40,8 @@ const StaggerItem = ({ children, index, root, className = '' }: StaggerItemProps
       className={className}
       style={{
         opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateX(0)' : 'translateX(-8px)',
-        transition: 'opacity 0.35s ease-out, transform 0.35s ease-out',
+        transform: isVisible ? 'translateY(0)' : 'translateY(4px)',
+        transition: 'opacity 0.3s ease-out, transform 0.3s ease-out',
       }}
     >
       {children}
