@@ -84,6 +84,27 @@ function MapContent({ places, containerRef }: { places: Place[]; containerRef: R
     };
   }, []);
 
+  // Auto-show user location as blue dot without changing map view
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const map = mapInstanceRef.current;
+      if (!map) return;
+      const { latitude, longitude } = pos.coords;
+      if (userMarkerRef.current) {
+        userMarkerRef.current.setLatLng([latitude, longitude]);
+      } else {
+        const userIcon = L.divIcon({
+          className: '',
+          html: '<div style="width:14px;height:14px;background:#4A90D9;border:2px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>',
+          iconSize: [14, 14],
+          iconAnchor: [7, 7],
+        });
+        userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon }).addTo(map);
+      }
+    }, () => {}, { enableHighAccuracy: true, timeout: 10000 });
+  }, [places, containerRef]);
+
   // Expose map instance for external use
   (containerRef as any).__mapInstance = mapInstanceRef;
   (containerRef as any).__userMarker = userMarkerRef;
@@ -168,19 +189,19 @@ export function PlacesMap({ places }: { places: Place[] }) {
           <div ref={fullscreenMapRef} className="w-full h-full" />
           {isFullscreen && <MapContent places={places} containerRef={fullscreenMapRef} />}
           <button
-            onClick={locateFullscreen}
-            className={btnStyle}
-            style={{ borderRadius: 4, top: 44, right: 8 }}
-            disabled={locatingFullscreen}
-          >
-            <Navigation size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
-          </button>
-          <button
             onClick={() => setIsFullscreen(false)}
             className={btnStyle}
             style={{ borderRadius: 4, top: 8, right: 8 }}
           >
             <X size={14} />
+          </button>
+          <button
+            onClick={locateFullscreen}
+            className={btnStyle}
+            style={{ borderRadius: 4, bottom: 44, right: 8 }}
+            disabled={locatingFullscreen}
+          >
+            <Navigation size={14} className={locatingFullscreen ? 'animate-pulse' : ''} />
           </button>
         </DialogContent>
       </Dialog>
