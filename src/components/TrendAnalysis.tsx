@@ -235,8 +235,27 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
   // Calculate width based on data points
   const chartWidth = Math.max(width - 45, data.length * 60);
 
-  const visibleCount = Math.max(2, Math.ceil(data.length * progress));
-  const visibleData = data.slice(0, visibleCount);
+  // Interpolate between points for smooth drawing
+  const totalSegments = data.length - 1;
+  const continuousIndex = totalSegments * progress; // e.g. 2.4 means between point 2 and 3
+  const lastFullIndex = Math.floor(continuousIndex);
+  const segmentFraction = continuousIndex - lastFullIndex;
+  
+  const visibleData: WeightChartData[] = [];
+  for (let i = 0; i <= Math.min(lastFullIndex, data.length - 1); i++) {
+    visibleData.push(data[i]);
+  }
+  // Add interpolated point if we're between two points
+  if (lastFullIndex < totalSegments && segmentFraction > 0) {
+    const from = data[lastFullIndex];
+    const to = data[lastFullIndex + 1];
+    visibleData.push({
+      date: to.date,
+      value: from.value + (to.value - from.value) * segmentFraction,
+      expectedWeight: from.expectedWeight + (to.expectedWeight - from.expectedWeight) * segmentFraction,
+      isOutOfBounds: to.isOutOfBounds,
+    });
+  }
 
   const option = {
     backgroundColor: 'transparent',
@@ -302,7 +321,11 @@ const WeightChart = memo(({ data, width, scrollRoot }: { data: WeightChartData[]
       {
         name: 'Gewicht',
         type: 'line',
-        data: visibleData.map(d => d.value),
+        data: visibleData.map((d, i) => ({
+          value: d.value,
+          symbol: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 'none' : 'circle',
+          symbolSize: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 0 : 8,
+        })),
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
@@ -401,8 +424,26 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
   for (let i = 0; i <= 4; i++) {
     yTicks.push(Math.round((domainMin + step * i) * 10) / 10);
   }
-  const visibleCount = Math.max(2, Math.ceil(data.length * progress));
-  const visibleData = data.slice(0, visibleCount);
+  // Interpolate between points for smooth drawing
+  const totalSegments = data.length - 1;
+  const continuousIndex = totalSegments * progress;
+  const lastFullIndex = Math.floor(continuousIndex);
+  const segmentFraction = continuousIndex - lastFullIndex;
+  
+  const visibleData: PhChartData[] = [];
+  for (let i = 0; i <= Math.min(lastFullIndex, data.length - 1); i++) {
+    visibleData.push(data[i]);
+  }
+  // Add interpolated point if we're between two points
+  if (lastFullIndex < totalSegments && segmentFraction > 0) {
+    const from = data[lastFullIndex];
+    const to = data[lastFullIndex + 1];
+    visibleData.push({
+      dateLine1: to.dateLine1,
+      dateLine2: to.dateLine2,
+      value: from.value + (to.value - from.value) * segmentFraction,
+    });
+  }
 
   const option = {
     backgroundColor: 'transparent',
@@ -484,7 +525,11 @@ const PhChart = memo(({ data, width, scrollRoot }: { data: PhChartData[]; width:
       {
         name: 'pH-Wert',
         type: 'line',
-        data: visibleData.map(d => d.value),
+        data: visibleData.map((d, i) => ({
+          value: d.value,
+          symbol: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 'none' : 'circle',
+          symbolSize: (i === visibleData.length - 1 && lastFullIndex < totalSegments && segmentFraction > 0) ? 0 : 8,
+        })),
         smooth: true,
         symbol: 'circle',
         symbolSize: 8,
