@@ -150,6 +150,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
   const [selectedPubertyPhase, setSelectedPubertyPhase] = useState<number | null>(null);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
   const wochenplanScrollRef = useRef<HTMLDivElement>(null);
+  const infoScrollRef = useRef<HTMLDivElement>(null);
   const todayColRef = useRef<HTMLTableCellElement>(null);
   const [activeSnackId, setActiveSnackId] = useState<string | null>(null);
   const [snackDeleting, setSnackDeleting] = useState<string | null>(null);
@@ -913,9 +914,38 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
           </header>
 
           {/* Scrollable content - fills entire viewport */}
-          <div className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden px-4 pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'calc(56px + env(safe-area-inset-top, 0px))', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+            {/* Quick nav */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 -mx-1 px-1 md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
+              {[
+                { id: 'section-essen', emoji: '🍖', label: 'Essen' },
+                { id: 'section-snacks', emoji: '🍪', label: 'Snacks' },
+                { id: 'section-notfall', emoji: '🚑', label: 'Notfall' },
+                { id: 'section-apotheke', emoji: '💊', label: 'Apotheke' },
+                { id: 'section-pubertaet', emoji: '👹', label: 'Pubertät' },
+                { id: 'section-training', emoji: '🧑‍🏫', label: 'Training' },
+                { id: 'section-orte', emoji: '🗺️', label: 'Orte' },
+                { id: 'section-wochenplan', emoji: '🗓️', label: 'Wochenplan' },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    const el = document.getElementById(item.id);
+                    if (el && infoScrollRef.current) {
+                      const containerTop = infoScrollRef.current.getBoundingClientRect().top;
+                      const elTop = el.getBoundingClientRect().top;
+                      const scrollTop = infoScrollRef.current.scrollTop;
+                      infoScrollRef.current.scrollTo({ top: scrollTop + (elTop - containerTop) - 60, behavior: 'smooth' });
+                    }
+                  }}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] text-white/80 text-[13px] active:bg-white/[0.15] transition-colors"
+                >
+                  <span className="text-[16px]">{item.emoji}</span>
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
-            {/* Loading skeleton for meals */}
             {!dataLoaded && (
               <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
@@ -931,7 +961,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             )}
             
             {meals && meals.map((meal, mealIndex) => (
-              <div key={mealIndex} className="mb-2">
+              <div key={mealIndex} id={mealIndex === 0 ? 'section-essen' : undefined} className="mb-2">
                 <h2 className="flex items-center gap-2 text-[16px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
                 <p className="text-[14px] text-white/60 mb-4">{meal.title}</p>
                 <div className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden">
@@ -1101,7 +1131,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             <DogFoodChecker />
 
             {/* Snacks Section */}
-            <div className="mb-8">
+            <div id="section-snacks" className="mb-8">
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
@@ -1195,7 +1225,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </div>
 
             {/* Emergency Section */}
-            <div className="mb-2">
+            <div id="section-notfall" className="mb-2">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
@@ -1277,7 +1307,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             </div>
 
             {/* Hausapotheke Section */}
-            <div className="mb-8">
+            <div id="section-apotheke" className="mb-8">
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
@@ -1390,7 +1420,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               const isCurrentPhase = displayIndex === currentPhaseIndex;
 
               return (
-                <div className="mb-8">
+                <div id="section-pubertaet" className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
                   <div 
                     className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden"
@@ -1574,7 +1604,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               const trick = ageGroup.tricks[Math.floor(Math.random() * ageGroup.tricks.length)];
 
               return (
-                <div className="mb-8">
+                <div id="section-training" className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
                   <div className="bg-white/[0.04] rounded-[12px] border border-white/5 overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
@@ -1593,7 +1623,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
             })()}
 
             {/* Orte Section */}
-            <div className="mb-8">
+            <div id="section-orte" className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
               <div className="bg-white/[0.04] rounded-[12px] border border-white/5 p-4">
                 {/* Map with pins */}
@@ -1705,7 +1735,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
 
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
-            <div className="mb-0 -mx-4">
+            <div id="section-wochenplan" className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
                 <h2 className="flex items-center gap-2 text-[16px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
               </div>
