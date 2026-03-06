@@ -1279,7 +1279,8 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
   }, []);
 
   return (
-    <div className="space-y-2" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 80px)' }} data-vaul-no-drag>
+    <div className="relative" data-vaul-no-drag>
+      <div className="space-y-2 pb-16">
       {/* Age Display */}
       <div className="w-full bg-white/[0.04] rounded-[12px] border border-white/5 p-4 flex items-center justify-center">
         <span className="text-[14px] leading-none">
@@ -1346,20 +1347,20 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
           </div>
         </div>
       </div>
+      <div ref={endRef} />
+      </div>
 
-      
-      {/* Export Button */}
-      <div className="mt-8 flex justify-center">
+      {/* Export Button - sticky at bottom, scrolls out with section */}
+      <div className="sticky bottom-6 z-10 flex justify-center pointer-events-none pb-2">
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3"
+          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)] pointer-events-auto"
         >
           <Download className="w-4 h-4" />
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
         </Button>
       </div>
-      <div ref={endRef} />
     </div>
   );
 });
