@@ -219,7 +219,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                 <span className="text-[20px] shrink-0">🗓️</span>
                 <span className="truncate">{summary}</span>
               </span>
-              <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
+              <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
             </div>
           );
         }
@@ -230,7 +230,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                 <span className="text-[20px] shrink-0">{entry.hasPipi && entry.hasPoop ? '💦💩' : entry.hasPoop ? '💩' : '💦'}</span>
                 <span>{entry.hasPipi && entry.hasPoop ? 'Pipi & Stuhlgang' : entry.hasPoop ? 'Stuhlgang' : 'Pipi'}</span>
               </span>
-              <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
+              <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0 ml-2">{entry.timeKey} Uhr</span>
             </div>
           );
         }
@@ -267,7 +267,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                       </span>
                     ))}
                   </div>
-                  <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+                  <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
                     {firstEvent.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
                     {firstEvent.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
                     {group.timeKey} Uhr
@@ -308,7 +308,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                   {event.type === 'parasiten' && 'Parasiten Tablette'}
                   {event.type === 'krallen' && 'Krallen schneiden'}
                 </span>
-                <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0">
+                <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0">
                   {format(new Date(event.time), 'HH:mm')} Uhr
                 </span>
               </div>
