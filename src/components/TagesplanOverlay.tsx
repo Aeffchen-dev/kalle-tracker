@@ -963,10 +963,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
               </div>
               <div
                 ref={tocChipsRef}
-                className="px-4 pb-2 transition-all duration-300"
+                className="pb-2 transition-all duration-300"
                 style={{ opacity: hasScrolled ? 1 : 0, maxHeight: hasScrolled ? 40 : 0, overflow: 'hidden' }}
               >
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1.5">
+                <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-1.5 px-4" style={{ marginLeft: 0, marginRight: 0, width: '100vw' }}>
                   {tocSections.map((item) => (
                     <button
                       key={item.id}
@@ -988,9 +988,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
                     </button>
                   ))}
                 </div>
-                <div className="relative w-full h-[2px] rounded-full bg-white/10">
+                <div className="relative w-full h-[1px] bg-white/10">
                   <div
-                    className="absolute top-0 left-0 h-full bg-white/60 rounded-full transition-all duration-300"
+                    className="absolute top-0 left-0 h-full bg-white/60 transition-all duration-300"
                     style={{
                       width: activeSection
                         ? `${((tocSections.findIndex(s => s.id === activeSection) + 1) / tocSections.length) * 100}%`
