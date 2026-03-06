@@ -942,7 +942,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                             <CalendarIcon size={20} className="text-white" />
                           </button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-black border-white/30" align="start" onClick={(e) => e.stopPropagation()}>
+                        <PopoverContent className="w-auto p-0 bg-black border-0 rounded-2xl overflow-hidden" align="start" onClick={(e) => e.stopPropagation()}>
                           <Calendar
                             mode="single"
                             selected={selectedDate}
@@ -982,7 +982,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
                       {format(selectedDate, 'EEEE, d. MMMM yyyy', { locale: de })}
                     </DrawerTitle>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-black border-white/30" align="center" onClick={(e) => e.stopPropagation()}>
+                  <PopoverContent className="w-auto p-0 bg-black border-0 rounded-2xl overflow-hidden" align="center" onClick={(e) => e.stopPropagation()}>
                     <Calendar
                       mode="single"
                       selected={selectedDate}
