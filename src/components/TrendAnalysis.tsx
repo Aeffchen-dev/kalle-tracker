@@ -38,6 +38,31 @@ const useContainerWidth = () => {
   return { containerRef, width };
 };
 
+const useInViewOnce = <T extends HTMLElement>(threshold = 0.2) => {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || inView) return;
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          obs.disconnect();
+        }
+      },
+      { threshold }
+    );
+
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [inView, threshold]);
+
+  return { ref, inView };
+};
+
 const StatCard = memo(({ 
   emoji, 
   label, 
@@ -135,22 +160,13 @@ interface WeightChartData {
 const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const containerRef2 = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
-
-  useEffect(() => {
-    const el = containerRef2.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   if (data.length < 2) {
     return (
@@ -278,12 +294,16 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          <ReactECharts
-            ref={chartRef}
-            option={option}
-            style={{ height: CHART_HEIGHT, width: chartWidth }}
-            opts={{ renderer: 'svg' }}
-          />
+          {inView ? (
+            <ReactECharts
+              ref={chartRef}
+              option={option}
+              style={{ height: CHART_HEIGHT, width: chartWidth }}
+              opts={{ renderer: 'svg' }}
+            />
+          ) : (
+            <div style={{ height: CHART_HEIGHT, width: chartWidth }} />
+          )}
         </div>
       </div>
     </div>
@@ -301,22 +321,13 @@ interface PhChartData {
 const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
-  const containerRef2 = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
   
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = scrollRef.current.scrollWidth;
     }
   }, [data.length]);
-
-  useEffect(() => {
-    const el = containerRef2.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   if (data.length < 2) {
     return (
@@ -490,12 +501,16 @@ const PhChart = memo(({ data, width }: { data: PhChartData[]; width: number }) =
         data-vaul-no-drag
       >
         <div style={{ width: chartWidth, height: CHART_HEIGHT }}>
-          <ReactECharts
-            ref={chartRef}
-            option={option}
-            style={{ height: CHART_HEIGHT, width: chartWidth }}
-            opts={{ renderer: 'svg' }}
-          />
+          {inView ? (
+            <ReactECharts
+              ref={chartRef}
+              option={option}
+              style={{ height: CHART_HEIGHT, width: chartWidth }}
+              opts={{ renderer: 'svg' }}
+            />
+          ) : (
+            <div style={{ height: CHART_HEIGHT, width: chartWidth }} />
+          )}
         </div>
       </div>
     </div>
@@ -512,18 +527,9 @@ interface GrowthDataPoint {
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
   const chartRef = useRef<any>(null);
-  const containerRef2 = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
+  const { ref: containerRef2, inView } = useInViewOnce<HTMLDivElement>(0.2);
   const lastTapRef = useRef<number>(0);
   const isZoomedRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    const el = containerRef2.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold: 0.2 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
 
   const handleChartClick = () => {
     // no-op: zoom disabled to allow page scroll
@@ -723,12 +729,16 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
 
   return (
     <div ref={containerRef2} onClick={handleChartClick} style={{ touchAction: 'pan-y' }}>
-      <ReactECharts
-        ref={chartRef}
-        option={option}
-        style={{ height: CHART_HEIGHT }}
-        opts={{ renderer: 'svg' }}
-      />
+      {inView ? (
+        <ReactECharts
+          ref={chartRef}
+          option={option}
+          style={{ height: CHART_HEIGHT }}
+          opts={{ renderer: 'svg' }}
+        />
+      ) : (
+        <div style={{ height: CHART_HEIGHT }} />
+      )}
       {/* Legend */}
       <div className="flex flex-wrap gap-3 text-[12px] text-white/60 justify-center mt-2">
         <div className="flex items-center gap-1">
@@ -1363,7 +1373,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         <Button
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
+          className="h-10 px-6 min-w-[200px] text-[14px] bg-[#5AD940] text-black hover:bg-[#4fc936] disabled:bg-[#5AD940] disabled:text-black/50 disabled:opacity-100 rounded-[999px] gap-3"
         >
           <Download className="w-4 h-4" />
           {isExporting ? 'Exportiere...' : 'Daten exportieren'}
