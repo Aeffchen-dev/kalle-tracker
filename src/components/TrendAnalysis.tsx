@@ -153,6 +153,7 @@ export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean =>
 interface WeightChartData {
   date: string;
   fullDate: string;
+  rawTime: Date;
   value: number;
   expectedWeight: number;
   isOutOfBounds: boolean;
@@ -208,9 +209,12 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       formatter: (params: any) => {
         const idx = params.dataIndex;
         const d = data[idx];
+        const eventDate = new Date(d.rawTime);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const status = d.isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
-          <div style="font-weight:600;margin-bottom:4px">${d.fullDate}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.fullDate}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:4px">Alter: ${formatDecimal(ageInMonths)} Monate</div>
           <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
           <div>Ideal: ${String(d.expectedWeight).replace('.', ',')} kg</div>
           <div style="margin-top:4px">${status}</div>
@@ -617,9 +621,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           const isOutOfBounds = params.seriesName === 'Abweichung';
           const status = isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
           return `<div style="padding:4px 0">
-            <div style="font-weight:600;margin-bottom:4px">${dateStr}</div>
-            <div style="color:rgba(255,255,255,0.6);font-size:11px">Alter: ${formatDecimal(month)} Monate</div>
-            <div style="margin-top:4px">Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
+            <div style="color:rgba(255,255,255,0.6);font-size:11px">${dateStr}</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:4px">Alter: ${formatDecimal(month)} Monate</div>
+            <div>Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
             <div>Ideal: ${formatDecimal(expected)} kg</div>
             <div style="margin-top:4px">${status}</div>
           </div>`;
@@ -840,6 +844,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
           fullDate: format(eventDate, 'd. MMM yyyy', { locale: de }),
+          rawTime: eventDate,
           value: weight,
           isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
           expectedWeight: Math.round(expectedWeight * 10) / 10,
