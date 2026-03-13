@@ -527,6 +527,7 @@ interface GrowthDataPoint {
   month: number;
   weight: number;
   isOutOfBounds: boolean;
+  date: string;
 }
 
 const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
