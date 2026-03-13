@@ -566,6 +566,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           month: Math.round(ageInMonths * 10) / 10,
           weight,
           isOutOfBounds,
+          date: format(eventDate, 'd. MMM yyyy', { locale: de }),
         };
       })
       .filter(d => d.month >= 2 && d.month <= 18);
