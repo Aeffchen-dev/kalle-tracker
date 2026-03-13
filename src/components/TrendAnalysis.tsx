@@ -620,9 +620,9 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
           const isOutOfBounds = params.seriesName === 'Abweichung';
           const status = isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
           return `<div style="padding:4px 0">
-            <div style="font-weight:600;margin-bottom:4px">${dateStr}</div>
-            <div style="color:rgba(255,255,255,0.6);font-size:11px">Alter: ${formatDecimal(month)} Monate</div>
-            <div style="margin-top:4px">Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
+            <div style="color:rgba(255,255,255,0.6);font-size:11px">${dateStr}</div>
+            <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:4px">Alter: ${formatDecimal(month)} Monate</div>
+            <div>Gewicht: <b>${String(weight).replace('.', ',')} kg</b></div>
             <div>Ideal: ${formatDecimal(expected)} kg</div>
             <div style="margin-top:4px">${status}</div>
           </div>`;
