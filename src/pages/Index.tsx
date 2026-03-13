@@ -453,6 +453,7 @@ const Index = () => {
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
           loadEvents();
+          setEventsVersion(v => v + 1);
           setShowDogAnimation(true);
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
