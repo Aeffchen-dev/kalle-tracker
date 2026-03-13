@@ -844,6 +844,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
           fullDate: format(eventDate, 'd. MMM yyyy', { locale: de }),
+          rawTime: e.time,
           value: weight,
           isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
           expectedWeight: Math.round(expectedWeight * 10) / 10,
