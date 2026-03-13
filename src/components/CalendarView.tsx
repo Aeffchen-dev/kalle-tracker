@@ -369,7 +369,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
             <span className="text-[20px] shrink-0">🐶</span>
             <span>{kalleOwner.person} hat Kalle</span>
           </span>
-          <span className="text-[14px] text-white/60 whitespace-nowrap shrink-0 ml-2">
+          <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0 ml-2">
             bis {format(new Date(kalleOwner.endDate.getTime() - 86400000), 'd. MMM', { locale: de })}
           </span>
         </div>
