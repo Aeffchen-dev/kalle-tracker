@@ -210,7 +210,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         const d = data[idx];
         const status = d.isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
-          <div style="font-weight:600;margin-bottom:4px">${d.date}</div>
+          <div style="font-weight:600;margin-bottom:4px">${d.fullDate}</div>
           <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
           <div>Ideal: ${String(d.expectedWeight).replace('.', ',')} kg</div>
           <div style="margin-top:4px">${status}</div>
