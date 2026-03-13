@@ -286,7 +286,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
     if (!isOpen) return;
     fetchICalEvents().then(setIcalEvents).catch(console.error);
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
-  }, [isOpen]);
+  }, [isOpen, eventsVersion]);
 
   // Load snacks from DB
   const loadSnacks = async () => {

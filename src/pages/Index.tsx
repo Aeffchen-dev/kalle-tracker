@@ -465,6 +465,7 @@ const Index = () => {
         isOpen={showTagesplan} 
         onClose={() => { setShowTagesplan(false); setTagesplanScrollDate(null); }}
         scrollToDate={tagesplanScrollDate}
+        eventsVersion={eventsVersion}
       />
 
       {/* Weather forecast drawer */}
