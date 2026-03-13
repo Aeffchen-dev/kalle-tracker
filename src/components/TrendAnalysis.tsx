@@ -835,7 +835,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       .map(e => {
         const eventDate = new Date(e.time);
         const weight = Number(e.weight_value);
-        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const expectedWeight = getExpectedWeight(ageInMonths);
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
