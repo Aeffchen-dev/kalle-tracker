@@ -348,7 +348,7 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                   )}
                 </span>
               </span>
-              <span className="text-[14px] text-white whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
+              <span className="text-[12px] text-white/60 whitespace-nowrap shrink-0 ml-2 flex items-center gap-1.5">
                 {event.logged_by === 'Watch' && <Watch size={14} className="text-white/60" />}
                 {event.logged_by === 'Widget' && <LayoutGrid size={14} className="text-white/60" />}
                 {format(new Date(event.time), 'HH:mm')} Uhr
