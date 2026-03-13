@@ -839,6 +839,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
         const expectedWeight = getExpectedWeight(ageInMonths);
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
+          fullDate: format(eventDate, 'd. MMM yyyy', { locale: de }),
           value: weight,
           isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
           expectedWeight: Math.round(expectedWeight * 10) / 10,
