@@ -69,6 +69,7 @@ const Index = () => {
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
+  const [eventsVersion, setEventsVersion] = useState(0);
   
   const [imageLoaded, setImageLoaded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
