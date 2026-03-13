@@ -208,9 +208,12 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
       formatter: (params: any) => {
         const idx = params.dataIndex;
         const d = data[idx];
+        const eventDate = new Date(d.rawTime);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const status = d.isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
-          <div style="font-weight:600;margin-bottom:4px">${d.fullDate}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px">${d.fullDate}</div>
+          <div style="color:rgba(255,255,255,0.6);font-size:11px;margin-bottom:4px">Alter: ${formatDecimal(ageInMonths)} Monate</div>
           <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
           <div>Ideal: ${String(d.expectedWeight).replace('.', ',')} kg</div>
           <div style="margin-top:4px">${status}</div>
