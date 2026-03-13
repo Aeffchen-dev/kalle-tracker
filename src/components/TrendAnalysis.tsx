@@ -1,7 +1,7 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
 import CountUp from '@/components/CountUp';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
+import { format, differenceInMinutes, differenceInDays, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
 import { de } from 'date-fns/locale';
 import ReactECharts from 'echarts-for-react';
 import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
@@ -142,7 +142,7 @@ const getExpectedWeight = (ageInMonths: number): number => {
 };
 
 export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean => {
-  const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+  const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
   if (ageInMonths < 2 || ageInMonths > 18) return false;
   const expected = getExpectedWeight(ageInMonths);
   const upperBound = expected * 1.05;
@@ -152,6 +152,7 @@ export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean =>
 
 interface WeightChartData {
   date: string;
+  fullDate: string;
   value: number;
   expectedWeight: number;
   isOutOfBounds: boolean;
@@ -209,7 +210,7 @@ const WeightChart = memo(({ data, width }: { data: WeightChartData[]; width: num
         const d = data[idx];
         const status = d.isOutOfBounds ? '<span style="color:#FF0000">⚠️ Abweichung</span>' : '<span style="color:#5AD940">✓ Normal</span>';
         return `<div style="padding:4px 0">
-          <div style="font-weight:600;margin-bottom:4px">${d.date}</div>
+          <div style="font-weight:600;margin-bottom:4px">${d.fullDate}</div>
           <div>Gewicht: <b>${String(d.value).replace('.', ',')} kg</b></div>
           <div>Ideal: ${String(d.expectedWeight).replace('.', ',')} kg</div>
           <div style="margin-top:4px">${status}</div>
@@ -558,7 +559,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .map(e => {
         const eventDate = new Date(e.time);
-        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const weight = Number(e.weight_value);
         const isOutOfBounds = isWeightOutOfBounds(weight, eventDate);
         
@@ -834,10 +835,11 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       .map(e => {
         const eventDate = new Date(e.time);
         const weight = Number(e.weight_value);
-        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const expectedWeight = getExpectedWeight(ageInMonths);
         return {
           date: format(eventDate, 'MMM yy', { locale: de }),
+          fullDate: format(eventDate, 'd. MMM yyyy', { locale: de }),
           value: weight,
           isOutOfBounds: isWeightOutOfBounds(weight, eventDate),
           expectedWeight: Math.round(expectedWeight * 10) / 10,
@@ -891,7 +893,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     
     if (lastWeightEvent) {
       const eventDate = new Date(lastWeightEvent.time);
-      const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+      const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
       idealWeight = Math.round(getExpectedWeight(ageInMonths) * 10) / 10;
       
       const latestWeight = Number(lastWeightEvent.weight_value);
