@@ -717,7 +717,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: 'Normal',
         type: 'scatter',
-        data: normalPoints.map(p => [p.month, p.weight]),
+        data: normalPoints.map(p => [p.month, p.weight, p.date]),
         symbolSize: 10,
         itemStyle: {
           color: '#5AD940',
