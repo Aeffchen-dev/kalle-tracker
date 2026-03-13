@@ -201,9 +201,9 @@ const DayPanel = ({ date, events: dayEvents, icalEvents: dayIcalEvents, kalleOwn
                   <Check
                     className="w-[14px] h-[14px]"
                     style={{
-                      color: 'black',
-                      opacity: isChecking ? 1 : 0,
-                      transform: isChecking ? 'scale(1) rotate(0deg)' : 'scale(0) rotate(-45deg)',
+                      color: isChecking ? 'black' : 'rgba(255,255,255,0.15)',
+                      opacity: isChecking ? 1 : 0.5,
+                      transform: isChecking ? 'scale(1) rotate(0deg)' : 'scale(1) rotate(0deg)',
                       transition: 'all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     }}
                     strokeWidth={3}
