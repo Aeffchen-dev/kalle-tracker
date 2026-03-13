@@ -86,7 +86,7 @@ const Index = () => {
       return stored ? new Set(JSON.parse(stored)) : new Set();
     } catch { return new Set(); }
   });
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [weatherEmoji, setWeatherEmoji] = useState('🌡️');
   const [weatherTemp, setWeatherTemp] = useState<number | null>(null);
   const [currentWeatherCode, setCurrentWeatherCode] = useState<number | null>(null);

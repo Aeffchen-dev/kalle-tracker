@@ -413,9 +413,9 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const swipeDecided = useRef<boolean>(false);
   
   // Long press refs
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTriggered = useRef<boolean>(false);
-  const titleLongPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const titleLongPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Double tap refs
   const lastTapTime = useRef<number>(0);
