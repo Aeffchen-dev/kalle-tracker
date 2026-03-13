@@ -137,9 +137,10 @@ interface TagesplanOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   scrollToDate?: string | null;
+  eventsVersion?: number;
 }
 
-const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayProps) => {
+const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: TagesplanOverlayProps) => {
   const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
@@ -285,7 +286,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate }: TagesplanOverlayPro
     if (!isOpen) return;
     fetchICalEvents().then(setIcalEvents).catch(console.error);
     getEvents().then(result => setAppEvents(result.events)).catch(console.error);
-  }, [isOpen]);
+  }, [isOpen, eventsVersion]);
 
   // Load snacks from DB
   const loadSnacks = async () => {

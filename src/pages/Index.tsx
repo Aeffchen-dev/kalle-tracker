@@ -69,6 +69,7 @@ const Index = () => {
   const [eventSheetOpen, setEventSheetOpen] = useState(false);
   const [showDogAnimation, setShowDogAnimation] = useState(false);
   const [calendarKey, setCalendarKey] = useState(0);
+  const [eventsVersion, setEventsVersion] = useState(0);
   
   const [imageLoaded, setImageLoaded] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -452,6 +453,7 @@ const Index = () => {
         onOpenChange={setEventSheetOpen}
         onEventAdded={() => {
           loadEvents();
+          setEventsVersion(v => v + 1);
           setShowDogAnimation(true);
           // Force CalendarView remount to ensure drawer is visible
           setTimeout(() => setCalendarKey(k => k + 1), 200);
@@ -463,6 +465,7 @@ const Index = () => {
         isOpen={showTagesplan} 
         onClose={() => { setShowTagesplan(false); setTagesplanScrollDate(null); }}
         scrollToDate={tagesplanScrollDate}
+        eventsVersion={eventsVersion}
       />
 
       {/* Weather forecast drawer */}
