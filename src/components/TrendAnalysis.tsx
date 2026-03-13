@@ -735,7 +735,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       {
         name: 'Abweichung',
         type: 'scatter',
-        data: outOfBoundsPoints.map(p => [p.month, p.weight]),
+        data: outOfBoundsPoints.map(p => [p.month, p.weight, p.date]),
         symbolSize: 10,
         itemStyle: {
           color: '#FF0000',
