@@ -153,6 +153,7 @@ export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean =>
 interface WeightChartData {
   date: string;
   fullDate: string;
+  rawTime: string;
   value: number;
   expectedWeight: number;
   isOutOfBounds: boolean;
