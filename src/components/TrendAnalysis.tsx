@@ -559,7 +559,7 @@ const GrowthCurveChart = memo(({ events }: { events: Event[] }) => {
       .filter(e => e.type === 'gewicht' && e.weight_value !== null && e.weight_value !== undefined)
       .map(e => {
         const eventDate = new Date(e.time);
-        const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+        const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
         const weight = Number(e.weight_value);
         const isOutOfBounds = isWeightOutOfBounds(weight, eventDate);
         
