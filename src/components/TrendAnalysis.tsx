@@ -1,7 +1,7 @@
 import { useMemo, memo, useRef, useState, useEffect, useCallback } from 'react';
 import CountUp from '@/components/CountUp';
 import { Event } from '@/lib/events';
-import { format, differenceInMinutes, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
+import { format, differenceInMinutes, differenceInDays, subDays, isAfter, differenceInMonths, differenceInYears } from 'date-fns';
 import { de } from 'date-fns/locale';
 import ReactECharts from 'echarts-for-react';
 import { TrendingUp, TrendingDown, Minus, Download } from 'lucide-react';
