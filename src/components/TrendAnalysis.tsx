@@ -893,7 +893,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     
     if (lastWeightEvent) {
       const eventDate = new Date(lastWeightEvent.time);
-      const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+      const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
       idealWeight = Math.round(getExpectedWeight(ageInMonths) * 10) / 10;
       
       const latestWeight = Number(lastWeightEvent.weight_value);
