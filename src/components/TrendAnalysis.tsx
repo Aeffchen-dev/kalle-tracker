@@ -142,7 +142,7 @@ const getExpectedWeight = (ageInMonths: number): number => {
 };
 
 export const isWeightOutOfBounds = (weight: number, eventDate: Date): boolean => {
-  const ageInMonths = differenceInMonths(eventDate, getBirthday()) + (eventDate.getDate() / 30);
+  const ageInMonths = differenceInDays(eventDate, getBirthday()) / 30.44;
   if (ageInMonths < 2 || ageInMonths > 18) return false;
   const expected = getExpectedWeight(ageInMonths);
   const upperBound = expected * 1.05;
