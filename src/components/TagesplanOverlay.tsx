@@ -985,14 +985,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
         })}
       </div>
 
-      {/* Solid brown background - hide instantly on close */}
+      {/* Gradient background with grain - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }} />
+        <div className="fixed inset-0 pointer-events-auto info-overlay-gradient info-overlay-grain" />
       )}
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
+        <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0 }}>
           {/* Desktop/Tablet: fixed header bar with INFO + nav + close in one row */}
           <div className="hidden md:block fixed top-0 left-0 right-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
             <div className="flex items-center px-4 py-3" style={{ background: 'hsl(var(--spot-color))' }}>
