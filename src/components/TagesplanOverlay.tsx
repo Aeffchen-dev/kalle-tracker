@@ -1031,7 +1031,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             {/* Trend Analysis Section */}
             
             
-            <div id="section-trends" className="mb-8">
+            <div id="section-trends" className="sm:col-span-2">
               <TrendAnalysis events={appEvents} />
             </div>
             
