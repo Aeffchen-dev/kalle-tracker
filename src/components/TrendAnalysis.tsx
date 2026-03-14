@@ -1457,7 +1457,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       <div ref={chartsRef}>
         <div ref={containerRef} className="space-y-2">
           <div ref={growthChartRef}>
-            <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+            <div className="bento-glass p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">Wachstumskurve</h3>
               <div ref={growthChartInnerRef}>
                 <GrowthCurveChart events={events} />
