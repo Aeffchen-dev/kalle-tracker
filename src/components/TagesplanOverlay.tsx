@@ -780,7 +780,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
       }, 1100);
       // Recolor body (status bar + bottom bar) after dot transition completes
       setTimeout(() => {
-        document.body.style.backgroundColor = '#2e2017';
+        document.body.style.backgroundColor = '#3D2A23';
       }, 1400);
     }
   }, [isOpen, animationPhase]);
