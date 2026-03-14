@@ -2223,7 +2223,6 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             
           </div>
         </div>
-      )}
     </div>
   );
 };
