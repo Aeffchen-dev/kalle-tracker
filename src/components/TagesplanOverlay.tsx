@@ -1050,7 +1050,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             )}
             
             {meals && meals.map((meal, mealIndex) => (
-              <div key={mealIndex} id={mealIndex === 0 ? 'section-essen' : undefined} className="mb-2">
+              <div key={mealIndex} id={mealIndex === 0 ? 'section-essen' : undefined} className="sm:col-span-2">
                 <h2 className="flex items-center gap-2 text-[16px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
                 <p className="text-[14px] text-white/60 mb-4">{meal.title}</p>
                 <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
