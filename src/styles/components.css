@@ -46,7 +46,7 @@
 /* ── Info overlay gradient background (Dune Ember) ───────── */
 
 .info-overlay-gradient {
-  background: url('/images/dune-ember-bg.jpeg') center/cover no-repeat fixed;
+  background: url('/images/dune-ember-bg.jpeg') center top / cover no-repeat;
 }
 
 /* Film grain noise overlay */
