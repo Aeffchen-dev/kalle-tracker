@@ -1027,7 +1027,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }} />
             </div>
             <div className="px-4 relative z-0">
-            <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
+            <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Trend Analysis Section */}
             
             
