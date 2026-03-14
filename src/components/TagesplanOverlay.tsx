@@ -1723,9 +1723,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Orte Section */}
             
-            <div id="section-orte" className="mb-8">
+            <div id="section-orte" className="sm:col-span-2">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
-              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+              <div className="bento-glass p-4">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
                   <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative">
