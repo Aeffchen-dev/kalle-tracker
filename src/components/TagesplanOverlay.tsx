@@ -780,7 +780,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
       }, 1100);
       // Recolor body (status bar + bottom bar) after dot transition completes
       setTimeout(() => {
-        document.body.style.backgroundColor = '#3D2A23';
+        document.body.style.backgroundColor = '#2e2017';
       }, 1400);
     }
   }, [isOpen, animationPhase]);
@@ -966,7 +966,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               viewBox="-50 -50 100 100"
             >
               <g transform={`rotate(${spot.rotate})`}>
-                <path d={blobPaths[spot.seed % 4]} fill={spot.top < 25 ? '#93511D' : spot.top < 55 ? '#5C3520' : '#3D2A23'}>
+                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
                   <animateTransform
                     attributeName="transform"
                     type="scale"
@@ -985,9 +985,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
         })}
       </div>
 
-      {/* Gradient background with grain - fades in over the dots */}
+      {/* Gradient background with grain - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto info-overlay-gradient-enter info-overlay-grain" />
+        <div className="fixed inset-0 pointer-events-auto info-overlay-grain" style={{ backgroundColor: '#3D2A23', backgroundImage: 'url(/images/dune-ember-bg.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center top', backgroundRepeat: 'no-repeat' }} />
       )}
 
       {/* Content - only render when visible */}
