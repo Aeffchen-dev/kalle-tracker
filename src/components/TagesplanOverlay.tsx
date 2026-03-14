@@ -1837,7 +1837,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
             
-            <div id="section-wochenplan" className="mb-0 -mx-4">
+            <div id="section-wochenplan" className="sm:col-span-2 mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
                 <h2 className="flex items-center gap-2 text-[16px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
               </div>
