@@ -773,15 +773,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
-      setAnimationPhase('expanding');
-      // Reveal content after dots have mostly expanded
-      setTimeout(() => {
-        setAnimationPhase('visible');
-      }, 1100);
-      // Recolor body (status bar + bottom bar) after dot transition completes
-      setTimeout(() => {
-        document.body.style.backgroundColor = '#2e2017';
-      }, 1400);
+      setAnimationPhase('visible');
     }
   }, [isOpen, animationPhase]);
 
