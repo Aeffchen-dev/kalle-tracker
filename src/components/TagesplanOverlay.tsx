@@ -899,7 +899,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
       <div className="fixed left-0 right-0 pwa-info-overlay-root" style={{ top: 0, bottom: 0 }}>
           {/* Desktop/Tablet: fixed header bar with INFO + nav + close in one row */}
           <div className="hidden md:block fixed top-0 left-0 right-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-            <div className="flex items-center px-4 py-3" style={{ background: 'hsl(var(--spot-color))' }}>
+            <div className="flex items-center px-4 py-3" style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
               <h1 className="text-[16px] uppercase text-white shrink-0">Info</h1>
               <div className="flex-1 flex justify-center overflow-hidden mx-4">
                 <div
