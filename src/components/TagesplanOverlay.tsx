@@ -1403,8 +1403,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Hausapotheke Section */}
             
-            <div id="section-apotheke" className="mb-8">
-              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+            <div id="section-apotheke">
+              <div className="bento-glass p-4">
                 <h3 className="text-[16px] text-white/90 mb-4">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
