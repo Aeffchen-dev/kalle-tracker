@@ -1343,7 +1343,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               </div>
 
               {/* Tierklinik Bärenwiese */}
-              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+               <div className="bento-glass p-4">
                 <a 
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
