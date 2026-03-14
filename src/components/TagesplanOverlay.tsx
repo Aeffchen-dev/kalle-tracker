@@ -985,9 +985,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
         })}
       </div>
 
-      {/* Gradient background with grain - hide instantly on close */}
+      {/* Gradient background with grain - fades in over the dots */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto info-overlay-grain" style={{ backgroundColor: '#3D2A23', backgroundImage: 'url(/images/dune-ember-bg.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center top', backgroundRepeat: 'no-repeat' }} />
+        <div className="fixed inset-0 pointer-events-auto info-overlay-gradient-enter info-overlay-grain" />
       )}
 
       {/* Content - only render when visible */}
