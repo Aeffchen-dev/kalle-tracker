@@ -1518,10 +1518,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               const isCurrentPhase = displayIndex === currentPhaseIndex;
 
               return (
-                <div id="section-pubertaet" className="mb-8">
+                <div id="section-pubertaet" className="sm:col-span-2">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
                   <div 
-                    className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]"
+                    className="bento-glass overflow-hidden"
                   >
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
