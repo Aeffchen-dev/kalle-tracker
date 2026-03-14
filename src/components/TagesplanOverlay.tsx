@@ -141,7 +141,7 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'visible' | 'closing'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
@@ -773,7 +773,15 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
   useEffect(() => {
     if (isOpen && animationPhase === 'idle') {
       setSelectedPubertyPhase(null);
-      setAnimationPhase('visible');
+      setAnimationPhase('expanding');
+      // Reveal content after dots have mostly expanded
+      setTimeout(() => {
+        setAnimationPhase('visible');
+      }, 1100);
+      // Recolor body (status bar + bottom bar) after dot transition completes
+      setTimeout(() => {
+        document.body.style.backgroundColor = '#2e2017';
+      }, 1400);
     }
   }, [isOpen, animationPhase]);
 
@@ -877,10 +885,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
   }, [animationPhase, scrollToDate]);
 
   const handleClose = () => {
-    setAnimationPhase('closing');
+    // Start animation immediately
+    setAnimationPhase('dots-collapsing');
     document.body.style.backgroundColor = '';
-    setTimeout(() => {
+    
+    // Close modal after brief delay so animation starts
+    requestAnimationFrame(() => {
       onClose();
+    });
+    
+    // Hide SVG after animation completes
+    setTimeout(() => {
       setAnimationPhase('idle');
     }, 300);
   };
@@ -888,18 +903,99 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
   if (animationPhase === 'idle') return null;
 
   return (
-    <div 
-      className={`fixed inset-0 z-40 pointer-events-auto transition-opacity duration-300 ${animationPhase === 'closing' ? 'opacity-0' : 'opacity-100'}`}
-      style={{ minHeight: '100dvh' }}
-    >
-      {/* Blur backdrop */}
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-2xl" />
+    <div className="fixed inset-0 z-40 pointer-events-none" style={{ minHeight: '100dvh' }}>
+      {/* Animated spots using SVG with SMIL animation for sharp scaling */}
+      <div key={animationPhase} className="absolute inset-0 pointer-events-auto overflow-hidden">
+        {[
+          { left: 5, top: 8, w: 4.8, h: 5.6, rotate: 12, seed: 0 },
+          { left: 70, top: 8, w: 6.4, h: 4.8, rotate: -6, seed: 1 },
+          { left: 35, top: 18, w: 5.6, h: 6.4, rotate: 45, seed: 2 },
+          { left: 82, top: 28, w: 5.2, h: 6, rotate: -12, seed: 3 },
+          { left: 8, top: 42, w: 6, h: 4.8, rotate: 30, seed: 4 },
+          { left: 65, top: 52, w: 4.8, h: 5.6, rotate: -20, seed: 5 },
+          { left: 20, top: 68, w: 6.4, h: 5.2, rotate: 15, seed: 6 },
+          { left: 75, top: 78, w: 5.2, h: 6.4, rotate: -35, seed: 7 },
+          { left: 45, top: 85, w: 5.6, h: 4.8, rotate: 25, seed: 8 },
+          { left: 18, top: 12, w: 4, h: 4.4, rotate: -15, seed: 9 },
+          { left: 48, top: 6, w: 4.4, h: 3.6, rotate: 20, seed: 10 },
+          { left: 88, top: 22, w: 3.6, h: 4.4, rotate: -8, seed: 11 },
+          { left: 55, top: 35, w: 4, h: 3.6, rotate: 35, seed: 12 },
+          { left: 30, top: 48, w: 4.4, h: 4, rotate: -25, seed: 13 },
+          { left: 92, top: 58, w: 3.6, h: 4, rotate: 10, seed: 14 },
+          { left: 50, top: 72, w: 4, h: 4.4, rotate: -40, seed: 15 },
+          { left: 10, top: 82, w: 4.4, h: 3.6, rotate: 5, seed: 16 },
+          { left: 85, top: 95, w: 3.6, h: 4, rotate: -18, seed: 17 },
+          { left: 28, top: 2, w: 2.8, h: 3.2, rotate: 8, seed: 18 },
+          { left: 60, top: 15, w: 3.2, h: 2.8, rotate: -12, seed: 19 },
+          { left: 3, top: 25, w: 2.8, h: 2.8, rotate: 22, seed: 20 },
+          { left: 42, top: 38, w: 3.2, h: 3.2, rotate: -5, seed: 21 },
+          { left: 78, top: 45, w: 2.8, h: 3.2, rotate: 15, seed: 22 },
+          { left: 38, top: 62, w: 3.2, h: 2.8, rotate: -28, seed: 23 },
+          { left: 62, top: 75, w: 2.8, h: 2.8, rotate: 32, seed: 24 },
+          { left: 28, top: 85, w: 3.2, h: 3.2, rotate: -10, seed: 25 },
+          { left: 68, top: 92, w: 2.8, h: 3.2, rotate: 18, seed: 26 },
+          { left: 92, top: 10, w: 1.6, h: 2, rotate: 0, seed: 27 },
+          { left: 25, top: 32, w: 2, h: 1.6, rotate: 0, seed: 28 },
+          { left: 15, top: 55, w: 1.6, h: 1.6, rotate: 0, seed: 29 },
+          { left: 88, top: 65, w: 2, h: 2, rotate: 0, seed: 30 },
+          { left: 58, top: 80, w: 1.6, h: 2, rotate: 0, seed: 31 },
+        ].map((spot) => {
+          // Blob paths centered at origin (0,0)
+          const blobPaths = [
+            'M0,-45 C25,-45 45,-30 45,-5 C45,20 30,45 0,45 C-30,45 -45,25 -45,0 C-45,-25 -25,-45 0,-45 Z',
+            'M0,-42 C30,-42 42,-25 42,0 C42,25 25,42 0,42 C-25,42 -42,20 -42,-5 C-42,-30 -30,-42 0,-42 Z',
+            'M-5,-45 C20,-45 45,-25 45,0 C45,30 20,45 -5,45 C-35,45 -45,20 -45,-5 C-45,-35 -30,-45 -5,-45 Z',
+            'M5,-42 C35,-42 42,-20 42,5 C42,30 25,42 0,42 C-30,42 -42,15 -42,-10 C-42,-35 -20,-42 5,-42 Z',
+          ];
+          
+          const startScale = animationPhase === 'dots-collapsing' ? 40 : 1;
+          const endScale = animationPhase === 'dots-collapsing' ? 1 : 40;
+          
+          return (
+            <svg
+              key={spot.seed}
+              style={{
+                position: 'absolute',
+                left: `calc(${spot.left}% + ${spot.w / 2}vw + 4px)`,
+                top: `calc(${spot.top}% + ${spot.h / 2}vw + 4px)`,
+                width: `${spot.w}vw`,
+                height: `${spot.h}vw`,
+                overflow: 'visible',
+                transform: 'translate(-50%, -50%)',
+              }}
+              viewBox="-50 -50 100 100"
+            >
+              <g transform={`rotate(${spot.rotate})`}>
+                <path d={blobPaths[spot.seed % 4]} fill="#5c4033">
+                  <animateTransform
+                    attributeName="transform"
+                    type="scale"
+                    from={`${startScale} ${startScale}`}
+                    to={`${endScale} ${endScale}`}
+                    dur={animationPhase === 'dots-collapsing' ? '0.32s' : '1.4s'}
+                    fill="freeze"
+                    calcMode="spline"
+                    keyTimes="0;1"
+                    keySplines={animationPhase === 'dots-collapsing' ? "0 0 0.2 1" : "0.8 0 1 1"}
+                  />
+                </path>
+              </g>
+            </svg>
+          );
+        })}
+      </div>
 
-      {/* Content */}
-      <div className="fixed left-0 right-0 pwa-info-overlay-root" style={{ top: 0, bottom: 0 }}>
+      {/* Solid brown background - hide instantly on close */}
+      {animationPhase === 'visible' && (
+        <div className="fixed inset-0 pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }} />
+      )}
+
+      {/* Content - only render when visible */}
+      {animationPhase === 'visible' && (
+        <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Desktop/Tablet: fixed header bar with INFO + nav + close in one row */}
           <div className="hidden md:block fixed top-0 left-0 right-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-            <div className="flex items-center px-4 py-3" style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+            <div className="flex items-center px-4 py-3" style={{ background: 'hsl(var(--spot-color))' }}>
               <h1 className="text-[16px] uppercase text-white shrink-0">Info</h1>
               <div className="flex-1 flex justify-center overflow-hidden mx-4">
                 <div
@@ -949,11 +1045,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               </button>
             </div>
             {/* Bottom fade */}
-            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }} />
+            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
           </div>
 
           {/* Mobile: scrollable layout with sticky nav */}
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32 }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             {/* Fixed close button - always top right (mobile only) */}
             <div className="fixed right-0 z-20 px-4 pt-3 md:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
               <button onClick={handleClose} className="text-white p-1">
@@ -966,7 +1062,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             {/* Sticky navigation (mobile only) */}
             <div className="sticky top-0 z-[15] md:hidden">
-              <div style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
+              <div style={{ background: 'hsl(var(--spot-color))' }}>
                 <div
                   ref={tocChipsMobileRef}
                   className="overflow-x-auto scrollbar-hide"
@@ -1024,21 +1120,21 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
                 </div>
               </div>
               {/* Bottom fade */}
-              <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }} />
+              <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
             </div>
             <div className="px-4 relative z-0">
-            <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
             {/* Trend Analysis Section */}
             
             
-            <div id="section-trends" className="sm:col-span-2">
+            <div id="section-trends" className="mb-8">
               <TrendAnalysis events={appEvents} />
             </div>
             
             {!dataLoaded && (
-              <div className="sm:col-span-2">
+              <div className="mb-8">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
-                <div className="bento-glass overflow-hidden">
+                <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className={`flex p-3 gap-3 ${i !== 6 ? 'border-b border-white/[0.06]' : ''}`}>
                       <Skeleton className="h-4 w-16 bg-white/10" />
@@ -1050,10 +1146,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             )}
             
             {meals && meals.map((meal, mealIndex) => (
-              <div key={mealIndex} id={mealIndex === 0 ? 'section-essen' : undefined} className="sm:col-span-2">
+              <div key={mealIndex} id={mealIndex === 0 ? 'section-essen' : undefined} className="mb-2">
                 <h2 className="flex items-center gap-2 text-[16px] text-white mb-1">{mealIndex === 0 && <span className="info-emoji">🍖</span>}<span>Essen</span></h2>
                 <p className="text-[14px] text-white/60 mb-4">{meal.title}</p>
-                <div className="bento-glass overflow-hidden">
+                <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                   {meal.ingredients.map((ingredient, index) => {
                     const ingredientKey = `${mealIndex}-${index}`;
                     const isActive = activeIngredientKey === ingredientKey;
@@ -1217,14 +1313,14 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             ))}
 
             {/* Dog Food Checker */}
-            <div className="sm:col-span-2">
+            
             <DogFoodChecker />
-            </div>
+            
 
             {/* Snacks Section */}
             
-            <div id="section-snacks">
-               <div className="bento-glass p-4">
+            <div id="section-snacks" className="mb-8">
+               <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                 <h3 className="text-[16px] text-white/90 mb-4">Snacks</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {snacks.map((snack, index) => {
@@ -1319,11 +1415,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Emergency Section */}
             
-            <div id="section-notfall">
+            <div id="section-notfall" className="mb-2">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
-              <div className="bento-glass p-4 mb-2">
+              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 mb-2 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                 <a 
                   href="https://www.tierarztpraxis-sonnenallee.de/?gad_source=1&gad_campaignid=1857807503&gbraid=0AAAAACzVUKlJl2A4d-chpHx705_Kb1tWY&gclid=Cj0KCQiAprLLBhCMARIsAEDhdPc4TJVMjdztujQuW5wFRyIqjwoP6QMboQ8ldcTAc1rpomFMn2XrYpkaAkZoEALw_wcB"
                   target="_blank"
@@ -1343,7 +1439,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               </div>
 
               {/* Tierklinik Bärenwiese */}
-               <div className="bento-glass p-4">
+              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                 <a 
                   href="https://tierarzt-baerenwiese.de/"
                   target="_blank"
@@ -1403,8 +1499,8 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Hausapotheke Section */}
             
-            <div id="section-apotheke">
-              <div className="bento-glass p-4">
+            <div id="section-apotheke" className="mb-8">
+              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                 <h3 className="text-[16px] text-white/90 mb-4">Hausapotheke</h3>
                 <div className="flex flex-col divide-y divide-white/10">
                   {medicines.map((med, index) => {
@@ -1518,10 +1614,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               const isCurrentPhase = displayIndex === currentPhaseIndex;
 
               return (
-                <div id="section-pubertaet" className="sm:col-span-2">
+                <div id="section-pubertaet" className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">👹</span> <span>Pubertät</span></h2>
                   <div 
-                    className="bento-glass overflow-hidden"
+                    className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]"
                   >
                     {/* Header with phase name and progress */}
                     <div className="p-4 pb-0">
@@ -1702,9 +1798,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               const trick = ageGroup.tricks[trainingTrickIndexRef.current % ageGroup.tricks.length];
 
               return (
-                <div id="section-training" className="sm:col-span-2">
+                <div id="section-training" className="mb-8">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
-                  <div className="bento-glass overflow-hidden p-4">
+                  <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
@@ -1723,9 +1819,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Orte Section */}
             
-            <div id="section-orte" className="sm:col-span-2">
+            <div id="section-orte" className="mb-8">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🗺️</span> <span>Orte</span></h2>
-              <div className="bento-glass p-4">
+              <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                 {/* Map with pins */}
                 {places.filter(p => p.latitude && p.longitude).length > 0 && (
                   <div className="rounded-lg overflow-hidden mb-4 bg-white/5 h-[200px] relative">
@@ -1837,7 +1933,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             {/* Wochenplan Section - Horizontal scrollable cards, full viewport width on desktop */}
             
-            <div id="section-wochenplan" className="sm:col-span-2 mb-0 -mx-4">
+            <div id="section-wochenplan" className="mb-0 -mx-4">
               <div className="mb-3 px-4 md:pl-[calc((100vw-60vw)/2)] lg:pl-[calc((100vw-50vw)/2)]">
                 <h2 className="flex items-center gap-2 text-[16px] text-white"><span className="info-emoji">🗓️</span> <span>Wochenplan</span></h2>
               </div>
@@ -2223,6 +2319,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             
           </div>
         </div>
+      )}
     </div>
   );
 };
