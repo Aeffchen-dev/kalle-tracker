@@ -1024,7 +1024,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
                 </div>
               </div>
               {/* Bottom fade */}
-              <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
+              <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent)' }} />
             </div>
             <div className="px-4 relative z-0">
             <div className="md:max-w-[60vw] lg:max-w-[50vw] md:mx-auto">
