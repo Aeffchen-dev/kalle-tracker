@@ -953,7 +953,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
           </div>
 
           {/* Mobile: scrollable layout with sticky nav */}
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32 }}>
             {/* Fixed close button - always top right (mobile only) */}
             <div className="fixed right-0 z-20 px-4 pt-3 md:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
               <button onClick={handleClose} className="text-white p-1">
