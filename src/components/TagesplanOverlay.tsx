@@ -1217,9 +1217,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             ))}
 
             {/* Dog Food Checker */}
-            
+            <div className="sm:col-span-2">
             <DogFoodChecker />
-            
+            </div>
 
             {/* Snacks Section */}
             
