@@ -1319,7 +1319,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
 
             {/* Emergency Section */}
             
-            <div id="section-notfall" className="mb-2">
+            <div id="section-notfall">
               <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🚑</span> <span>Im Notfall</span></h2>
               
               {/* Tierarztpraxis Sonnenallee */}
