@@ -1036,7 +1036,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             
             {!dataLoaded && (
-              <div className="mb-8">
+              <div className="sm:col-span-2">
                 <Skeleton className="h-4 w-40 bg-white/10 mb-4" />
                 <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
