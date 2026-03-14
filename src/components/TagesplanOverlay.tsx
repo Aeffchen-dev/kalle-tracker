@@ -141,7 +141,7 @@ interface TagesplanOverlayProps {
 }
 
 const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: TagesplanOverlayProps) => {
-  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'visible' | 'dots-collapsing'>('idle');
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'visible' | 'closing'>('idle');
   const [meals, setMeals] = useState<MealData[] | null>(null);
   const [schedule, setSchedule] = useState<DaySchedule[] | null>(null);
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; slotIndex: number; field: 'time' | 'activity' } | null>(null);
