@@ -1474,7 +1474,7 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
             </div>
           </div>
           <div ref={phChartRef} data-vaul-no-drag>
-            <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] p-3 overflow-hidden shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+            <div className="bento-glass p-3 overflow-hidden">
               <h3 className="text-[14px] text-white/60 mb-3">pH-Wert Verlauf</h3>
               <div ref={phChartInnerRef}>
                 <PhChart data={phData} width={width} />
