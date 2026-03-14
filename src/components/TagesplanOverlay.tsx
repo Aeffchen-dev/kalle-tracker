@@ -877,17 +877,10 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
   }, [animationPhase, scrollToDate]);
 
   const handleClose = () => {
-    // Start animation immediately
-    setAnimationPhase('dots-collapsing');
+    setAnimationPhase('closing');
     document.body.style.backgroundColor = '';
-    
-    // Close modal after brief delay so animation starts
-    requestAnimationFrame(() => {
-      onClose();
-    });
-    
-    // Hide SVG after animation completes
     setTimeout(() => {
+      onClose();
       setAnimationPhase('idle');
     }, 300);
   };
