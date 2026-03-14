@@ -985,17 +985,17 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
         })}
       </div>
 
-      {/* Gradient background with grain - hide instantly on close */}
+      {/* Solid brown background - hide instantly on close */}
       {animationPhase === 'visible' && (
-        <div className="fixed inset-0 pointer-events-auto info-overlay-grain" style={{ backgroundColor: '#3D2A23', backgroundImage: 'url(/images/dune-ember-bg.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center top', backgroundRepeat: 'no-repeat' }} />
+        <div className="fixed inset-0 pointer-events-auto" style={{ background: 'hsl(var(--spot-color))' }} />
       )}
 
       {/* Content - only render when visible */}
       {animationPhase === 'visible' && (
-        <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0 }}>
+        <div className="fixed left-0 right-0 pointer-events-auto pwa-info-overlay-root" style={{ top: 0, bottom: 0, background: 'hsl(var(--spot-color))' }}>
           {/* Desktop/Tablet: fixed header bar with INFO + nav + close in one row */}
           <div className="hidden md:block fixed top-0 left-0 right-0 z-20" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
-            <div className="flex items-center px-4 py-3" style={{ background: 'transparent' }}>
+            <div className="flex items-center px-4 py-3" style={{ background: 'hsl(var(--spot-color))' }}>
               <h1 className="text-[16px] uppercase text-white shrink-0">Info</h1>
               <div className="flex-1 flex justify-center overflow-hidden mx-4">
                 <div
@@ -1045,11 +1045,11 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               </button>
             </div>
             {/* Bottom fade */}
-            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, #93511D, transparent)' }} />
+            <div className="h-4 pointer-events-none" style={{ background: 'linear-gradient(to bottom, hsl(var(--spot-color)), transparent)' }} />
           </div>
 
           {/* Mobile: scrollable layout with sticky nav */}
-          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32 }}>
+          <div ref={infoScrollRef} className="fixed top-0 left-0 right-0 overflow-y-auto overflow-x-hidden pwa-info-overlay-scroll" style={{ bottom: 0, paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 32, background: 'hsl(var(--spot-color))' }}>
             {/* Fixed close button - always top right (mobile only) */}
             <div className="fixed right-0 z-20 px-4 pt-3 md:hidden" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
               <button onClick={handleClose} className="text-white p-1">
@@ -1062,7 +1062,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             {/* Sticky navigation (mobile only) */}
             <div className="sticky top-0 z-[15] md:hidden">
-              <div style={{ background: 'rgba(46, 32, 23, 0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
+              <div style={{ background: 'hsl(var(--spot-color))' }}>
                 <div
                   ref={tocChipsMobileRef}
                   className="overflow-x-auto scrollbar-hide"
