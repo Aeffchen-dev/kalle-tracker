@@ -966,7 +966,7 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
             </div>
             {/* Sticky navigation (mobile only) */}
             <div className="sticky top-0 z-[15] md:hidden">
-              <div style={{ background: 'hsl(var(--spot-color))' }}>
+              <div style={{ background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}>
                 <div
                   ref={tocChipsMobileRef}
                   className="overflow-x-auto scrollbar-hide"
