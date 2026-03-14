@@ -1702,9 +1702,9 @@ const TagesplanOverlay = ({ isOpen, onClose, scrollToDate, eventsVersion }: Tage
               const trick = ageGroup.tricks[trainingTrickIndexRef.current % ageGroup.tricks.length];
 
               return (
-                <div id="section-training" className="mb-8">
+                <div id="section-training" className="sm:col-span-2">
                   <h2 className="flex items-center gap-2 text-[16px] text-white mb-4"><span className="info-emoji">🧑‍🏫</span> <span>Training</span></h2>
-                  <div className="bg-white/[0.01] rounded-[12px] border border-white/[0.03] overflow-hidden p-4 shadow-[0_0_12px_4px_rgba(0,0,0,0.08)]">
+                  <div className="bento-glass overflow-hidden p-4">
                     <div className="text-white text-[14px] font-medium mb-2">{trick.name}</div>
                     <div className="text-white/60 text-[14px] leading-relaxed mb-3">{trick.description}</div>
                     <ul className="space-y-1.5">
