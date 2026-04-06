@@ -427,6 +427,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     setEvents(result.events);
     setIsOffline(result.fromLocal);
     setPendingCount(result.pendingCount);
+
+    // Refresh settings (e.g. walk interval) so predictions update
+    const settings = await getSettings();
+    setWalkIntervalHours(settings.walk_interval_hours);
+    if (settings.birthday) {
+      setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
+    }
     
     if (result.fromLocal) {
       toast({
@@ -445,13 +452,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   useEffect(() => {
     loadEvents();
     setSelectedDate(new Date());
-    // Load birthday from settings
-    getSettings().then((settings) => {
-      if (settings.birthday) {
-        setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
-      }
-      setWalkIntervalHours(settings.walk_interval_hours);
-    });
     // Load iCal events
     fetchICalEvents().then(setIcalEvents).catch(console.error);
   }, []);
