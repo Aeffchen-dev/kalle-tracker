@@ -871,9 +871,8 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     });
   }, [events]);
 
-  // Filter events from last 7 days, 30 days, and 90 days for calculations
+  // Filter events from last 7 days and 90 days for calculations
   const sevenDaysAgo = useMemo(() => subDays(new Date(), 7), []);
-  const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
   const ninetyDaysAgo = useMemo(() => subDays(new Date(), 90), []);
 
   const weightStats = useMemo(() => {
@@ -972,21 +971,21 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
       : null;
     
-    const last30DaysPipi = events
+    const last7DaysPipi = events
       .filter(e => e.type === 'pipi')
-      .filter(e => isAfter(new Date(e.time), thirtyDaysAgo));
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo));
     
     const uniqueDaysWithPipi = new Set(
-      last30DaysPipi.map(e => format(new Date(e.time), 'yyyy-MM-dd'))
+      last7DaysPipi.map(e => format(new Date(e.time), 'yyyy-MM-dd'))
     );
     const daysWithEntries = uniqueDaysWithPipi.size;
     
-    const avgPerDay = last30DaysPipi.length > 0 && daysWithEntries > 0
-      ? Math.round(last30DaysPipi.length / daysWithEntries * 10) / 10
+    const avgPerDay = last7DaysPipi.length > 0 && daysWithEntries > 0
+      ? Math.round(last7DaysPipi.length / daysWithEntries * 10) / 10
       : null;
     
     return { avg, avgPerDay };
-  }, [events, sevenDaysAgo, thirtyDaysAgo]);
+  }, [events, sevenDaysAgo]);
 
   const stuhlgangStats = useMemo(() => {
     const stuhlgangEvents = events
@@ -1004,21 +1003,21 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
       ? Math.round(last7DaysIntervals.reduce((a, b) => a + b, 0) / last7DaysIntervals.length * 10) / 10
       : null;
     
-    const last30DaysStuhlgang = events
+    const last7DaysStuhlgang = events
       .filter(e => e.type === 'stuhlgang')
-      .filter(e => isAfter(new Date(e.time), thirtyDaysAgo));
+      .filter(e => isAfter(new Date(e.time), sevenDaysAgo));
     
     const uniqueDaysWithStuhlgang = new Set(
-      last30DaysStuhlgang.map(e => format(new Date(e.time), 'yyyy-MM-dd'))
+      last7DaysStuhlgang.map(e => format(new Date(e.time), 'yyyy-MM-dd'))
     );
     const daysWithEntries = uniqueDaysWithStuhlgang.size;
     
-    const avgPerDay = last30DaysStuhlgang.length > 0 && daysWithEntries > 0
-      ? Math.round(last30DaysStuhlgang.length / daysWithEntries * 10) / 10
+    const avgPerDay = last7DaysStuhlgang.length > 0 && daysWithEntries > 0
+      ? Math.round(last7DaysStuhlgang.length / daysWithEntries * 10) / 10
       : null;
     
     return { avg, avgPerDay };
-  }, [events, sevenDaysAgo, thirtyDaysAgo]);
+  }, [events, sevenDaysAgo]);
 
   const handleExportPDF = useCallback(async () => {
     if (!chartsRef.current || isExporting) return;
