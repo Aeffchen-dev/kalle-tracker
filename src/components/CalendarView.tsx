@@ -427,6 +427,13 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     setEvents(result.events);
     setIsOffline(result.fromLocal);
     setPendingCount(result.pendingCount);
+
+    // Refresh settings (e.g. walk interval) so predictions update
+    const settings = await getSettings();
+    setWalkIntervalHours(settings.walk_interval_hours);
+    if (settings.birthday) {
+      setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
+    }
     
     if (result.fromLocal) {
       toast({
