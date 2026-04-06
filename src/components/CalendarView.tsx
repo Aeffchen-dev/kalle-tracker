@@ -805,6 +805,28 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       return { predictionSlots: estimates, lastPredictionHour: maxPredHour };
     }
     
+    // For today: if there are pipi/stuhlgang entries, predict next = last entry + walk_interval_hours
+    const todayPipiPoop = targetEvents
+      .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+    
+    const currentHour = now.getHours() + now.getMinutes() / 60;
+    
+    if (todayPipiPoop.length > 0) {
+      // Use last entry time + interval for prediction
+      const lastEntry = new Date(todayPipiPoop[0].time);
+      const lastEntryHour = lastEntry.getHours() + lastEntry.getMinutes() / 60;
+      const nextPredHour = lastEntryHour + walkIntervalHours;
+      
+      // Only show if prediction is in the future and within today (< 24h)
+      if (nextPredHour > currentHour && nextPredHour < 24) {
+        const slot: PredSlot = { avgHour: nextPredHour, hasPoop: true, hasPipi: true };
+        return { predictionSlots: [slot], lastPredictionHour: Math.max(maxPredHour ?? nextPredHour, nextPredHour) };
+      }
+      return { predictionSlots: [], lastPredictionHour: maxPredHour };
+    }
+    
+    // No entries today: fall back to historical estimates
     const realHours = targetEvents
       .filter(e => e.type === 'pipi' || e.type === 'stuhlgang')
       .map(e => {
@@ -812,7 +834,6 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
         return d.getHours() + d.getMinutes() / 60;
       });
     
-    const currentHour = now.getHours() + now.getMinutes() / 60;
     const usedEstimates = new Set<number>();
     
     for (let ei = 0; ei < estimates.length; ei++) {
@@ -831,7 +852,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
     const slots = futureSlots.length > 0 ? [futureSlots[0]] : [];
     
     return { predictionSlots: slots, lastPredictionHour: maxPredHour };
-  }, [avgGassiByDay]);
+  }, [avgGassiByDay, walkIntervalHours]);
 
   // Build prediction slots for selected date
   const { predictionSlots, lastPredictionHour } = useMemo(() => {
