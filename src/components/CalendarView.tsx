@@ -450,6 +450,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
       if (settings.birthday) {
         setBirthday(parse(settings.birthday, 'yyyy-MM-dd', new Date()));
       }
+      setWalkIntervalHours(settings.walk_interval_hours);
     });
     // Load iCal events
     fetchICalEvents().then(setIcalEvents).catch(console.error);
