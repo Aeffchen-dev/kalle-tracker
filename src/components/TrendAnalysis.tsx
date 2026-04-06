@@ -871,9 +871,8 @@ const TrendAnalysis = memo(({ events, scrollToChart }: TrendAnalysisProps) => {
     });
   }, [events]);
 
-  // Filter events from last 7 days, 30 days, and 90 days for calculations
+  // Filter events from last 7 days and 90 days for calculations
   const sevenDaysAgo = useMemo(() => subDays(new Date(), 7), []);
-  const thirtyDaysAgo = useMemo(() => subDays(new Date(), 30), []);
   const ninetyDaysAgo = useMemo(() => subDays(new Date(), 90), []);
 
   const weightStats = useMemo(() => {
