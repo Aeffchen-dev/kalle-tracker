@@ -396,6 +396,7 @@ const CalendarView = ({ eventSheetOpen = false }: CalendarViewProps) => {
   const [birthday, setBirthday] = useState<Date | null>(null);
   const [isContentScrollable, setIsContentScrollable] = useState(false);
   const [icalEvents, setIcalEvents] = useState<ICalEvent[]>([]);
+  const [walkIntervalHours, setWalkIntervalHours] = useState(4);
   const [stickyItem, setStickyItem] = useState<StickyMedicalItem | null>(null);
   const { toast } = useToast();
   
