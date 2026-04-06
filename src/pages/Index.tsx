@@ -428,7 +428,7 @@ const Index = () => {
         {/* Calendar event notifications */}
         {showCard && (
           <div className="w-full animate-fade-in-up" style={{ animationDelay: '150ms', animationFillMode: 'backwards' }}>
-            <CalendarNotifications onCalendarEventTap={(date) => { setTagesplanScrollDate(date); setShowTagesplan(true); }} onEventSaved={() => loadEvents()} />
+            <CalendarNotifications onCalendarEventTap={(date) => { setTagesplanScrollDate(date); setShowTagesplan(true); }} onEventSaved={() => { loadEvents(); setEventsVersion(v => v + 1); setTimeout(() => setCalendarKey(k => k + 1), 200); }} />
           </div>
         )}
       </main>
